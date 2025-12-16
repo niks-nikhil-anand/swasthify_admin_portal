@@ -20,10 +20,10 @@ export function Navbar() {
                     <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                         Home
                     </Link>
-                    <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                    <Link href="/about-us" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                         About
                     </Link>
-                    <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                    <Link href="/services" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                         Services
                     </Link>
                     <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
@@ -58,8 +58,8 @@ export function Navbar() {
             {isOpen && (
                 <div className="md:hidden border-b border-border/40 bg-background p-4 flex flex-col gap-4 animate-in slide-in-from-top-2">
                     <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground">Home</Link>
-                    <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground">About</Link>
-                    <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground">Services</Link>
+                    <Link href="/about-us" className="text-sm font-medium text-muted-foreground hover:text-foreground">About</Link>
+                    <Link href="/services" className="text-sm font-medium text-muted-foreground hover:text-foreground">Services</Link>
                     <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground">Contact</Link>
                     <div className="flex flex-col gap-2 mt-2">
                         <button className="w-full px-4 py-2 text-sm font-medium text-primary border border-primary/20 rounded-md hover:bg-primary/5">
