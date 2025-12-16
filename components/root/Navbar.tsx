@@ -17,7 +17,7 @@ export function Navbar() {
 
                 {/* Desktop Menu */}
                 <div className="hidden md:flex gap-6 items-center">
-                    <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                    <Link href="/" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                         Home
                     </Link>
                     <Link href="/about-us" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
@@ -26,7 +26,7 @@ export function Navbar() {
                     <Link href="/services" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                         Services
                     </Link>
-                    <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                    <Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                         Contact
                     </Link>
                 </div>
@@ -60,7 +60,7 @@ export function Navbar() {
                     <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground">Home</Link>
                     <Link href="/about-us" className="text-sm font-medium text-muted-foreground hover:text-foreground">About</Link>
                     <Link href="/services" className="text-sm font-medium text-muted-foreground hover:text-foreground">Services</Link>
-                    <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground">Contact</Link>
+                    <Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground">Contact</Link>
                     <div className="flex flex-col gap-2 mt-2">
                         <button className="w-full px-4 py-2 text-sm font-medium text-primary border border-primary/20 rounded-md hover:bg-primary/5">
                             Log in

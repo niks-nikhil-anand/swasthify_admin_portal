@@ -66,11 +66,13 @@ export default function AboutPage() {
                             </div>
                         </div>
                         <div className="relative">
-                            <div className="aspect-square rounded-2xl overflow-hidden bg-muted relative shadow-2xl skew-y-3 hover:skew-y-0 transition-transform duration-500">
-                                {/* Placeholder for About Image - Use a nice gradient/pattern until image is available */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                                    <Users className="w-32 h-32 text-primary/40" />
-                                </div>
+                            <div className="aspect-video rounded-2xl overflow-hidden bg-muted relative shadow-2xl skew-y-3 hover:skew-y-0 transition-transform duration-500">
+                                <Image
+                                    src="/images/specialties/our_services.png"
+                                    alt="Our Services"
+                                    fill
+                                    className="object-cover"
+                                />
                             </div>
                             <div className="absolute -bottom-6 -left-6 bg-card p-6 rounded-xl shadow-xl border border-border max-w-xs">
                                 <div className="flex items-center gap-4 mb-2">

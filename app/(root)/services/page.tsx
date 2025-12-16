@@ -68,16 +68,30 @@ export default function ServicesPage() {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Hero Section */}
-            <section className="bg-muted/40 py-20 relative overflow-hidden">
+            <section className="bg-muted/40 py-12 md:py-20 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                 <div className="container mx-auto px-4 relative z-10">
-                    <div className="text-center max-w-3xl mx-auto">
-                        <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
-                            Comprehensive Healthcare Services
-                        </h1>
-                        <p className="text-xl text-muted-foreground mb-8">
-                            From online consultations to complex surgeries, Swasthify is your one-stop solution for all medical needs.
-                        </p>
+                    <div className="flex flex-col md:flex-row items-center gap-12">
+                        <div className="flex-1 text-center md:text-left">
+                            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
+                                Comprehensive Healthcare Services
+                            </h1>
+                            <p className="text-xl text-muted-foreground mb-8">
+                                From online consultations to complex surgeries, Swasthify is your one-stop solution for all medical needs.
+                            </p>
+                        </div>
+                        <div className="flex-1 relative">
+                            <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl border border-border/50">
+                                <img
+                                    src="/images/empowering.png"
+                                    alt="Empowering Healthcare"
+                                    className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700"
+                                />
+                            </div>
+                            {/* Decorative elements behind image */}
+                            <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-primary/10 rounded-full blur-xl" />
+                            <div className="absolute -top-6 -left-6 w-32 h-32 bg-accent/10 rounded-full blur-xl" />
+                        </div>
                     </div>
                 </div>
             </section>
