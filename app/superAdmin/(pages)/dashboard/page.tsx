@@ -29,9 +29,18 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  ComposedChart,
   Legend,
+  Line,
   Pie,
   PieChart,
+  PolarAngleAxis,
+  PolarGrid,
+  PolarRadiusAxis,
+  Radar,
+  RadarChart,
+  RadialBar,
+  RadialBarChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -84,6 +93,33 @@ export default function DashboardPage() {
     { title: "Missed Appointments", count: 12, type: "warning", desc: "No-show report generated" },
     { title: "Supply Alert", count: 3, type: "info", desc: "Low stock in Lab B" },
   ]
+
+  // New Charts Data
+  const dailyTargetsData = [
+    { name: 'Revenue', uv: 90, fill: '#8884d8' },
+    { name: 'Appts', uv: 80, fill: '#83a6ed' },
+    { name: 'Patients', uv: 45, fill: '#8dd1e1' },
+    { name: 'Labs', uv: 70, fill: '#82ca9d' },
+  ];
+
+  const systemHealthData = [
+    { subject: 'CPU Load', A: 45, fullMark: 100 },
+    { subject: 'Memory', A: 60, fullMark: 100 },
+    { subject: 'Disk I/O', A: 30, fullMark: 100 },
+    { subject: 'API Latency', A: 20, fullMark: 100 },
+    { subject: 'DB Conn', A: 50, fullMark: 100 },
+    { subject: 'Network', A: 40, fullMark: 100 },
+  ];
+
+  const patientVisitsData = [
+    { name: 'Mon', new: 20, returning: 40 },
+    { name: 'Tue', new: 25, returning: 45 },
+    { name: 'Wed', new: 30, returning: 35 },
+    { name: 'Thu', new: 22, returning: 50 },
+    { name: 'Fri', new: 35, returning: 60 },
+    { name: 'Sat', new: 40, returning: 30 },
+    { name: 'Sun', new: 15, returning: 20 },
+  ];
 
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
@@ -197,9 +233,9 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* Charts Section */}
+      {/* Charts Section 1 */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        {/* Appointment Trends */}
+        {/* Appointment Trends - Area Chart */}
         <Card className="col-span-4">
           <CardHeader>
             <CardTitle>Appointment Trends</CardTitle>
@@ -224,7 +260,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Status Distribution */}
+        {/* Status Distribution - Donut Chart */}
         <Card className="col-span-3">
           <CardHeader>
             <CardTitle>Appointment Status</CardTitle>
@@ -252,6 +288,72 @@ export default function DashboardPage() {
             </ResponsiveContainer>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Charts Section 2 - NEW Charts from User Request */}
+      <div className="grid gap-4 md:grid-cols-3">
+
+        {/* Daily Targets - Radial Bar */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Daily Targets</CardTitle>
+            <CardDescription>Performance goals (%)</CardDescription>
+          </CardHeader>
+          <CardContent className="h-[250px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadialBarChart cx="50%" cy="50%" innerRadius="10%" outerRadius="80%" barSize={10} data={dailyTargetsData}>
+                <RadialBar
+                  label={{ position: 'insideStart', fill: '#fff' }}
+                  background
+                  dataKey="uv"
+                />
+                <Legend iconSize={10} layout="vertical" verticalAlign="middle" wrapperStyle={{ top: '50%', right: 0, transform: 'translate(0, -50%)', lineHeight: '24px' }} />
+                <Tooltip />
+              </RadialBarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* System Health - Radar */}
+        <Card>
+          <CardHeader>
+            <CardTitle>System Health</CardTitle>
+            <CardDescription>Performance metrics</CardDescription>
+          </CardHeader>
+          <CardContent className="h-[250px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart cx="50%" cy="50%" outerRadius="80%" data={systemHealthData}>
+                <PolarGrid />
+                <PolarAngleAxis dataKey="subject" fontSize={10} />
+                <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                <Radar name="Current" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                <Tooltip />
+              </RadarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Patient Visits - Composed Chart (Bar + Line) */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Patient Visits</CardTitle>
+            <CardDescription>New vs Returning</CardDescription>
+          </CardHeader>
+          <CardContent className="h-[250px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={patientVisitsData}>
+                <XAxis dataKey="name" scale="point" padding={{ left: 10, right: 10 }} fontSize={10} />
+                <YAxis fontSize={10} />
+                <Tooltip />
+                <Legend />
+                <CartesianGrid stroke="#f5f5f5" />
+                <Bar dataKey="new" barSize={20} fill="#413ea0" />
+                <Line type="monotone" dataKey="returning" stroke="#ff7300" />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
       </div>
 
       {/* Detailed Info Section */}
