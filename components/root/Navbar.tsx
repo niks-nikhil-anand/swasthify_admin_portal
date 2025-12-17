@@ -29,6 +29,9 @@ export function Navbar() {
                     <Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                         Contact
                     </Link>
+                    <Link href="/how-it-works" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                        How It Works
+                    </Link>
                     <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                         Pricing
                     </Link>
@@ -63,6 +66,7 @@ export function Navbar() {
                     <Link href="/about-us" className="text-sm font-medium text-muted-foreground hover:text-foreground">About</Link>
                     <Link href="/services" className="text-sm font-medium text-muted-foreground hover:text-foreground">Services</Link>
                     <Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground">Contact</Link>
+                    <Link href="/how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground">How It Works</Link>
                     <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground">Pricing</Link>
                     <div className="flex flex-col gap-2 mt-2">
                         <button className="w-full px-4 py-2 text-sm font-medium text-primary border border-primary/20 rounded-md hover:bg-primary/5">
