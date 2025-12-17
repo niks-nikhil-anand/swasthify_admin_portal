@@ -17,11 +17,11 @@ export function Hero() {
                 </div>
 
                 <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground max-w-4xl">
-                    Complete <span className="text-primary">Doctor Patient</span> <br className="hidden sm:block" /> Appointment System
+                    Your health. <span className="text-primary">One place.</span>
                 </h1>
 
                 <p className="text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed">
-                    Swasthify simplifies healthcare access. Book appointments with top specialists, manage your health records, and experience seamless care coordination.
+                    Link your ABHA, book doctors, upload lab reports — secure & consent-based.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-auto">
