@@ -93,17 +93,17 @@ const sidebarGroups = [
         items: [
             {
                 title: "Reports",
-                href: "/superAdmin/reports",
+                href: "/superAdmin/system/reports",
                 icon: FileText,
             },
             {
                 title: "Push Notifications",
-                href: "/superAdmin/notifications",
+                href: "/superAdmin/system/pushNotification",
                 icon: Bell,
             },
             {
                 title: "Settings",
-                href: "/superAdmin/settings",
+                href: "/superAdmin/system/settings",
                 icon: Settings,
             },
         ]
