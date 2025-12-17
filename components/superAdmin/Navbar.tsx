@@ -53,14 +53,7 @@ export function Navbar() {
                 </Sheet>
 
                 {/* Global Search (Optional but good for generic admin layout) */}
-                <div className="hidden md:flex relative max-w-sm w-full">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        type="search"
-                        placeholder="Search..."
-                        className="pl-9 w-[300px] h-9 bg-background/50 border-muted focus-visible:ring-primary/20"
-                    />
-                </div>
+
             </div>
 
             <div className="flex items-center gap-2 sm:gap-4">
