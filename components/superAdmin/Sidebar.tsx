@@ -53,17 +53,17 @@ const sidebarGroups = [
             },
             {
                 title: "Patients",
-                href: "/superAdmin/patients",
+                href: "/superAdmin/userManagement/patient",
                 icon: User,
             },
             {
                 title: "Labs",
-                href: "/superAdmin/labs",
+                href: "/superAdmin/userManagement/labs",
                 icon: TestTube,
             },
             {
                 title: "All Users",
-                href: "/superAdmin/users",
+                href: "/superAdmin/userManagement/users",
                 icon: Users,
             },
         ]
