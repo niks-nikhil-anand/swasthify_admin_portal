@@ -117,7 +117,7 @@ export function Sidebar({ className }: SidebarProps) {
         <div className={cn("flex flex-col h-screen border-r bg-card/50 backdrop-blur-xl", className)}>
             {/* Logo Section */}
             <div className="p-6 pb-2">
-                <div className="flex items-center gap-3 px-2 mb-6">
+                <div className="flex items-center gap-3 px-2 mb-6 ">
                     <div className="bg-muted p-2.5 rounded-xl shadow-sm border border-border group-hover:scale-105 transition-transform duration-300">
                         <ShieldCheck className="h-6 w-6 text-primary" />
                     </div>
