@@ -10,10 +10,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> { }
+interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
+    redirectTo?: string
+    role?: string
+}
 
-export function LoginForm({ className, ...props }: UserAuthFormProps) {
+export function LoginForm({ className, redirectTo = "/dashboard", role = "user", ...props }: UserAuthFormProps) {
     const router = useRouter()
     const [isLoading, setIsLoading] = React.useState<boolean>(false)
     const [loginMethod, setLoginMethod] = React.useState<"email" | "mobile">("email")
@@ -33,11 +35,11 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
         setTimeout(() => {
             setIsLoading(false)
             // Simulate login success - in real app, call API
-            console.log("Login submitted", {
+            console.log(`Login submitted for role: ${role}`, {
                 method: loginMethod,
                 data: loginMethod === "email" ? { email, password } : { mobile, otp }
             })
-            router.push("/dashboard")
+            router.push(redirectTo)
         }, 2000)
     }
 
