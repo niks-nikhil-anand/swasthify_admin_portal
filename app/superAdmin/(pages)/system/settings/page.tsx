@@ -18,7 +18,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Separator } from "@/components/ui/tabs" // Mistake in import? Separator is in ui/separator. But tabs usually use standard separator. Wait, Shadcn tabs doesn't export Separator. I will use a simple div or check if separator exists.
+
 import { Switch } from "@/components/ui/switch"
 import {
     Tabs,
