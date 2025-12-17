@@ -12,7 +12,15 @@ import {
     Activity,
     FileText,
     LifeBuoy,
-    ChevronRight
+    ChevronRight,
+    Stethoscope,
+    User,
+    TestTube,
+    Calendar,
+    Ticket,
+    MessageSquareWarning,
+    BarChart,
+    Bell
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -26,20 +34,55 @@ const sidebarGroups = [
                 href: "/superAdmin/dashboard",
                 icon: LayoutDashboard,
             },
+            {
+                title: "Analytics",
+                href: "/superAdmin/analytics",
+                icon: BarChart,
+            },
         ]
     },
     {
-        label: "Management",
+        label: "User Management",
         items: [
             {
-                title: "Users",
+                title: "Doctors",
+                href: "/superAdmin/doctors",
+                icon: Stethoscope,
+            },
+            {
+                title: "Patients",
+                href: "/superAdmin/patients",
+                icon: User,
+            },
+            {
+                title: "Labs",
+                href: "/superAdmin/labs",
+                icon: TestTube,
+            },
+            {
+                title: "All Users",
                 href: "/superAdmin/users",
                 icon: Users,
             },
+        ]
+    },
+    {
+        label: "Operations",
+        items: [
             {
-                title: "Reports",
-                href: "/superAdmin/reports",
-                icon: FileText,
+                title: "Appointments",
+                href: "/superAdmin/appointments",
+                icon: Calendar,
+            },
+            {
+                title: "Tickets",
+                href: "/superAdmin/tickets",
+                icon: Ticket,
+            },
+            {
+                title: "Complaints",
+                href: "/superAdmin/complaints",
+                icon: MessageSquareWarning,
             },
         ]
     },
@@ -47,9 +90,14 @@ const sidebarGroups = [
         label: "System",
         items: [
             {
-                title: "System Health",
-                href: "/superAdmin/health",
-                icon: Activity,
+                title: "Reports",
+                href: "/superAdmin/reports",
+                icon: FileText,
+            },
+            {
+                title: "Push Notifications",
+                href: "/superAdmin/notifications",
+                icon: Bell,
             },
             {
                 title: "Settings",
@@ -151,7 +199,7 @@ export function Sidebar({ className }: SidebarProps) {
                     className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors h-10 mt-2"
                 >
                     <LogOut className="h-4 w-4" />
-                    <span className="text-sm font-medium">Logout details</span>
+                    <span className="text-sm font-medium">Logout</span>
                 </Button>
             </div>
         </div>
