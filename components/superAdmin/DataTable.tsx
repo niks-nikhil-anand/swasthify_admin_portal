@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import * as React from "react"
@@ -5,6 +6,7 @@ import {
     ColumnDef,
     ColumnFiltersState,
     SortingState,
+    VisibilityState,
     flexRender,
     getCoreRowModel,
     getFilteredRowModel,
@@ -12,7 +14,7 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, FileDown, Search } from "lucide-react"
+import { ArrowUpDown, ChevronDown, FileDown, ListFilter, Search, SlidersHorizontal } from "lucide-react"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 
@@ -30,6 +32,10 @@ import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
@@ -48,6 +54,10 @@ export function DataTable<TData, TValue>({
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
     )
+    const [columnVisibility, setColumnVisibility] =
+        React.useState<VisibilityState>({})
+
+    const [currentSearchKey, setCurrentSearchKey] = React.useState(searchKey)
 
     const table = useReactTable({
         data,
@@ -58,9 +68,11 @@ export function DataTable<TData, TValue>({
         getSortedRowModel: getSortedRowModel(),
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
+        onColumnVisibilityChange: setColumnVisibility,
         state: {
             sorting,
             columnFilters,
+            columnVisibility,
         },
     })
 
@@ -70,8 +82,7 @@ export function DataTable<TData, TValue>({
             .filter((col) => typeof col.header === "string")
             .map((col) => col.header as string)
 
-        // Simplistic data extraction for PDF, better to allow custom export logic if needed
-        // But for now, we try to extract text from row values
+        // Simplistic data extraction for PDF
         const tableRows = data.map((row) => {
             return Object.values(row as any).map((val: any) => String(val));
         });
@@ -103,21 +114,83 @@ export function DataTable<TData, TValue>({
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center py-4 relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    {searchKey && (
-                        <Input
-                            placeholder="Search..."
-                            value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-                            onChange={(event) =>
-                                table.getColumn(searchKey)?.setFilterValue(event.target.value)
-                            }
-                            className="pl-8 max-w-sm"
-                        />
-                    )}
+            <div className="flex items-center justify-between py-4">
+                <div className="flex items-center gap-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm">
+                                <ListFilter className="mr-2 h-4 w-4" />
+                                Filter
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start">
+                            <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuRadioGroup
+                                value={currentSearchKey}
+                                onValueChange={(value) => {
+                                    table.resetColumnFilters()
+                                    setCurrentSearchKey(value)
+                                }}
+                            >
+                                {table.getAllColumns()
+                                    .filter((column) => column.getCanFilter())
+                                    .map((column) => (
+                                        <DropdownMenuRadioItem key={column.id} value={column.id} className="capitalize">
+                                            {column.id}
+                                        </DropdownMenuRadioItem>
+                                    ))}
+                            </DropdownMenuRadioGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <div className="relative">
+                        <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        {currentSearchKey && (
+                            <Input
+                                placeholder={`Filter ${currentSearchKey}...`}
+                                value={(table.getColumn(currentSearchKey)?.getFilterValue() as string) ?? ""}
+                                onChange={(event) =>
+                                    table.getColumn(currentSearchKey)?.setFilterValue(event.target.value)
+                                }
+                                className="pl-8 max-w-sm"
+                            />
+                        )}
+                    </div>
                 </div>
                 <div className="flex items-center space-x-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" className="ml-auto">
+                                <SlidersHorizontal className="mr-2 h-4 w-4" />
+                                View
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            {table
+                                .getAllColumns()
+                                .filter(
+                                    (column) =>
+                                        typeof column.accessorFn !== "undefined" &&
+                                        column.getCanHide()
+                                )
+                                .map((column) => {
+                                    return (
+                                        <DropdownMenuCheckboxItem
+                                            key={column.id}
+                                            className="capitalize"
+                                            checked={column.getIsVisible()}
+                                            onCheckedChange={(value) =>
+                                                column.toggleVisibility(!!value)
+                                            }
+                                        >
+                                            {column.id}
+                                        </DropdownMenuCheckboxItem>
+                                    )
+                                })}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                     <Button variant="outline" size="sm" onClick={exportToPDF}>
                         <FileDown className="mr-2 h-4 w-4" />
                         PDF
