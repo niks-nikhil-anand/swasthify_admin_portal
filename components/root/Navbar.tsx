@@ -29,13 +29,16 @@ export function Navbar() {
                     <Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                         Contact
                     </Link>
+                    <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                        Pricing
+                    </Link>
                 </div>
 
                 <div className="hidden md:flex gap-4">
                     <Link href={"/login"}>
-                    <button className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 transition-colors shadow-sm">
-                        Log in
-                    </button>
+                        <button className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 transition-colors shadow-sm">
+                            Log in
+                        </button>
                     </Link>
                 </div>
 
@@ -60,6 +63,7 @@ export function Navbar() {
                     <Link href="/about-us" className="text-sm font-medium text-muted-foreground hover:text-foreground">About</Link>
                     <Link href="/services" className="text-sm font-medium text-muted-foreground hover:text-foreground">Services</Link>
                     <Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground">Contact</Link>
+                    <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground">Pricing</Link>
                     <div className="flex flex-col gap-2 mt-2">
                         <button className="w-full px-4 py-2 text-sm font-medium text-primary border border-primary/20 rounded-md hover:bg-primary/5">
                             Log in
