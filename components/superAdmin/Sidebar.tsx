@@ -73,17 +73,17 @@ const sidebarGroups = [
         items: [
             {
                 title: "Appointments",
-                href: "/superAdmin/appointments",
+                href: "/superAdmin/operations/appointment",
                 icon: Calendar,
             },
             {
                 title: "Tickets",
-                href: "/superAdmin/tickets",
+                href: "/superAdmin/operations/tickets",
                 icon: Ticket,
             },
             {
                 title: "Complaints",
-                href: "/superAdmin/complaints",
+                href: "/superAdmin/operations/complaints",
                 icon: MessageSquareWarning,
             },
         ]
