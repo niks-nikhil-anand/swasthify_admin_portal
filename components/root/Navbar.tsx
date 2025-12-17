@@ -32,12 +32,11 @@ export function Navbar() {
                 </div>
 
                 <div className="hidden md:flex gap-4">
-                    <button className="px-4 py-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                    <Link href={"/login"}>
+                    <button className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 transition-colors shadow-sm">
                         Log in
                     </button>
-                    <button className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 transition-colors shadow-sm">
-                        Get Started
-                    </button>
+                    </Link>
                 </div>
 
                 {/* Mobile Menu Button */}
