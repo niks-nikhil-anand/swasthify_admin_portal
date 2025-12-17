@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -65,8 +67,14 @@ export function Sidebar({ className }: SidebarProps) {
             {/* Logo Section */}
             <div className="p-6 pb-2">
                 <div className="flex items-center gap-3 px-2 mb-6 ">
-                    <div className="bg-muted p-2.5 rounded-xl shadow-sm border border-border group-hover:scale-105 transition-transform duration-300">
-                        <Stethoscope className="h-6 w-6 text-primary" />
+                    <div className="bg-muted p-1.5 rounded-xl shadow-sm border border-border group-hover:scale-105 transition-transform duration-300">
+                        <Image
+                            src="/logo.png"
+                            alt="Swasthify Logo"
+                            width={32}
+                            height={32}
+                            className="h-8 w-8 object-contain"
+                        />
                     </div>
                     <div>
                         <h2 className="text-xl font-bold tracking-tight text-foreground">

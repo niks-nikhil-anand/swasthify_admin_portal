@@ -17,7 +17,7 @@ export default function SuperAdminLayout({
             <div className="flex flex-col md:pl-64">
                 <Navbar />
                 <main className="flex-1 p-6 overflow-y-auto">
-                    <div className="max-w-7xl mx-auto w-full">
+                    <div className=" mx-auto w-full">
                         {children}
                     </div>
                 </main>
