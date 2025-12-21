@@ -44,7 +44,7 @@ model User {
   lab         Lab?
   
   notifications Notification[]
-  address       Address?
+  addresses     Address[]
   wallet        Wallet?
 
   auditLogs     AuditLog[]
@@ -101,6 +101,7 @@ model Doctor {
   experienceYears Int?
   consultationFee Float?
   qualification   String?
+  clinicPhone     String?
   timeZone        String   @default("UTC")
   
   averageRating   Float    @default(0.0)
@@ -135,7 +136,7 @@ model Lab {
   averageRating   Float    @default(0.0)
   totalReviews    Int      @default(0)
 
-  address         Address?
+  addresses       Address[]
 
   reviews         Review[]
   tests           LabTest[]
@@ -201,6 +202,10 @@ model Appointment {
   
   videoLink       String?
   meetingPassword String?
+  
+  cancelledBy       String? // User/Doctor ID
+  cancellationReason String?
+  cancelledAt       DateTime?
 
   prescription    Prescription?
   payment         Payment?
@@ -225,6 +230,7 @@ model MedicalRecord {
   notes     String?
   fileUrl   String?
   attachments Attachment[]
+  vitalSigns  VitalSigns?
   
   date      DateTime @default(now())
   createdAt DateTime @default(now())
@@ -370,6 +376,11 @@ model LabTest {
   reports     LabReport[]
   appointments Appointment[]
   
+  // Self-relation for Bundles (e.g. Full Body -> includes CBC, Thyroid)
+  bundleId    String?
+  includedIn  LabTest?  @relation("LabTestBundles", fields: [bundleId], references: [id])
+  includes    LabTest[] @relation("LabTestBundles")
+  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -402,10 +413,13 @@ enum ReportStatus {
 
 model Address {
   id        String   @id @default(uuid())
-  userId    String?  @unique
+  userId    String?
   user      User?    @relation(fields: [userId], references: [id])
-  labId     String?  @unique
+  labId     String?
   lab       Lab?     @relation(fields: [labId], references: [id])
+  
+  label     String?  // "Home", "Work", "Clinic"
+  isDefault Boolean  @default(false)
   
   street    String?
   city      String
@@ -577,6 +591,27 @@ model Attachment {
   createdAt       DateTime       @default(now())
 
   @@map("attachments")
+}
+
+model VitalSigns {
+  id              String        @id @default(uuid())
+  medicalRecordId String        @unique
+  medicalRecord   MedicalRecord @relation(fields: [medicalRecordId], references: [id], onDelete: Cascade)
+  
+  heartRate       Int?          // bpm
+  systolic        Int?          // mmHg
+  diastolic       Int?          // mmHg
+  temperature     Float?        // Celsius
+  respiratoryRate Int?
+  spO2            Int?          // %
+  weight          Float?        // kg
+  height          Float?        // cm
+  bmi             Float?
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("vital_signs")
 }
 
 model Waitlist {
