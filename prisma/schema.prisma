@@ -44,7 +44,9 @@ model User {
   wallet        Wallet?
 
   auditLogs     AuditLog[]
+  userRoles     UserRole[]
 
+  @@index([email])
   @@index([email])
   @@index([phone])
   @@map("users")
@@ -89,8 +91,10 @@ model Doctor {
   experienceYears Int?
   consultationFee Float?
   qualification   String?
+  timeZone        String   @default("UTC")
   
   specializations Specialization[]
+  leaves          DoctorLeave[]
 
   availability     DoctorAvailability[]
   appointments     Appointment[]
@@ -164,9 +168,9 @@ model Appointment {
   
   dateTime        DateTime
   status          AppointmentStatus @default(PENDING)
-  reason          String?
   
   consultationFee Float    @default(0.0) // Locked-in price
+  version         Int      @default(0)   // For optimistic locking
   
   type            AppointmentType   @default(IN_PERSON)
 
@@ -192,6 +196,7 @@ model MedicalRecord {
   diagnosis String?
   notes     String?
   fileUrl   String?
+  attachments Attachment[]
   
   date      DateTime @default(now())
   createdAt DateTime @default(now())
@@ -449,6 +454,90 @@ model AuditLog {
   createdAt DateTime @default(now())
 
   @@map("audit_logs")
+}
+
+// --- RBAC System ---
+
+model AccessRole {
+  id          String   @id @default(uuid())
+  name        String   @unique // e.g., "SUPER_ADMIN", "CLINIC_MANAGER"
+  description String?
+  
+  permissions RolePermission[]
+  users       UserRole[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("access_roles") // Renamed from Role to avoid conflict with Enum Role
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  action      String   @unique // e.g., "appointment.create", "user.delete"
+  description String?
+  
+  roles       RolePermission[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  role         AccessRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model UserRole {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roleId    String
+  role      AccessRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+
+  @@unique([userId, roleId])
+  @@map("user_roles")
+}
+
+// --- Scalable Scheduling ---
+
+model DoctorLeave {
+  id        String   @id @default(uuid())
+  doctorId  String
+  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  
+  startDate DateTime
+  endDate   DateTime
+  reason    String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([doctorId])
+  @@map("doctor_leaves")
+}
+
+model Attachment {
+  id              String         @id @default(uuid())
+  url             String
+  type            String         // "LAB_REPORT", "XRAY", "PRESCRIPTION"
+  
+  medicalRecordId String?
+  medicalRecord   MedicalRecord? @relation(fields: [medicalRecordId], references: [id], onDelete: SetNull)
+  
+  createdAt       DateTime       @default(now())
+
+  @@map("attachments")
 }
 
 enum AppointmentStatus {
