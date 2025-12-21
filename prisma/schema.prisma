@@ -45,13 +45,15 @@ model User {
 
   auditLogs     AuditLog[]
 
+  @@index([email])
+  @@index([phone])
   @@map("users")
 }
 
 model Patient {
   id            String   @id @default(uuid())
   userId        String   @unique
-  user          User     @relation(fields: [userId], references: [id])
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   dateOfBirth   DateTime?
   gender        Gender?
@@ -80,7 +82,7 @@ model Patient {
 model Doctor {
   id              String   @id @default(uuid())
   userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id])
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   licenseNumber   String?
   bio             String?
@@ -88,8 +90,7 @@ model Doctor {
   consultationFee Float?
   qualification   String?
   
-  specializationId String?
-  specialization   Specialization? @relation(fields: [specializationId], references: [id])
+  specializations Specialization[]
 
   availability     DoctorAvailability[]
   appointments     Appointment[]
@@ -108,7 +109,7 @@ model Doctor {
 model Lab {
   id              String   @id @default(uuid())
   userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id])
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   licenseNumber   String?
   description     String?
@@ -165,6 +166,8 @@ model Appointment {
   status          AppointmentStatus @default(PENDING)
   reason          String?
   
+  consultationFee Float    @default(0.0) // Locked-in price
+  
   type            AppointmentType   @default(IN_PERSON)
 
   prescription    Prescription?
@@ -173,6 +176,9 @@ model Appointment {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 
+  @@index([doctorId])
+  @@index([patientId])
+  @@index([dateTime])
   @@map("appointments")
 }
 
@@ -433,8 +439,8 @@ model Insurance {
 
 model AuditLog {
   id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   
   action    String
   details   String?
