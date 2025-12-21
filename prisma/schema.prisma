@@ -68,7 +68,11 @@ model Patient {
   height        Float?   // in cm
   weight        Float?   // in kg
   allergies     String?
+  allergies     String?
   chronicDiseases String?
+  
+  emergencyContactName  String?
+  emergencyContactPhone String?
   
   appointments  Appointment[]
   medicalRecords MedicalRecord[]
@@ -99,6 +103,9 @@ model Doctor {
   qualification   String?
   timeZone        String   @default("UTC")
   
+  averageRating   Float    @default(0.0)
+  totalReviews    Int      @default(0)
+  
   specializations Specialization[]
   leaves          DoctorLeave[]
 
@@ -124,6 +131,9 @@ model Lab {
   licenseNumber   String?
   description     String?
   website         String?
+
+  averageRating   Float    @default(0.0)
+  totalReviews    Int      @default(0)
 
   address         Address?
 
@@ -330,6 +340,9 @@ model Payment {
   status          PaymentStatus @default(PENDING)
   method          String?       // "CARD", "UPI", "CASH"
   transactionId   String?
+  
+  refundId        String?       // From Payment Gateway
+  refundedAt      DateTime?
   
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
