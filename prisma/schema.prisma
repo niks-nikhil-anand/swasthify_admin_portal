@@ -34,6 +34,10 @@ model User {
   status      Boolean  @default(true) // For soft delete or banning
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  
+  resetToken       String?  @unique
+  resetTokenExpiry DateTime?
+  lastLogin        DateTime?
 
   patients    Patient[] // Changed from 1:1 to 1:N for Family Accounts
   doctor      Doctor?
@@ -125,6 +129,8 @@ model Lab {
 
   reviews         Review[]
   tests           LabTest[]
+  appointments    Appointment[]
+  availability    LabAvailability[]
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -165,8 +171,14 @@ model Appointment {
   id              String            @id @default(uuid())
   patientId       String
   patient         Patient           @relation(fields: [patientId], references: [id])
-  doctorId        String
-  doctor          Doctor            @relation(fields: [doctorId], references: [id])
+  
+  doctorId        String?
+  doctor          Doctor?           @relation(fields: [doctorId], references: [id])
+  
+  labId           String?
+  lab             Lab?              @relation(fields: [labId], references: [id])
+  labTestId       String?
+  labTest         LabTest?          @relation(fields: [labTestId], references: [id])
   
   dateTime        DateTime
   status          AppointmentStatus @default(PENDING)
@@ -288,6 +300,10 @@ model Notification {
   isRead    Boolean  @default(false)
   type      String?  // e.g. "APPOINTMENT", "SYSTEM", "PROMOTION"
   
+  channel        NotificationChannel @default(IN_APP)
+  deliveryStatus DeliveryStatus      @default(QUEUED)
+  externalId     String?             // AWS Message ID
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -339,6 +355,7 @@ model LabTest {
   duration    String?  // e.g. "24 hours"
   
   reports     LabReport[]
+  appointments Appointment[]
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -586,6 +603,38 @@ enum AppointmentStatus {
 enum AppointmentType {
   VIDEO
   IN_PERSON
+  LAB_WALK_IN
+  LAB_HOME_COLLECTION
+}
+
+model LabAvailability {
+  id        String    @id @default(uuid())
+  labId     String
+  lab       Lab       @relation(fields: [labId], references: [id])
+  
+  dayOfWeek DayOfWeek
+  startTime String    // Format HH:mm
+  endTime   String    // Format HH:mm
+  capacity  Int       @default(10) // Number of patients per slot/hour
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("lab_availabilities")
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  SMS
+  PUSH
+}
+
+enum DeliveryStatus {
+  QUEUED
+  SENT
+  FAILED
+  DELIVERED
 }
 
 enum DayOfWeek {
