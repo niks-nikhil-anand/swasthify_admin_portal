@@ -11,7 +11,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // url removed for Prisma 7, configured in prisma.config.ts
 }
 
 enum Role {
@@ -44,13 +44,13 @@ model User {
   lab         Lab?
   
   notifications Notification[]
+  deviceTokens  DeviceToken[]
   addresses     Address[]
   wallet        Wallet?
 
   auditLogs     AuditLog[]
   userRoles     UserRole[]
 
-  @@index([email])
   @@index([email])
   @@index([phone])
   @@map("users")
@@ -67,7 +67,6 @@ model Patient {
   bloodGroup    String?
   height        Float?   // in cm
   weight        Float?   // in kg
-  allergies     String?
   allergies     String?
   chronicDiseases String?
   
@@ -109,6 +108,7 @@ model Doctor {
   
   specializations Specialization[]
   leaves          DoctorLeave[]
+  waitlist        Waitlist[]
 
   availability     DoctorAvailability[]
   appointments     Appointment[]
@@ -699,5 +699,25 @@ enum Gender {
   MALE
   FEMALE
   OTHER
+}
+
+model DeviceToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  token     String   @unique // FCM Token
+  platform  Platform // IOS, ANDROID, WEB
+  
+  lastActiveAt DateTime @default(now())
+  createdAt    DateTime @default(now())
+
+  @@map("device_tokens")
+}
+
+enum Platform {
+  IOS
+  ANDROID
+  WEB
 }
 
