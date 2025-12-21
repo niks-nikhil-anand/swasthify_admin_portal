@@ -35,7 +35,7 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  patient     Patient?
+  patients    Patient[] // Changed from 1:1 to 1:N for Family Accounts
   doctor      Doctor?
   lab         Lab?
   
@@ -54,9 +54,10 @@ model User {
 
 model Patient {
   id            String   @id @default(uuid())
-  userId        String   @unique
+  userId        String   // Removed @unique to allow multiple patients per user (Family)
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
+  name          String?  // Added name here since User name is for the login account
   dateOfBirth   DateTime?
   gender        Gender?
   bloodGroup    String?
@@ -74,6 +75,7 @@ model Patient {
   reviews       Review[]
   favoriteDoctors FavoriteDoctor[]
   labReports    LabReport[]
+  waitlist      Waitlist[]
   
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -171,8 +173,12 @@ model Appointment {
   
   consultationFee Float    @default(0.0) // Locked-in price
   version         Int      @default(0)   // For optimistic locking
+  duration        Int      @default(30)  // Duration in minutes
   
   type            AppointmentType   @default(IN_PERSON)
+  
+  videoLink       String?
+  meetingPassword String?
 
   prescription    Prescription?
   payment         Payment?
@@ -377,6 +383,9 @@ model Address {
   zipCode   String
   country   String   @default("India")
   
+  latitude  Float?
+  longitude Float?
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -538,6 +547,32 @@ model Attachment {
   createdAt       DateTime       @default(now())
 
   @@map("attachments")
+}
+
+model Waitlist {
+  id        String   @id @default(uuid())
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId  String
+  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  
+  preferredDate DateTime
+  status        WaitlistStatus @default(ACTIVE)
+  priority      Int            @default(0) // For sorting based on trust score/membership
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([doctorId, preferredDate])
+  @@map("waitlists")
+}
+
+enum WaitlistStatus {
+  ACTIVE
+  NOTIFIED
+  BOOKED
+  EXPIRED
+  CANCELLED
 }
 
 enum AppointmentStatus {
