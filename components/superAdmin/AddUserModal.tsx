@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { UserPlus } from "lucide-react"
+import { UserPlus, Eye, EyeOff } from "lucide-react"
 import { Role } from "@prisma/client"
 
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -37,27 +37,16 @@ import {
 } from "@/components/ui/select"
 import { createUser } from "@/lib/actions/user.actions"
 
-const formSchema = z.object({
-    name: z.string().min(2, {
-        message: "Name must be at least 2 characters.",
-    }),
-    email: z.string().email({
-        message: "Please enter a valid email address.",
-    }),
-    password: z.string().min(6, {
-        message: "Password must be at least 6 characters.",
-    }),
-    phone: z.string().optional(),
-    role: z.nativeEnum(Role),
-})
+import { UserValidation } from "@/lib/validators"
 
 export function AddUserModal() {
     const [open, setOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
+    const [showPassword, setShowPassword] = useState(false)
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<z.infer<typeof UserValidation>>({
+        resolver: zodResolver(UserValidation),
         defaultValues: {
             name: "",
             email: "",
@@ -67,7 +56,7 @@ export function AddUserModal() {
         },
     })
 
-    async function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof UserValidation>) {
         setIsLoading(true)
         try {
             const result = await createUser(values)
@@ -133,7 +122,27 @@ export function AddUserModal() {
                                 <FormItem>
                                     <FormLabel>Password</FormLabel>
                                     <FormControl>
-                                        <Input type="password" placeholder="******" {...field} />
+                                        <div className="relative">
+                                            <Input
+                                                type={showPassword ? "text" : "password"}
+                                                placeholder="******"
+                                                {...field}
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                                onClick={() => setShowPassword((prev) => !prev)}
+                                            >
+                                                {showPassword ? (
+                                                    <EyeOff className="h-4 w-4" />
+                                                ) : (
+                                                    <Eye className="h-4 w-4" />
+                                                )}
+                                                <span className="sr-only">Toggle password visibility</span>
+                                            </Button>
+                                        </div>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -146,7 +155,20 @@ export function AddUserModal() {
                                 <FormItem>
                                     <FormLabel>Phone (Optional)</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="+1234567890" {...field} />
+                                        <div className="flex items-center">
+                                            <div className="flex items-center justify-center border border-r-0 rounded-l-md bg-muted px-3 py-2 text-sm text-muted-foreground h-10">
+                                                +91
+                                            </div>
+                                            <Input
+                                                placeholder="9876543210"
+                                                className="rounded-l-none"
+                                                {...field}
+                                                onChange={(e) => {
+                                                    const value = e.target.value.replace(/\D/g, "").slice(0, 10)
+                                                    field.onChange(value)
+                                                }}
+                                            />
+                                        </div>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
