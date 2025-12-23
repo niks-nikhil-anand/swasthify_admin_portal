@@ -1,72 +1,63 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
 import bcrypt from "bcrypt";
 import { UserValidation } from "@/lib/validators";
+import { db as prisma } from "@/lib/db";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // Validate input using Zod schema
-    const validation = UserValidation.safeParse(body);
+    // Validate using the strict UserValidation schema
+    const validationResult = UserValidation.safeParse(body);
 
-    if (!validation.success) {
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Invalid data", details: validation.error.format() },
+        { 
+          error: "Validation failed", 
+          details: validationResult.error.format() 
+        },
         { status: 400 }
       );
     }
 
-    const data = validation.data;
+    const { name, email, password, phone, role } = validationResult.data;
 
-    // Check for existing user
-    const existingUser = await db.user.findFirst({
-      where: {
-        OR: [
-          { email: data.email },
-          ...(data.phone ? [{ phone: data.phone }] : []),
-        ],
-      },
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
     });
 
     if (existingUser) {
-        if (existingUser.email === data.email) {
-            return NextResponse.json(
-                { error: "User with this email already exists" },
-                { status: 409 }
-            );
-        }
-        if (data.phone && existingUser.phone === data.phone) {
-            return NextResponse.json(
-                { error: "User with this phone number already exists" },
-                { status: 409 }
-            );
-        }
+      return NextResponse.json(
+        { error: "User with this email already exists" },
+        { status: 409 }
+      );
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    // Encrypt password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
-    const newUser = await db.user.create({
+    // Create user in DB
+    const newUser = await prisma.user.create({
       data: {
-        name: data.name,
-        email: data.email,
+        name,
+        email,
         password: hashedPassword,
-        phone: data.phone || null,
-        role: data.role,
-        status: true, // Default active
-        isVerified: false, // Public registration might require verification
+        phone,
+        role,
       },
     });
 
-    // Remove password from response
-    const { password: _, ...userWithoutPassword } = newUser;
-
+    // Return success (exclude sensitive data)
     return NextResponse.json(
       {
         message: "User registered successfully",
-        user: userWithoutPassword,
+        user: {
+          id: newUser.id,
+          name: newUser.name,
+          email: newUser.email,
+          role: newUser.role,
+        },
       },
       { status: 201 }
     );

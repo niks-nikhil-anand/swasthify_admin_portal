@@ -35,7 +35,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { createUser } from "@/lib/actions/user.actions"
+// import { createUser } from "@/lib/actions/user.actions"
 
 import { UserValidation } from "@/lib/validators"
 
@@ -59,9 +59,18 @@ export function AddUserModal() {
     async function onSubmit(values: z.infer<typeof UserValidation>) {
         setIsLoading(true)
         try {
-            const result = await createUser(values)
-            if (result.error) {
-                form.setError("root", { message: result.error })
+            const response = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(values),
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                form.setError("root", { message: data.error || "Something went wrong" })
             } else {
                 setOpen(false)
                 form.reset()

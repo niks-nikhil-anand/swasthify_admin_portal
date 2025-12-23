@@ -62,15 +62,6 @@ export async function POST(req: Request) {
       },
       { status: 200 }
     );
-
-    // Set HTTP-only cookie
-    response.cookies.set("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24, // 1 day
-      path: "/",
-    });
-
     return response;
   } catch (error) {
     console.error("Login error:", error);
