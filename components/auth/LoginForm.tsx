@@ -32,15 +32,34 @@ export function LoginForm({ className, redirectTo = "/dashboard", role = "user",
         event.preventDefault()
         setIsLoading(true)
 
-        setTimeout(() => {
+        try {
+            if (loginMethod === "email") {
+                const response = await fetch("/api/auth", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password }),
+                })
+
+                const data = await response.json()
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Login failed")
+                }
+
+                console.log("Login successful", data)
+                router.push(redirectTo)
+            } else {
+                // Mobile/OTP not implemented yet
+                console.log("Mobile login not implemented")
+                setTimeout(() => {
+                    setIsLoading(false)
+                }, 2000)
+            }
+        } catch (error) {
+            console.error("Login error:", error)
+            // TODO: Show toast error
             setIsLoading(false)
-            // Simulate login success - in real app, call API
-            console.log(`Login submitted for role: ${role}`, {
-                method: loginMethod,
-                data: loginMethod === "email" ? { email, password } : { mobile, otp }
-            })
-            router.push(redirectTo)
-        }, 2000)
+        }
     }
 
     const handleSendOtp = () => {

@@ -13,7 +13,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Copy, Edit, Mail, MoreHorizontal, Shield, Trash, User, Eye } from "lucide-react"
+import { ArrowUpDown, Copy, Edit, Mail, MoreHorizontal, Shield, Trash, Eye } from "lucide-react"
+import { AddUserModal } from "@/components/superAdmin/AddUserModal"
 
 type AppUser = {
     id: string
@@ -174,9 +175,7 @@ export default function UsersPage() {
         <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold tracking-tight">System Users</h1>
-                <Button>
-                    <User className="mr-2 h-4 w-4" /> Add User
-                </Button>
+                <AddUserModal />
             </div>
 
             <Card>
