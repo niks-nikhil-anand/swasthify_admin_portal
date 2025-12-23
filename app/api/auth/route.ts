@@ -1,70 +1,68 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import * as jose from "jose";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
-
-const JWT_SECRET = process.env.JWT_SECRET || "default_secret_for_dev_only";
+import { UserValidation } from "@/lib/validators";
+import { db as prisma } from "@/lib/db";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { email, password } = body;
 
-    if (!email || !password) {
+    // Validate using the strict UserValidation schema
+    const validationResult = UserValidation.safeParse(body);
+
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { 
+          error: "Validation failed", 
+          details: validationResult.error.format() 
+        },
         { status: 400 }
       );
     }
 
-    const user = await prisma.user.findUnique({
+    const { name, email, password, phone, role } = validationResult.data;
+
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (!user) {
+    if (existingUser) {
       return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 }
+        { error: "User with this email already exists" },
+        { status: 409 }
       );
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    // Encrypt password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    if (!isPasswordValid) {
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 }
-      );
-    }
+    // Create user in DB
+    const newUser = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        role,
+      },
+    });
 
-    // Generate JWT
-    const secret = new TextEncoder().encode(JWT_SECRET);
-    const token = await new jose.SignJWT({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-    })
-      .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("24h")
-      .sign(secret);
-
-    const response = NextResponse.json(
+    // Return success (exclude sensitive data)
+    return NextResponse.json(
       {
-        message: "Login successful",
+        message: "User registered successfully",
         user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
+          id: newUser.id,
+          name: newUser.name,
+          email: newUser.email,
+          role: newUser.role,
         },
       },
-      { status: 200 }
+      { status: 201 }
     );
-    return response;
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("Registration error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
