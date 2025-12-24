@@ -56,7 +56,7 @@ export async function POST(req) {
     // 4. Check Role Match (Normalization)
     // Map input role to Prisma Enum if necessary, or just compare string case-insensitively
     // Prisma Roles: SUPER_ADMIN, ADMIN, DOCTOR, PATIENT, LAB, PHARMACY
-    
+
     // Normalize input role to upper case for comparison
     const inputRoleUpper = role.toUpperCase();
     // Normalize DB role
@@ -70,8 +70,8 @@ export async function POST(req) {
     console.log(`Role Check: Input=${role} (Normalized=${normalizedInputRole}), DB=${user.role} (Normalized=${dbRoleUpper})`);
 
     if (dbRoleUpper !== normalizedInputRole) {
-       console.log("Login failed: Role mismatch");
-       return NextResponse.json(
+      console.log("Login failed: Role mismatch");
+      return NextResponse.json(
         { error: "Unauthorized for this role" },
         { status: 403 }
       );
@@ -79,10 +79,10 @@ export async function POST(req) {
 
     // 5. Generate JWT
     const secret = new TextEncoder().encode(JWT_SECRET);
-    const token = await new SignJWT({ 
-        userId: user.id, 
-        role: user.role, 
-        email: user.email 
+    const token = await new SignJWT({
+      userId: user.id,
+      role: user.role,
+      email: user.email
     })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
@@ -92,11 +92,11 @@ export async function POST(req) {
     // 6. Set Cookie
     let cookieName = "token"; // Default
     if (normalizedInputRole === "SUPER_ADMIN") {
-      cookieName = "SuperAdmin";
+      cookieName = "SUPER_ADMIN";
     } else if (normalizedInputRole === "PATIENT") {
-      cookieName = "patient";
+      cookieName = "PATIENT";
     } else if (normalizedInputRole === "DOCTOR") {
-      cookieName = "doctor";
+      cookieName = "DOCTOR";
     }
 
     console.log(`Setting cookie: ${cookieName}`);

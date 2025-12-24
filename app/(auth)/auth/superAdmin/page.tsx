@@ -15,7 +15,7 @@ export default function SuperAdminLoginPage() {
             description="Secure area for administrators only"
             showSocial={false}
         >
-            <LoginForm redirectTo="/superAdmin" role="superAdmin" />
+            <LoginForm redirectTo="/superAdmin/dashboard" role="superAdmin" />
         </AuthWrapper>
     )
 }

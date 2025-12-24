@@ -47,6 +47,7 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
                 }
 
                 console.log("Login successful", data)
+                router.refresh()
                 router.push(redirectTo)
             } else {
                 // Mobile/OTP not implemented yet
