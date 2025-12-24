@@ -15,58 +15,17 @@ import {
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, Copy, Edit, Mail, MoreHorizontal, Shield, Trash, Eye } from "lucide-react"
 import { AddUserModal } from "@/components/superAdmin/AddUserModal"
+import { useEffect, useState } from "react"
+import { format } from "date-fns"
 
 type AppUser = {
     id: string
     name: string
     email: string
-    role: "Admin" | "User" | "Moderator"
-    status: "Active" | "Inactive" | "Banned"
-    joinedDate: string
+    role: string // roles are strings in the enum
+    status: boolean // status is boolean in db
+    createdAt: string
 }
-
-const data: AppUser[] = [
-    {
-        id: "1",
-        name: "John Doe",
-        email: "john@example.com",
-        role: "Admin",
-        status: "Active",
-        joinedDate: "2023-01-01",
-    },
-    {
-        id: "2",
-        name: "Jane Smith",
-        email: "jane@example.com",
-        role: "User",
-        status: "Active",
-        joinedDate: "2023-02-15",
-    },
-    {
-        id: "3",
-        name: "Bob Johnson",
-        email: "bob@example.com",
-        role: "User",
-        status: "Inactive",
-        joinedDate: "2023-03-10",
-    },
-    {
-        id: "4",
-        name: "Alice Williams",
-        email: "alice@example.com",
-        role: "Moderator",
-        status: "Active",
-        joinedDate: "2023-04-05",
-    },
-    {
-        id: "5",
-        name: "Charlie Brown",
-        email: "charlie@example.com",
-        role: "User",
-        status: "Banned",
-        joinedDate: "2023-05-20",
-    },
-]
 
 const columns: ColumnDef<AppUser>[] = [
     {
@@ -108,25 +67,26 @@ const columns: ColumnDef<AppUser>[] = [
         accessorKey: "status",
         header: "Status",
         cell: ({ row }) => {
-            const status = row.getValue("status") as string
+            const status = row.getValue("status") as boolean
             return (
                 <Badge
                     variant={
-                        status === "Active"
+                        status
                             ? "success"
-                            : status === "Inactive"
-                                ? "secondary"
-                                : "danger"
+                            : "danger"
                     }
                 >
-                    {status}
+                    {status ? "Active" : "Inactive"}
                 </Badge>
             )
         },
     },
     {
-        accessorKey: "joinedDate",
+        accessorKey: "createdAt",
         header: "Joined Date",
+        cell: ({ row }) => {
+            return format(new Date(row.getValue("createdAt")), "PPP")
+        }
     },
     {
         id: "actions",
@@ -171,6 +131,29 @@ const columns: ColumnDef<AppUser>[] = [
 ]
 
 export default function UsersPage() {
+    const [data, setData] = useState<AppUser[]>([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch("/api/user")
+                if (response.ok) {
+                    const result = await response.json()
+                    setData(result.users)
+                } else {
+                    console.error("Failed to fetch users")
+                }
+            } catch (error) {
+                console.error("Error fetching users:", error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchUsers()
+    }, [])
+
     return (
         <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
@@ -183,7 +166,11 @@ export default function UsersPage() {
                     <CardTitle>All Users</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <DataTable columns={columns} data={data} searchKey="name" />
+                    {loading ? (
+                        <div className="py-10 text-center text-muted-foreground">Loading users...</div>
+                    ) : (
+                        <DataTable columns={columns} data={data} searchKey="name" />
+                    )}
                 </CardContent>
             </Card>
 

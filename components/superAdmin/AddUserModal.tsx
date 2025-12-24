@@ -59,7 +59,7 @@ export function AddUserModal() {
     async function onSubmit(values: z.infer<typeof UserValidation>) {
         setIsLoading(true)
         try {
-            const response = await fetch("/api/auth", {
+            const response = await fetch("/api/auth/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

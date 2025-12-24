@@ -17,7 +17,7 @@ export default function DoctorLoginPage() {
             backButtonHref="/register/doctor"
             showSocial
         >
-            <LoginForm redirectTo="/doctor/dashboard" role="doctor" />
+            <LoginForm redirectTo="/doctor-panel" role="doctor" />
         </AuthWrapper>
     )
 }

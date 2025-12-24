@@ -15,7 +15,7 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
     role?: string
 }
 
-export function LoginForm({ className, redirectTo = "/dashboard", role = "user", ...props }: UserAuthFormProps) {
+export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doctor", ...props }: UserAuthFormProps) {
     const router = useRouter()
     const [isLoading, setIsLoading] = React.useState<boolean>(false)
     const [loginMethod, setLoginMethod] = React.useState<"email" | "mobile">("email")
@@ -34,10 +34,10 @@ export function LoginForm({ className, redirectTo = "/dashboard", role = "user",
 
         try {
             if (loginMethod === "email") {
-                const response = await fetch("/api/auth", {
+                const response = await fetch("/api/auth/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password }),
+                    body: JSON.stringify({ email, password, role }),
                 })
 
                 const data = await response.json()
