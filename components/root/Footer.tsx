@@ -6,7 +6,7 @@ export function Footer() {
         <footer className="bg-muted/40 border-t border-border/50 py-12">
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                    
+
                     <div className="space-y-4">
                         <div className="flex items-center space-x-2">
                             <Image src="/logo.png" alt="Swasthify Logo" width={32} height={32} className="h-8 w-8 object-contain" />
@@ -27,6 +27,7 @@ export function Footer() {
                             <li><Link href="/how-it-works" className="hover:text-primary transition-colors">How It Works</Link></li>
                             <li><a href="#" className="hover:text-primary transition-colors">Contact</a></li>
                             <li><Link href="/pricing" className="hover:text-primary transition-colors">Pricing</Link></li>
+                            <li><Link href="/doctor-profile" className="hover:text-primary transition-colors">Join as Doctor</Link></li>
                             <li><a href="#" className="hover:text-primary transition-colors">Contact</a></li>
                         </ul>
                     </div>
