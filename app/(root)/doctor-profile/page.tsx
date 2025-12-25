@@ -1,329 +1,219 @@
 "use client"
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Loader2, Plus, Stethoscope, Building2, User } from "lucide-react"
+import {
+    Globe,
+    Laptop,
+    Clock,
+    TrendingUp,
+    ShieldCheck,
+    Star
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { toast } from "sonner"
-
-const doctorSchema = z.object({
-    firstName: z.string().min(2, "First name must be at least 2 characters"),
-    lastName: z.string().min(2, "Last name must be at least 2 characters"),
-    email: z.string().email("Invalid email address"),
-    phone: z.string().min(10, "Phone number must be at least 10 digits"),
-    specialization: z.string().min(1, "Please select a specialization"),
-    licenseNumber: z.string().min(5, "License number is required"),
-    experience: z.string().min(1, "Please enter years of experience"),
-    clinicName: z.string().optional(),
-    clinicAddress: z.string().optional(),
-    bio: z.string().max(500, "Bio must be less than 500 characters").optional(),
-})
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import DoctorRegistrationForm from "@/components/root/DoctorRegistrationForm"
 
 export default function DoctorProfilePage() {
 
-    const [isLoading, setIsLoading] = useState(false)
-
-    const form = useForm<z.infer<typeof doctorSchema>>({
-        resolver: zodResolver(doctorSchema),
-        defaultValues: {
-            firstName: "",
-            lastName: "",
-            email: "",
-            phone: "",
-            specialization: "",
-            licenseNumber: "",
-            experience: "",
-            clinicName: "",
-            clinicAddress: "",
-            bio: "",
-        },
-    })
-
-    async function onSubmit(values: z.infer<typeof doctorSchema>) {
-        setIsLoading(true)
-        // Simulate API call
-        setTimeout(() => {
-            setIsLoading(false)
-            toast.success("Application Submitted", {
-                description: "We have received your application. Our team will verify your details and get back to you shortly.",
-            })
-            console.log(values)
-            form.reset()
-        }, 2000)
-    }
+    const scrollToForm = () => {
+        const element = document.getElementById("registration-form");
+        if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+        }
+    };
 
     return (
-        <div className="min-h-screen bg-muted/30 pb-20">
+        <div className="min-h-screen bg-background w-full overflow-x-hidden">
             {/* Hero Section */}
-            <div className="bg-primary text-primary-foreground py-20 px-4">
-                <div className="container mx-auto text-center max-w-3xl">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-6">Join Swasthify as a Doctor</h1>
-                    <p className="text-xl opacity-90 mb-8">
-                        Expand your practice, manage appointments efficiently, and connect with thousands of patients looking for quality healthcare.
-                    </p>
-                </div>
-            </div>
-
-            <div className="container mx-auto px-4 -mt-10">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Benefits Sidebar */}
-                    <div className="lg:col-span-1 space-y-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Why Join Us?</CardTitle>
-                                <CardDescription>Benefits of partnering with Swasthify</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="flex items-start gap-3">
-                                    <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                                        <User className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold">Expand Your Reach</h4>
-                                        <p className="text-sm text-muted-foreground">Connect with patients across the region who need your expertise.</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                    <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                                        <Building2 className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold">Digital Clinic</h4>
-                                        <p className="text-sm text-muted-foreground">Manage appointments, prescriptions, and records digitally.</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                    <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                                        <Stethoscope className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold">Flexible Schedule</h4>
-                                        <p className="text-sm text-muted-foreground">Set your own availability and consultation fees.</p>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+            <section className="relative bg-gradient-to-br from-primary/10 via-background to-background pt-20 pb-20 md:pt-32 md:pb-40 overflow-hidden w-full">
+                <div className="container mx-auto px-4 md:px-6 relative z-10">
+                    <div className="max-w-5xl mx-auto text-center space-y-6 md:space-y-8 mb-16">
+                        <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-medium text-sm md:text-base mb-2 md:mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            Join the Future of Healthcare
+                        </div>
+                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground animate-in fade-in slide-in-from-bottom-6 duration-700">
+                            Join Swasthify as a <span className="text-primary">Doctor</span>
+                        </h1>
+                        <h2 className="text-xl md:text-3xl lg:text-4xl font-medium text-muted-foreground animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+                            Grow Your Practice. Simplify Your Work. Deliver Better Care.
+                        </h2>
+                        <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-10 duration-700 delay-200 px-4">
+                            At Swasthify, we empower healthcare professionals to expand their reach, streamline daily operations, and connect with patients who truly value quality care.
+                        </p>
                     </div>
 
-                    {/* Onboarding Form */}
-                    <div className="lg:col-span-2">
-                        <Card className="border-t-4 border-t-primary shadow-lg">
-                            <CardHeader>
-                                <CardTitle className="text-2xl">Doctor Registration</CardTitle>
-                                <CardDescription>
-                                    Fill in your details to get started. Verification documents will be requested in the next step.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <Form {...form}>
-                                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-
-                                        {/* Personal Details */}
-                                        <div className="space-y-4">
-                                            <h3 className="text-lg font-semibold flex items-center gap-2">
-                                                <User className="h-4 w-4" /> Personal Information
-                                            </h3>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <FormField
-                                                    control={form.control}
-                                                    name="firstName"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>First Name</FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder="Dr. John" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="lastName"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Last Name</FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder="Doe" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <FormField
-                                                    control={form.control}
-                                                    name="email"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Email Address</FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder="doctor@example.com" type="email" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="phone"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Phone Number</FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder="+91 9876543210" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="h-px bg-border" />
-
-                                        {/* Professional Details */}
-                                        <div className="space-y-4">
-                                            <h3 className="text-lg font-semibold flex items-center gap-2">
-                                                <Stethoscope className="h-4 w-4" /> Professional Details
-                                            </h3>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <FormField
-                                                    control={form.control}
-                                                    name="specialization"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Specialization</FormLabel>
-                                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                                <FormControl>
-                                                                    <SelectTrigger>
-                                                                        <SelectValue placeholder="Select Specialization" />
-                                                                    </SelectTrigger>
-                                                                </FormControl>
-                                                                <SelectContent>
-                                                                    <SelectItem value="general_physician">General Physician</SelectItem>
-                                                                    <SelectItem value="cardiologist">Cardiologist</SelectItem>
-                                                                    <SelectItem value="dermatologist">Dermatologist</SelectItem>
-                                                                    <SelectItem value="pediatrician">Pediatrician</SelectItem>
-                                                                    <SelectItem value="neurologist">Neurologist</SelectItem>
-                                                                    <SelectItem value="orthopedist">Orthopedist</SelectItem>
-                                                                    <SelectItem value="gynecologist">Gynecologist</SelectItem>
-                                                                    <SelectItem value="other">Other</SelectItem>
-                                                                </SelectContent>
-                                                            </Select>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="experience"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Experience (Years)</FormLabel>
-                                                            <FormControl>
-                                                                <Input type="number" min="0" placeholder="e.g. 5" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            </div>
-                                            <FormField
-                                                control={form.control}
-                                                name="licenseNumber"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Medical License Number</FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="MCI/State Council Registration Number" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
-
-                                        <div className="h-px bg-border" />
-
-                                        {/* Clinic Details */}
-                                        <div className="space-y-4">
-                                            <h3 className="text-lg font-semibold flex items-center gap-2">
-                                                <Building2 className="h-4 w-4" /> Clinic / Hospital (Optional)
-                                            </h3>
-                                            <FormField
-                                                control={form.control}
-                                                name="clinicName"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Clinic / Hospital Name</FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="Healthy Life Clinic" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="clinicAddress"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Address</FormLabel>
-                                                        <FormControl>
-                                                            <Textarea placeholder="123, Healthcare Street, Medical City..." className="resize-none" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
-
-                                        <div className="pt-4">
-                                            <Button type="submit" className="w-full md:w-auto" disabled={isLoading} size="lg">
-                                                {isLoading ? (
-                                                    <>
-                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...
-                                                    </>
-                                                ) : (
-                                                    "Submit Application"
-                                                )}
-                                            </Button>
-                                            <p className="text-xs text-muted-foreground mt-2">
-                                                By submitting, you agree to our Terms of Service and Privacy Policy.
-                                            </p>
-                                        </div>
-
-                                    </form>
-                                </Form>
-                            </CardContent>
-                        </Card>
+                    {/* Integrated Full Width Form */}
+                    <div className="w-full max-w-[1400px] mx-auto animate-in fade-in slide-in-from-bottom-12 duration-700 delay-300">
+                        <DoctorRegistrationForm />
                     </div>
                 </div>
-            </div>
+                {/* Decorative background elements */}
+                <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl -z-10 opacity-70 pointer-events-none" />
+                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-400/10 rounded-full blur-3xl -z-10 opacity-70 pointer-events-none" />
+            </section>
+
+            {/* Why Partner Section */}
+            <section className="py-16 md:py-24 bg-background bg-muted/30 w-full">
+                <div className="container max-w-7xl mx-auto px-4 md:px-6">
+                    <div className="text-center mb-12 md:mb-16">
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">Why Partner with Swasthify?</h2>
+                        <p className="text-lg text-muted-foreground max-w-3xl mx-auto px-2">
+                            Join a trusted digital healthcare ecosystem designed to support you at every step of your practice.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                        {[
+                            {
+                                icon: Globe,
+                                title: "Expand Your Reach",
+                                desc: "Connect with a wider patient base beyond your physical clinic. Reach patients across regions actively seeking qualified professionals."
+                            },
+                            {
+                                icon: Laptop,
+                                title: "Your Digital Clinic",
+                                desc: "Manage appointments, records, prescriptions, and follow-ups from a secure dashboard. Spend less time on admin, more on care."
+                            },
+                            {
+                                icon: Clock,
+                                title: "Flexible Practice",
+                                desc: "Set your own hours, availability, and fees. Control your schedule with options for in-clinic or online consultations."
+                            },
+                            {
+                                icon: TrendingUp,
+                                title: "Professional Growth",
+                                desc: "Build your digital presence with a verified profile highlighting your expertise and patient feedback to grow credibility."
+                            },
+                            {
+                                icon: ShieldCheck,
+                                title: "Secure & Compliant",
+                                desc: "Industry-grade security protects your data and patient information, ensuring complete confidentiality and peace of mind."
+                            }
+                        ].map((feature, idx) => (
+                            <Card key={idx} className="border-none shadow-lg hover:shadow-2xl transition-all duration-300 bg-card group h-full">
+                                <CardHeader>
+                                    <div className="w-14 h-14 rounded-2xl bg-primary/10 group-hover:bg-primary/20 transition-colors flex items-center justify-center text-primary mb-4">
+                                        <feature.icon className="w-7 h-7" />
+                                    </div>
+                                    <CardTitle className="text-xl md:text-2xl">{feature.title}</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-muted-foreground leading-relaxed text-base md:text-lg">
+                                        {feature.desc}
+                                    </p>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* How It Works Section */}
+            <section className="py-16 md:py-24  w-full">
+                <div className="container max-w-7xl mx-auto px-4 md:px-6">
+                    <div className="text-center mb-12 md:mb-16">
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">How It Works</h2>
+                        <p className="text-lg text-muted-foreground">Simple steps to digitize your practice</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 relative">
+                        {[
+                            { step: "01", title: "Sign Up & Create Profile", desc: "Complete your profile with qualifications, experience, and preferences." },
+                            { step: "02", title: "Quick Verification", desc: "Our team verifies your credentials to ensure a trusted network." },
+                            { step: "03", title: "Set Availability", desc: "Choose your consultation slots and pricing with full flexibility." },
+                            { step: "04", title: "Start Consulting", desc: "Begin receiving appointments and growing your practice effortlessly." }
+                        ].map((item, idx) => (
+                            <div key={idx} className="relative group h-full">
+                                <div className="bg-background rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-xl transition-all border border-border/50 h-full flex flex-col items-center text-center md:items-start md:text-left">
+                                    <div className="text-5xl md:text-6xl font-bold text-primary/10 mb-6 group-hover:text-primary/20 transition-colors">
+                                        {item.step}
+                                    </div>
+                                    <h3 className="text-xl md:text-2xl font-bold mb-3">{item.title}</h3>
+                                    <p className="text-muted-foreground text-base md:text-lg">{item.desc}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Testimonials */}
+            <section className="py-16 md:py-24 w-full">
+                <div className="container max-w-7xl mx-auto px-4 md:px-6">
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12 md:mb-16">Hear from our Partners</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                        {[
+                            {
+                                name: "Dr. Ananya Mehra",
+                                role: "General Physician",
+                                text: "Swasthify has completely transformed how I manage my practice. The platform is intuitive, and I can focus more on patient care instead of administrative work."
+                            },
+                            {
+                                name: "Dr. Rohan Iyer",
+                                role: "Orthopedic Specialist",
+                                text: "The quality of patients and platform professionalism is unmatched. Verification builds trust, and flexibility allows me to manage both clinic and online seamlessly."
+                            },
+                            {
+                                name: "Dr. Neha Kapoor",
+                                role: "Dermatologist",
+                                text: "Helped me grow my online presence without technical hassle. Support is responsive and the system is extremely easy to use. Great for modern practice."
+                            },
+                            {
+                                name: "Dr. Amit Verma",
+                                role: "Pediatrician",
+                                text: "From appointment scheduling to digital prescriptions, everything is smooth and reliable. Swasthify truly understands the needs of doctors."
+                            }
+                        ].map((t, idx) => (
+                            <Card key={idx} className="bg-background border-none shadow-md hover:shadow-xl transition-all duration-300 p-2 md:p-4">
+                                <CardContent className="pt-6">
+                                    <div className="flex gap-1 text-yellow-400 mb-4">
+                                        {[1, 2, 3, 4, 5].map((_, i) => (
+                                            <Star key={i} className="w-5 h-5 fill-current" />
+                                        ))}
+                                    </div>
+                                    <p className="text-lg md:text-xl text-muted-foreground italic mb-8 leading-relaxed">"{t.text}"</p>
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
+                                            {t.name.charAt(4)}
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-lg">{t.name}</h4>
+                                            <span className="text-sm text-primary font-medium">{t.role}</span>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* FAQ Section */}
+            <section className="py-16 md:py-24 bg-muted/30 w-full">
+                <div className="container max-w-4xl mx-auto px-4 md:px-6">
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12 md:mb-16">Frequently Asked Questions</h2>
+                    <Accordion type="single" collapsible className="w-full space-y-4">
+                        {[
+                            { q: "Who can join Swasthify?", a: "Registered medical practitioners including MBBS, MD, MS, BDS, AYUSH doctors, and specialists with valid credentials can join." },
+                            { q: "How do I get started?", a: "Simply sign up, complete your profile, upload your credentials for verification, and set your availability. Once approved, you can start receiving appointments." },
+                            { q: "Is there a cost to join?", a: "Joining Swasthify is simple and transparent. Details about consultation fees and platform charges (if any) are clearly shared during onboarding." },
+                            { q: "Can I choose my own consultation timings?", a: "Yes. You have complete control over your availability, working hours, and consultation modes (online or in-clinic)." },
+                            { q: "How are patient records managed?", a: "All patient records, prescriptions, and consultation history are stored securely on the platform and can be accessed anytime." },
+                            { q: "Is patient data secure?", a: "Absolutely. Swasthify follows strict data security protocols and ensures compliance with healthcare data protection standards." },
+                            { q: "Will I receive support if I face any issues?", a: "Yes. Our dedicated support team is available to assist you with onboarding, technical queries, or account-related concerns." },
+                            { q: "How do payments work?", a: "Payments are processed securely and credited to your account as per the agreed payout cycle, with complete transparency." }
+                        ].map((faq, idx) => (
+                            <AccordionItem key={idx} value={`item-${idx}`} className="border rounded-xl px-4 md:px-6 data-[state=open]:bg-muted/30 transition-colors">
+                                <AccordionTrigger className="text-left text-lg md:text-xl font-medium py-6 hover:no-underline">{faq.q}</AccordionTrigger>
+                                <AccordionContent className="text-muted-foreground text-base md:text-lg pb-6 leading-relaxed">
+                                    {faq.a}
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </div>
+            </section>
         </div>
     )
 }
