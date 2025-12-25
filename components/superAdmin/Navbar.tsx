@@ -28,6 +28,7 @@ export function Navbar() {
 
     // Effect to handle mounting state
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         setMounted(true);
     }, []);
 
