@@ -22,32 +22,32 @@ enum Role {
 }
 
 model User {
-  id          String   @id @default(uuid())
-  email       String   @unique
-  phone       String?  @unique
-  password    String
-  name        String
-  role        Role     @default(PATIENT)
-  isVerified  Boolean  @default(false)
-  status      Boolean  @default(true) // For soft delete or banning
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  resetToken       String?  @unique
+  id         String   @id @default(uuid())
+  email      String   @unique
+  phone      String?  @unique
+  password   String
+  name       String
+  role       Role     @default(PATIENT)
+  isVerified Boolean  @default(false)
+  status     Boolean  @default(true) // For soft delete or banning
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  resetToken       String?   @unique
   resetTokenExpiry DateTime?
   lastLogin        DateTime?
 
-  patients    Patient[] // Changed from 1:1 to 1:N for Family Accounts
-  doctor      Doctor?
-  lab         Lab?
-  
+  patients Patient[] // Changed from 1:1 to 1:N for Family Accounts
+  doctor   Doctor?
+  lab      Lab?
+
   notifications Notification[]
   deviceTokens  DeviceToken[]
   addresses     Address[]
   wallet        Wallet?
 
-  auditLogs     AuditLog[]
-  userRoles     UserRole[]
+  auditLogs AuditLog[]
+  userRoles UserRole[]
 
   @@index([email])
   @@index([phone])
@@ -55,50 +55,52 @@ model User {
 }
 
 model Patient {
-  id            String   @id @default(uuid())
-  userId        String   // Removed @unique to allow multiple patients per user (Family)
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  name          String?  // Added name here since User name is for the login account
-  dateOfBirth   DateTime?
-  gender        Gender?
-  bloodGroup    String?
-  height        Float?   // in cm
-  weight        Float?   // in kg
-  allergies     String?
+  id     String @id @default(uuid())
+  userId String // Removed @unique to allow multiple patients per user (Family)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name            String? // Added name here since User name is for the login account
+  dateOfBirth     DateTime?
+  gender          Gender?
+  bloodGroup      String?
+  height          Float? // in cm
+  weight          Float? // in kg
+  allergies       String?
   chronicDiseases String?
-  
+
   emergencyContactName  String?
   emergencyContactPhone String?
-  
-  appointments  Appointment[]
+
+  appointments   Appointment[]
   medicalRecords MedicalRecord[]
-  prescriptions Prescription[]
-  
-  insurance     Insurance?
-  
-  reviews       Review[]
+  prescriptions  Prescription[]
+
+  insurance Insurance?
+
+  reviews         Review[]
   favoriteDoctors FavoriteDoctor[]
-  labReports    LabReport[]
-  waitlist      Waitlist[]
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  labReports      LabReport[]
+  waitlist        Waitlist[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("patients")
 }
 
 model Doctor {
-  id              String   @id @default(uuid())
-  userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   licenseNumber   String?
   bio             String?
   experienceYears Int?
   consultationFee Float?
   qualification   String?
   clinicPhone     String?
+  clinicName      String?
+  hospitalName    String?
   timeZone        String   @default("UTC")
   
   averageRating   Float    @default(0.0)
@@ -123,26 +125,26 @@ model Doctor {
 }
 
 model Lab {
-  id              String   @id @default(uuid())
-  userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  licenseNumber   String?
-  description     String?
-  website         String?
+  licenseNumber String?
+  description   String?
+  website       String?
+  
+  averageRating Float @default(0.0)
+  totalReviews  Int   @default(0)
+  
+  addresses Address[]
+  
+  reviews      Review[]
+  tests        LabTest[]
+  appointments Appointment[]
+  availability LabAvailability[]
 
-  averageRating   Float    @default(0.0)
-  totalReviews    Int      @default(0)
-
-  addresses       Address[]
-
-  reviews         Review[]
-  tests           LabTest[]
-  appointments    Appointment[]
-  availability    LabAvailability[]
-
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("labs")
 }
@@ -151,8 +153,8 @@ model Specialization {
   id          String   @id @default(uuid())
   name        String   @unique
   description String?
-  icon        String?
-
+  image       String?
+  
   doctors     Doctor[]
 
   createdAt   DateTime @default(now())
@@ -161,55 +163,57 @@ model Specialization {
   @@map("specializations")
 }
 
+
+
 model DoctorAvailability {
-  id        String    @id @default(uuid())
-  doctorId  String
-  doctor    Doctor    @relation(fields: [doctorId], references: [id])
-  
+  id       String @id @default(uuid())
+  doctorId String
+  doctor   Doctor @relation(fields: [doctorId], references: [id])
+
   dayOfWeek DayOfWeek
-  startTime String    // Format HH:mm
-  endTime   String    // Format HH:mm
-  
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  startTime String // Format HH:mm
+  endTime   String // Format HH:mm
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("doctor_availabilities")
 }
 
 model Appointment {
-  id              String            @id @default(uuid())
-  patientId       String
-  patient         Patient           @relation(fields: [patientId], references: [id])
-  
-  doctorId        String?
-  doctor          Doctor?           @relation(fields: [doctorId], references: [id])
-  
-  labId           String?
-  lab             Lab?              @relation(fields: [labId], references: [id])
-  labTestId       String?
-  labTest         LabTest?          @relation(fields: [labTestId], references: [id])
-  
-  dateTime        DateTime
-  status          AppointmentStatus @default(PENDING)
-  
-  consultationFee Float    @default(0.0) // Locked-in price
-  version         Int      @default(0)   // For optimistic locking
-  duration        Int      @default(30)  // Duration in minutes
-  
-  type            AppointmentType   @default(IN_PERSON)
-  
+  id        String  @id @default(uuid())
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+
+  doctorId String?
+  doctor   Doctor? @relation(fields: [doctorId], references: [id])
+
+  labId     String?
+  lab       Lab?     @relation(fields: [labId], references: [id])
+  labTestId String?
+  labTest   LabTest? @relation(fields: [labTestId], references: [id])
+
+  dateTime DateTime
+  status   AppointmentStatus @default(PENDING)
+
+  consultationFee Float @default(0.0) // Locked-in price
+  version         Int   @default(0) // For optimistic locking
+  duration        Int   @default(30) // Duration in minutes
+
+  type AppointmentType @default(IN_PERSON)
+
   videoLink       String?
   meetingPassword String?
-  
-  cancelledBy       String? // User/Doctor ID
-  cancellationReason String?
-  cancelledAt       DateTime?
 
-  prescription    Prescription?
-  payment         Payment?
-  
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  cancelledBy        String? // User/Doctor ID
+  cancellationReason String?
+  cancelledAt        DateTime?
+
+  prescription Prescription?
+  payment      Payment?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([doctorId])
   @@index([patientId])
@@ -218,18 +222,18 @@ model Appointment {
 }
 
 model MedicalRecord {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   patientId String
-  patient   Patient  @relation(fields: [patientId], references: [id])
+  patient   Patient @relation(fields: [patientId], references: [id])
   doctorId  String
-  doctor    Doctor   @relation(fields: [doctorId], references: [id])
-  
-  diagnosis String?
-  notes     String?
-  fileUrl   String?
+  doctor    Doctor  @relation(fields: [doctorId], references: [id])
+
+  diagnosis   String?
+  notes       String?
+  fileUrl     String?
   attachments Attachment[]
   vitalSigns  VitalSigns?
-  
+
   date      DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -238,20 +242,20 @@ model MedicalRecord {
 }
 
 model Prescription {
-  id             String       @id @default(uuid())
-  patientId      String
-  patient        Patient      @relation(fields: [patientId], references: [id])
-  doctorId       String
-  doctor         Doctor       @relation(fields: [doctorId], references: [id])
-  appointmentId  String?      @unique
-  appointment    Appointment? @relation(fields: [appointmentId], references: [id])
-  
-  medications    Medication[]
-  notes          String?
-  
-  date           DateTime     @default(now())
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id            String       @id @default(uuid())
+  patientId     String
+  patient       Patient      @relation(fields: [patientId], references: [id])
+  doctorId      String
+  doctor        Doctor       @relation(fields: [doctorId], references: [id])
+  appointmentId String?      @unique
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+
+  medications Medication[]
+  notes       String?
+
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("prescriptions")
 }
@@ -260,31 +264,31 @@ model Medication {
   id             String       @id @default(uuid())
   prescriptionId String
   prescription   Prescription @relation(fields: [prescriptionId], references: [id])
-  
-  name           String
-  dosage         String?
-  frequency      String?
-  duration       String?
-  instructions   String?
-  
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+
+  name         String
+  dosage       String?
+  frequency    String?
+  duration     String?
+  instructions String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("medications")
 }
 
 model Review {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   patientId String
-  patient   Patient  @relation(fields: [patientId], references: [id])
+  patient   Patient @relation(fields: [patientId], references: [id])
   doctorId  String?
-  doctor    Doctor?  @relation(fields: [doctorId], references: [id])
+  doctor    Doctor? @relation(fields: [doctorId], references: [id])
   labId     String?
-  lab       Lab?     @relation(fields: [labId], references: [id])
-  
-  rating    Int
-  comment   String?
-  
+  lab       Lab?    @relation(fields: [labId], references: [id])
+
+  rating  Int
+  comment String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -292,12 +296,12 @@ model Review {
 }
 
 model FavoriteDoctor {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   patientId String
-  patient   Patient  @relation(fields: [patientId], references: [id])
+  patient   Patient @relation(fields: [patientId], references: [id])
   doctorId  String
-  doctor    Doctor   @relation(fields: [doctorId], references: [id])
-  
+  doctor    Doctor  @relation(fields: [doctorId], references: [id])
+
   createdAt DateTime @default(now())
 
   @@unique([patientId, doctorId])
@@ -305,18 +309,18 @@ model FavoriteDoctor {
 }
 
 model Notification {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  
-  title     String
-  message   String
-  isRead    Boolean  @default(false)
-  type      String?  // e.g. "APPOINTMENT", "SYSTEM", "PROMOTION"
-  
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  title   String
+  message String
+  isRead  Boolean @default(false)
+  type    String? // e.g. "APPOINTMENT", "SYSTEM", "PROMOTION"
+
   channel        NotificationChannel @default(IN_APP)
   deliveryStatus DeliveryStatus      @default(QUEUED)
-  externalId     String?             // AWS Message ID
+  externalId     String? // AWS Message ID
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -325,31 +329,31 @@ model Notification {
 }
 
 model SystemSetting {
-  id          String   @id @default(uuid())
-  key         String   @unique
+  id          String  @id @default(uuid())
+  key         String  @unique
   value       String
   description String?
-  
-  updatedAt   DateTime @updatedAt
+
+  updatedAt DateTime @updatedAt
 
   @@map("system_settings")
 }
 
 model Payment {
-  id              String        @id @default(uuid())
-  appointmentId   String        @unique
-  appointment     Appointment   @relation(fields: [appointmentId], references: [id])
-  
-  amount          Float
-  status          PaymentStatus @default(PENDING)
-  method          String?       // "CARD", "UPI", "CASH"
-  transactionId   String?
-  
-  refundId        String?       // From Payment Gateway
-  refundedAt      DateTime?
-  
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  id            String      @id @default(uuid())
+  appointmentId String      @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+
+  amount        Float
+  status        PaymentStatus @default(PENDING)
+  method        String? // "CARD", "UPI", "CASH"
+  transactionId String?
+
+  refundId   String? // From Payment Gateway
+  refundedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("payments")
 }
@@ -362,43 +366,43 @@ enum PaymentStatus {
 }
 
 model LabTest {
-  id          String   @id @default(uuid())
-  labId       String
-  lab         Lab      @relation(fields: [labId], references: [id])
-  
+  id    String @id @default(uuid())
+  labId String
+  lab   Lab    @relation(fields: [labId], references: [id])
+
   name        String
   description String?
   price       Float
-  duration    String?  // e.g. "24 hours"
-  
-  reports     LabReport[]
+  duration    String? // e.g. "24 hours"
+
+  reports      LabReport[]
   appointments Appointment[]
-  
+
   // Self-relation for Bundles (e.g. Full Body -> includes CBC, Thyroid)
-  bundleId    String?
-  includedIn  LabTest?  @relation("LabTestBundles", fields: [bundleId], references: [id])
-  includes    LabTest[] @relation("LabTestBundles")
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  bundleId   String?
+  includedIn LabTest?  @relation("LabTestBundles", fields: [bundleId], references: [id])
+  includes   LabTest[] @relation("LabTestBundles")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("lab_tests")
 }
 
 model LabReport {
-  id          String   @id @default(uuid())
-  testId      String
-  test        LabTest  @relation(fields: [testId], references: [id])
-  patientId   String
-  patient     Patient  @relation(fields: [patientId], references: [id])
-  doctorId    String?
-  doctor      Doctor?  @relation(fields: [doctorId], references: [id])
-  
-  fileUrl     String?
-  status      ReportStatus @default(PENDING)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String  @id @default(uuid())
+  testId    String
+  test      LabTest @relation(fields: [testId], references: [id])
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+  doctorId  String?
+  doctor    Doctor? @relation(fields: [doctorId], references: [id])
+
+  fileUrl String?
+  status  ReportStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("lab_reports")
 }
@@ -410,24 +414,24 @@ enum ReportStatus {
 }
 
 model Address {
-  id        String   @id @default(uuid())
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
-  labId     String?
-  lab       Lab?     @relation(fields: [labId], references: [id])
-  
-  label     String?  // "Home", "Work", "Clinic"
-  isDefault Boolean  @default(false)
-  
-  street    String?
-  city      String
-  state     String
-  zipCode   String
-  country   String   @default("India")
-  
+  id     String  @id @default(uuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+  labId  String?
+  lab    Lab?    @relation(fields: [labId], references: [id])
+
+  label     String? // "Home", "Work", "Clinic"
+  isDefault Boolean @default(false)
+
+  street  String?
+  city    String
+  state   String
+  zipCode String
+  country String  @default("India")
+
   latitude  Float?
   longitude Float?
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -435,15 +439,15 @@ model Address {
 }
 
 model Wallet {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id])
-  
-  balance   Float    @default(0.0)
-  currency  String   @default("INR")
-  
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  balance  Float  @default(0.0)
+  currency String @default("INR")
+
   transactions Transaction[]
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -451,17 +455,17 @@ model Wallet {
 }
 
 model Transaction {
-  id            String   @id @default(uuid())
-  walletId      String
-  wallet        Wallet   @relation(fields: [walletId], references: [id])
-  
-  amount        Float
-  type          TransactionType
-  status        TransactionStatus @default(PENDING)
-  description   String?
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id       String @id @default(uuid())
+  walletId String
+  wallet   Wallet @relation(fields: [walletId], references: [id])
+
+  amount      Float
+  type        TransactionType
+  status      TransactionStatus @default(PENDING)
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("transactions")
 }
@@ -478,30 +482,30 @@ enum TransactionStatus {
 }
 
 model Insurance {
-  id              String   @id @default(uuid())
-  patientId       String   @unique
-  patient         Patient  @relation(fields: [patientId], references: [id])
-  
+  id        String  @id @default(uuid())
+  patientId String  @unique
+  patient   Patient @relation(fields: [patientId], references: [id])
+
   provider        String
   policyNumber    String
   coverageDetails String?
   validTill       DateTime?
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("insurances")
 }
 
 model AuditLog {
-  id        String   @id @default(uuid())
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  
+  id     String  @id @default(uuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
   action    String
   details   String?
   ipAddress String?
-  
+
   createdAt DateTime @default(now())
 
   @@map("audit_logs")
@@ -510,28 +514,28 @@ model AuditLog {
 // --- RBAC System ---
 
 model AccessRole {
-  id          String   @id @default(uuid())
-  name        String   @unique // e.g., "SUPER_ADMIN", "CLINIC_MANAGER"
+  id          String  @id @default(uuid())
+  name        String  @unique // e.g., "SUPER_ADMIN", "CLINIC_MANAGER"
   description String?
-  
+
   permissions RolePermission[]
   users       UserRole[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("access_roles") // Renamed from Role to avoid conflict with Enum Role
 }
 
 model Permission {
-  id          String   @id @default(uuid())
-  action      String   @unique // e.g., "appointment.create", "user.delete"
+  id          String  @id @default(uuid())
+  action      String  @unique // e.g., "appointment.create", "user.delete"
   description String?
-  
-  roles       RolePermission[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  roles RolePermission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("permissions")
 }
@@ -542,18 +546,18 @@ model RolePermission {
   role         AccessRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
   permissionId String
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-  
+
   @@unique([roleId, permissionId])
   @@map("role_permissions")
 }
 
 model UserRole {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  roleId    String
-  role      AccessRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  
+  id     String     @id @default(uuid())
+  userId String
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roleId String
+  role   AccessRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
 
   @@unique([userId, roleId])
@@ -563,14 +567,14 @@ model UserRole {
 // --- Scalable Scheduling ---
 
 model DoctorLeave {
-  id        String   @id @default(uuid())
-  doctorId  String
-  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-  
+  id       String @id @default(uuid())
+  doctorId String
+  doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
   startDate DateTime
   endDate   DateTime
   reason    String?
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -579,14 +583,14 @@ model DoctorLeave {
 }
 
 model Attachment {
-  id              String         @id @default(uuid())
-  url             String
-  type            String         // "LAB_REPORT", "XRAY", "PRESCRIPTION"
-  
+  id   String @id @default(uuid())
+  url  String
+  type String // "LAB_REPORT", "XRAY", "PRESCRIPTION"
+
   medicalRecordId String?
   medicalRecord   MedicalRecord? @relation(fields: [medicalRecordId], references: [id], onDelete: SetNull)
-  
-  createdAt       DateTime       @default(now())
+
+  createdAt DateTime @default(now())
 
   @@map("attachments")
 }
@@ -595,34 +599,34 @@ model VitalSigns {
   id              String        @id @default(uuid())
   medicalRecordId String        @unique
   medicalRecord   MedicalRecord @relation(fields: [medicalRecordId], references: [id], onDelete: Cascade)
-  
-  heartRate       Int?          // bpm
-  systolic        Int?          // mmHg
-  diastolic       Int?          // mmHg
-  temperature     Float?        // Celsius
+
+  heartRate       Int? // bpm
+  systolic        Int? // mmHg
+  diastolic       Int? // mmHg
+  temperature     Float? // Celsius
   respiratoryRate Int?
-  spO2            Int?          // %
-  weight          Float?        // kg
-  height          Float?        // cm
+  spO2            Int? // %
+  weight          Float? // kg
+  height          Float? // cm
   bmi             Float?
-  
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("vital_signs")
 }
 
 model Waitlist {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   patientId String
-  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patient   Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
   doctorId  String
-  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-  
+  doctor    Doctor  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
   preferredDate DateTime
   status        WaitlistStatus @default(ACTIVE)
   priority      Int            @default(0) // For sorting based on trust score/membership
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -654,17 +658,17 @@ enum AppointmentType {
 }
 
 model LabAvailability {
-  id        String    @id @default(uuid())
-  labId     String
-  lab       Lab       @relation(fields: [labId], references: [id])
-  
+  id    String @id @default(uuid())
+  labId String
+  lab   Lab    @relation(fields: [labId], references: [id])
+
   dayOfWeek DayOfWeek
-  startTime String    // Format HH:mm
-  endTime   String    // Format HH:mm
+  startTime String // Format HH:mm
+  endTime   String // Format HH:mm
   capacity  Int       @default(10) // Number of patients per slot/hour
-  
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("lab_availabilities")
 }
@@ -700,13 +704,13 @@ enum Gender {
 }
 
 model DeviceToken {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  token     String   @unique // FCM Token
-  platform  Platform // IOS, ANDROID, WEB
-  
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  token    String   @unique // FCM Token
+  platform Platform // IOS, ANDROID, WEB
+
   lastActiveAt DateTime @default(now())
   createdAt    DateTime @default(now())
 
@@ -718,4 +722,3 @@ enum Platform {
   ANDROID
   WEB
 }
-
