@@ -1,5 +1,5 @@
 import * as z from "zod"
-import { Role } from "@prisma/client"
+import { Role } from "@/lib/enums"
 
 export const UserValidation = z.object({
   name: z.string().min(2, {

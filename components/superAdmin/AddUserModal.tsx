@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { UserPlus, Eye, EyeOff } from "lucide-react"
-import { Role } from "@prisma/client"
+import { Role } from "@/lib/enums"
 
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
@@ -52,7 +52,7 @@ export function AddUserModal() {
             email: "",
             password: "",
             phone: "",
-            role: "PATIENT", // Default role
+            role: Role.PATIENT, // Default role
         },
     })
 
