@@ -2,6 +2,27 @@ import Image from "next/image";
 import Link from "next/link";
 
 export function Footer() {
+    const quickLinks = [
+        { label: "Home", href: "#" },
+        { label: "Doctors", href: "#" },
+        { label: "How It Works", href: "/how-it-works" },
+        { label: "Contact", href: "#" },
+        { label: "Pricing", href: "/pricing" },
+    ];
+
+    const services = [
+        { label: "Online Booking", href: "#" },
+        { label: "Health Records", href: "#" },
+        { label: "Emergency Care", href: "#" },
+        { label: "Join as Doctor", href: "/doctor-profile" },
+
+    ];
+
+    const legalLinks = [
+        { label: "Privacy Policy", href: "#" },
+        { label: "Terms of Service", href: "#" },
+    ];
+
     return (
         <footer className="bg-muted/40 border-t border-border/50 py-12">
             <div className="container mx-auto px-4">
@@ -22,22 +43,26 @@ export function Footer() {
                     <div>
                         <h3 className="font-semibold text-foreground mb-4">Quick Links</h3>
                         <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><a href="#" className="hover:text-primary transition-colors">Home</a></li>
-                            <li><a href="#" className="hover:text-primary transition-colors">Doctors</a></li>
-                            <li><Link href="/how-it-works" className="hover:text-primary transition-colors">How It Works</Link></li>
-                            <li><a href="#" className="hover:text-primary transition-colors">Contact</a></li>
-                            <li><Link href="/pricing" className="hover:text-primary transition-colors">Pricing</Link></li>
-                            <li><Link href="/doctor-profile" className="hover:text-primary transition-colors">Join as Doctor</Link></li>
-                            <li><a href="#" className="hover:text-primary transition-colors">Contact</a></li>
+                            {quickLinks.map((link) => (
+                                <li key={link.label}>
+                                    <Link href={link.href} className="hover:text-primary transition-colors">
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
                     <div>
                         <h3 className="font-semibold text-foreground mb-4">Services</h3>
                         <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><a href="#" className="hover:text-primary transition-colors">Online Booking</a></li>
-                            <li><a href="#" className="hover:text-primary transition-colors">Health Records</a></li>
-                            <li><a href="#" className="hover:text-primary transition-colors">Emergency Care</a></li>
+                            {services.map((link) => (
+                                <li key={link.label}>
+                                    <Link href={link.href} className="hover:text-primary transition-colors">
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
@@ -55,8 +80,11 @@ export function Footer() {
                         © {new Date().getFullYear()} Swasthify. All rights reserved.
                     </p>
                     <div className="flex gap-4">
-                        <a href="#" className="text-muted-foreground hover:text-foreground text-sm">Privacy Policy</a>
-                        <a href="#" className="text-muted-foreground hover:text-foreground text-sm">Terms of Service</a>
+                        {legalLinks.map((link) => (
+                            <Link key={link.label} href={link.href} className="text-muted-foreground hover:text-foreground text-sm">
+                                {link.label}
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </div>
