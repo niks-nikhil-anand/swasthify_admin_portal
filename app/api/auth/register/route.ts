@@ -37,16 +37,33 @@ export async function POST(req: Request) {
     // Encrypt password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user in DB
-    const newUser = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        phone,
-        role,
-      },
+    // Create user and patient in DB transaction
+    const result = await prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+          phone,
+          role,
+        },
+      });
+
+      // If the user is a patient, create a Patient profile
+      if (role === 'PATIENT') {
+        await tx.patient.create({
+          data: {
+            userId: newUser.id,
+            name: newUser.name, // Initialize with user's name
+            // Other fields will be empty/default
+          }
+        });
+      }
+
+      return newUser;
     });
+
+    const newUser = result;
 
     // Return success (exclude sensitive data)
     return NextResponse.json(

@@ -14,9 +14,7 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, FileDown, ListFilter, Search, SlidersHorizontal } from "lucide-react"
-import jsPDF from "jspdf"
-import autoTable from "jspdf-autotable"
+import { ArrowUpDown, ChevronDown, ListFilter, Search, SlidersHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -76,41 +74,7 @@ export function DataTable<TData, TValue>({
         },
     })
 
-    const exportToPDF = () => {
-        const doc = new jsPDF()
-        const tableColumn = columns
-            .filter((col) => typeof col.header === "string")
-            .map((col) => col.header as string)
 
-        // Simplistic data extraction for PDF
-        const tableRows = data.map((row) => {
-            return Object.values(row as any).map((val: any) => String(val));
-        });
-
-        // Use autoTable - note: Typescript might complain if types aren't perfect, casting usually helps
-        (doc as any).autoTable({
-            head: [tableColumn],
-            body: tableRows,
-        })
-        doc.save("table-data.pdf")
-    }
-
-    const exportToCSV = () => {
-        // Basic CSV export
-        const headers = columns
-            .filter((col) => typeof col.header === "string")
-            .map((col) => col.header as string).join(",");
-
-        const rows = data.map(row => Object.values(row as any).join(",")).join("\n");
-
-        const csvContent = "data:text/csv;charset=utf-8," + headers + "\n" + rows;
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "table_data.csv");
-        document.body.appendChild(link);
-        link.click();
-    }
 
     return (
         <div className="space-y-4">
@@ -191,14 +155,7 @@ export function DataTable<TData, TValue>({
                                 })}
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <Button variant="outline" size="sm" onClick={exportToPDF}>
-                        <FileDown className="mr-2 h-4 w-4" />
-                        PDF
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={exportToCSV}>
-                        <FileDown className="mr-2 h-4 w-4" />
-                        CSV
-                    </Button>
+
                 </div>
             </div>
             <div className="rounded-md border">

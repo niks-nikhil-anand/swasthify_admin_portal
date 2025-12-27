@@ -52,7 +52,7 @@ export function AddUserModal() {
             email: "",
             password: "",
             phone: "",
-            role: Role.PATIENT, // Default role
+            role: Role.PATIENT, 
         },
     })
 

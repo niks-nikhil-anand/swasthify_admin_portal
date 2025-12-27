@@ -4,6 +4,7 @@ import { DataTable } from "@/components/superAdmin/DataTable"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Progress } from "@/components/ui/progress"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -15,6 +16,7 @@ import {
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, Copy, Edit, Mail, MoreHorizontal, Shield, Trash, Eye } from "lucide-react"
 import { AddUserModal } from "@/components/superAdmin/AddUserModal"
+import { ExportUserModal } from "@/components/superAdmin/ExportUserModal"
 import { useEffect, useState } from "react"
 import { format } from "date-fns"
 
@@ -133,9 +135,21 @@ const columns: ColumnDef<AppUser>[] = [
 export default function UsersPage() {
     const [data, setData] = useState<AppUser[]>([])
     const [loading, setLoading] = useState(true)
+    const [progress, setProgress] = useState(0)
 
     useEffect(() => {
         const fetchUsers = async () => {
+            // Start progress simulation
+            const interval = setInterval(() => {
+                setProgress((prev) => {
+                    if (prev >= 90) {
+                        clearInterval(interval)
+                        return 90
+                    }
+                    return prev + 10
+                })
+            }, 100)
+
             try {
                 const response = await fetch("/api/user")
                 if (response.ok) {
@@ -147,7 +161,12 @@ export default function UsersPage() {
             } catch (error) {
                 console.error("Error fetching users:", error)
             } finally {
-                setLoading(false)
+                // Ensure progress completes before showing content
+                setProgress(100)
+                clearInterval(interval)
+                setTimeout(() => {
+                    setLoading(false)
+                }, 500)
             }
         }
 
@@ -158,7 +177,10 @@ export default function UsersPage() {
         <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold tracking-tight">System Users</h1>
-                <AddUserModal />
+                <div className="flex gap-2">
+                    <ExportUserModal data={data} />
+                    <AddUserModal />
+                </div>
             </div>
 
             <Card>
@@ -167,7 +189,13 @@ export default function UsersPage() {
                 </CardHeader>
                 <CardContent>
                     {loading ? (
-                        <div className="py-10 text-center text-muted-foreground">Loading users...</div>
+                        <div className="flex flex-col items-center justify-center py-10 space-y-4">
+                            <div className="flex items-center gap-2 text-muted-foreground">
+                                <span>Loading users...</span>
+                                <span className="font-mono">{progress}%</span>
+                            </div>
+                            <Progress value={progress} className="w-[60%]" />
+                        </div>
                     ) : (
                         <DataTable columns={columns} data={data} searchKey="name" />
                     )}
