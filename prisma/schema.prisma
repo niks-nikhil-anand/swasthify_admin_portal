@@ -12,6 +12,12 @@ datasource db {
   provider = "postgresql"
 }
 
+enum DoctorStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum Role {
   SUPER_ADMIN
   ADMIN
@@ -102,6 +108,8 @@ model Doctor {
   clinicName      String?
   hospitalName    String?
   timeZone        String   @default("UTC")
+  
+  status          DoctorStatus @default(PENDING)
   
   averageRating   Float    @default(0.0)
   totalReviews    Int      @default(0)
