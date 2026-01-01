@@ -25,7 +25,13 @@ export default function ContactPage() {
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        if (name === "phone") {
+            const numericValue = value.replace(/[^0-9]/g, "").slice(0, 10);
+            setFormData({ ...formData, [name]: numericValue });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
 
     return (
@@ -112,7 +118,7 @@ export default function ContactPage() {
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label htmlFor="name" className="text-sm font-medium">Full Name</label>
+                                        <label htmlFor="name" className="block text-sm font-medium pb-1">Full Name</label>
                                         <input
                                             type="text"
                                             id="name"
@@ -125,7 +131,7 @@ export default function ContactPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label htmlFor="email" className="text-sm font-medium">Email Address</label>
+                                        <label htmlFor="email" className="block text-sm font-medium pb-1">Email Address</label>
                                         <input
                                             type="email"
                                             id="email"
@@ -140,26 +146,30 @@ export default function ContactPage() {
                                 </div>
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label htmlFor="phone" className="text-sm font-medium">Phone Number</label>
-                                        <input
-                                            type="tel"
-                                            id="phone"
-                                            name="phone"
-                                            placeholder="+91 98765 43210"
-                                            required
-                                            value={formData.phone}
-                                            onChange={handleChange}
-                                            className="flex h-12 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        />
+                                        <label htmlFor="phone" className="block text-sm font-medium pb-1">Phone Number</label>
+                                        <div className="flex bg-background border border-input rounded-lg ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 overflow-hidden items-center">
+                                            <div className="bg-muted px-3 py-2 border-r border-input text-muted-foreground text-sm font-medium">
+                                                +91
+                                            </div>
+                                            <input
+                                                type="tel"
+                                                id="phone"
+                                                name="phone"
+                                                placeholder="9876543210"
+                                                required
+                                                value={formData.phone}
+                                                onChange={handleChange}
+                                                className="flex h-12 w-full bg-transparent px-4 py-2 text-sm placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 border-none rounded-none"
+                                            />
+                                        </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <label htmlFor="subject" className="text-sm font-medium">Subject</label>
+                                        <label htmlFor="subject" className="block text-sm font-medium pb-1">Subject</label>
                                         <input
                                             type="text"
                                             id="subject"
                                             name="subject"
                                             placeholder="How can we help?"
-                                            required
                                             value={formData.subject}
                                             onChange={handleChange}
                                             className="flex h-12 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -167,7 +177,7 @@ export default function ContactPage() {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label htmlFor="message" className="text-sm font-medium">Message</label>
+                                    <label htmlFor="message" className="block text-sm font-medium pb-1">Message</label>
                                     <textarea
                                         id="message"
                                         name="message"
