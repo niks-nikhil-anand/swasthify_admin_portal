@@ -1,5 +1,5 @@
 import * as z from "zod"
-import { Role } from "@/lib/enums"
+import { Role, UserStatus } from "@/lib/enums"
 
 export const UserValidation = z.object({
   name: z.string().min(2, {
@@ -21,6 +21,23 @@ export const UserValidation = z.object({
       message: "Phone number must be exactly 10 digits.",
     }),
   role: z.nativeEnum(Role),
+})
+
+export const UserEditValidation = z.object({
+  name: z.string().min(2, {
+    message: "Name must be at least 2 characters.",
+  }),
+  email: z.string().email({
+    message: "Please enter a valid email address.",
+  }),
+  phone: z
+    .string()
+    .optional()
+    .refine((val) => !val || /^\d{10}$/.test(val), {
+      message: "Phone number must be exactly 10 digits.",
+    }),
+  role: z.nativeEnum(Role),
+  status: z.nativeEnum(UserStatus),
 })
 
 export const DoctorValidation = z.object({

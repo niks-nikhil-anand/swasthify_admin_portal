@@ -6,3 +6,10 @@ export enum Role {
   LAB = "LAB",
   PHARMACY = "PHARMACY",
 }
+
+export enum UserStatus {
+  PENDING = "PENDING",
+  ACTIVE = "ACTIVE",
+  BLOCKED = "BLOCKED",
+  ARCHIVED = "ARCHIVED",
+}

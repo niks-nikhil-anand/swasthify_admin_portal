@@ -5,16 +5,9 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Copy, Edit, Mail, MoreHorizontal, Shield, Trash, Eye } from "lucide-react"
+import { ArrowUpDown, Mail, Shield } from "lucide-react"
+import { UserActions } from "@/components/superAdmin/UserActions"
 import { AddUserModal } from "@/components/superAdmin/AddUserModal"
 import { ExportUserModal } from "@/components/superAdmin/ExportUserModal"
 import { useEffect, useState } from "react"
@@ -95,42 +88,7 @@ const columns: ColumnDef<AppUser>[] = [
     {
         id: "actions",
         header: "Actions",
-        cell: ({ row }) => {
-            const user = row.original
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(user.id)}
-                        >
-                            <Copy className="mr-2 h-4 w-4" />
-                            Copy ID
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            <Eye className="mr-2 h-4 w-4" />
-                            View Details
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit User
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">
-                            <Trash className="mr-2 h-4 w-4" />
-                            Delete User
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
-        },
+        cell: ({ row }) => <UserActions user={row.original} />,
     },
 ]
 
