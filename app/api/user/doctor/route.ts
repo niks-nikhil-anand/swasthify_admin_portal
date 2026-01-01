@@ -41,7 +41,7 @@ export async function POST(req: Request) {
             // 1. Create User (Password is optional now)
             const user = await tx.user.create({
                 data: {
-                    // name,
+                    name,
                     email: validatedData.email,
                     phone: validatedData.phone,
                     role: Role.DOCTOR,
