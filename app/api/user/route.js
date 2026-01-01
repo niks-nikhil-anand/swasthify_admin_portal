@@ -5,6 +5,9 @@ export async function GET(req) {
   try {
     const users = await db.user.findMany({
       orderBy: { createdAt: "desc" },
+      include: {
+        doctor: true,
+      },
     });
 
     return NextResponse.json({ users });

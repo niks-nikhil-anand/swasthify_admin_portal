@@ -25,7 +25,7 @@ type AppUser = {
     name: string
     email: string
     role: string // roles are strings in the enum
-    status: boolean // status is boolean in db
+    status: "PENDING" | "ACTIVE" | "BLOCKED" | "ARCHIVED"
     createdAt: string
 }
 
@@ -69,16 +69,18 @@ const columns: ColumnDef<AppUser>[] = [
         accessorKey: "status",
         header: "Status",
         cell: ({ row }) => {
-            const status = row.getValue("status") as boolean
+            const status = row.getValue("status") as string
+
+            const variantMap: Record<string, "default" | "secondary" | "destructive" | "outline" | "success" | "warning"> = {
+                "ACTIVE": "success",
+                "PENDING": "warning",
+                "BLOCKED": "destructive",
+                "ARCHIVED": "secondary"
+            }
+
             return (
-                <Badge
-                    variant={
-                        status
-                            ? "success"
-                            : "danger"
-                    }
-                >
-                    {status ? "Active" : "Inactive"}
+                <Badge variant={variantMap[status] || "default"}>
+                    {status}
                 </Badge>
             )
         },

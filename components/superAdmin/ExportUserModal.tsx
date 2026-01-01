@@ -26,7 +26,7 @@ type AppUser = {
     name: string
     email: string
     role: string
-    status: boolean
+    status: string
     createdAt: string
 }
 
@@ -74,7 +74,7 @@ export function ExportUserModal({ data }: ExportUserModalProps) {
             case "role":
                 return user.role
             case "status":
-                return user.status ? "Active" : "Inactive"
+                return user.status
             case "createdAt":
                 return format(new Date(user.createdAt), "PPP")
             default:

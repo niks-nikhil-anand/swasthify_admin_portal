@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { DoctorValidation } from "@/lib/validators"
-import { Role } from "@prisma/client"
-import * as z from "zod"
+import { Role, UserStatus } from "@prisma/client"
 
 export async function POST(req: Request) {
     try {
@@ -46,7 +45,7 @@ export async function POST(req: Request) {
                     phone: validatedData.phone,
                     role: Role.DOCTOR,
                     isVerified: false, 
-                    status: true
+                    status: UserStatus.PENDING
                 }
             })
 

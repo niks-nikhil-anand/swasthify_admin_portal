@@ -12,10 +12,11 @@ datasource db {
   provider = "postgresql"
 }
 
-enum DoctorStatus {
+enum UserStatus {
   PENDING
-  APPROVED
-  REJECTED
+  ACTIVE
+  BLOCKED
+  ARCHIVED
 }
 
 enum Role {
@@ -35,7 +36,7 @@ model User {
   name       String
   role       Role     @default(PATIENT)
   isVerified Boolean  @default(false)
-  status     Boolean  @default(true) // For soft delete or banning
+  status     UserStatus  @default(ACTIVE) // Replaces boolean status
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -108,8 +109,6 @@ model Doctor {
   clinicName      String?
   hospitalName    String?
   timeZone        String   @default("UTC")
-  
-  status          DoctorStatus @default(PENDING)
   
   averageRating   Float    @default(0.0)
   totalReviews    Int      @default(0)
