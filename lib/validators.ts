@@ -32,7 +32,7 @@ export const DoctorValidation = z.object({
   }),
   specialization: z.array(z.string()).min(1, "Please select at least one specialization"),
   qualification: z.string().min(2, "Qualification is required"),
-  licenseNumber: z.string().min(5, "License number is required"),
+  licenseNumber: z.string().optional(),
   experience: z.string().min(1, "Please enter years of experience"),
   clinicName: z.string().optional(),
   hospitalName: z.string().optional(),

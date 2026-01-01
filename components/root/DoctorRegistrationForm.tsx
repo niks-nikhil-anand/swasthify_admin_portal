@@ -237,7 +237,15 @@ export default function DoctorRegistrationForm() {
 
                 <CardContent className="p-6 md:p-10">
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        <form
+                            onSubmit={form.handleSubmit(onSubmit)}
+                            className="space-y-6"
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault()
+                                }
+                            }}
+                        >
                             <AnimatePresence mode="wait" custom={direction}>
                                 <motion.div
                                     key={currentStep}
@@ -403,7 +411,7 @@ export default function DoctorRegistrationForm() {
                                                     name="licenseNumber"
                                                     render={({ field }) => (
                                                         <FormItem className="md:col-span-2">
-                                                            <FormLabel>Medical License Number</FormLabel>
+                                                            <FormLabel>Medical License Number (Optional)</FormLabel>
                                                             <FormControl>
                                                                 <Input placeholder="MCI/State Council Registration Number" className="h-11" {...field} value={field.value ?? ""} />
                                                             </FormControl>
