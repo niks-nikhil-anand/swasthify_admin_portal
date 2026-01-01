@@ -119,8 +119,10 @@ export default function DoctorRegistrationForm() {
         }
     ]
 
-    const nextStep = async () => {
+    const nextStep = async (e?: React.MouseEvent) => {
+        e?.preventDefault()
         const fields = steps[currentStep - 1].fields
+        console.log("Validating fields:", fields)
         const output = await form.trigger(fields, { shouldFocus: true })
 
         if (!output) return
