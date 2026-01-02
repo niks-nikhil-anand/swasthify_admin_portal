@@ -35,20 +35,21 @@ export default function TicketsPage() {
     const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null)
     const [detailsOpen, setDetailsOpen] = useState(false)
 
-    useEffect(() => {
-        const fetchTickets = async () => {
-            try {
-                const res = await fetch("/api/tickets")
-                if (!res.ok) throw new Error("Failed to fetch")
-                const data = await res.json()
-                setTickets(data)
-            } catch (error) {
-                console.error(error)
-                toast.error("Failed to load tickets")
-            } finally {
-                setLoading(false)
-            }
+    const fetchTickets = async () => {
+        try {
+            const res = await fetch("/api/tickets")
+            if (!res.ok) throw new Error("Failed to fetch")
+            const data = await res.json()
+            setTickets(data)
+        } catch (error) {
+            console.error(error)
+            toast.error("Failed to load tickets")
+        } finally {
+            setLoading(false)
         }
+    }
+
+    useEffect(() => {
         fetchTickets()
     }, [])
 
@@ -171,6 +172,7 @@ export default function TicketsPage() {
                 ticket={selectedTicket}
                 open={detailsOpen}
                 onOpenChange={setDetailsOpen}
+                onTicketUpdated={fetchTickets}
             />
 
         </div>

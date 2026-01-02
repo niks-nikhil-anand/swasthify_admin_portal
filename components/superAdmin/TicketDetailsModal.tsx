@@ -14,6 +14,14 @@ import { Separator } from "@/components/ui/separator"
 import { Copy, CheckCircle, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { useState, useEffect } from "react"
 
 type SupportTicket = {
     id: string
@@ -30,9 +38,19 @@ interface TicketDetailsModalProps {
     ticket: SupportTicket | null
     open: boolean
     onOpenChange: (open: boolean) => void
+    onTicketUpdated?: () => void
 }
 
-export function TicketDetailsModal({ ticket, open, onOpenChange }: TicketDetailsModalProps) {
+export function TicketDetailsModal({ ticket, open, onOpenChange, onTicketUpdated }: TicketDetailsModalProps) {
+    const [status, setStatus] = useState<string>(ticket?.status || "OPEN")
+    const [updating, setUpdating] = useState(false)
+
+    useEffect(() => {
+        if (ticket) {
+            setStatus(ticket.status)
+        }
+    }, [ticket])
+
     if (!ticket) return null
 
     const handleCopyId = () => {
@@ -40,29 +58,27 @@ export function TicketDetailsModal({ ticket, open, onOpenChange }: TicketDetails
         toast.success("Ticket ID copied to clipboard")
     }
 
-    const getStatusBadge = (status: string) => {
-        if (status === "CLOSED") {
-            return (
-                <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <Badge>CLOSED</Badge>
-                </div>
-            )
+    const handleStatusChange = async (newStatus: string) => {
+        setStatus(newStatus)
+        setUpdating(true)
+        try {
+            const res = await fetch(`/api/tickets/${ticket.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: newStatus }),
+            })
+
+            if (!res.ok) throw new Error("Failed to update status")
+
+            toast.success("Status updated successfully")
+            if (onTicketUpdated) onTicketUpdated()
+        } catch (error) {
+            console.error(error)
+            toast.error("Failed to update status")
+            setStatus(ticket.status) // Revert on error
+        } finally {
+            setUpdating(false)
         }
-        if (status === "IN_PROGRESS") {
-            return (
-                <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-yellow-500" />
-                    <Badge variant="warning">IN_PROGRESS</Badge>
-                </div>
-            )
-        }
-        return (
-            <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-red-500" />
-                <Badge variant="destructive">OPEN</Badge>
-            </div>
-        )
     }
 
     return (
@@ -92,7 +108,37 @@ export function TicketDetailsModal({ ticket, open, onOpenChange }: TicketDetails
                     <div className="grid grid-cols-4 gap-4 items-center">
                         <Label className="text-right text-muted-foreground">Status</Label>
                         <div className="col-span-3">
-                            {getStatusBadge(ticket.status)}
+                            <Select value={status} onValueChange={handleStatusChange} disabled={updating}>
+                                <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Select status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="OPEN">
+                                        <div className="flex items-center gap-2">
+                                            <Clock className="h-4 w-4 text-red-500" />
+                                            <span>OPEN</span>
+                                        </div>
+                                    </SelectItem>
+                                    <SelectItem value="IN_PROGRESS">
+                                        <div className="flex items-center gap-2">
+                                            <Clock className="h-4 w-4 text-yellow-500" />
+                                            <span>IN PROGRESS</span>
+                                        </div>
+                                    </SelectItem>
+                                    <SelectItem value="CLOSED">
+                                        <div className="flex items-center gap-2">
+                                            <CheckCircle className="h-4 w-4 text-green-500" />
+                                            <span>CLOSED</span>
+                                        </div>
+                                    </SelectItem>
+                                    <SelectItem value="ARCHIVED">
+                                        <div className="flex items-center gap-2">
+                                            <CheckCircle className="h-4 w-4 text-gray-500" />
+                                            <span>ARCHIVED</span>
+                                        </div>
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
 
