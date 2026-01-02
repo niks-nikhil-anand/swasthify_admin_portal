@@ -19,6 +19,13 @@ enum UserStatus {
   ARCHIVED
 }
 
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+  ARCHIVED
+}
+
 enum Role {
   SUPER_ADMIN
   ADMIN
@@ -728,4 +735,19 @@ enum Platform {
   IOS
   ANDROID
   WEB
+}
+
+model Ticket {
+  id        String       @id @default(uuid())
+  name      String
+  email     String
+  phone     String
+  subject   String
+  message   String
+  status    TicketStatus @default(OPEN)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tickets")
 }

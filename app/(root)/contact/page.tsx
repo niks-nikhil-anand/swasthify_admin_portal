@@ -2,6 +2,7 @@
 
 import { Mail, Phone, MapPin, Send, MessageSquare, Clock } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
@@ -17,11 +18,30 @@ export default function ContactPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        alert("Message sent successfully! We will get back to you soon.");
-        setIsSubmitting(false);
-        setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+
+        try {
+            const response = await fetch("/api/tickets", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to send message");
+            }
+
+            toast.success("Message sent successfully!", {
+                description: "We will get back to you soon."
+            });
+            setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+        } catch (error) {
+            console.error(error);
+            toast.error("Something went wrong.", {
+                description: "Please try again later."
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
