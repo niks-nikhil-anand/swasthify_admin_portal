@@ -1,44 +1,45 @@
 "use client";
 
-import { Baby, TestTube2, Stethoscope, User, Brain, Utensils, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 const specialities = [
     {
         title: "Gynaecology",
         price: "₹599",
-        icon: Baby,
-        color: "bg-pink-100 text-pink-600",
+        image: "/icon-gynaecology.png",
+        color: "bg-pink-50/50",
     },
     {
         title: "Sexology",
         price: "₹599",
-        icon: User,
-        color: "bg-indigo-100 text-indigo-600",
+        image: "/icon-sexology.png",
+        color: "bg-indigo-50/50",
     },
     {
         title: "General physician",
         price: "₹499",
-        icon: Stethoscope,
-        color: "bg-blue-100 text-blue-600",
+        image: "/icon-general-physician.png",
+        color: "bg-blue-50/50",
     },
     {
         title: "Dermatology",
         price: "₹549",
-        icon: User, // Using User as placeholder for face/skin
-        color: "bg-purple-100 text-purple-600",
+        image: "/icon-dermatology.png",
+        color: "bg-teal-50/50",
     },
     {
         title: "Psychiatry",
         price: "₹599",
-        icon: Brain,
-        color: "bg-red-100 text-red-600",
+        image: "/icon-psychiatry.png",
+        color: "bg-green-50/50",
     },
     {
         title: "Stomach and digestion",
         price: "₹499",
-        icon: Utensils,
-        color: "bg-orange-100 text-orange-600",
+        image: "/icon-stomach.png",
+        color: "bg-orange-50/50",
     },
 ];
 
@@ -55,22 +56,29 @@ export function Specialities() {
                             Consult with top doctors across specialities
                         </p>
                     </div>
-                    <Link href="/specialities" className="hidden md:flex items-center text-primary font-semibold hover:gap-2 transition-all">
-                        See all specialities <ChevronRight className="w-5 h-5 ml-1" />
+                    <Link href="/specialities" className="hidden md:flex items-center text-primary font-semibold hover:gap-2 transition-all group">
+                        See all specialities <ChevronRight className="w-5 h-5 ml-1 transition-transform group-hover:translate-x-1" />
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
                     {specialities.map((item, index) => (
                         <div
                             key={index}
-                            className="group flex flex-col items-center text-center p-6 rounded-2xl border border-border bg-card hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer"
+                            className="group flex flex-col items-center text-center p-4 rounded-2xl border border-border bg-card hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer h-full"
                         >
-                            <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-4 ${item.color} group-hover:scale-110 transition-transform`}>
-                                <item.icon className="w-10 h-10" />
+                            <div className={`w-32 h-32 relative mb-4 ${item.color} rounded-full flex items-center justify-center transition-transform group-hover:scale-105`}>
+                                <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-white/40 to-transparent pointer-events-none" />
+                                <Image
+                                    src={item.image}
+                                    alt={item.title}
+                                    width={100}
+                                    height={100}
+                                    className="object-contain drop-shadow-md"
+                                />
                             </div>
 
-                            <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                            <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2 px-1">
                                 {item.title}
                             </h3>
 
@@ -78,8 +86,8 @@ export function Specialities() {
                                 {item.price}
                             </div>
 
-                            <span className="text-sm font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity flex items-center">
-                                Consult now <ChevronRight className="w-3 h-3 ml-1" />
+                            <span className="mt-auto text-xs font-bold text-primary opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center bg-primary/10 px-3 py-1 rounded-full">
+                                Consult <ChevronRight className="w-3 h-3 ml-1" />
                             </span>
                         </div>
                     ))}
