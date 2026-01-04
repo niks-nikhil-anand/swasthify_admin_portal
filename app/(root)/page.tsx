@@ -6,6 +6,7 @@ import { DownloadApp } from "@/components/root/DownloadApp";
 import { HowItWorks } from "@/components/root/HowItWorks";
 import { Testimonials } from "@/components/root/Testimonials";
 import { FAQ } from "@/components/root/FAQ";
+import { AbhaIntegration } from "@/components/root/AbhaIntegration";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
       <main className="flex-1">
         <Hero />
         <Services />
+        <AbhaIntegration />
         <HowItWorks />
         <Specialities />
         <InClinic />
