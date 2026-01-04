@@ -3,7 +3,9 @@ import { Services } from "@/components/root/Services";
 import { Specialities } from "@/components/root/Specialities";
 import { InClinic } from "@/components/root/InClinic";
 import { DownloadApp } from "@/components/root/DownloadApp";
-import { Footer } from "@/components/root/Footer";
+import { HowItWorks } from "@/components/root/HowItWorks";
+import { Testimonials } from "@/components/root/Testimonials";
+import { FAQ } from "@/components/root/FAQ";
 
 export default function Home() {
   return (
@@ -11,8 +13,12 @@ export default function Home() {
       <main className="flex-1">
         <Hero />
         <Services />
+        <HowItWorks />
         <Specialities />
         <InClinic />
+        <Testimonials />
+        <FAQ />
+        <DownloadApp />
       </main>
     </div>
   );
