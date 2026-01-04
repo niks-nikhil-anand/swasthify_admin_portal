@@ -74,16 +74,16 @@ export function Specialities() {
                                     alt={item.title}
                                     width={100}
                                     height={100}
-                                    className="object-contain drop-shadow-md"
+                                    className="object-contain drop-shadow-xl"
                                 />
                             </div>
 
-                            <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2 px-1">
+                            <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-2 px-1">
                                 {item.title}
                             </h3>
 
-                            <div className="text-sm font-medium text-muted-foreground mb-4">
-                                {item.price}
+                            <div className="text-xs text-muted-foreground mb-4">
+                                starts from <span className="font-bold text-foreground text-sm">{item.price}</span>
                             </div>
 
                             <span className="mt-auto text-xs font-bold text-primary opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center bg-primary/10 px-3 py-1 rounded-full">
