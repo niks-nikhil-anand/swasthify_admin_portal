@@ -26,12 +26,27 @@ export function VitalCheckups() {
             tests: "T3, T4, TSH Ultra-sensitive",
             icon: <Activity className="h-6 w-6 text-purple-500" />
         },
+        {
+            title: "Iron Deficiency",
+            tests: "Iron, TIBC, Transferrin Saturation",
+            icon: <Droplet className="h-6 w-6 text-red-700" />
+        },
+        {
+            title: "Vitamin D",
+            tests: "25-OH Vitamin D (Total)",
+            icon: <Activity className="h-6 w-6 text-orange-400" />
+        },
+        {
+            title: "Complete Hemogram",
+            tests: "Hb, RBC, WBC, Platelets, MCV, MCH...",
+            icon: <Droplet className="h-6 w-6 text-red-600" />
+        }
     ];
 
     return (
-        <section className="w-full py-12 px-4 md:px-6 bg-gray-50/50">
+        <section className="w-full py-16 px-4 md:px-6 bg-gray-50/50">
             <div className="container mx-auto">
-                <h2 className="text-2xl font-bold mb-8">Recommended Vital Checkups</h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-10">Recommended Vital Checkups</h2>
                 <ScrollArea className="w-full whitespace-nowrap">
                     <div className="flex space-x-4 pb-4">
                         {checkups.map((checkup, index) => (
