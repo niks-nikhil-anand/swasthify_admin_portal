@@ -18,9 +18,9 @@ export function DownloadApp() {
                             <Image
                                 src="/images/swasthify_app_mockup_new.png"
                                 alt="Swasthify Mobile App Interface"
-                                width={600}
-                                height={800}
-                                className="object-contain drop-shadow-2xl scale-110"
+                                width={350}
+                                height={600}
+                                className="object-contain drop-shadow-2xl rounded-3xl border-4 border-white/20"
                                 priority
                             />
                         </div>
