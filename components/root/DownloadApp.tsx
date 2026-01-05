@@ -16,11 +16,11 @@ export function DownloadApp() {
 
                         <div className="relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
                             <Image
-                                src="/images/swasthify_app_mockup_new.png"
+                                src="/images/swasthify_promo_tall.png"
                                 alt="Swasthify Mobile App Interface"
-                                width={350}
-                                height={600}
-                                className="object-contain drop-shadow-2xl rounded-3xl border-4 border-white/20"
+                                width={400}
+                                height={700}
+                                className="object-cover drop-shadow-2xl rounded-lg shadow-emerald-200/50"
                                 priority
                             />
                         </div>
