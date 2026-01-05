@@ -1,34 +1,38 @@
-
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Thermometer, Activity, User, HeartPulse, Stethoscope, Ribbon, Smile } from "lucide-react";
+import Image from "next/image";
 
 export function HealthConcern() {
     const concerns = [
-        { icon: <Thermometer className="h-10 w-10 text-orange-500" />, label: "Fever", bg: "bg-orange-100" },
-        { icon: <Activity className="h-10 w-10 text-blue-500" />, label: "Diabetes", bg: "bg-blue-100" },
-        { icon: <Smile className="h-10 w-10 text-purple-500" />, label: "Skin", bg: "bg-purple-100" },
-        { icon: <User className="h-10 w-10 text-rose-500" />, label: "Kidney", bg: "bg-rose-100" },
-        { icon: <Stethoscope className="h-10 w-10 text-yellow-500" />, label: "Digestion", bg: "bg-yellow-100" },
-        { icon: <Ribbon className="h-10 w-10 text-pink-500" />, label: "Cancer", bg: "bg-pink-100" },
-        { icon: <HeartPulse className="h-10 w-10 text-red-500" />, label: "Heart", bg: "bg-red-100" },
+        { image: "/images/lab-test/concerns/fever.png", label: "Fever", bg: "bg-orange-50" },
+        { image: "/images/lab-test/concerns/diabetes.png", label: "Diabetes", bg: "bg-blue-50" },
+        { image: "/images/lab-test/concerns/skin.png", label: "Skin", bg: "bg-purple-50" },
+        { image: "/images/lab-test/concerns/kidney.png", label: "Kidney", bg: "bg-rose-50" },
+        { image: "/images/lab-test/concerns/digestion.png", label: "Digestion", bg: "bg-yellow-50" },
+        { image: "/images/lab-test/concerns/cancer.png", label: "Cancer", bg: "bg-pink-50" },
+        { image: "/images/lab-test/concerns/heart.png", label: "Heart", bg: "bg-red-50" },
     ];
 
     return (
-        <section className="w-full py-12 px-4 md:px-6">
+        <section className="w-full py-16 px-4 md:px-6 bg-white">
             <div className="container mx-auto">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold">Find Tests by Health Concern</h2>
-                    {/* <Button variant="ghost" size="sm" className="hidden md:flex">View Correct</Button> */}
+                <div className="flex justify-between items-center mb-10">
+                    <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-gray-900">Find Tests by Health Concern</h2>
                 </div>
 
-                <ScrollArea className="w-full whitespace-nowrap pb-4">
-                    <div className="flex space-x-8 px-4">
+                <ScrollArea className="w-full whitespace-nowrap pb-6">
+                    <div className="flex space-x-8 px-4 justify-start md:justify-center w-max md:w-full">
                         {concerns.map((item, index) => (
-                            <div key={index} className="flex flex-col items-center space-y-3 cursor-pointer group">
-                                <div className={`w-24 h-24 rounded-full ${item.bg} flex items-center justify-center transition-transform group-hover:scale-110`}>
-                                    {item.icon}
+                            <div key={index} className="flex flex-col items-center space-y-4 cursor-pointer group">
+                                <div className={`w-32 h-32 rounded-full ${item.bg} flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm border border-gray-100 overflow-hidden`}>
+                                    <Image
+                                        src={item.image}
+                                        alt={item.label}
+                                        width={100}
+                                        height={100}
+                                        className="object-contain p-2"
+                                    />
                                 </div>
-                                <span className="text-sm font-medium text-gray-700">{item.label}</span>
+                                <span className="text-base font-semibold text-gray-700 group-hover:text-emerald-600 transition-colors">{item.label}</span>
                             </div>
                         ))}
                     </div>
