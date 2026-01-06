@@ -1,5 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { FeatureComparison } from "@/components/pricing/FeatureComparison";
+import { PricingFAQ } from "@/components/pricing/PricingFAQ";
+import { PricingTestimonials } from "@/components/pricing/PricingTestimonials";
+import { PricingCTA } from "@/components/pricing/PricingCTA";
 
 export default function PricingPage() {
     const tiers = [
@@ -73,8 +77,8 @@ export default function PricingPage() {
                         <div
                             key={tier.id}
                             className={`flex flex-col justify-between rounded-3xl p-8 ring-1 xl:p-10 ${tier.mostPopular
-                                    ? "bg-white/5 ring-2 ring-primary relative"
-                                    : "bg-white ring-gray-200 dark:bg-gray-900/50 dark:ring-gray-800"
+                                ? "bg-white/5 ring-2 ring-primary relative"
+                                : "bg-white ring-gray-200 dark:bg-gray-900/50 dark:ring-gray-800"
                                 }`}
                         >
                             <div>
@@ -123,8 +127,8 @@ export default function PricingPage() {
                             <Button
                                 asChild
                                 className={`mt-8 w-full ${tier.mostPopular
-                                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                                        : "bg-primary/10 text-primary hover:bg-primary/20"
+                                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                                    : "bg-primary/10 text-primary hover:bg-primary/20"
                                     }`}
                                 variant={tier.mostPopular ? "default" : "outline"}
                             >
@@ -136,6 +140,15 @@ export default function PricingPage() {
                     ))}
                 </div>
             </div>
-        </div>
+
+
+            <FeatureComparison />
+
+            <PricingTestimonials />
+
+            <PricingFAQ />
+
+            <PricingCTA />
+        </div >
     );
 }
