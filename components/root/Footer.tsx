@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
 
 export function Footer() {
     const quickLinks = [
@@ -69,10 +70,42 @@ export function Footer() {
 
                     <div>
                         <h3 className="font-semibold text-foreground mb-4">Contact</h3>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li>support@swasthify.com</li>
-                            <li>+91 123 456 7890</li>
+                        <ul className="space-y-3 text-sm text-muted-foreground">
+                            <li className="flex items-center gap-2">
+                                <Mail className="h-4 w-4 text-primary" />
+                                <a href="mailto:support@swasthify.com" className="hover:text-primary transition-colors">
+                                    support@swasthify.com
+                                </a>
+                            </li>
+                            <li className="flex items-center gap-2">
+                                <Phone className="h-4 w-4 text-primary" />
+                                <a href="tel:+911234567890" className="hover:text-primary transition-colors">
+                                    +91 123 456 7890
+                                </a>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <MapPin className="h-4 w-4 text-primary mt-1" />
+                                <span>123 Health Street, Wellness City, India</span>
+                            </li>
                         </ul>
+
+                        <div className="mt-6">
+                            <h4 className="text-sm font-semibold text-foreground mb-3">Follow Us</h4>
+                            <div className="flex gap-4">
+                                <a href="#" aria-label="Facebook" className="text-muted-foreground hover:text-primary transition-colors bg-blue-100/50 dark:bg-blue-900/20 p-2 rounded-full hover:bg-blue-200 dark:hover:bg-blue-900/40">
+                                    <Facebook className="h-4 w-4" />
+                                </a>
+                                <a href="#" aria-label="Twitter" className="text-muted-foreground hover:text-primary transition-colors bg-sky-100/50 dark:bg-sky-900/20 p-2 rounded-full hover:bg-sky-200 dark:hover:bg-sky-900/40">
+                                    <Twitter className="h-4 w-4" />
+                                </a>
+                                <a href="#" aria-label="Instagram" className="text-muted-foreground hover:text-primary transition-colors bg-pink-100/50 dark:bg-pink-900/20 p-2 rounded-full hover:bg-pink-200 dark:hover:bg-pink-900/40">
+                                    <Instagram className="h-4 w-4" />
+                                </a>
+                                <a href="#" aria-label="LinkedIn" className="text-muted-foreground hover:text-primary transition-colors bg-indigo-100/50 dark:bg-indigo-900/20 p-2 rounded-full hover:bg-indigo-200 dark:hover:bg-indigo-900/40">
+                                    <Linkedin className="h-4 w-4" />
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
