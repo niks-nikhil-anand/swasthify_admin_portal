@@ -30,14 +30,16 @@ export function Footer() {
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
 
-                    <div className="space-y-4">
-                        <div className="flex items-center space-x-2">
-                            <Image src="/logo.png" alt="Swasthify Logo" width={32} height={32} className="h-8 w-8 object-contain" />
-                            <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                    <div className="space-y-6">
+                        <Link href="/" className="flex items-center space-x-3 group">
+                            <div className="relative h-10 w-10 transition-transform group-hover:scale-110 duration-300">
+                                <Image src="/logo.png" alt="Swasthify Logo" fill className="object-contain" />
+                            </div>
+                            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                                 Swasthify
                             </span>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
+                        </Link>
+                        <p className="text-muted-foreground leading-relaxed max-w-xs transition-colors hover:text-foreground/80">
                             Connecting patients with the best healthcare professionals for a healthier tomorrow.
                         </p>
                     </div>
