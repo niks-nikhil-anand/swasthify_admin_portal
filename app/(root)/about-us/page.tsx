@@ -147,23 +147,23 @@ export default function AboutPage() {
             {/* CTA */}
             <section className="py-24">
                 <div className="container mx-auto px-4">
-                    <div className="bg-primary rounded-[2.5rem] p-12 md:p-20 text-center text-primary-foreground relative overflow-hidden shadow-2xl">
+                    <div className="bg-gray-100 rounded-[2.5rem] p-12 md:p-20 text-center text-gray-900 relative overflow-hidden shadow-2xl">
                         {/* Abstract Shapes */}
-                        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-                        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+                        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/40 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+                        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-white/40 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
 
                         <div className="relative z-10 max-w-3xl mx-auto space-y-8">
                             <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
                                 Ready to experience <br /> better healthcare?
                             </h2>
-                            <p className="text-primary-foreground/80 text-lg md:text-xl">
+                            <p className="text-gray-600 text-lg md:text-xl">
                                 Join thousands of users who trust Swasthify for their medical needs. Start your journey today.
                             </p>
                             <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-                                <Button size="lg" variant="secondary" className="h-14 px-8 rounded-full text-base font-bold shadow-lg hover:shadow-xl transition-all">
+                                <Button size="lg" className="h-14 px-8 rounded-full text-base font-bold shadow-lg hover:shadow-xl transition-all">
                                     Get Started Now
                                 </Button>
-                                <Button size="lg" variant="outline" className="h-14 px-8 rounded-full text-base font-bold bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-white transition-all">
+                                <Button size="lg" variant="outline" className="h-14 px-8 rounded-full text-base font-bold bg-white/50 border-gray-300 text-gray-900 hover:bg-white hover:text-primary transition-all">
                                     View Services
                                 </Button>
                             </div>
