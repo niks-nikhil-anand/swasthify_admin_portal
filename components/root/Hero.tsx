@@ -64,9 +64,15 @@ export function Hero() {
                         <div className="flex items-center gap-8 pt-6 text-sm text-muted-foreground animate-in fade-in slide-in-from-bottom-4 duration-700 delay-700">
                             <div className="flex items-center gap-2">
                                 <div className="flex -space-x-3">
-                                    <div className="w-9 h-9 rounded-full bg-gray-200 border-2 border-background flex items-center justify-center text-[10px] font-bold">A</div>
-                                    <div className="w-9 h-9 rounded-full bg-gray-300 border-2 border-background flex items-center justify-center text-[10px] font-bold">B</div>
-                                    <div className="w-9 h-9 rounded-full bg-gray-400 border-2 border-background flex items-center justify-center text-[10px] font-bold">C</div>
+                                    <div className="relative w-9 h-9 rounded-full border-2 border-background overflow-hidden">
+                                        <Image src="/patient-a.png" alt="Patient A" fill className="object-cover" />
+                                    </div>
+                                    <div className="relative w-9 h-9 rounded-full border-2 border-background overflow-hidden">
+                                        <Image src="/patient-b.png" alt="Patient B" fill className="object-cover" />
+                                    </div>
+                                    <div className="relative w-9 h-9 rounded-full border-2 border-background overflow-hidden">
+                                        <Image src="/patient-c.png" alt="Patient C" fill className="object-cover" />
+                                    </div>
                                 </div>
                                 <span className="font-medium ml-2">10k+ Patients</span>
                             </div>
