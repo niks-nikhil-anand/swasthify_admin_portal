@@ -1,7 +1,7 @@
 "use client";
 
+
 import Image from "next/image";
-import { Apple, Smartphone } from "lucide-react";
 
 export function DownloadApp() {
     return (
@@ -16,11 +16,11 @@ export function DownloadApp() {
 
                         <div className="relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
                             <Image
-                                src="/images/swasthify_promo_tall.png"
+                                src="/images/swasthify_app_mockup.png"
                                 alt="Swasthify Mobile App Interface"
-                                width={400}
-                                height={700}
-                                className="object-cover drop-shadow-2xl rounded-lg shadow-emerald-200/50"
+                                width={500}
+                                height={500}
+                                className="object-contain drop-shadow-2xl rounded-lg"
                                 priority
                             />
                         </div>
@@ -32,7 +32,7 @@ export function DownloadApp() {
                             Download the <span className="text-primary">Swasthify</span> app
                         </h2>
 
-                        <p className="text-muted-foreground text-lg md:text-xl mb-12 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+                        <p className="text-muted-foreground text-lg md:text-xl mb-12 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
                             Access video consultation with India's top doctors.
                             Connect online 24/7 from the comfort of your home.
                         </p>
@@ -41,7 +41,7 @@ export function DownloadApp() {
                             <label className="block text-sm font-semibold text-foreground mb-4 opacity-80">
                                 Get the link to download the app
                             </label>
-                            <div className="flex gap-3 max-w-md mx-auto lg:mx-0">
+                            <div className="flex gap-3 max-w-md mx-auto lg:mx-0 w-full">
                                 <span className="inline-flex items-center px-4 py-3 border border-border bg-background text-foreground font-medium rounded-xl shadow-sm">
                                     +91
                                 </span>
@@ -57,16 +57,30 @@ export function DownloadApp() {
                         </div>
 
                         <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
-                            <button className="flex items-center gap-3 bg-foreground text-background px-6 py-3.5 rounded-xl hover:bg-foreground/90 transition-all hover:-translate-y-1 shadow-xl">
-                                <Smartphone className="w-7 h-7" />
+                            <button className="flex items-center gap-3 bg-foreground text-background px-6 py-3.5 rounded-xl hover:bg-foreground/90 transition-all hover:-translate-y-1 shadow-xl min-w-[200px]">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    className="w-7 h-7 fill-current"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path d="M5 20.5v-13l13.5 6.5-13.5 6.5z" />
+                                    <path d="M14.6 11.2L4.4 1a1.5 1.5 0 0 0-1.8.2l8.4 10z" fillOpacity="0.1" />
+                                    <path d="M14.6 12.8L11 9.2l-6.5 6.4 10.1-2.8z" fillOpacity="0.1" />
+                                </svg>
                                 <div className="text-left">
                                     <div className="text-[10px] font-medium leading-none mb-1 opacity-80">GET IT ON</div>
                                     <div className="text-base font-bold leading-none">Google Play</div>
                                 </div>
                             </button>
 
-                            <button className="flex items-center gap-3 bg-foreground text-background px-6 py-3.5 rounded-xl hover:bg-foreground/90 transition-all hover:-translate-y-1 shadow-xl">
-                                <Apple className="w-7 h-7" />
+                            <button className="flex items-center gap-3 bg-foreground text-background px-6 py-3.5 rounded-xl hover:bg-foreground/90 transition-all hover:-translate-y-1 shadow-xl min-w-[200px]">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    className="w-7 h-7 fill-current"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.74 1.18 0 2.21-.93 3.8-.93.62 0 2.45.19 3.6 1.92-3.72 1.8-3.1 6.55 1.76 8.5-.88 1.85-2.09 3.73-4.24 2.74zm-2.8-15.6c.92-1.13.68-2.65.65-2.68-1.55.19-2.86 1.05-3.32 2.15-.3.72-.19 2.05 1.05 2.54.34-.69.88-1.42 1.62-2.01z" />
+                                </svg>
                                 <div className="text-left">
                                     <div className="text-[10px] font-medium leading-none mb-1 opacity-80">Download on the</div>
                                     <div className="text-base font-bold leading-none">App Store</div>

@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { cn } from "@/lib/utils"
 
 interface AuthWrapperProps {
@@ -26,21 +27,15 @@ export function AuthWrapper({
                 <div className="bg-card px-10 py-12 shadow-xl sm:rounded-xl ring-1 ring-black/5 border border-border/50">
                     <div className="sm:mx-auto sm:w-full sm:max-w-md mb-8 text-center">
                         {/* Logo placeholder - replace with actual logo if available */}
-                        <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={2}
-                                stroke="currentColor"
-                                className="w-6 h-6 text-primary"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"
-                                />
-                            </svg>
+                        {/* Logo */}
+                        <div className="mx-auto h-12 w-12 flex items-center justify-center mb-4">
+                            <Image
+                                src="/logo.png"
+                                alt="Swasthify"
+                                width={48}
+                                height={48}
+                                className="h-12 w-12 object-contain"
+                            />
                         </div>
                         <h2 className="text-3xl font-bold tracking-tight text-foreground transition-colors">
                             {title}
