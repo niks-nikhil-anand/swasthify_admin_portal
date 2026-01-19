@@ -7,12 +7,7 @@ import { Badge } from "@/components/ui/badge";
 export function LabHero() {
     return (
         <section className="w-full bg-primary/5 relative py-20 md:py-32 lg:py-40 flex items-center justify-center overflow-hidden">
-            {/* Background Image with Overlay */}
-            <div
-                className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat scale-105 animate-in fade-in zoom-in duration-[1.5s]"
-            >
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/60 backdrop-blur-[2px]"></div>
-            </div>
+
 
             <div className="container relative z-10 px-4 md:px-6">
                 <div className="flex flex-col items-center space-y-6 text-center animate-in fade-in slide-in-from-bottom-8 duration-700">
