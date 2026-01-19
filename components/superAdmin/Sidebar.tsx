@@ -120,7 +120,7 @@ export function Sidebar({ className }: SidebarProps) {
                 <div className="flex items-center gap-3 px-2 mb-6 ">
                     <div className="bg-white p-1.5 rounded-xl shadow-sm border border-border group-hover:scale-105 transition-transform duration-300">
                         <Image
-                            src="/logo2.jpeg"
+                            src="/logo.png"
                             alt="Swasthify Logo"
                             width={42}
                             height={42}
