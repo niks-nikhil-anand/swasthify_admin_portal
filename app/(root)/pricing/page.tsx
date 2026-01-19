@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import { FeatureComparison } from "@/components/pricing/FeatureComparison";
 import { PricingFAQ } from "@/components/pricing/PricingFAQ";
 import { PricingTestimonials } from "@/components/pricing/PricingTestimonials";
-import { PricingCTA } from "@/components/pricing/PricingCTA";
+import { CTA } from "@/components/shared/CTA";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -91,8 +91,8 @@ export default function PricingPage() {
                             <div key={tier.id} className={`flex flex-col animate-in fade-in slide-in-from-bottom-12 duration-700 fill-mode-backwards`} style={{ animationDelay: `${index * 150}ms` }}>
                                 <Card
                                     className={`flex flex-col h-full relative transition-all duration-300 hover:shadow-2xl ${tier.mostPopular
-                                            ? "border-primary shadow-xl scale-105 z-10 bg-background"
-                                            : "border-border/50 hover:-translate-y-2 bg-background/50 backdrop-blur-sm"
+                                        ? "border-primary shadow-xl scale-105 z-10 bg-background"
+                                        : "border-border/50 hover:-translate-y-2 bg-background/50 backdrop-blur-sm"
                                         }`}
                                 >
                                     {tier.mostPopular && (
@@ -148,7 +148,12 @@ export default function PricingPage() {
 
             <PricingFAQ />
 
-            <PricingCTA />
+            <CTA
+                title="Ready to modernize your practice?"
+                description="Join thousands of healthcare professionals who trust Swasthify to manage their clinics and hospitals more efficiently."
+                primaryAction={{ text: "Get Started for Free", href: "/register/doctor" }}
+                secondaryAction={{ text: "Contact Sales", href: "/contact" }}
+            />
         </div>
     );
 }
