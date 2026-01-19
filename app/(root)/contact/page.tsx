@@ -248,7 +248,12 @@ export default function ContactPage() {
                     </div>
                 </div>
             </section>
-            <CTA />
+            <CTA
+                title="Still have questions?"
+                description="Our team is here to help. But if you're ready to get started, you can register for free right now."
+                primaryAction={{ text: "Register Now", href: "/register/patient" }}
+                secondaryAction={{ text: "View FAQ", href: "/#faq" }}
+            />
         </div>
     );
 }
