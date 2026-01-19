@@ -24,33 +24,38 @@ export function FeatureComparison() {
                     </p>
                 </div>
 
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="border-b border-gray-200">
-                                <th className="py-4 px-6 text-lg font-semibold text-gray-900 w-1/4">Features</th>
-                                <th className="py-4 px-6 text-lg font-semibold text-gray-900 text-center w-1/4">Starter</th>
-                                <th className="py-4 px-6 text-lg font-semibold text-primary text-center w-1/4">Pro</th>
-                                <th className="py-4 px-6 text-lg font-semibold text-gray-900 text-center w-1/4">Enterprise</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {features.map((feature, index) => (
-                                <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                                    <td className="py-4 px-6 text-gray-700 font-medium">{feature.name}</td>
-                                    <td className="py-4 px-6 text-center">
-                                        {renderValue(feature.starter)}
-                                    </td>
-                                    <td className="py-4 px-6 text-center bg-primary/5">
-                                        {renderValue(feature.pro)}
-                                    </td>
-                                    <td className="py-4 px-6 text-center">
-                                        {renderValue(feature.enterprise)}
-                                    </td>
+                <div className="overflow-hidden border border-gray-200 rounded-2xl shadow-lg">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse min-w-[800px]">
+                            <thead>
+                                <tr className="bg-gray-50/50 border-b border-gray-200">
+                                    <th className="py-6 px-6 text-lg font-semibold text-gray-900 w-1/4">Features</th>
+                                    <th className="py-6 px-6 text-lg font-semibold text-gray-900 text-center w-1/4 border-l border-gray-200">Starter</th>
+                                    <th className="py-6 px-6 text-lg font-semibold text-primary text-center w-1/4 bg-primary/5 border-l border-r border-primary/20 relative">
+                                        Pro
+                                        <div className="absolute top-0 left-0 w-full h-1 bg-primary/20"></div>
+                                    </th>
+                                    <th className="py-6 px-6 text-lg font-semibold text-gray-900 text-center w-1/4">Enterprise</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {features.map((feature, index) => (
+                                    <tr key={index} className="hover:bg-gray-50/50 transition-colors group">
+                                        <td className="py-4 px-6 text-gray-700 font-medium group-hover:text-gray-900">{feature.name}</td>
+                                        <td className="py-4 px-6 text-center border-l border-gray-100">
+                                            {renderValue(feature.starter)}
+                                        </td>
+                                        <td className="py-4 px-6 text-center bg-primary/5 border-l border-r border-primary/10 group-hover:bg-primary/10 transition-colors">
+                                            {renderValue(feature.pro)}
+                                        </td>
+                                        <td className="py-4 px-6 text-center">
+                                            {renderValue(feature.enterprise)}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </section>
