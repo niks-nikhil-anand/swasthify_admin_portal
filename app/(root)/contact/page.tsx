@@ -3,6 +3,11 @@
 import { Mail, Phone, MapPin, Send, MessageSquare, Clock } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
@@ -55,14 +60,21 @@ export default function ContactPage() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen bg-background">
             {/* Hero Section */}
-            <section className="bg-muted/40 py-16">
-                <div className="container mx-auto px-4 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-6">Get in Touch</h1>
-                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        Have questions about our services or need assistance? We're here to help.
-                        Reach out to us and we'll respond as soon as possible.
+            <section className="relative w-full py-20 md:py-32 overflow-hidden bg-primary/5">
+                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-background to-primary/5 opacity-50" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 rounded-full blur-3xl -z-10" />
+
+                <div className="container mx-auto px-4 relative z-10 text-center">
+                    <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-medium text-sm md:text-base mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        We'd love to hear from you
+                    </div>
+                    <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                        Get in Touch with <span className="text-primary">Swasthify</span>
+                    </h1>
+                    <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+                        Have questions about our services or need assistance? We're here to help. Reach out to us and we'll respond as soon as possible.
                     </p>
                 </div>
             </section>
@@ -72,157 +84,165 @@ export default function ContactPage() {
                     <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
 
                         {/* Contact Information */}
-                        <div className="space-y-8">
+                        <div className="space-y-8 animate-in fade-in slide-in-from-left-8 duration-700 delay-200">
                             <div>
-                                <h2 className="text-3xl font-bold mb-6">Contact Information</h2>
-                                <p className="text-muted-foreground mb-8 text-lg">
-                                    Fill out the form or contact us directly using the details below.
+                                <h2 className="text-3xl font-bold mb-4">Contact Information</h2>
+                                <p className="text-muted-foreground text-lg">
+                                    Fill out the form or contact us directly using the details below. Our team is ready to assist you.
                                 </p>
                             </div>
 
-                            <div className="space-y-6">
-                                <div className="flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:shadow-lg transition-shadow">
-                                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                                        <Phone className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-lg mb-1">Phone Number</h3>
-                                        <p className="text-muted-foreground">+91 98765 43210</p>
-                                        <p className="text-muted-foreground">+91 12345 67890</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:shadow-lg transition-shadow">
-                                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                                        <Mail className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-lg mb-1">Email Address</h3>
-                                        <p className="text-muted-foreground">support@swasthify.com</p>
-                                        <p className="text-muted-foreground">info@swasthify.com</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:shadow-lg transition-shadow">
-                                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                                        <MapPin className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-lg mb-1">Office Location</h3>
-                                        <p className="text-muted-foreground">
-                                            123 Health Tech Park, Sector 62,<br />
-                                            Noida, Uttar Pradesh, 201301
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:shadow-lg transition-shadow">
-                                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                                        <Clock className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-lg mb-1">Business Hours</h3>
-                                        <p className="text-muted-foreground">Mon - Fri: 9:00 AM - 8:00 PM</p>
-                                        <p className="text-muted-foreground">Sat - Sun: 10:00 AM - 6:00 PM</p>
-                                    </div>
-                                </div>
+                            <div className="grid gap-6">
+                                {[
+                                    {
+                                        icon: Phone,
+                                        title: "Phone Number",
+                                        lines: ["+91 98765 43210", "+91 12345 67890"],
+                                        color: "text-blue-500",
+                                        bg: "bg-blue-500/10"
+                                    },
+                                    {
+                                        icon: Mail,
+                                        title: "Email Address",
+                                        lines: ["support@swasthify.com", "info@swasthify.com"],
+                                        color: "text-green-500",
+                                        bg: "bg-green-500/10"
+                                    },
+                                    {
+                                        icon: MapPin,
+                                        title: "Office Location",
+                                        lines: ["123 Health Tech Park, Sector 62,", "Noida, Uttar Pradesh, 201301"],
+                                        color: "text-purple-500",
+                                        bg: "bg-purple-500/10"
+                                    },
+                                    {
+                                        icon: Clock,
+                                        title: "Business Hours",
+                                        lines: ["Mon - Fri: 9:00 AM - 8:00 PM", "Sat - Sun: 10:00 AM - 6:00 PM"],
+                                        color: "text-orange-500",
+                                        bg: "bg-orange-500/10"
+                                    }
+                                ].map((item, index) => (
+                                    <Card key={index} className="border-border/50 hover:shadow-lg transition-all duration-300 group overflow-hidden">
+                                        <CardContent className="p-6 flex items-start gap-4">
+                                            <div className={`w-12 h-12 rounded-xl ${item.bg} flex items-center justify-center ${item.color} shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                                                <item.icon className="w-6 h-6" />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-lg mb-1">{item.title}</h3>
+                                                {item.lines.map((line, i) => (
+                                                    <p key={i} className="text-muted-foreground">{line}</p>
+                                                ))}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
                             </div>
                         </div>
 
                         {/* Contact Form */}
-                        <div className="bg-card border border-border rounded-3xl p-8 shadow-sm">
-                            <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                                <MessageSquare className="w-6 h-6 text-primary" />
-                                Send us a Message
-                            </h3>
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label htmlFor="name" className="block text-sm font-medium pb-1">Full Name</label>
-                                        <input
-                                            type="text"
-                                            id="name"
-                                            name="name"
-                                            placeholder="John Doe"
-                                            required
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            className="flex h-12 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        />
+                        <div className="animate-in fade-in slide-in-from-right-8 duration-700 delay-300">
+                            <Card className="border-border/50 shadow-xl overflow-hidden relative">
+                                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-accent" />
+                                <CardContent className="p-8">
+                                    <div className="flex items-center gap-3 mb-8">
+                                        <div className="p-3 rounded-full bg-primary/10 text-primary">
+                                            <MessageSquare className="w-6 h-6" />
+                                        </div>
+                                        <h3 className="text-2xl font-bold">Send us a Message</h3>
                                     </div>
-                                    <div className="space-y-2">
-                                        <label htmlFor="email" className="block text-sm font-medium pb-1">Email Address</label>
-                                        <input
-                                            type="email"
-                                            id="email"
-                                            name="email"
-                                            placeholder="john@example.com"
-                                            required
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            className="flex h-12 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label htmlFor="phone" className="block text-sm font-medium pb-1">Phone Number</label>
-                                        <div className="flex bg-background border border-input rounded-lg ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 overflow-hidden items-center">
-                                            <div className="bg-muted px-3 py-2 border-r border-input text-muted-foreground text-sm font-medium">
-                                                +91
+
+                                    <form onSubmit={handleSubmit} className="space-y-6">
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="name">Full Name</Label>
+                                                <Input
+                                                    id="name"
+                                                    name="name"
+                                                    placeholder="John Doe"
+                                                    required
+                                                    value={formData.name}
+                                                    onChange={handleChange}
+                                                    className="h-12 bg-muted/30 focus:bg-background transition-colors"
+                                                />
                                             </div>
-                                            <input
-                                                type="tel"
-                                                id="phone"
-                                                name="phone"
-                                                placeholder="9876543210"
+                                            <div className="space-y-2">
+                                                <Label htmlFor="email">Email Address</Label>
+                                                <Input
+                                                    type="email"
+                                                    id="email"
+                                                    name="email"
+                                                    placeholder="john@example.com"
+                                                    required
+                                                    value={formData.email}
+                                                    onChange={handleChange}
+                                                    className="h-12 bg-muted/30 focus:bg-background transition-colors"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="phone">Phone Number</Label>
+                                                <div className="relative">
+                                                    <div className="absolute left-0 top-0 h-full px-3 flex items-center border-r border-input bg-muted/50 text-muted-foreground text-sm font-medium rounded-l-md">
+                                                        +91
+                                                    </div>
+                                                    <Input
+                                                        type="tel"
+                                                        id="phone"
+                                                        name="phone"
+                                                        placeholder="9876543210"
+                                                        required
+                                                        value={formData.phone}
+                                                        onChange={handleChange}
+                                                        className="h-12 pl-16 bg-muted/30 focus:bg-background transition-colors"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="subject">Subject</Label>
+                                                <Input
+                                                    id="subject"
+                                                    name="subject"
+                                                    placeholder="How can we help?"
+                                                    value={formData.subject}
+                                                    onChange={handleChange}
+                                                    className="h-12 bg-muted/30 focus:bg-background transition-colors"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="message">Message</Label>
+                                            <Textarea
+                                                id="message"
+                                                name="message"
+                                                placeholder="Tell us more about your inquiry..."
+                                                rows={6}
                                                 required
-                                                value={formData.phone}
+                                                value={formData.message}
                                                 onChange={handleChange}
-                                                className="flex h-12 w-full bg-transparent px-4 py-2 text-sm placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 border-none rounded-none"
+                                                className="resize-y bg-muted/30 focus:bg-background transition-colors"
                                             />
                                         </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label htmlFor="subject" className="block text-sm font-medium pb-1">Subject</label>
-                                        <input
-                                            type="text"
-                                            id="subject"
-                                            name="subject"
-                                            placeholder="How can we help?"
-                                            value={formData.subject}
-                                            onChange={handleChange}
-                                            className="flex h-12 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <label htmlFor="message" className="block text-sm font-medium pb-1">Message</label>
-                                    <textarea
-                                        id="message"
-                                        name="message"
-                                        placeholder="Tell us more about your inquiry..."
-                                        rows={6}
-                                        required
-                                        value={formData.message}
-                                        onChange={handleChange}
-                                        className="flex w-full rounded-lg border border-input bg-background px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-primary text-primary-foreground h-12 px-6 font-bold shadow-md hover:bg-primary/90 transition-all disabled:opacity-50 disabled:pointer-events-none"
-                                >
-                                    {isSubmitting ? (
-                                        "Sending..."
-                                    ) : (
-                                        <>
-                                            Send Message <Send className="w-4 h-4" />
-                                        </>
-                                    )}
-                                </button>
-                            </form>
+
+                                        <Button
+                                            type="submit"
+                                            disabled={isSubmitting}
+                                            className="w-full h-12 text-base font-semibold shadow-lg hover:shadow-primary/25 transition-all"
+                                        >
+                                            {isSubmitting ? (
+                                                "Sending..."
+                                            ) : (
+                                                <>
+                                                    Send Message <Send className="w-4 h-4 ml-2" />
+                                                </>
+                                            )}
+                                        </Button>
+                                    </form>
+                                </CardContent>
+                            </Card>
                         </div>
                     </div>
                 </div>
