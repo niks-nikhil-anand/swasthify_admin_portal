@@ -32,7 +32,7 @@ export function Footer() {
 
                     <div className="space-y-6">
                         <Link href="/" className="flex items-center space-x-3 group">
-                            <div className="relative h-10 w-10 transition-transform group-hover:scale-110 duration-300">
+                            <div className="relative h-20 w-20 transition-transform group-hover:scale-110 duration-300">
                                 <Image src="/logo2.jpeg" alt="Swasthify Logo" fill className="object-contain" />
                             </div>
                             <span className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
