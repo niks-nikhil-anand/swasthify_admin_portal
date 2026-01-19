@@ -1,9 +1,13 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { FeatureComparison } from "@/components/pricing/FeatureComparison";
 import { PricingFAQ } from "@/components/pricing/PricingFAQ";
 import { PricingTestimonials } from "@/components/pricing/PricingTestimonials";
 import { PricingCTA } from "@/components/pricing/PricingCTA";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export default function PricingPage() {
     const tiers = [
@@ -61,86 +65,82 @@ export default function PricingPage() {
     ];
 
     return (
-        <div className="bg-page-bg min-h-screen py-24 sm:py-32">
-            <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                <div className="mx-auto max-w-4xl text-center">
-                    <h2 className="text-base font-semibold leading-7 text-primary">Pricing</h2>
-                    <p className="mt-2 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-                        Choose the right plan for your clinic
+        <div className="flex flex-col min-h-screen bg-background">
+            {/* Hero Section */}
+            <section className="relative w-full py-20 md:py-32 overflow-hidden bg-primary/5">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-3xl -z-10" />
+
+                <div className="container mx-auto px-4 text-center relative z-10">
+                    <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-medium text-sm md:text-base mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        Transparent Pricing
+                    </div>
+                    <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                        Choose the right plan <br /> for <span className="text-primary">your clinic</span>
+                    </h1>
+                    <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+                        Simple, transparent pricing that grows with you. Try any plan free for 14 days. No hidden fees.
                     </p>
                 </div>
-                <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-muted-foreground">
-                    Simple, transparent pricing that grows with you. Try any plan free for 14 days.
-                </p>
-                <div className="isolate mx-auto mt-16 grid max-w-md grid-cols-1 gap-y-8 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-                    {tiers.map((tier, tierIdx) => (
-                        <div
-                            key={tier.id}
-                            className={`flex flex-col justify-between rounded-3xl p-8 ring-1 xl:p-10 ${tier.mostPopular
-                                ? "bg-white/5 ring-2 ring-primary relative"
-                                : "bg-white ring-gray-200 dark:bg-gray-900/50 dark:ring-gray-800"
-                                }`}
-                        >
-                            <div>
-                                <div className="flex items-center justify-between gap-x-4">
-                                    <h3
-                                        id={tier.id}
-                                        className={`text-lg font-semibold leading-8 ${tier.mostPopular ? "text-primary" : "text-foreground"
-                                            }`}
-                                    >
-                                        {tier.name}
-                                    </h3>
-                                    {tier.mostPopular ? (
-                                        <p className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold leading-5 text-primary">
-                                            Most popular
-                                        </p>
-                                    ) : null}
-                                </div>
-                                <p className="mt-4 text-sm leading-6 text-muted-foreground">
-                                    {tier.description}
-                                </p>
-                                <p className="mt-6 flex items-baseline gap-x-1">
-                                    <span className="text-4xl font-bold tracking-tight text-foreground">
-                                        {tier.price.monthly}
-                                    </span>
-                                    {tier.price.monthly !== "Free" && tier.price.monthly !== "Custom" && (
-                                        <span className="text-sm font-semibold leading-6 text-muted-foreground">
-                                            /month
-                                        </span>
-                                    )}
-                                </p>
-                                <ul
-                                    role="list"
-                                    className="mt-8 space-y-3 text-sm leading-6 text-muted-foreground"
-                                >
-                                    {tier.features.map((feature) => (
-                                        <li key={feature} className="flex gap-x-3">
-                                            <Check
-                                                className="h-6 w-5 flex-none text-primary"
-                                                aria-hidden="true"
-                                            />
-                                            {feature}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            <Button
-                                asChild
-                                className={`mt-8 w-full ${tier.mostPopular
-                                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                                    : "bg-primary/10 text-primary hover:bg-primary/20"
-                                    }`}
-                                variant={tier.mostPopular ? "default" : "outline"}
-                            >
-                                <a href={tier.href} aria-describedby={tier.id}>
-                                    {tier.cta}
-                                </a>
-                            </Button>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            </section>
 
+            {/* Pricing Tiers */}
+            <section className="-mt-20 py-12 relative z-20">
+                <div className="container mx-auto px-4">
+                    <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                        {tiers.map((tier, index) => (
+                            <div key={tier.id} className={`flex flex-col animate-in fade-in slide-in-from-bottom-12 duration-700 fill-mode-backwards`} style={{ animationDelay: `${index * 150}ms` }}>
+                                <Card
+                                    className={`flex flex-col h-full relative transition-all duration-300 hover:shadow-2xl ${tier.mostPopular
+                                            ? "border-primary shadow-xl scale-105 z-10 bg-background"
+                                            : "border-border/50 hover:-translate-y-2 bg-background/50 backdrop-blur-sm"
+                                        }`}
+                                >
+                                    {tier.mostPopular && (
+                                        <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                                            <Badge className="bg-primary px-4 py-1.5 text-sm shadow-md">Most Popular</Badge>
+                                        </div>
+                                    )}
+
+                                    <CardHeader className="text-center pb-8 pt-10">
+                                        <CardTitle className="text-2xl font-bold">{tier.name}</CardTitle>
+                                        <CardDescription className="text-muted-foreground mt-2 min-h-[40px]">
+                                            {tier.description}
+                                        </CardDescription>
+                                    </CardHeader>
+
+                                    <CardContent className="flex-1 px-8">
+                                        <div className="flex items-center justify-center gap-1 mb-8">
+                                            <span className="text-4xl font-bold text-foreground">{tier.price.monthly}</span>
+                                            {tier.price.monthly !== "Free" && tier.price.monthly !== "Custom" && (
+                                                <span className="text-muted-foreground self-end mb-1">/mo</span>
+                                            )}
+                                        </div>
+
+                                        <ul className="space-y-4">
+                                            {tier.features.map((feature) => (
+                                                <li key={feature} className="flex items-start gap-3 text-sm text-foreground/80">
+                                                    <Check className="h-5 w-5 text-primary shrink-0" />
+                                                    <span>{feature}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </CardContent>
+
+                                    <CardFooter className="px-8 pb-10 pt-4">
+                                        <Button
+                                            asChild
+                                            className="w-full h-12 text-base font-semibold shadow-md"
+                                            variant={tier.mostPopular ? "default" : "outline"}
+                                        >
+                                            <a href={tier.href}>{tier.cta}</a>
+                                        </Button>
+                                    </CardFooter>
+                                </Card>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
 
             <FeatureComparison />
 
@@ -149,6 +149,6 @@ export default function PricingPage() {
             <PricingFAQ />
 
             <PricingCTA />
-        </div >
+        </div>
     );
 }
