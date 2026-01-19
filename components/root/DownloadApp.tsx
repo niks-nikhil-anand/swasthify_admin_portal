@@ -7,10 +7,10 @@ export function DownloadApp() {
     return (
         <section className="py-24 bg-gradient-to-br from-primary/5 to-accent/5 overflow-hidden">
             <div className="container mx-auto px-4">
-                <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24">
+                <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-0">
 
                     {/* Left Side - Mobile App Image */}
-                    <div className="w-full lg:w-1/2 flex justify-center lg:justify-end relative order-2 lg:order-1">
+                    <div className="w-full lg:w-5/12 flex justify-center lg:justify-end relative order-2 lg:order-1">
                         {/* Decorative Elements */}
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-100/50 rounded-full blur-3xl -z-10" />
 
@@ -27,7 +27,7 @@ export function DownloadApp() {
                     </div>
 
                     {/* Right Side - Content */}
-                    <div className="w-full lg:w-1/2 lg:pl-4 order-1 lg:order-2 text-center lg:text-left">
+                    <div className="w-full lg:w-5/12 order-1 lg:order-2 text-center lg:text-left">
                         <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
                             Download the <span className="text-primary">Swasthify</span> app
                         </h2>
