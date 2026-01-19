@@ -5,6 +5,7 @@ import { UserPlus, Link as LinkIcon, Activity, ExternalLink, ArrowRight } from "
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { CTA } from "@/components/shared/CTA";
 
 export default function HowItWorksPage() {
     const steps = [
@@ -156,6 +157,13 @@ export default function HowItWorksPage() {
                     </div>
                 </div>
             </section>
+
+            <CTA
+                title="Start Your Health Journey"
+                description="Now that you know how it works, it's time to take control of your health. Join Swasthify today."
+                primaryAction={{ text: "Create Account", href: "/register/patient" }}
+                secondaryAction={{ text: "Learn More", href: "/about-us" }}
+            />
         </div>
     );
 }
