@@ -141,7 +141,7 @@ export default function ContactPage() {
                         </div>
 
                         {/* Contact Form */}
-                        <div className="animate-in fade-in slide-in-from-right-8 duration-700 delay-300">
+                        <div className="animate-in fade-in slide-in-from-right-8 duration-700 delay-300 lg:mt-16">
                             <Card className="border-border/50 shadow-xl overflow-hidden relative">
                                 <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-accent" />
                                 <CardContent className="p-8">
