@@ -3,7 +3,6 @@ import Image from "next/image";
 
 export function HealthConcern() {
     const concerns = [
-        { image: "/images/lab-test/concerns/fever.png", label: "Fever", bg: "bg-orange-50" },
         { image: "/images/lab-test/concerns/diabetes.png", label: "Diabetes", bg: "bg-blue-50" },
         { image: "/images/lab-test/concerns/skin.png", label: "Skin", bg: "bg-purple-50" },
         { image: "/images/lab-test/concerns/kidney.png", label: "Kidney", bg: "bg-rose-50" },
@@ -20,10 +19,10 @@ export function HealthConcern() {
                 </div>
 
                 <ScrollArea className="w-full whitespace-nowrap pb-6">
-                    <div className="flex space-x-8 px-4 justify-start md:justify-center w-max md:w-full">
+                    <div className="flex space-x-8 px-4 justify-start w-max">
                         {concerns.map((item, index) => (
                             <div key={index} className="flex flex-col items-center space-y-4 cursor-pointer group">
-                                <div className={`w-32 h-32 rounded-full ${item.bg} flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm border border-gray-100 overflow-hidden`}>
+                                <div className={`w-32 h-32 rounded-full  flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm border border-gray-100 overflow-hidden`}>
                                     <Image
                                         src={item.image}
                                         alt={item.label}
