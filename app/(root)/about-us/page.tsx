@@ -145,7 +145,11 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            <CTA />
+            <CTA
+                title="Be Part of Our Mission"
+                description="Join us in our journey to make healthcare accessible to everyone. Experience the difference with Swasthify."
+                primaryAction={{ text: "Join Now", href: "/register/patient" }}
+            />
         </div>
     );
 }
