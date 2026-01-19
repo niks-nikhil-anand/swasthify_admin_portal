@@ -80,8 +80,9 @@ const packages = {
 
 export function HealthPackages() {
     return (
-        <section className="container mx-auto py-12 px-4 md:px-6 bg-gray-50 bg-opacity-50">
-            <div className="flex flex-col space-y-6">
+        <div className="bg-gray-50 bg-opacity-50">
+        <section className=" container mx-auto py-12 px-4 md:px-6 ">
+            <div className=" flex flex-col space-y-6">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
                     Popular <span className="text-emerald-600 bg-emerald-100 px-2 rounded-md">Health Checkup Packages</span>
                 </h2>
@@ -152,5 +153,6 @@ export function HealthPackages() {
                 </Tabs>
             </div>
         </section>
+         </div>
     );
 }
