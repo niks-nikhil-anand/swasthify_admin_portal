@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "sonner";
 
 const sidebarGroups = [
     {
@@ -202,6 +203,25 @@ export function Sidebar({ className }: SidebarProps) {
 
                 <Button
                     variant="ghost"
+                    onClick={async () => {
+                        try {
+                            const res = await fetch("/api/auth/logout", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ role: "SUPER_ADMIN" }),
+                            });
+
+                            if (res.ok) {
+                                toast.success("Logout successful");
+                                window.location.href = "/";
+                            } else {
+                                toast.error("Logout failed. Please try again.");
+                            }
+                        } catch (error) {
+                            console.error("Logout error", error);
+                            toast.error("An error occurred during logout.");
+                        }
+                    }}
                     className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors h-10 mt-2"
                 >
                     <LogOut className="h-4 w-4" />
