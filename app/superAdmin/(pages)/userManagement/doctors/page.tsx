@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { Skeleton } from "@/components/ui/skeleton"
 import { DataTable } from "@/components/superAdmin/DataTable"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -22,75 +23,14 @@ type Doctor = {
     specialization: string
     email: string
     phone: string
-    status: "Active" | "Inactive" | "Pending"
+    status: string
     joinedDate: string
+    clinicName: string | null
+    qualification: string | null
+    experience: number | null
+    city: string
+    isVerified: boolean
 }
-
-const data: Doctor[] = [
-    {
-        id: "1",
-        name: "Dr. Rajesh Koothrappali",
-        specialization: "Astrophysics",
-        email: "rajesh@example.com",
-        phone: "+91 98765 43210",
-        status: "Active",
-        joinedDate: "2024-01-15",
-    },
-    {
-        id: "2",
-        name: "Dr. Sheldon Cooper",
-        specialization: "Theoretical Physics",
-        email: "sheldon@example.com",
-        phone: "+91 98765 43211",
-        status: "Active",
-        joinedDate: "2024-01-10",
-    },
-    {
-        id: "3",
-        name: "Dr. Leonard Hofstadter",
-        specialization: "Experimental Physics",
-        email: "leonard@example.com",
-        phone: "+91 98765 43212",
-        status: "Inactive",
-        joinedDate: "2024-02-01",
-    },
-    {
-        id: "4",
-        name: "Dr. Gregory House",
-        specialization: "Diagnostician",
-        email: "house@example.com",
-        phone: "+91 99999 88888",
-        status: "Active",
-        joinedDate: "2023-11-20",
-    },
-    {
-        id: "5",
-        name: "Dr. Meredith Grey",
-        specialization: "General Surgery",
-        email: "meredith@example.com",
-        phone: "+91 77777 66666",
-        status: "Pending",
-        joinedDate: "2024-03-05",
-    },
-    {
-        id: "6",
-        name: "Dr. Derek Shepherd",
-        specialization: "Neurosurgery",
-        email: "derek@example.com",
-        phone: "+91 55555 44444",
-        status: "Active",
-        joinedDate: "2024-03-01",
-    },
-    {
-        id: "7",
-        name: "Dr. Shaun Murphy",
-        specialization: "Surgical Resident",
-        email: "shaun@example.com",
-        phone: "+91 33333 22222",
-        status: "Active",
-        joinedDate: "2024-02-15",
-    },
-]
 
 const columns: ColumnDef<Doctor>[] = [
     {
@@ -106,11 +46,12 @@ const columns: ColumnDef<Doctor>[] = [
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
+        cell: ({ row }) => <div className="font-medium">{row.getValue("name") || "N/A"}</div>,
     },
     {
         accessorKey: "specialization",
         header: "Specialization",
+        cell: ({ row }) => <div>{row.getValue("specialization") || "N/A"}</div>,
     },
     {
         accessorKey: "email",
@@ -118,7 +59,7 @@ const columns: ColumnDef<Doctor>[] = [
         cell: ({ row }) => (
             <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                {row.getValue("email")}
+                {row.getValue("email") || "N/A"}
             </div>
         ),
     },
@@ -128,7 +69,7 @@ const columns: ColumnDef<Doctor>[] = [
         cell: ({ row }) => (
             <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-muted-foreground" />
-                {row.getValue("phone")}
+                {row.getValue("phone") || "N/A"}
             </div>
         ),
     },
@@ -140,14 +81,26 @@ const columns: ColumnDef<Doctor>[] = [
             return (
                 <Badge
                     variant={
-                        status === "Active"
+                        status === "ACTIVE"
                             ? "success"
-                            : status === "Inactive"
+                            : status === "INACTIVE" || status === "BLOCKED"
                                 ? "secondary"
                                 : "warning"
                     }
                 >
-                    {status}
+                    {status || "N/A"}
+                </Badge>
+            )
+        },
+    },
+    {
+        accessorKey: "isVerified",
+        header: "Verified",
+        cell: ({ row }) => {
+            const isVerified = row.getValue("isVerified") as boolean
+            return (
+                <Badge variant={isVerified ? "success" : "secondary"}>
+                    {isVerified ? "Verified" : "Not Verified"}
                 </Badge>
             )
         },
@@ -155,6 +108,10 @@ const columns: ColumnDef<Doctor>[] = [
     {
         accessorKey: "joinedDate",
         header: "Joined Date",
+        cell: ({ row }) => {
+            const date = row.getValue("joinedDate") as string
+            return <div>{date ? new Date(date).toLocaleDateString() : "N/A"}</div>
+        },
     },
     {
         id: "actions",
@@ -200,10 +157,27 @@ const columns: ColumnDef<Doctor>[] = [
 
 export default function DoctorsPage() {
     const [isMounted, setIsMounted] = useState(false)
+    const [doctors, setDoctors] = useState<Doctor[]>([])
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         setIsMounted(true)
+        fetchDoctors()
     }, [])
+
+    const fetchDoctors = async () => {
+        try {
+            const response = await fetch("/api/user/doctor")
+            if (response.ok) {
+                const data = await response.json()
+                setDoctors(data)
+            }
+        } catch (error) {
+            console.error("Failed to fetch doctors", error)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     if (!isMounted) {
         return null
@@ -223,7 +197,33 @@ export default function DoctorsPage() {
                     <CardTitle>All Doctors</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <DataTable columns={columns} data={data} searchKey="name" />
+                    {loading ? (
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between py-4">
+                                <Skeleton className="h-10 w-[250px]" />
+                                <Skeleton className="h-10 w-[100px]" />
+                            </div>
+                            <div className="rounded-md border">
+                                <div className="h-12 border-b px-4 flex items-center gap-4">
+                                    <Skeleton className="h-4 w-[150px]" />
+                                    <Skeleton className="h-4 w-[150px]" />
+                                    <Skeleton className="h-4 w-[200px]" />
+                                    <Skeleton className="h-4 w-[100px]" />
+                                </div>
+                                {[...Array(5)].map((_, i) => (
+                                    <div key={i} className="h-16 border-b px-4 flex items-center gap-4">
+                                        <Skeleton className="h-10 w-10 rounded-full" />
+                                        <div className="space-y-2">
+                                            <Skeleton className="h-4 w-[200px]" />
+                                            <Skeleton className="h-3 w-[150px]" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
+                        <DataTable columns={columns} data={doctors} searchKey="name" />
+                    )}
                 </CardContent>
             </Card>
 
