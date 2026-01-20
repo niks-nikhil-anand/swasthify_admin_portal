@@ -7,10 +7,10 @@ export async function POST(req: Request) {
     try {
         const body = await req.json()
         const result = DoctorValidation.safeParse(body)
-        
+
         if (!result.success) {
-             return NextResponse.json(
-                { error: "Validation failed", details: result.error.flatten() }, 
+            return NextResponse.json(
+                { error: "Validation failed", details: result.error.flatten() },
                 { status: 400 }
             )
         }
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
                     email: validatedData.email,
                     phone: validatedData.phone,
                     role: Role.DOCTOR,
-                    isVerified: false, 
+                    isVerified: false,
                     status: UserStatus.PENDING
                 }
             })
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
                 const formattedName = id.split('_')
                     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(' ')
-                
+
                 return {
                     where: { name: formattedName },
                     create: { name: formattedName }
@@ -89,22 +89,69 @@ export async function POST(req: Request) {
                     state: validatedData.state,
                     zipCode: validatedData.zipCode,
                     country: validatedData.country,
-                    label: "Clinic" 
+                    label: "Clinic"
                 }
             })
 
             return user
         })
 
-        return NextResponse.json({ 
-            message: "Doctor registration successful", 
-            userId: newUser.id 
+        return NextResponse.json({
+            message: "Doctor registration successful",
+            userId: newUser.id
         }, { status: 201 })
 
     } catch (error: any) {
         console.error("Registration error:", error)
         return NextResponse.json(
-            { error: "Internal Server Error" }, 
+            { error: "Internal Server Error" },
+            { status: 500 }
+        )
+    }
+}
+
+export async function GET(req: Request) {
+    try {
+        const doctors = await db.doctor.findMany({
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                        email: true,
+                        phone: true,
+                        status: true,
+                        isVerified: true,
+                        createdAt: true,
+                        addresses: true
+                    }
+                },
+                specializations: true,
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        })
+
+        const formattedDoctors = doctors.map(doctor => ({
+            id: doctor.id,
+            name: doctor.user.name,
+            email: doctor.user.email,
+            phone: doctor.user.phone,
+            specialization: doctor.specializations.map(s => s.name).join(", "),
+            qualification: doctor.qualification,
+            experience: doctor.experienceYears,
+            status: doctor.user.status,
+            isVerified: doctor.user.isVerified,
+            clinicName: doctor.clinicName,
+            joinedDate: doctor.user.createdAt,
+            city: doctor.user.addresses.find(a => a.label === "Clinic")?.city || "N/A"
+        }))
+
+        return NextResponse.json(formattedDoctors)
+    } catch (error) {
+        console.error("Error fetching doctors:", error)
+        return NextResponse.json(
+            { error: "Internal Server Error" },
             { status: 500 }
         )
     }
