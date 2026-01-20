@@ -42,6 +42,15 @@ export async function POST(req) {
       );
     }
 
+    // 2.1 Check Status
+    if (user.status !== "ACTIVE") {
+      console.log(`Login failed: User status is ${user.status}`);
+      return NextResponse.json(
+        { error: "Your account is not active. Please contact support." },
+        { status: 403 }
+      );
+    }
+
     // 3. Verify Password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
