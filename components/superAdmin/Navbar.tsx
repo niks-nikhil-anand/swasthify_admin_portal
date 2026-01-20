@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import { Menu, Bell, Search, ChevronDown, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
     Sheet,
@@ -114,7 +115,28 @@ export function Navbar() {
                             Settings
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive">
+                        <DropdownMenuItem
+                            className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer"
+                            onClick={async () => {
+                                try {
+                                    const res = await fetch("/api/auth/logout", {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ role: "SUPER_ADMIN" }),
+                                    });
+
+                                    if (res.ok) {
+                                        toast.success("Logout successful");
+                                        window.location.href = "/";
+                                    } else {
+                                        toast.error("Logout failed. Please try again.");
+                                    }
+                                } catch (error) {
+                                    console.error("Logout error", error);
+                                    toast.error("An error occurred during logout.");
+                                }
+                            }}
+                        >
                             Log out
                         </DropdownMenuItem>
                     </DropdownMenuContent>
