@@ -98,7 +98,7 @@ export function Specialities() {
                             className="group flex flex-col items-center text-center p-4 rounded-2xl border border-border bg-card hover:shadow-xl transition-all cursor-pointer h-full"
                         >
                             <div className={`w-32 h-32 relative mb-4 ${speciality.color} rounded-full flex items-center justify-center transition-transform group-hover:scale-105`}>
-                                <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-white/40 to-transparent pointer-events-none" />
+                                <div className="absolute inset-0 rounded-full bg-linear-to-tr from-white/40 to-transparent pointer-events-none" />
                                 <Image
                                     src={speciality.image}
                                     alt={speciality.title}
