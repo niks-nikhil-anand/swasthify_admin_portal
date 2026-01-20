@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Clock, User } from "lucide-react";
+import { motion } from "framer-motion";
 
 // Mock data - In a real app this would likely come from an API or props
 const packages = {
@@ -78,81 +79,110 @@ const packages = {
     ]
 };
 
+const container = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1
+        }
+    }
+};
+
+const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+};
+
 export function HealthPackages() {
     return (
         <div className="bg-gray-50 bg-opacity-50">
-        <section className=" container mx-auto py-12 px-4 md:px-6 ">
-            <div className=" flex flex-col space-y-6">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                    Popular <span className="text-emerald-600 bg-emerald-100 px-2 rounded-md">Health Checkup Packages</span>
-                </h2>
+            <section className=" container mx-auto py-12 px-4 md:px-6 ">
+                <div className=" flex flex-col space-y-6">
+                    <motion.h2
+                        initial={{ opacity: 0, y: -20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                        className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl"
+                    >
+                        Popular <span className="text-emerald-600 bg-emerald-100 px-2 rounded-md">Health Checkup Packages</span>
+                    </motion.h2>
 
-                <Tabs defaultValue="featured" className="w-full">
-                    <div className="flex justify-start mb-6">
-                        <TabsList className="bg-transparent h-auto p-0 space-x-6">
-                            <TabsTrigger
-                                value="featured"
-                                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-4 data-[state=active]:border-gray-800 rounded-none px-0 pb-2 text-lg font-medium text-gray-500 data-[state=active]:text-gray-900"
-                            >
-                                Featured Checkups
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="women"
-                                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-4 data-[state=active]:border-gray-800 rounded-none px-0 pb-2 text-lg font-medium text-gray-500 data-[state=active]:text-gray-900"
-                            >
-                                Women's Health
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="men"
-                                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-4 data-[state=active]:border-gray-800 rounded-none px-0 pb-2 text-lg font-medium text-gray-500 data-[state=active]:text-gray-900"
-                            >
-                                Men's Health
-                            </TabsTrigger>
-                        </TabsList>
-                    </div>
+                    <Tabs defaultValue="featured" className="w-full">
+                        <div className="flex justify-start mb-6">
+                            <TabsList className="bg-transparent h-auto p-0 space-x-6">
+                                <TabsTrigger
+                                    value="featured"
+                                    className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-4 data-[state=active]:border-gray-800 rounded-none px-0 pb-2 text-lg font-medium text-gray-500 data-[state=active]:text-gray-900"
+                                >
+                                    Featured Checkups
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="women"
+                                    className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-4 data-[state=active]:border-gray-800 rounded-none px-0 pb-2 text-lg font-medium text-gray-500 data-[state=active]:text-gray-900"
+                                >
+                                    Women's Health
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="men"
+                                    className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-4 data-[state=active]:border-gray-800 rounded-none px-0 pb-2 text-lg font-medium text-gray-500 data-[state=active]:text-gray-900"
+                                >
+                                    Men's Health
+                                </TabsTrigger>
+                            </TabsList>
+                        </div>
 
-                    {Object.entries(packages).map(([key, items]) => (
-                        <TabsContent key={key} value={key} className="mt-0">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                {items.map((pkg) => (
-                                    <Card key={pkg.id} className="overflow-hidden border-2 hover:shadow-lg transition-all duration-300 flex flex-col h-full group">
-                                        <div className="relative h-56 w-full bg-gray-200 overflow-hidden">
-                                            <div className="absolute top-4 left-4 z-10">
-                                                <Badge className="bg-emerald-600 hover:bg-emerald-700">{pkg.discount}</Badge>
-                                            </div>
-                                            <Image
-                                                src={pkg.image}
-                                                alt={pkg.name}
-                                                fill
-                                                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                            />
-                                            <div className="absolute bottom-0 left-0 right-0 bg-white/95 p-2 text-center text-sm font-medium text-gray-800 border-t backdrop-blur-sm">
-                                                Includes {pkg.testsCount} tests
-                                            </div>
-                                        </div>
-                                        <CardHeader className="flex-1 pb-2">
-                                            <CardTitle className="text-xl line-clamp-2 min-h-[3.5rem]">{pkg.name}</CardTitle>
-                                            <p className="text-sm text-muted-foreground mt-2">For Age: {pkg.ageRange}</p>
-                                        </CardHeader>
-                                        <CardContent className="pt-0 pb-2">
-                                            <div className="flex items-baseline space-x-2">
-                                                <span className="text-2xl font-bold text-emerald-600">₹{pkg.price}</span>
-                                                <span className="text-sm text-gray-400 line-through">₹{pkg.originalPrice}</span>
-                                            </div>
-                                        </CardContent>
-                                        <CardFooter>
-                                            <Button variant="outline" className="w-full border-gray-300 font-semibold hover:bg-gray-50 text-gray-700">
-                                                Book Now
-                                            </Button>
-                                        </CardFooter>
-                                    </Card>
-                                ))}
-                            </div>
-                        </TabsContent>
-                    ))}
-                </Tabs>
-            </div>
-        </section>
-         </div>
+                        {Object.entries(packages).map(([key, items]) => (
+                            <TabsContent key={key} value={key} className="mt-0">
+                                <motion.div
+                                    variants={container}
+                                    initial="hidden"
+                                    whileInView="show"
+                                    viewport={{ once: true }}
+                                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                                >
+                                    {items.map((pkg) => (
+                                        <motion.div key={pkg.id} variants={item} whileHover={{ scale: 1.03 }}>
+                                            <Card className="overflow-hidden border-2 hover:shadow-lg transition-all duration-300 flex flex-col h-full group">
+                                                <div className="relative h-56 w-full bg-gray-200 overflow-hidden">
+                                                    <div className="absolute top-4 left-4 z-10">
+                                                        <Badge className="bg-emerald-600 hover:bg-emerald-700">{pkg.discount}</Badge>
+                                                    </div>
+                                                    <Image
+                                                        src={pkg.image}
+                                                        alt={pkg.name}
+                                                        fill
+                                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                                    />
+                                                    <div className="absolute bottom-0 left-0 right-0 bg-white/95 p-2 text-center text-sm font-medium text-gray-800 border-t backdrop-blur-sm">
+                                                        Includes {pkg.testsCount} tests
+                                                    </div>
+                                                </div>
+                                                <CardHeader className="flex-1 pb-2">
+                                                    <CardTitle className="text-xl line-clamp-2 min-h-14">{pkg.name}</CardTitle>
+                                                    <p className="text-sm text-muted-foreground mt-2">For Age: {pkg.ageRange}</p>
+                                                </CardHeader>
+                                                <CardContent className="pt-0 pb-2">
+                                                    <div className="flex items-baseline space-x-2">
+                                                        <span className="text-2xl font-bold text-emerald-600">₹{pkg.price}</span>
+                                                        <span className="text-sm text-gray-400 line-through">₹{pkg.originalPrice}</span>
+                                                    </div>
+                                                </CardContent>
+                                                <CardFooter>
+                                                    <Button variant="outline" className="w-full border-gray-300 font-semibold hover:bg-gray-50 text-gray-700">
+                                                        Book Now
+                                                    </Button>
+                                                </CardFooter>
+                                            </Card>
+                                        </motion.div>
+                                    ))}
+                                </motion.div>
+                            </TabsContent>
+                        ))}
+                    </Tabs>
+                </div>
+            </section>
+        </div>
     );
 }
