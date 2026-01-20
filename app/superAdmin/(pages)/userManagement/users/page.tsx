@@ -12,6 +12,7 @@ import { AddUserModal } from "@/components/superAdmin/AddUserModal"
 import { ExportUserModal } from "@/components/superAdmin/ExportUserModal"
 import { useEffect, useState } from "react"
 import { format } from "date-fns"
+import { FacetedFilter } from "@/components/superAdmin/DataTable"
 
 type AppUser = {
     id: string
@@ -40,7 +41,17 @@ const columns: ColumnDef<AppUser>[] = [
     },
     {
         accessorKey: "email",
-        header: "Email",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Email
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
         cell: ({ row }) => (
             <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
@@ -50,7 +61,18 @@ const columns: ColumnDef<AppUser>[] = [
     },
     {
         accessorKey: "role",
-        header: "Role",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Role
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
+        enableGrouping: true,
         cell: ({ row }) => (
             <div className="flex items-center gap-2">
                 <Shield className="h-4 w-4 text-muted-foreground" />
@@ -60,7 +82,18 @@ const columns: ColumnDef<AppUser>[] = [
     },
     {
         accessorKey: "status",
-        header: "Status",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Status
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
+        enableGrouping: true,
         cell: ({ row }) => {
             const status = row.getValue("status") as string
 
@@ -80,7 +113,17 @@ const columns: ColumnDef<AppUser>[] = [
     },
     {
         accessorKey: "createdAt",
-        header: "Joined Date",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Joined Date
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
         cell: ({ row }) => {
             return format(new Date(row.getValue("createdAt")), "PPP")
         }
@@ -89,6 +132,29 @@ const columns: ColumnDef<AppUser>[] = [
         id: "actions",
         header: "Actions",
         cell: ({ row }) => <UserActions user={row.original} />,
+    },
+]
+
+const filters: FacetedFilter[] = [
+    {
+        columnId: "role",
+        title: "Role",
+        options: [
+            { label: "Admin", value: "ADMIN" },
+            { label: "Doctor", value: "DOCTOR" },
+            { label: "Patient", value: "PATIENT" },
+            { label: "Super Admin", value: "SUPER_ADMIN" },
+        ],
+    },
+    {
+        columnId: "status",
+        title: "Status",
+        options: [
+            { label: "Active", value: "ACTIVE" },
+            { label: "Pending", value: "PENDING" },
+            { label: "Blocked", value: "BLOCKED" },
+            { label: "Archived", value: "ARCHIVED" },
+        ],
     },
 ]
 
@@ -157,7 +223,7 @@ export default function UsersPage() {
                             <Progress value={progress} className="w-[60%]" />
                         </div>
                     ) : (
-                        <DataTable columns={columns} data={data} searchKey="name" />
+                        <DataTable columns={columns} data={data} searchKey="name" facetedFilters={filters} />
                     )}
                 </CardContent>
             </Card>
