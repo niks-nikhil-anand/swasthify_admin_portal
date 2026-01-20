@@ -1,20 +1,26 @@
 "use client";
 
-
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 export function DownloadApp() {
     return (
-        <section className="py-24 bg-gradient-to-br from-primary/5 to-accent/5 overflow-hidden">
+        <section className="py-24 bg-linear-to-br from-primary/5 to-accent/5 overflow-hidden">
             <div className="container mx-auto px-4">
                 <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-0">
 
                     {/* Left Side - Mobile App Image */}
-                    <div className="w-full lg:w-5/12 flex justify-center lg:justify-end relative order-2 lg:order-1">
+                    <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        className="w-full lg:w-5/12 flex justify-center lg:justify-end relative order-2 lg:order-1"
+                    >
                         {/* Decorative Elements */}
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-100/50 rounded-full blur-3xl -z-10" />
 
-                        <div className="relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                        <div className="relative z-10">
                             <Image
                                 src="/images/swasthify_app_mockup.png"
                                 alt="Swasthify Mobile App Interface"
@@ -24,20 +30,44 @@ export function DownloadApp() {
                                 priority
                             />
                         </div>
-                    </div>
+                    </motion.div>
 
                     {/* Right Side - Content */}
-                    <div className="w-full lg:w-5/12 order-1 lg:order-2 text-center lg:text-left">
-                        <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8 }}
+                        className="w-full lg:w-5/12 order-1 lg:order-2 text-center lg:text-left"
+                    >
+                        <motion.h2
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2, duration: 0.6 }}
+                            className="text-3xl md:text-5xl font-bold text-foreground mb-6 leading-tight"
+                        >
                             Download the <span className="text-primary">Swasthify</span> app
-                        </h2>
+                        </motion.h2>
 
-                        <p className="text-muted-foreground text-lg md:text-xl mb-12 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3, duration: 0.6 }}
+                            className="text-muted-foreground text-lg md:text-xl mb-12 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
+                        >
                             Access video consultation with India's top doctors.
                             Connect online 24/7 from the comfort of your home.
-                        </p>
+                        </motion.p>
 
-                        <div className="mb-12">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.4, duration: 0.6 }}
+                            className="mb-12"
+                        >
                             <label className="block text-sm font-semibold text-foreground mb-4 opacity-80">
                                 Get the link to download the app
                             </label>
@@ -54,9 +84,15 @@ export function DownloadApp() {
                                     Send SMS
                                 </button>
                             </div>
-                        </div>
+                        </motion.div>
 
-                        <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.5, duration: 0.6 }}
+                            className="flex flex-wrap gap-4 justify-center lg:justify-start"
+                        >
                             <button className="flex items-center gap-3 bg-foreground text-background px-6 py-3.5 rounded-xl hover:bg-foreground/90 transition-all hover:-translate-y-1 shadow-xl min-w-[200px]">
                                 <svg
                                     viewBox="0 0 24 24"
@@ -86,8 +122,8 @@ export function DownloadApp() {
                                     <div className="text-base font-bold leading-none">App Store</div>
                                 </div>
                             </button>
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
                 </div>
             </div>
         </section>
