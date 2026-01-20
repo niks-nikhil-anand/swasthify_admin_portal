@@ -4,6 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff, Loader2, Smartphone, Mail } from "lucide-react"
+import { toast } from "sonner"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -43,22 +44,26 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
                 const data = await response.json()
 
                 if (!response.ok) {
-                    throw new Error(data.error || "Login failed")
+                    toast.error(data.error || "Login failed")
+                    setIsLoading(false)
+                    return
                 }
 
                 console.log("Login successful", data)
+                toast.success("Login successful")
                 router.refresh()
                 router.push(redirectTo)
             } else {
                 // Mobile/OTP not implemented yet
                 console.log("Mobile login not implemented")
+                toast.info("Mobile login coming soon")
                 setTimeout(() => {
                     setIsLoading(false)
                 }, 2000)
             }
         } catch (error) {
             console.error("Login error:", error)
-            // TODO: Show toast error
+            toast.error(error instanceof Error ? error.message : "Invalid credentials")
             setIsLoading(false)
         }
     }
