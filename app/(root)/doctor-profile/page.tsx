@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import DoctorRegistrationForm from "@/components/root/DoctorRegistrationForm"
+import { FAQ } from "@/components/root/FAQ"
 
 export default function DoctorProfilePage() {
 
@@ -190,30 +191,19 @@ export default function DoctorProfilePage() {
             </section>
 
             {/* FAQ Section */}
-            <section className="py-16 md:py-24 bg-muted/30 w-full">
-                <div className="container max-w-4xl mx-auto px-4 md:px-6">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12 md:mb-16">Frequently Asked Questions</h2>
-                    <Accordion type="single" collapsible className="w-full space-y-4">
-                        {[
-                            { q: "Who can join Swasthify?", a: "Registered medical practitioners including MBBS, MD, MS, BDS, AYUSH doctors, and specialists with valid credentials can join." },
-                            { q: "How do I get started?", a: "Simply sign up, complete your profile, upload your credentials for verification, and set your availability. Once approved, you can start receiving appointments." },
-                            { q: "Is there a cost to join?", a: "Joining Swasthify is simple and transparent. Details about consultation fees and platform charges (if any) are clearly shared during onboarding." },
-                            { q: "Can I choose my own consultation timings?", a: "Yes. You have complete control over your availability, working hours, and consultation modes (online or in-clinic)." },
-                            { q: "How are patient records managed?", a: "All patient records, prescriptions, and consultation history are stored securely on the platform and can be accessed anytime." },
-                            { q: "Is patient data secure?", a: "Absolutely. Swasthify follows strict data security protocols and ensures compliance with healthcare data protection standards." },
-                            { q: "Will I receive support if I face any issues?", a: "Yes. Our dedicated support team is available to assist you with onboarding, technical queries, or account-related concerns." },
-                            { q: "How do payments work?", a: "Payments are processed securely and credited to your account as per the agreed payout cycle, with complete transparency." }
-                        ].map((faq, idx) => (
-                            <AccordionItem key={idx} value={`item-${idx}`} className="border rounded-xl px-4 md:px-6 data-[state=open]:bg-muted/30 transition-colors">
-                                <AccordionTrigger className="text-left text-lg md:text-xl font-medium py-6 hover:no-underline">{faq.q}</AccordionTrigger>
-                                <AccordionContent className="text-muted-foreground text-base md:text-lg pb-6 leading-relaxed">
-                                    {faq.a}
-                                </AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
-                </div>
-            </section>
+            {/* FAQ Section */}
+            <FAQ
+                items={[
+                    { question: "Who can join Swasthify?", answer: "Registered medical practitioners including MBBS, MD, MS, BDS, AYUSH doctors, and specialists with valid credentials can join." },
+                    { question: "How do I get started?", answer: "Simply sign up, complete your profile, upload your credentials for verification, and set your availability. Once approved, you can start receiving appointments." },
+                    { question: "Is there a cost to join?", answer: "Joining Swasthify is simple and transparent. Details about consultation fees and platform charges (if any) are clearly shared during onboarding." },
+                    { question: "Can I choose my own consultation timings?", answer: "Yes. You have complete control over your availability, working hours, and consultation modes (online or in-clinic)." },
+                    { question: "How are patient records managed?", answer: "All patient records, prescriptions, and consultation history are stored securely on the platform and can be accessed anytime." },
+                    { question: "Is patient data secure?", answer: "Absolutely. Swasthify follows strict data security protocols and ensures compliance with healthcare data protection standards." },
+                    { question: "Will I receive support if I face any issues?", answer: "Yes. Our dedicated support team is available to assist you with onboarding, technical queries, or account-related concerns." },
+                    { question: "How do payments work?", answer: "Payments are processed securely and credited to your account as per the agreed payout cycle, with complete transparency." }
+                ]}
+            />
         </div>
     )
 }

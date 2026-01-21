@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import LabRegistrationForm from "@/components/root/LabRegistrationForm"
+import { FAQ } from "@/components/root/FAQ"
 
 export default function LabPartnerPage() {
 
@@ -27,7 +28,7 @@ export default function LabPartnerPage() {
     return (
         <div className="min-h-screen bg-background w-full overflow-x-hidden">
             {/* Hero Section */}
-            <section className="relative bg-gradient-to-br from-primary/10 via-background to-background pt-20 pb-20 md:pt-32 md:pb-40 overflow-hidden w-full">
+            <section className="relative bg-linear-to-br from-primary/10 via-background to-background pt-20 pb-20 md:pt-32 md:pb-40 overflow-hidden w-full">
                 <div className="container mx-auto px-4 md:px-6 relative z-10">
                     <div className="max-w-5xl mx-auto text-center space-y-6 md:space-y-8 mb-16">
                         <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-medium text-sm md:text-base mb-2 md:mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -55,7 +56,7 @@ export default function LabPartnerPage() {
             </section>
 
             {/* Why Partner Section */}
-            <section className="py-16 md:py-24 bg-background bg-muted/30 w-full">
+            <section className="py-16 md:py-24 bg-muted/30 w-full">
                 <div className="container max-w-7xl mx-auto px-4 md:px-6">
                     <div className="text-center mb-12 md:mb-16">
                         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">Why Partner with Swasthify?</h2>
@@ -196,28 +197,17 @@ export default function LabPartnerPage() {
             </section>
 
             {/* FAQ Section */}
-            <section className="py-16 md:py-24 bg-muted/30 w-full">
-                <div className="container max-w-4xl mx-auto px-4 md:px-6">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12 md:mb-16">Frequently Asked Questions</h2>
-                    <Accordion type="single" collapsible className="w-full space-y-4">
-                        {[
-                            { q: "What documents are needed to join?", a: "You need valid registration certificates (NABL/NABH preferred), address proof, and GSTIN (if applicable)." },
-                            { q: "Can I set my own test prices?", a: "Yes, you have full control over your pricing. You can also create special discounted packages for Swasthify users." },
-                            { q: "How are home collections managed?", a: "You can use your own phlebotomists managed via our app, or partner with our logistics network in select cities." },
-                            { q: "When do I get paid?", a: "Settlements for online payments are processed weekly directly to your registered bank account." },
-                            { q: "Is there a joining fee?", a: "Currently, there is no joining fee. We operate on a small commission model per successful booking." },
-                            { q: "How do I deliver reports?", a: "You can upload PDF reports directly to the dashboard, which are instantly available to the patient and referring doctor." },
-                        ].map((faq, idx) => (
-                            <AccordionItem key={idx} value={`item-${idx}`} className="border rounded-xl px-4 md:px-6 data-[state=open]:bg-muted/30 transition-colors">
-                                <AccordionTrigger className="text-left text-lg md:text-xl font-medium py-6 hover:no-underline">{faq.q}</AccordionTrigger>
-                                <AccordionContent className="text-muted-foreground text-base md:text-lg pb-6 leading-relaxed">
-                                    {faq.a}
-                                </AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
-                </div>
-            </section>
+            {/* FAQ Section */}
+            <FAQ
+                items={[
+                    { question: "What documents are needed to join?", answer: "You need valid registration certificates (NABL/NABH preferred), address proof, and GSTIN (if applicable)." },
+                    { question: "Can I set my own test prices?", answer: "Yes, you have full control over your pricing. You can also create special discounted packages for Swasthify users." },
+                    { question: "How are home collections managed?", answer: "You can use your own phlebotomists managed via our app, or partner with our logistics network in select cities." },
+                    { question: "When do I get paid?", answer: "Settlements for online payments are processed weekly directly to your registered bank account." },
+                    { question: "Is there a joining fee?", answer: "Currently, there is no joining fee. We operate on a small commission model per successful booking." },
+                    { question: "How do I deliver reports?", answer: "You can upload PDF reports directly to the dashboard, which are instantly available to the patient and referring doctor." },
+                ]}
+            />
         </div>
     )
 }
