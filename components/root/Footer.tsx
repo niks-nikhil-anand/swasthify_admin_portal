@@ -14,7 +14,7 @@ export function Footer() {
     const services = [
         { label: "Online Booking", href: "#" },
         { label: "Health Records", href: "#" },
-        { label: "Lab Tests", href: "/lab-test" },
+        { label: "Join as Lab Partner", href: "/lab-partner" },
         { label: "Emergency Care", href: "#" },
         { label: "Join as Doctor", href: "/doctor-profile" },
 
