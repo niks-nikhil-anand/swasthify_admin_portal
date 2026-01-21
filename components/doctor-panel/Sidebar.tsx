@@ -14,7 +14,9 @@ import {
     User,
     LifeBuoy,
     ChevronRight,
-    Stethoscope
+    Stethoscope,
+    BarChart3,
+    Megaphone
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -29,14 +31,24 @@ const sidebarGroups = [
                 icon: LayoutDashboard,
             },
             {
+                title: "Analytics",
+                href: "/doctor-panel/analytics",
+                icon: BarChart3,
+            },
+            {
                 title: "Appointments",
-                href: "/doctor-panel/appointments",
+                href: "/doctor-panel/appointment",
                 icon: Calendar,
             },
             {
                 title: "My Patients",
-                href: "/doctor-panel/patients",
+                href: "/doctor-panel/patient",
                 icon: Users,
+            },
+            {
+                title: "Campaigns",
+                href: "/doctor-panel/campaign",
+                icon: Megaphone,
             },
         ]
     },
@@ -50,7 +62,7 @@ const sidebarGroups = [
             },
             {
                 title: "Settings",
-                href: "/doctor-panel/settings",
+                href: "/doctor-panel/setting",
                 icon: Settings,
             },
         ]
