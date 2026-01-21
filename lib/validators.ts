@@ -53,7 +53,27 @@ export const DoctorValidation = z.object({
   experience: z.string().min(1, "Please enter years of experience"),
   clinicName: z.string().optional(),
   hospitalName: z.string().optional(),
-  
+
+  // Address
+  street: z.string().optional(),
+  city: z.string().min(2, "City is required"),
+  state: z.string().min(1, "State is required"),
+  zipCode: z.string().refine((val) => /^\d{6}$/.test(val), {
+    message: "Zip code must be exactly 6 digits",
+  }),
+  country: z.string().default("India"),
+})
+
+export const LabValidation = z.object({
+  labName: z.string().min(3, "Lab name must be at least 3 characters"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().refine((val) => /^\d{10}$/.test(val), {
+    message: "Phone number must be exactly 10 digits.",
+  }),
+  licenseNumber: z.string().optional(),
+  website: z.string().url().optional().or(z.literal("")),
+  description: z.string().optional(),
+
   // Address
   street: z.string().optional(),
   city: z.string().min(2, "City is required"),
