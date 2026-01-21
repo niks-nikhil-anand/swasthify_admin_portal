@@ -52,6 +52,14 @@ export async function POST(req) {
     }
 
     // 3. Verify Password
+    if (!user.password) {
+      console.log("Login failed: User has no password set");
+      return NextResponse.json(
+        { error: "Invalid credentials" },
+        { status: 401 }
+      );
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {

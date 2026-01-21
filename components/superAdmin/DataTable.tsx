@@ -69,10 +69,7 @@ export function DataTable<TData, TValue>({
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [grouping, setGrouping] = React.useState<GroupingState>([])
-    const [rowSelection, setRowSelection] = React.useState({})
     const [expanded, setExpanded] = React.useState({})
-
-    const [currentSearchKey, setCurrentSearchKey] = React.useState(searchKey)
 
     const table = useReactTable({
         data,
@@ -96,8 +93,6 @@ export function DataTable<TData, TValue>({
             expanded,
         },
     })
-
-
 
     return (
         <div className="space-y-4">
@@ -231,12 +226,12 @@ export function DataTable<TData, TValue>({
 
                     <div className="relative">
                         <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        {currentSearchKey && (
+                        {searchKey && (
                             <Input
-                                placeholder={`Filter ${currentSearchKey}...`}
-                                value={(table.getColumn(currentSearchKey)?.getFilterValue() as string) ?? ""}
+                                placeholder={`Filter ${searchKey}...`}
+                                value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
                                 onChange={(event) =>
-                                    table.getColumn(currentSearchKey)?.setFilterValue(event.target.value)
+                                    table.getColumn(searchKey)?.setFilterValue(event.target.value)
                                 }
                                 className="pl-8 max-w-sm"
                             />
