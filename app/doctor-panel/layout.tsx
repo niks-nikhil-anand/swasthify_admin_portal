@@ -15,7 +15,7 @@ export default function DoctorPanelLayout({
             {/* Main Content Area */}
             <div className="flex flex-col md:pl-64">
                 {/* Navbar placeholder - can be added later if needed */}
-                <main className="flex-1 p-6 overflow-y-auto">
+                <main className="flex-1  py-6 overflow-y-auto">
                     <div className="max-w-7xl mx-auto w-full">
                         {children}
                     </div>
