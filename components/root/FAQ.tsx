@@ -8,8 +8,19 @@ import {
 } from "@/components/ui/accordion";
 import { motion } from "framer-motion";
 
-export function FAQ() {
-    const faqs = [
+interface FAQItem {
+    question: string;
+    answer: string;
+}
+
+interface FAQProps {
+    items?: FAQItem[];
+    title?: string;
+    description?: string;
+}
+
+export function FAQ({ items, title = "Frequently Asked Questions", description = "Got questions? We have answers. Find everything you need to know about Swasthify." }: FAQProps) {
+    const defaultFaqs = [
         {
             question: "How do I book an appointment?",
             answer: "You can search for a doctor by specialty or name, view their profile, and select a convenient time slot. You can choose between video consultation or in-clinic visit."
@@ -31,6 +42,8 @@ export function FAQ() {
             answer: "After your consultation, the digital prescription will be instantly available in your app. You can download it or share it with pharmacies directly."
         }
     ];
+
+    const faqs = items || defaultFaqs;
 
     const container = {
         hidden: { opacity: 0 },
@@ -60,10 +73,18 @@ export function FAQ() {
                         className="lg:col-span-4"
                     >
                         <h2 className="text-3xl md:text-5xl font-bold mb-6 text-foreground leading-tight">
-                            Frequently Asked <br className="hidden lg:block" /> Questions
+                            {title.split(' ').map((word, i, arr) => (
+                                i === arr.length - 1 ? (
+                                    <span key={i}>
+                                        <br className="hidden lg:block" /> {word}
+                                    </span>
+                                ) : (
+                                    <span key={i}>{word} </span>
+                                )
+                            ))}
                         </h2>
                         <p className="text-lg text-muted-foreground mb-8">
-                            Got questions? We have answers. Find everything you need to know about Swasthify.
+                            {description}
                         </p>
                     </motion.div>
 

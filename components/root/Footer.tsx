@@ -12,12 +12,10 @@ export function Footer() {
     ];
 
     const services = [
-        { label: "Online Booking", href: "#" },
-        { label: "Health Records", href: "#" },
-        { label: "Join as Lab Partner", href: "/lab-partner" },
+        { label: "Pharmacy Partner", href: "/pharmacy_partner" },
+        { label: "Lab Partner", href: "/lab-partner" },
+        { label: "Doctor Partner", href: "/doctor-profile" },
         { label: "Emergency Care", href: "#" },
-        { label: "Join as Doctor", href: "/doctor-profile" },
-
     ];
 
     const legalLinks = [
