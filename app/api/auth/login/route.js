@@ -9,12 +9,13 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key"; // Replace with 
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { email, mobile, password, role } = body;
+    const { email, mobile, password, role, otp } = body;
 
-    console.log("Login request received:", { email, mobile, role });
+    console.log("Login request received:", { email, mobile, role, hasOtp: !!otp });
 
     // 1. Basic Validation
-    if ((!email && !mobile) || !password || !role) {
+    // Require email/mobile AND role. Also require EITHER password OR otp.
+    if ((!email && !mobile) || (!password && !otp) || !role) {
       console.log("Login failed: Missing required fields");
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -51,23 +52,57 @@ export async function POST(req) {
       );
     }
 
-    // 3. Verify Password
-    if (!user.password) {
-      console.log("Login failed: User has no password set");
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 }
-      );
-    }
+    // 3. Verify Credentials (Password or OTP)
+    if (body.otp) {
+      // --- OTP Verification Mode ---
+      if (!user.loginOtp || !user.otpExpiry) {
+        return NextResponse.json(
+          { error: "Invalid or expired OTP" },
+          { status: 401 }
+        );
+      }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (new Date() > user.otpExpiry) {
+        return NextResponse.json(
+          { error: "OTP has expired" },
+          { status: 401 }
+        );
+      }
 
-    if (!isPasswordValid) {
-      console.log("Login failed: Invalid password");
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 }
-      );
+      const isOtpValid = await bcrypt.compare(body.otp, user.loginOtp);
+
+      if (!isOtpValid) {
+        return NextResponse.json(
+          { error: "Invalid OTP" },
+          { status: 401 }
+        );
+      }
+
+      // Clear OTP after successful use
+      await db.user.update({
+        where: { id: user.id },
+        data: { loginOtp: null, otpExpiry: null }
+      });
+
+    } else {
+      // --- Password Verification Mode ---
+      if (!user.password) {
+        console.log("Login failed: User has no password set");
+        return NextResponse.json(
+          { error: "Invalid credentials" },
+          { status: 401 }
+        );
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        console.log("Login failed: Invalid password");
+        return NextResponse.json(
+          { error: "Invalid credentials" },
+          { status: 401 }
+        );
+      }
     }
 
     // 4. Check Role Match (Normalization)

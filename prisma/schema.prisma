@@ -36,16 +36,19 @@ enum Role {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  email      String   @unique
-  phone      String?  @unique
+  id         String     @id @default(uuid())
+  email      String     @unique
+  phone      String?    @unique
   password   String?
   name       String
-  role       Role     @default(PATIENT)
-  isVerified Boolean  @default(false)
-  status     UserStatus  @default(ACTIVE) // Replaces boolean status
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  role       Role       @default(PATIENT)
+  isVerified Boolean    @default(false)
+  status     UserStatus @default(ACTIVE) // Replaces boolean status
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  loginOtp  String? // For email OTP
+  otpExpiry DateTime?
 
   resetToken       String?   @unique
   resetTokenExpiry DateTime?
@@ -115,29 +118,29 @@ model Doctor {
   clinicPhone     String?
   clinicName      String?
   hospitalName    String?
-  timeZone        String   @default("UTC")
-  
-  averageRating   Float    @default(0.0)
-  totalReviews    Int      @default(0)
+  timeZone        String  @default("UTC")
 
-  permissions               String[] @default(["profile"])
-  isProfileComplete         Boolean  @default(false)
-  profileCompletionPercentage Int    @default(0)
-  
+  averageRating Float @default(0.0)
+  totalReviews  Int   @default(0)
+
+  permissions                 String[] @default(["profile"])
+  isProfileComplete           Boolean  @default(false)
+  profileCompletionPercentage Int      @default(0)
+
   specializations Specialization[]
   leaves          DoctorLeave[]
   waitlist        Waitlist[]
 
-  availability     DoctorAvailability[]
-  appointments     Appointment[]
-  medicalRecords   MedicalRecord[]
-  prescriptions    Prescription[]
-  reviews          Review[]
-  favoritedBy      FavoriteDoctor[]
-  referredReports  LabReport[]
+  availability    DoctorAvailability[]
+  appointments    Appointment[]
+  medicalRecords  MedicalRecord[]
+  prescriptions   Prescription[]
+  reviews         Review[]
+  favoritedBy     FavoriteDoctor[]
+  referredReports LabReport[]
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("doctors")
 }
@@ -146,16 +149,16 @@ model Lab {
   id     String @id @default(uuid())
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   licenseNumber String?
   description   String?
   website       String?
-  
+
   averageRating Float @default(0.0)
   totalReviews  Int   @default(0)
-  
+
   addresses Address[]
-  
+
   reviews      Review[]
   tests        LabTest[]
   appointments Appointment[]
@@ -168,20 +171,18 @@ model Lab {
 }
 
 model Specialization {
-  id          String   @id @default(uuid())
-  name        String   @unique
+  id          String  @id @default(uuid())
+  name        String  @unique
   description String?
   image       String?
-  
-  doctors     Doctor[]
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  doctors Doctor[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("specializations")
 }
-
-
 
 model DoctorAvailability {
   id       String @id @default(uuid())
@@ -742,13 +743,13 @@ enum Platform {
 }
 
 model Ticket {
-  id        String       @id @default(uuid())
-  name      String
-  email     String
-  phone     String
-  subject   String
-  message   String
-  status    TicketStatus @default(OPEN)
+  id      String       @id @default(uuid())
+  name    String
+  email   String
+  phone   String
+  subject String
+  message String
+  status  TicketStatus @default(OPEN)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

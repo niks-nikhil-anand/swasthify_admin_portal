@@ -17,7 +17,7 @@ export default function LoginPage() {
             backButtonHref="/register"
             showSocial
         >
-            <LoginForm />
+            <LoginForm role="patient" redirectTo="/" />
         </AuthWrapper>
     )
 }
