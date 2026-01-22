@@ -56,6 +56,9 @@ export async function PATCH(
             clinicName,
             hospitalName,
             licenseNumber,
+            permissions,
+            isProfileComplete,
+            profileCompletionPercentage
         } = body;
 
         // First check if doctor exists
@@ -98,6 +101,10 @@ export async function PATCH(
                     clinicName,
                     hospitalName,
                     licenseNumber,
+                    // Permission fields
+                    permissions,
+                    isProfileComplete,
+                    profileCompletionPercentage: profileCompletionPercentage ? Number(profileCompletionPercentage) : undefined,
                 },
                 include: {
                     user: true,
