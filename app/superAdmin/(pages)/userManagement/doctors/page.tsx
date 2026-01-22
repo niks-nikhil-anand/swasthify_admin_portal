@@ -15,7 +15,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Copy, Edit, Mail, MoreHorizontal, Phone, Plus, Trash, Eye } from "lucide-react"
+import { ArrowUpDown, Copy, Edit, Mail, MoreHorizontal, Phone, Plus, Trash, Eye, Shield } from "lucide-react"
 
 type Doctor = {
     id: string
@@ -33,7 +33,8 @@ type Doctor = {
 }
 
 const getColumns = (
-    onViewDetails: (id: string) => void
+    onViewDetails: (id: string) => void,
+    onManagePermissions: (id: string) => void
 ): ColumnDef<Doctor>[] => [
         {
             accessorKey: "name",
@@ -142,6 +143,10 @@ const getColumns = (
                                 <Eye className="mr-2 h-4 w-4" />
                                 View Details
                             </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onManagePermissions(doctor.id)}>
+                                <Shield className="mr-2 h-4 w-4" />
+                                Manage Permissions
+                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => onViewDetails(doctor.id)}>
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Doctor
@@ -158,6 +163,7 @@ const getColumns = (
     ]
 
 import { DoctorDetailsModal } from "./components/DoctorDetailsModal"
+import { PermissionModal } from "./components/PermissionModal"
 
 export default function DoctorsPage() {
     const [isMounted, setIsMounted] = useState(false)
@@ -165,6 +171,7 @@ export default function DoctorsPage() {
     const [loading, setLoading] = useState(true)
     const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false)
 
     useEffect(() => {
         setIsMounted(true)
@@ -190,7 +197,12 @@ export default function DoctorsPage() {
         setIsModalOpen(true)
     }
 
-    const columns = getColumns(handleViewDetails)
+    const handleManagePermissions = (id: string) => {
+        setSelectedDoctorId(id)
+        setIsPermissionModalOpen(true)
+    }
+
+    const columns = getColumns(handleViewDetails, handleManagePermissions)
 
     if (!isMounted) {
         return null
@@ -243,6 +255,11 @@ export default function DoctorsPage() {
             <DoctorDetailsModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
+                doctorId={selectedDoctorId}
+            />
+            <PermissionModal
+                isOpen={isPermissionModalOpen}
+                onClose={() => setIsPermissionModalOpen(false)}
                 doctorId={selectedDoctorId}
             />
         </div>
