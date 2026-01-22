@@ -168,19 +168,25 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
                             <div className="grid gap-2">
                                 <Label htmlFor="mobile">Mobile Number</Label>
                                 <div className="flex gap-2">
-                                    <Input
-                                        id="mobile"
-                                        placeholder="9876543210"
-                                        type="tel"
-                                        maxLength={10}
-                                        disabled={isLoading || isOtpSent}
-                                        value={mobile}
-                                        onChange={(e) => {
-                                            const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-                                            setMobile(val);
-                                        }}
-                                        required
-                                    />
+                                    <div className="relative flex-1">
+                                        <span className="absolute left-3 top-2.5 text-sm text-muted-foreground border-r border-slate-300 pr-2 h-5 flex items-center">
+                                            +91
+                                        </span>
+                                        <Input
+                                            id="mobile"
+                                            placeholder="9876543210"
+                                            type="tel"
+                                            maxLength={10}
+                                            disabled={isLoading || isOtpSent}
+                                            value={mobile}
+                                            className="pl-16"
+                                            onChange={(e) => {
+                                                const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                                setMobile(val);
+                                            }}
+                                            required
+                                        />
+                                    </div>
                                     {!isOtpSent && (
                                         <Button
                                             type="button"
