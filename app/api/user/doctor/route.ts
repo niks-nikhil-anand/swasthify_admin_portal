@@ -144,7 +144,10 @@ export async function GET(req: Request) {
             isVerified: doctor.user.isVerified,
             clinicName: doctor.clinicName,
             joinedDate: doctor.user.createdAt,
-            city: doctor.user.addresses.find(a => a.label === "Clinic")?.city || "N/A"
+            city: doctor.user.addresses.find(a => a.label === "Clinic")?.city || "N/A",
+            permissions: (doctor as any).permissions,
+            isProfileComplete: (doctor as any).isProfileComplete,
+            profileCompletionPercentage: (doctor as any).profileCompletionPercentage
         }))
 
         return NextResponse.json(formattedDoctors)
