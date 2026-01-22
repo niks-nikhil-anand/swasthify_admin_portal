@@ -119,6 +119,10 @@ model Doctor {
   
   averageRating   Float    @default(0.0)
   totalReviews    Int      @default(0)
+
+  permissions               String[] @default(["profile"])
+  isProfileComplete         Boolean  @default(false)
+  profileCompletionPercentage Int    @default(0)
   
   specializations Specialization[]
   leaves          DoctorLeave[]
