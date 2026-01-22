@@ -21,6 +21,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+const PERMISSION_MAPPING: Record<string, string> = {
+    "/doctor-panel": "dashboard",
+    "/doctor-panel/analytics": "analytics",
+    "/doctor-panel/appointment": "appointment",
+    "/doctor-panel/patient": "patient",
+    "/doctor-panel/campaign": "campaign",
+    "/doctor-panel/profile": "profile",
+    "/doctor-panel/setting": "setting",
+};
+
 const sidebarGroups = [
     {
         label: "Overview",
@@ -69,9 +79,12 @@ const sidebarGroups = [
     }
 ];
 
-interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> { }
+interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
+    permissions?: string[];
+    isProfileComplete?: boolean;
+}
 
-export function Sidebar({ className }: SidebarProps) {
+export function Sidebar({ className, permissions = [], isProfileComplete = false }: SidebarProps) {
     const pathname = usePathname();
 
     return (
@@ -102,42 +115,63 @@ export function Sidebar({ className }: SidebarProps) {
             {/* Navigation Links */}
             <ScrollArea className="flex-1 px-4">
                 <div className="space-y-6">
-                    {sidebarGroups.map((group, index) => (
-                        <div key={index} className="px-2">
-                            <h3 className="mb-2 px-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 select-none">
-                                {group.label}
-                            </h3>
-                            <div className="space-y-1">
-                                {group.items.map((link) => {
-                                    const Icon = link.icon;
-                                    const isActive = pathname === link.href;
-                                    return (
-                                        <Button
-                                            key={link.href}
-                                            variant="ghost"
-                                            className={cn(
-                                                "w-full justify-start gap-3 h-10 text-sm font-medium transition-all duration-300 group relative overflow-hidden",
-                                                isActive
-                                                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:bg-primary/90"
-                                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                                            )}
-                                            asChild
-                                        >
-                                            <Link href={link.href}>
-                                                <Icon className={cn("h-4 w-4 shrink-0 transition-transform duration-300 group-hover:scale-110", isActive && "text-primary-foreground")} />
-                                                <span className="flex-1 truncate">{link.title}</span>
-                                                {isActive && <ChevronRight className="h-3 w-3 opacity-50" />}
-                                                {/* Active Indicator Glow */}
-                                                {isActive && (
-                                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] animate-[shimmer_2s_infinite]" />
+                    {sidebarGroups.map((group, index) => {
+                        // Filter items based on permissions
+                        const filteredItems = group.items.filter((link) => {
+                            const permissionKey = PERMISSION_MAPPING[link.href];
+
+                            // If profile is incomplete, ONLY show profile page
+                            if (!isProfileComplete) {
+                                return permissionKey === "profile";
+                            }
+
+                            // Otherwise check if doctor has permission
+                            // If no mapping exists, show it (or hide it? assuming hide for safety, but check mapping coverage)
+                            // "Support" and "Logout" are outside this list.
+                            if (!permissionKey) return true;
+
+                            return permissions.includes(permissionKey);
+                        });
+
+                        if (filteredItems.length === 0) return null;
+
+                        return (
+                            <div key={index} className="px-2">
+                                <h3 className="mb-2 px-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 select-none">
+                                    {group.label}
+                                </h3>
+                                <div className="space-y-1">
+                                    {filteredItems.map((link) => {
+                                        const Icon = link.icon;
+                                        const isActive = pathname === link.href;
+                                        return (
+                                            <Button
+                                                key={link.href}
+                                                variant="ghost"
+                                                className={cn(
+                                                    "w-full justify-start gap-3 h-10 text-sm font-medium transition-all duration-300 group relative overflow-hidden",
+                                                    isActive
+                                                        ? "bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:bg-primary/90"
+                                                        : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                                                 )}
-                                            </Link>
-                                        </Button>
-                                    );
-                                })}
+                                                asChild
+                                            >
+                                                <Link href={link.href}>
+                                                    <Icon className={cn("h-4 w-4 shrink-0 transition-transform duration-300 group-hover:scale-110", isActive && "text-primary-foreground")} />
+                                                    <span className="flex-1 truncate">{link.title}</span>
+                                                    {isActive && <ChevronRight className="h-3 w-3 opacity-50" />}
+                                                    {/* Active Indicator Glow */}
+                                                    {isActive && (
+                                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] animate-[shimmer_2s_infinite]" />
+                                                    )}
+                                                </Link>
+                                            </Button>
+                                        );
+                                    })}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </ScrollArea>
 
