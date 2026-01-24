@@ -27,10 +27,6 @@ export const LoginOtpEmail = ({ otp, role, userName }: LoginOtpEmailProps) => {
             <Preview>Your Swasthify Login Code</Preview>
             <Body style={main}>
                 <Container style={container}>
-                    <Section style={header}>
-                        <Heading style={brandName}>Swasthify</Heading>
-                    </Section>
-
                     <Section style={box}>
                         <Heading style={h1}>Login Verification</Heading>
                         <Text style={paragraph}>

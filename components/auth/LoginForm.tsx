@@ -34,6 +34,21 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
     const [emailOtp, setEmailOtp] = React.useState("")
     const [isEmailOtpSent, setIsEmailOtpSent] = React.useState(false)
 
+    // Timer state
+    const [timeLeft, setTimeLeft] = React.useState(30)
+
+    React.useEffect(() => {
+        let interval: NodeJS.Timeout
+
+        if ((isOtpSent || isEmailOtpSent) && timeLeft > 0) {
+            interval = setInterval(() => {
+                setTimeLeft((prev) => prev - 1)
+            }, 1000)
+        }
+
+        return () => clearInterval(interval)
+    }, [isOtpSent, isEmailOtpSent, timeLeft])
+
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
         setIsLoading(true)
@@ -86,6 +101,7 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
         setTimeout(() => {
             setIsLoading(false)
             setIsOtpSent(true)
+            setTimeLeft(30) // Reset timer
             console.log("OTP Sent to", mobile)
         }, 1500)
     }
@@ -109,6 +125,7 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
             }
 
             setIsEmailOtpSent(true)
+            setTimeLeft(30) // Reset timer
             toast.success("OTP sent to your email")
         } catch (error) {
             console.error(error)
@@ -266,9 +283,22 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
                                             }}
                                             required
                                         />
-                                        <p className="text-xs text-muted-foreground text-right">
-                                            Resend OTP in 30s
-                                        </p>
+                                        <div className="flex justify-end">
+                                            {timeLeft > 0 ? (
+                                                <p className="text-xs text-muted-foreground">
+                                                    Resend OTP in {timeLeft}s
+                                                </p>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    className="text-xs text-primary hover:text-primary/80 font-medium"
+                                                    onClick={handleSendEmailOtp}
+                                                    disabled={isLoading}
+                                                >
+                                                    Resend OTP
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 )
                             )}
@@ -334,9 +364,22 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
                                         }}
                                         required
                                     />
-                                    <p className="text-xs text-muted-foreground text-right">
-                                        Resend OTP in 30s
-                                    </p>
+                                    <div className="flex justify-end">
+                                        {timeLeft > 0 ? (
+                                            <p className="text-xs text-muted-foreground">
+                                                Resend OTP in {timeLeft}s
+                                            </p>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                className="text-xs text-primary hover:text-primary/80 font-medium"
+                                                onClick={handleSendOtp}
+                                                disabled={isLoading}
+                                            >
+                                                Resend OTP
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             )}
                         </>
