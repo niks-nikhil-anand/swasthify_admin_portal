@@ -103,7 +103,7 @@ export async function POST(req: Request) {
         // Send email notification
         try {
             await resend.emails.send({
-                from: "Swasthify <noreply@swasthify.in>",
+                from: "Swasthify <onboarding@swasthify.in>",
                 to: validatedData.email,
                 subject: "Welcome to Swasthify - Application Received",
                 react: DoctorApplicationEmail({
