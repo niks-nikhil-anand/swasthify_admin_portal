@@ -4,19 +4,23 @@ import {
     Head,
     Heading,
     Html,
+    Link,
     Preview,
     Section,
     Text,
-    Link,
     Hr,
 } from "@react-email/components";
-import * as React from "react";
 
-interface DoctorLoginEmailProps {
+interface LoginOtpEmailProps {
     otp: string;
+    role?: string; // e.g., "Doctor", "Admin"
+    userName?: string;
 }
 
-export const DoctorLoginEmail = ({ otp }: DoctorLoginEmailProps) => {
+export const LoginOtpEmail = ({ otp, role, userName }: LoginOtpEmailProps) => {
+    const loginContext = role ? `${role} Panel` : "Swasthify Portal";
+    const greeting = userName ? `Hello ${userName},` : (role ? `Hello ${role},` : "Hello,");
+
     return (
         <Html>
             <Head />
@@ -30,13 +34,13 @@ export const DoctorLoginEmail = ({ otp }: DoctorLoginEmailProps) => {
                     <Section style={box}>
                         <Heading style={h1}>Login Verification</Heading>
                         <Text style={paragraph}>
-                            Hello Doctor,
+                            {greeting}
                         </Text>
                         <Text style={paragraph}>
-                            To securely access your Swasthify Doctor Panel, please use the verification code below. This code is valid for the next 10 minutes.
+                            To securely access the <strong>{loginContext}</strong>, please use the verification code below. This code is valid for the next 10 minutes.
                         </Text>
 
-                        <Section style={codeBox}>
+                        <Section style={codeContainer}>
                             <Text style={code}>{otp}</Text>
                         </Section>
 
@@ -58,12 +62,13 @@ export const DoctorLoginEmail = ({ otp }: DoctorLoginEmailProps) => {
     );
 };
 
-export default DoctorLoginEmail;
+export default LoginOtpEmail;
 
 const main = {
+    backgroundColor: "#f9fafb",
     fontFamily:
         '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
-    padding: "20px 0",
+    padding: "40px 0",
 };
 
 const container = {
@@ -72,69 +77,73 @@ const container = {
     padding: "0",
     marginBottom: "64px",
     maxWidth: "520px",
-    borderRadius: "12px",
-    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.05)",
-    border: "1px solid #e0e0e0",
+    borderRadius: "16px",
+    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+    border: "1px solid #f3f4f6",
+    overflow: "hidden" as const,
 };
 
 const header = {
     padding: "32px 32px 0",
     textAlign: "center" as const,
+    display: "flex",
+    flexDirection: "column" as const,
+    alignItems: "center",
+    justifyContent: "center",
 };
 
 const brandName = {
-    color: "#0DA96E",
-    fontSize: "28px",
+    color: "#059669", // Emerald 600
+    fontSize: "24px",
     fontWeight: "bold",
     margin: "0",
     letterSpacing: "-0.5px",
 };
 
 const box = {
-    padding: "32px",
+    padding: "32px 40px 48px",
 };
 
 const h1 = {
     color: "#111827",
     fontSize: "24px",
-    fontWeight: "600",
-    textAlign: "left" as const,
+    fontWeight: "700",
+    textAlign: "center" as const,
     margin: "0 0 24px",
 };
 
 const paragraph = {
-    color: "#4B5563",
+    color: "#374151",
     fontSize: "16px",
     lineHeight: "26px",
     textAlign: "left" as const,
     margin: "0 0 24px",
 };
 
-const codeBox = {
-    backgroundColor: "#F0FDF4",
-    border: "1px dashed #0DA96E",
-    borderRadius: "8px",
+const codeContainer = {
+    backgroundColor: "#ecfdf5",
+    borderRadius: "12px",
+    margin: "32px 0",
+    padding: "16px",
     textAlign: "center" as const,
-    margin: "0 0 32px",
-    padding: "24px",
 };
 
 const code = {
-    color: "#0DA96E",
-    fontSize: "36px",
+    color: "#059669",
+    fontSize: "32px",
     fontWeight: "700",
-    letterSpacing: "4px",
+    letterSpacing: "6px",
     margin: "0",
-    fontFamily: "monospace",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
 };
 
 const hr = {
-    borderColor: "#E5E7EB",
+    borderColor: "#e5e7eb",
     margin: "32px 0",
 };
 
 const footer = {
-    color: "#9CA3AF",
+    color: "#9ca3af",
     fontSize: "14px",
     lineHeight: "22px",
     textAlign: "center" as const,
@@ -142,7 +151,7 @@ const footer = {
 };
 
 const link = {
-    color: "#0DA96E",
+    color: "#059669",
     textDecoration: "underline",
 };
 

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { Resend } from "resend";
-import DoctorLoginEmail from "@/emails/auth/DoctorLoginOtpEmail";
+import LoginOtpEmail from "@/emails/auth/LoginOtpEmail";
 import bcrypt from "bcrypt";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -48,14 +48,16 @@ export async function POST(req) {
         });
 
         // 5. Send Email
-        // Only send the specialized email for doctors/superadmins for now, or generic.
-        // Using DoctorLoginEmail as requested, can serve others too.
+        // Pass role for context (e.g. "Doctor Panel", "SuperAdmin Panel")
+        const displayRole = role === "DOCTOR" ? "Doctor" :
+            role === "SUPERADMIN" ? "SuperAdmin" :
+                role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
 
         await resend.emails.send({
-            from: "Swasthify <noreply@swasthify.in>", 
+            from: "Swasthify <noreply@swasthify.in>",
             to: email,
             subject: "Your Login OTP",
-            react: DoctorLoginEmail({ otp }),
+            react: LoginOtpEmail({ otp, role: displayRole, userName: user.name }),
         });
 
         console.log(`OTP sent to ${email}`);
