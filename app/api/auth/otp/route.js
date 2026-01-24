@@ -52,7 +52,7 @@ export async function POST(req) {
         // Using DoctorLoginEmail as requested, can serve others too.
 
         await resend.emails.send({
-            from: "Swasthify <onboarding@resend.dev>", // Replace with verified domain
+            from: "Swasthify <noreply@swasthify.in>", 
             to: email,
             subject: "Your Login OTP",
             react: DoctorLoginEmail({ otp }),
