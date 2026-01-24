@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { Resend } from "resend";
+import ContactFormEmail from "@/emails/ContactFormEmail";
 
-export async function POST(req) {
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+export async function POST(req: Request) {
     try {
         const body = await req.json();
         const { name, email, phone, subject, message } = body;
@@ -21,14 +25,33 @@ export async function POST(req) {
             }
         });
 
+        // Send email notification
+        try {
+            await resend.emails.send({
+                from: "Swasthify <noreply@swasthify.in>",
+                to: email, // Sending to the user
+                subject: `Ticket Created: ${subject}`,
+                react: ContactFormEmail({
+                    name,
+                    email,
+                    phone,
+                    subject,
+                    message
+                })
+            });
+        } catch (emailError) {
+            console.error("Failed to send email notification:", emailError);
+            // We don't block the response if email fails, as the ticket is saved
+        }
+
         return NextResponse.json(ticket, { status: 201 });
-    } catch (error) {
+    } catch (error: any) {
         console.error("[TICKETS_POST]", error);
         return NextResponse.json({ error: "Internal Error", details: error.message }, { status: 500 });
     }
 }
 
-export async function GET(req) {
+export async function GET(req: Request) {
     try {
         const tickets = await db.ticket.findMany({
             orderBy: {
@@ -43,7 +66,7 @@ export async function GET(req) {
     }
 }
 
-export async function PATCH(req) {
+export async function PATCH(req: Request) {
     try {
         const body = await req.json();
         const { id, status } = body;
@@ -64,7 +87,7 @@ export async function PATCH(req) {
     }
 }
 
-export async function DELETE(req) {
+export async function DELETE(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
         const id = searchParams.get("id");
