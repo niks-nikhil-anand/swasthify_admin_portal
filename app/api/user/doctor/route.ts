@@ -2,6 +2,10 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { DoctorValidation } from "@/lib/validators"
 import { Role, UserStatus } from "@prisma/client"
+import { Resend } from "resend";
+import DoctorApplicationEmail from "@/emails/DoctorApplicationEmail";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
     try {
@@ -95,6 +99,21 @@ export async function POST(req: Request) {
 
             return user
         })
+
+        // Send email notification
+        try {
+            await resend.emails.send({
+                from: "Swasthify <noreply@swasthify.in>",
+                to: validatedData.email,
+                subject: "Welcome to Swasthify - Application Received",
+                react: DoctorApplicationEmail({
+                    name: name
+                })
+            });
+        } catch (emailError) {
+            console.error("Failed to send welcome email:", emailError);
+            // Non-blocking error
+        }
 
         return NextResponse.json({
             message: "Doctor registration successful",
