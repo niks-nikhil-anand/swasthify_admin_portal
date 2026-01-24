@@ -110,8 +110,8 @@ export function HealthPackages() {
                     </motion.h2>
 
                     <Tabs defaultValue="featured" className="w-full">
-                        <div className="flex justify-start mb-6">
-                            <TabsList className="bg-transparent h-auto p-0 space-x-6">
+                        <div className="flex justify-start mb-6 overflow-x-auto pb-2 scrollbar-none w-full">
+                            <TabsList className="bg-transparent h-auto p-0 space-x-6 w-max mx-auto md:mx-0">
                                 <TabsTrigger
                                     value="featured"
                                     className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-4 data-[state=active]:border-gray-800 rounded-none px-0 pb-2 text-lg font-medium text-gray-500 data-[state=active]:text-gray-900"
