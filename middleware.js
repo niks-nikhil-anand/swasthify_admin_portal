@@ -3,6 +3,7 @@ import { parse } from 'cookie';
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(req) {
+    console.log("MIDDLEWARE HIT:", req.nextUrl.pathname);
     const cookieHeader = req.headers.get('cookie');
     const cookies = parse(cookieHeader || '');
 
