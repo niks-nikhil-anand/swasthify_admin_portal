@@ -11,9 +11,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera, Mail, MapPin, Phone, User, Stethoscope, Upload, CheckCircle, AlertCircle, FileText, Loader2, Trash2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProfilePage() {
     const [loading, setLoading] = useState(false);
+    const [isFetching, setIsFetching] = useState(true);
     const [uploading, setUploading] = useState<string | null>(null); // Track which file is uploading
 
     // Form State
@@ -75,6 +77,8 @@ export default function ProfilePage() {
             } catch (error) {
                 console.error("Error fetching profile:", error);
                 toast.error("Failed to load profile data.");
+            } finally {
+                setIsFetching(false);
             }
         };
 
@@ -182,6 +186,72 @@ export default function ProfilePage() {
             setLoading(false);
         }
     };
+
+    if (isFetching) {
+        return (
+            <div className="space-y-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="space-y-2">
+                        <Skeleton className="h-9 w-48" />
+                        <Skeleton className="h-5 w-64" />
+                    </div>
+                    <div className="w-full md:w-auto min-w-[300px]">
+                        <Skeleton className="h-[88px] w-full rounded-lg" />
+                    </div>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-12">
+                    {/* Profile Sidebar Skeleton */}
+                    <div className="md:col-span-4 lg:col-span-3">
+                        <Card>
+                            <CardContent className="pt-6">
+                                <div className="flex flex-col items-center">
+                                    <Skeleton className="h-32 w-32 rounded-full mb-4" />
+                                    <Skeleton className="h-7 w-48 mb-2" />
+                                    <Skeleton className="h-4 w-32 mb-6" />
+                                    <Skeleton className="h-10 w-full mb-6" />
+                                </div>
+                                <div className="space-y-4">
+                                    <Skeleton className="h-px w-full" />
+                                    <Skeleton className="h-4 w-full" />
+                                    <Skeleton className="h-4 w-full" />
+                                    <Skeleton className="h-4 w-3/4" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Forms Skeleton */}
+                    <div className="md:col-span-8 lg:col-span-9 space-y-6">
+                        {[1, 2, 3].map((i) => (
+                            <Card key={i}>
+                                <CardHeader>
+                                    <Skeleton className="h-7 w-48 mb-2" />
+                                    <Skeleton className="h-5 w-full max-w-md" />
+                                </CardHeader>
+                                <CardContent className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Skeleton className="h-5 w-24" />
+                                            <Skeleton className="h-10 w-full" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Skeleton className="h-5 w-24" />
+                                            <Skeleton className="h-10 w-full" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-5 w-32" />
+                                        <Skeleton className="h-20 w-full" />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
