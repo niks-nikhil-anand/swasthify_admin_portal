@@ -120,6 +120,11 @@ model Doctor {
   hospitalName    String?
   timeZone        String  @default("UTC")
 
+  // Documents & Media
+  idProof          String?
+  associationProof String?
+  profilePhoto     String?
+
   averageRating Float @default(0.0)
   totalReviews  Int   @default(0)
 
