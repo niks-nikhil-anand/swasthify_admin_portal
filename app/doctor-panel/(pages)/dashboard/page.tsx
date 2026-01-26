@@ -2,10 +2,17 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, TrendingUp, Activity, ArrowUpRight, Clock, Plus, Megaphone, AlertCircle, FileText, CheckCircle, ShieldAlert } from "lucide-react";
+import { Calendar, Users, TrendingUp, Activity, ArrowUpRight, Clock, Plus, Megaphone, AlertCircle, FileText, CheckCircle, ShieldAlert, Edit } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import DoctorProfileForm from "@/components/doctor/DoctorProfileForm";
 
 interface DoctorData {
     user: {
@@ -25,24 +32,36 @@ interface DoctorData {
 export default function DoctorPanelPage() {
     const [loading, setLoading] = useState(true);
     const [doctorData, setDoctorData] = useState<DoctorData | null>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    const fetchDoctorData = useCallback(async () => {
+        try {
+            const res = await fetch("/api/doctor/me");
+            if (res.ok) {
+                const data = await res.json();
+                setDoctorData(data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch doctor data", error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
-        const fetchDoctorData = async () => {
-            try {
-                const res = await fetch("/api/doctor/me");
-                if (res.ok) {
-                    const data = await res.json();
-                    setDoctorData(data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch doctor data", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchDoctorData();
-    }, []);
+    }, [fetchDoctorData, refreshKey]);
+
+    const handleProfileUpdateSuccess = () => {
+        setRefreshKey(prev => prev + 1); // Trigger re-fetch
+        // Don't necessarily close modal immediately, maybe show success?
+        // Actually, usually good to keep open or close? Let's keep open but maybe show a toast (handled in form).
+        // If it's a "Save" action, maybe close. But the form handles specific field updates.
+        // Let's assume the user might want to edit more.
+        // However, if we want to reflect changes in dashboard immediately:
+        fetchDoctorData();
+    };
 
     if (loading) {
         return (
@@ -111,57 +130,38 @@ export default function DoctorPanelPage() {
         );
     }
 
-    // 2. VERIFICATION PENDING STATUS
-    if (!doctorData?.user?.isVerified || doctorData?.user?.status === "PENDING") {
+    // 2. PENDING STATUS (Account created but not yet active/approved by admin initially)
+    if (doctorData?.user?.status === "PENDING") {
         return (
             <div className="space-y-8">
-                {/* Welcome Component for Unverified Users */}
+                {/* Welcome Component for Pending Users */}
                 <div className="bg-linear-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10 p-8 rounded-3xl border border-blue-100 dark:border-blue-900/30">
                     <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                         <div>
                             <div className="flex items-center gap-2 mb-2">
                                 <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold flex items-center gap-1">
                                     <AlertCircle className="h-3 w-3" />
-                                    Verification Pending
+                                    Approval Pending
                                 </span>
                             </div>
                             <h1 className="text-3xl font-bold tracking-tight mb-2">
                                 Welcome, Dr. {doctorData?.user?.name || "Doctor"}!
                             </h1>
                             <p className="text-muted-foreground max-w-2xl text-lg">
-                                Your profile is under review. Complete your profile and upload necessary documents to start receiving appointments.
+                                Your account is currently pending approval. Please complete your profile to expedite the process.
                             </p>
                         </div>
-                        <Button size="lg" className="bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/20 rounded-full px-8">
-                            <Link href="/doctor-panel/profile">
-                                Complete Profile
-                            </Link>
+                        <Button
+                            size="lg"
+                            className="bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/20 rounded-full px-8"
+                            onClick={() => setIsEditModalOpen(true)}
+                        >
+                            Complete Profile
                         </Button>
                     </div>
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    <Card className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-blue-500">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-lg">
-                                <FileText className="h-5 w-5 text-blue-500" />
-                                Document Upload
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm text-muted-foreground mb-4">
-                                Upload your Medical License, Degree Certificate, and ID Proof for verification.
-                            </p>
-                            <div className="flex items-center justify-between text-sm font-medium p-3 bg-muted rounded-lg mb-4">
-                                <span>Status</span>
-                                <span className="text-amber-600">Pending</span>
-                            </div>
-                            <Button asChild className="w-full" variant="secondary">
-                                <Link href="/doctor-panel/profile">Upload Documents</Link>
-                            </Button>
-                        </CardContent>
-                    </Card>
-
                     <Card className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-indigo-500">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-lg">
@@ -171,7 +171,7 @@ export default function DoctorPanelPage() {
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm text-muted-foreground mb-4">
-                                Add your specializations, experience, and clinic details to help patients find you.
+                                Add your specializations, experience, and clinic details.
                             </p>
                             <div className="space-y-2 mb-4">
                                 <div className="flex justify-between text-sm">
@@ -185,33 +185,23 @@ export default function DoctorPanelPage() {
                                     />
                                 </div>
                             </div>
-                            <Button asChild className="w-full" variant="secondary">
-                                <Link href="/doctor-panel/profile">Edit Profile</Link>
-                            </Button>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-emerald-500 opacity-60">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-lg">
-                                <Megaphone className="h-5 w-5 text-emerald-500" />
-                                Start Campaigns
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm text-muted-foreground mb-4">
-                                Once verified, you can run health campaigns to attract more patients.
-                            </p>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted p-2 rounded justify-center mb-4">
-                                <Clock className="h-4 w-4" />
-                                <span>Unlocks after verification</span>
-                            </div>
-                            <Button disabled className="w-full">
-                                Locked
+                            <Button onClick={() => setIsEditModalOpen(true)} className="w-full" variant="secondary">
+                                Edit Profile
                             </Button>
                         </CardContent>
                     </Card>
                 </div>
+
+                <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+                    <DialogContent className="max-w-4xl h-[90vh] overflow-y-auto">
+                        <DialogHeader>
+                            <DialogTitle>Update Profile</DialogTitle>
+                        </DialogHeader>
+                        <div className="py-4">
+                            <DoctorProfileForm onSuccess={handleProfileUpdateSuccess} showCompletion={false} />
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </div>
         );
     }
@@ -224,10 +214,14 @@ export default function DoctorPanelPage() {
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-foreground">Doctor Dashboard</h1>
                     <p className="text-muted-foreground mt-1">
-                        Welcome back, Dr. {doctorData?.user?.name}. Here&apos;s your daily overview.
+                        Welcome back, Dr. {doctorData?.user?.name || "Doctor"}. Here&apos;s your daily overview.
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
+                    <Button variant="outline" className="gap-2" onClick={() => setIsEditModalOpen(true)}>
+                        <Edit className="h-4 w-4" />
+                        Edit Profile
+                    </Button>
                     <Button asChild variant="outline" className="gap-2">
                         <Link href="/doctor-panel/campaign">
                             <Megaphone className="h-4 w-4" />
@@ -242,6 +236,27 @@ export default function DoctorPanelPage() {
                     </Button>
                 </div>
             </div>
+
+            {/* NOT VERIFIED WARNING CARD */}
+            {(!doctorData?.user?.isVerified) && (
+                <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-xl p-4 flex items-start gap-4 shadow-xs">
+                    <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center shrink-0">
+                        <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-500" />
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-amber-900 dark:text-amber-200">Profile Not Verified</h3>
+                        <p className="text-sm text-amber-800/80 dark:text-amber-400/80 mt-1">
+                            Your documents are under review or pending upload. You cannot accept appointments or run campaigns until verified.
+                        </p>
+                        <div className="mt-3 flex gap-3">
+                            <Button size="sm" variant="outline" className="bg-white dark:bg-black/20 border-amber-200 hover:bg-amber-50 text-amber-700" onClick={() => setIsEditModalOpen(true)}>
+                                Check Verification Status
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
 
             {/* Stats Overview */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -376,6 +391,17 @@ export default function DoctorPanelPage() {
                     </CardContent>
                 </Card>
             </div>
+
+            <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+                <DialogContent className="max-w-4xl h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Update Profile</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <DoctorProfileForm onSuccess={handleProfileUpdateSuccess} showCompletion={false} />
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
