@@ -150,7 +150,7 @@ export function DoctorDetailsModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-[85vw] w-[85vw] h-[85vh] sm:max-w-[85vw] flex flex-col p-0 overflow-hidden shadow-2xl md:rounded-2xl border-none ring-1 ring-black/5 bg-background">
+            <DialogContent className="max-w-[60vw] w-[60vw] h-[85vh] sm:max-w-[60vw] flex flex-col p-0 overflow-hidden shadow-2xl md:rounded-2xl border-none ring-1 ring-black/5 bg-background">
                 {/* Header */}
                 <div className="flex items-center justify-between px-8 py-5 border-b bg-muted/30">
                     <div className="flex items-center gap-4">
@@ -167,16 +167,7 @@ export function DoctorDetailsModal({
                         </div>
                     </div>
                     <div className="flex gap-2">
-                        {!isEditing && !loading && (
-                            <Button
-                                variant="outline"
-                                onClick={() => setIsEditing(true)}
-                                className="shadow-sm hover:shadow-md transition-all gap-2"
-                            >
-                                <Pencil className="w-4 h-4" />
-                                Edit Doctor
-                            </Button>
-                        )}
+
                         {isEditing && (
                             <>
                                 <Button
