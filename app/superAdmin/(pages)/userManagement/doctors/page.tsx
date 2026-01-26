@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { DataTable } from "@/components/superAdmin/DataTable"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
     DropdownMenu,
@@ -30,6 +31,7 @@ type Doctor = {
     experience: number | null
     city: string
     isVerified: boolean
+    profileCompletionPercentage: number
 }
 
 const getColumns = (
@@ -114,6 +116,19 @@ const getColumns = (
             cell: ({ row }) => {
                 const date = row.getValue("joinedDate") as string
                 return <div>{date ? new Date(date).toLocaleDateString() : "N/A"}</div>
+            },
+        },
+        {
+            accessorKey: "profileCompletionPercentage",
+            header: "Profile Status",
+            cell: ({ row }) => {
+                const percentage = row.getValue("profileCompletionPercentage") as number || 0
+                return (
+                    <div className="flex flex-col gap-1 w-[120px]">
+                        <span className="text-xs font-medium text-muted-foreground">{percentage}% Completed</span>
+                        <Progress value={percentage} className="h-2" />
+                    </div>
+                )
             },
         },
         {
