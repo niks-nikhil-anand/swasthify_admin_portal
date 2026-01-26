@@ -12,6 +12,17 @@ import { Camera, Mail, MapPin, Phone, User, Stethoscope, Upload, CheckCircle, Al
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function ProfilePage() {
     const [loading, setLoading] = useState(false);
@@ -143,8 +154,6 @@ export default function ProfilePage() {
     };
 
     const handleDeletePhoto = async () => {
-        if (!confirm("Are you sure you want to remove your profile photo?")) return;
-
         setLoading(true);
         try {
             const res = await fetch("/api/doctor/profile/photo", {
@@ -314,16 +323,30 @@ export default function ProfilePage() {
 
                             {/* Remove Button - Outside label to prevent triggering file input */}
                             {formData.profilePhoto && !uploading && (
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        handleDeletePhoto();
-                                    }}
-                                    className="absolute -bottom-2 -right-2 p-2 bg-destructive text-destructive-foreground rounded-full shadow-lg hover:bg-destructive/90 transition-colors z-30"
-                                    title="Remove Photo"
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                </button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <button
+                                            className="absolute -bottom-2 -right-2 p-2 bg-destructive text-destructive-foreground rounded-full shadow-lg hover:bg-destructive/90 transition-colors z-30"
+                                            title="Remove Photo"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Delete Profile Photo?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Are you sure you want to remove your profile photo? This action cannot be undone.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={handleDeletePhoto} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                Delete
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             )}
                         </div>
                         <h2 className="text-xl font-bold">Dr. {formData.firstName} {formData.lastName}</h2>
