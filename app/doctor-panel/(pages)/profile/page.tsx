@@ -23,11 +23,18 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function ProfilePage() {
     const [loading, setLoading] = useState(false);
     const [isFetching, setIsFetching] = useState(true);
     const [uploading, setUploading] = useState<string | null>(null); // Track which file is uploading
+    const [viewingDoc, setViewingDoc] = useState<{ url: string; type: string } | null>(null);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -167,6 +174,25 @@ export default function ProfilePage() {
         } catch (error) {
             console.error(error);
             toast.error("Failed to remove profile photo.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleDeleteDocument = async (type: "idProof" | "associationProof") => {
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/doctor/profile/document?type=${type}`, {
+                method: "DELETE",
+            });
+
+            if (!res.ok) throw new Error("Delete failed");
+
+            setFormData(prev => ({ ...prev, [type]: "" }));
+            toast.success("Document removed successfully.");
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to remove document.");
         } finally {
             setLoading(false);
         }
@@ -475,14 +501,37 @@ export default function ProfilePage() {
                                 {/* ID Proof */}
                                 <div className="space-y-3">
                                     <Label>ID Proof (Aadhar/PAN/Passport)</Label>
-                                    <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors relative">
+                                    <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors relative h-48">
                                         {formData.idProof ? (
-                                            <div className="flex flex-col items-center gap-2">
+                                            <div className="flex flex-col items-center gap-3 w-full">
                                                 <FileText className="h-10 w-10 text-primary" />
-                                                <p className="text-sm font-medium text-primary break-all max-w-[200px]">Document Uploaded</p>
-                                                <Button variant="ghost" size="sm" asChild>
-                                                    <a href={formData.idProof} target="_blank" rel="noopener noreferrer">View</a>
-                                                </Button>
+                                                <p className="text-sm font-medium text-primary break-all max-w-[200px] truncate">Document Uploaded</p>
+                                                <div className="flex gap-2 w-full justify-center">
+                                                    <Button variant="outline" size="sm" onClick={() => setViewingDoc({ url: formData.idProof, type: "ID Proof" })}>
+                                                        View
+                                                    </Button>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button variant="destructive" size="sm" disabled={loading}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Delete ID Proof?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    Are you sure you want to remove this document? This action cannot be undone.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={() => handleDeleteDocument("idProof")} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                                    Delete
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </div>
                                             </div>
                                         ) : (
                                             <>
@@ -493,13 +542,13 @@ export default function ProfilePage() {
                                         )}
                                         <input
                                             type="file"
-                                            className="absolute inset-0 opacity-0 cursor-pointer"
+                                            className={`absolute inset-0 opacity-0 cursor-pointer ${formData.idProof ? 'hidden pointer-events-none' : ''}`}
                                             accept="application/pdf,image/*"
                                             onChange={(e) => handleFileUpload(e, "idProof")}
-                                            disabled={uploading === "idProof"}
+                                            disabled={uploading === "idProof" || !!formData.idProof}
                                         />
                                         {uploading === "idProof" && (
-                                            <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                                            <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
                                                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                                             </div>
                                         )}
@@ -509,14 +558,37 @@ export default function ProfilePage() {
                                 {/* Association Proof */}
                                 <div className="space-y-3">
                                     <Label>Medical Council Registration</Label>
-                                    <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors relative">
+                                    <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors relative h-48">
                                         {formData.associationProof ? (
-                                            <div className="flex flex-col items-center gap-2">
+                                            <div className="flex flex-col items-center gap-3 w-full">
                                                 <FileText className="h-10 w-10 text-primary" />
-                                                <p className="text-sm font-medium text-primary break-all max-w-[200px]">Document Uploaded</p>
-                                                <Button variant="ghost" size="sm" asChild>
-                                                    <a href={formData.associationProof} target="_blank" rel="noopener noreferrer">View</a>
-                                                </Button>
+                                                <p className="text-sm font-medium text-primary break-all max-w-[200px] truncate">Document Uploaded</p>
+                                                <div className="flex gap-2 w-full justify-center">
+                                                    <Button variant="outline" size="sm" onClick={() => setViewingDoc({ url: formData.associationProof, type: "Registration Proof" })}>
+                                                        View
+                                                    </Button>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button variant="destructive" size="sm" disabled={loading}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Delete Registration Proof?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    Are you sure you want to remove this document? This action cannot be undone.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={() => handleDeleteDocument("associationProof")} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                                    Delete
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </div>
                                             </div>
                                         ) : (
                                             <>
@@ -527,13 +599,13 @@ export default function ProfilePage() {
                                         )}
                                         <input
                                             type="file"
-                                            className="absolute inset-0 opacity-0 cursor-pointer"
+                                            className={`absolute inset-0 opacity-0 cursor-pointer ${formData.associationProof ? 'hidden pointer-events-none' : ''}`}
                                             accept="application/pdf,image/*"
                                             onChange={(e) => handleFileUpload(e, "associationProof")}
-                                            disabled={uploading === "associationProof"}
+                                            disabled={uploading === "associationProof" || !!formData.associationProof}
                                         />
                                         {uploading === "associationProof" && (
-                                            <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                                            <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
                                                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                                             </div>
                                         )}
@@ -551,6 +623,24 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
-        </div>
+
+
+            <Dialog open={!!viewingDoc} onOpenChange={(open) => !open && setViewingDoc(null)}>
+                <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+                    <DialogHeader>
+                        <DialogTitle>Document Preview - {viewingDoc?.type}</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex-1 w-full bg-muted/20 rounded-md overflow-hidden relative border flex items-center justify-center">
+                        {viewingDoc?.url && (
+                            viewingDoc.url.toLowerCase().endsWith('.pdf') ? (
+                                <iframe src={viewingDoc.url} className="w-full h-full" title="Document Preview" />
+                            ) : (
+                                <img src={viewingDoc.url} alt="Document" className="max-w-full max-h-full object-contain" />
+                            )
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </div >
     );
 }
