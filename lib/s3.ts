@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION!,
@@ -33,5 +33,37 @@ export async function uploadToS3(
   } catch (error) {
     console.error("Error uploading to S3:", error);
     throw new Error("Failed to upload file to S3");
+  }
+}
+
+export async function deleteFromS3(fileUrl: string): Promise<void> {
+  if (!fileUrl) return;
+
+  try {
+    const bucketName = process.env.AWS_BUCKET;
+    const region = process.env.AWS_REGION;
+
+    // Extract key from URL
+    // URL format: https://<bucket>.s3.<region>.amazonaws.com/<key>
+    const urlPattern = new RegExp(`^https://${bucketName}\.s3\.${region}\.amazonaws\.com/(.+)$`);
+    const match = fileUrl.match(urlPattern);
+
+    if (!match) {
+      console.warn("Could not parse S3 URL for deletion:", fileUrl);
+      return;
+    }
+
+    const key = match[1];
+
+    const command = new DeleteObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+    });
+
+    await s3Client.send(command);
+    console.log("Successfully deleted from S3:", key);
+  } catch (error) {
+    console.error("Error deleting from S3:", error);
+    // Don't throw here to avoid blocking DB updates if S3 fails, but log it
   }
 }
