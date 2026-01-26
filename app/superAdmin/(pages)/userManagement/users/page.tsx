@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress"
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, Mail, Shield } from "lucide-react"
 import { UserActions } from "@/components/superAdmin/UserActions"
-import { AddUserModal } from "@/components/superAdmin/AddUserModal"
+
 import { ExportUserModal } from "@/components/superAdmin/ExportUserModal"
 import { useEffect, useState } from "react"
 import { format } from "date-fns"
@@ -205,7 +205,7 @@ export default function UsersPage() {
                 <h1 className="text-3xl font-bold tracking-tight">System Users</h1>
                 <div className="flex gap-2">
                     <ExportUserModal data={data} />
-                    <AddUserModal />
+
                 </div>
             </div>
 
