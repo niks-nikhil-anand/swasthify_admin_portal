@@ -3,7 +3,8 @@
 import Image from "next/image";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
     LayoutDashboard,
@@ -86,6 +87,28 @@ interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function Sidebar({ className, permissions = [], isProfileComplete = false }: SidebarProps) {
     const pathname = usePathname();
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        try {
+            const res = await fetch("/api/auth/logout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ role: "DOCTOR" }),
+            });
+
+            if (res.ok) {
+                toast.success("Logged out successfully");
+                router.push("/auth/doctor");
+                router.refresh();
+            } else {
+                toast.error("Failed to logout");
+            }
+        } catch (error) {
+            console.error("Logout error:", error);
+            toast.error("Something went wrong");
+        }
+    };
 
     return (
         <div className={cn("flex flex-col h-screen border-r bg-card/50 backdrop-blur-xl", className)}>
@@ -197,7 +220,8 @@ export function Sidebar({ className, permissions = [], isProfileComplete = false
 
                 <Button
                     variant="ghost"
-                    className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors h-10 mt-2"
+                    className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors h-10 mt-2 cursor-pointer"
+                    onClick={handleLogout}
                 >
                     <LogOut className="h-4 w-4" />
                     <span className="text-sm font-medium">Logout</span>
