@@ -37,7 +37,7 @@ export const DoctorActiveEmail = ({
                         </Text>
 
                         <Section style={buttonContainer}>
-                            <Link href="https://admin.swasthify.in/auth/doctor" style={button}>
+                            <Link href="https://swasthify.in/auth/doctor" style={button}>
                                 Login to Dashboard
                             </Link>
                         </Section>
