@@ -4,6 +4,7 @@ import { DataTable } from "@/components/superAdmin/DataTable"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -161,7 +162,16 @@ export default function TicketsPage() {
                 </CardHeader>
                 <CardContent>
                     {loading ? (
-                        <div className="text-center py-4">Loading...</div>
+                        <div className="space-y-4">
+                            <div className="flex items-center space-x-4">
+                                <Skeleton className="h-12 w-full" />
+                            </div>
+                            <div className="space-y-2">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                    <Skeleton key={i} className="h-12 w-full" />
+                                ))}
+                            </div>
+                        </div>
                     ) : (
                         <DataTable columns={columns} data={tickets} searchKey="subject" />
                     )}
