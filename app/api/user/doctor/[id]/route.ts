@@ -158,6 +158,7 @@ export async function PATCH(
     }
 }
 
+
 export async function DELETE(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
@@ -176,12 +177,13 @@ export async function DELETE(
             );
         }
 
-        // Delete doctor
-        await db.doctor.delete({
-            where: { id },
+        // Delete the User record
+        // This will cascade delete the Doctor record and other relations due to onDelete: Cascade in schema
+        await db.user.delete({
+            where: { id: doctor.userId },
         });
 
-        return NextResponse.json({ message: "Doctor deleted successfully" });
+        return NextResponse.json({ message: "Doctor account deleted successfully" });
     } catch (error) {
         console.error("Error deleting doctor:", error);
         return NextResponse.json(

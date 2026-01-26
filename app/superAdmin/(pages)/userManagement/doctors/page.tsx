@@ -36,7 +36,8 @@ type Doctor = {
 
 const getColumns = (
     onViewDetails: (id: string) => void,
-    onManagePermissions: (id: string) => void
+    onManagePermissions: (id: string) => void,
+    onDelete: (id: string, name: string) => void
 ): ColumnDef<Doctor>[] => [
         {
             accessorKey: "name",
@@ -166,7 +167,10 @@ const getColumns = (
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Doctor
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600">
+                            <DropdownMenuItem
+                                className="text-red-600 cursor-pointer"
+                                onClick={() => onDelete(doctor.id, doctor.name)}
+                            >
                                 <Trash className="mr-2 h-4 w-4" />
                                 Delete Doctor
                             </DropdownMenuItem>
@@ -178,15 +182,19 @@ const getColumns = (
     ]
 
 import { DoctorDetailsModal } from "./components/DoctorDetailsModal"
+
 import { PermissionModal } from "./components/PermissionModal"
+import { DeleteDoctorModal } from "./components/DeleteDoctorModal"
 
 export default function DoctorsPage() {
     const [isMounted, setIsMounted] = useState(false)
     const [doctors, setDoctors] = useState<Doctor[]>([])
     const [loading, setLoading] = useState(true)
     const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null)
+    const [selectedDoctorName, setSelectedDoctorName] = useState<string | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false)
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
     useEffect(() => {
         setIsMounted(true)
@@ -217,7 +225,18 @@ export default function DoctorsPage() {
         setIsPermissionModalOpen(true)
     }
 
-    const columns = getColumns(handleViewDetails, handleManagePermissions)
+    const handleDeleteClick = (id: string, name: string) => {
+        setSelectedDoctorId(id)
+        setSelectedDoctorName(name)
+        setIsDeleteModalOpen(true)
+    }
+
+    const handleDeleteSuccess = () => {
+        setIsDeleteModalOpen(false)
+        fetchDoctors() // Refresh list
+    }
+
+    const columns = getColumns(handleViewDetails, handleManagePermissions, handleDeleteClick)
 
     if (!isMounted) {
         return null
@@ -276,6 +295,13 @@ export default function DoctorsPage() {
                 isOpen={isPermissionModalOpen}
                 onClose={() => setIsPermissionModalOpen(false)}
                 doctorId={selectedDoctorId}
+            />
+            <DeleteDoctorModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                doctorId={selectedDoctorId}
+                doctorName={selectedDoctorName}
+                onSuccess={handleDeleteSuccess}
             />
         </div>
     )
