@@ -71,13 +71,18 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
     try {
+        console.log("PROFILE PATCH: Request Received");
         const doctorId = await getAuthenticatedDoctorId();
+        console.log("PROFILE PATCH: Authenticated Doctor ID:", doctorId);
 
         if (!doctorId) {
+            console.error("PROFILE PATCH: Unauthorized (No Doctor ID)");
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
         const body = await req.json();
+        console.log("PROFILE PATCH: Body received", body);
+
         const {
             firstName,
             lastName,
@@ -174,8 +179,19 @@ export async function PATCH(req: NextRequest) {
 
         return NextResponse.json({ success: true, doctor: updatedDoctor });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Profile update error:", error);
+
+        // Handle Prisma Unique Constraint Violation
+        if (error.code === 'P2002') {
+            const field = error.meta?.target?.[0] || 'Field';
+            console.error("Unique constraint violation:", field);
+            return NextResponse.json(
+                { error: `${field} is already in use by another account.` },
+                { status: 409 }
+            );
+        }
+
         return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
     }
 }

@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, Mail, MapPin, Phone, User, Stethoscope, Upload, CheckCircle, AlertCircle, FileText } from "lucide-react";
+import { Camera, Mail, MapPin, Phone, User, Stethoscope, Upload, CheckCircle, AlertCircle, FileText, Loader2, Trash2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 
@@ -55,6 +55,7 @@ export default function ProfilePage() {
 
                 if (data.success && data.doctor) {
                     const d = data.doctor;
+                    console.log("Fetched Profile Photo URL:", d.profilePhoto);
                     setFormData(prev => ({
                         ...prev,
                         firstName: d.firstName || "",
@@ -95,21 +96,66 @@ export default function ProfilePage() {
         uploadFormData.append("type", type);
 
         try {
+            // 1. Upload to S3
             const res = await fetch("/api/upload", {
                 method: "POST",
                 body: uploadFormData,
             });
 
-            if (!res.ok) throw new Error("Upload failed");
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error("Upload failed details:", res.status, errorText);
+                throw new Error(`Upload failed: ${res.status} ${errorText}`);
+            }
 
             const data = await res.json();
-            setFormData(prev => ({ ...prev, [type]: data.url }));
-            toast.success(`${type === "profilePhoto" ? "Profile photo" : type} uploaded successfully.`);
-        } catch (error) {
+            const uploadedUrl = data.url;
+
+            // 2. Update Local State
+            setFormData(prev => ({ ...prev, [type]: uploadedUrl }));
+
+            // 3. PERSIST IMMEDIATELY TO DB (Only for profile photo)
+            if (type === "profilePhoto") {
+                const patchRes = await fetch("/api/doctor/profile", {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ ...formData, profilePhoto: uploadedUrl }) // Send updated URL
+                });
+
+                if (!patchRes.ok) {
+                    throw new Error("Failed to save photo to profile.");
+                }
+                toast.success("Profile photo updated successfully.");
+            } else {
+                toast.success(`${type} uploaded successfully.`);
+            }
+
+        } catch (error: any) {
             console.error(error);
-            toast.error("There was an error uploading your file.");
+            toast.error(error.message || "There was an error uploading your file.");
         } finally {
             setUploading(null);
+        }
+    };
+
+    const handleDeletePhoto = async () => {
+        if (!confirm("Are you sure you want to remove your profile photo?")) return;
+
+        setLoading(true);
+        try {
+            const res = await fetch("/api/doctor/profile/photo", {
+                method: "DELETE",
+            });
+
+            if (!res.ok) throw new Error("Delete failed");
+
+            setFormData(prev => ({ ...prev, profilePhoto: "" }));
+            toast.success("Profile photo removed.");
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to remove profile photo.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -122,12 +168,16 @@ export default function ProfilePage() {
                 body: JSON.stringify(formData)
             });
 
-            if (!res.ok) throw new Error("Update failed");
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error("Update failed details:", res.status, errorText);
+                throw new Error(`Update failed: ${res.status} ${errorText}`);
+            }
 
             toast.success("Profile updated successfully.");
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            toast.error("Could not save profile changes.");
+            toast.error(error.message || "Could not save profile changes.");
         } finally {
             setLoading(false);
         }
@@ -169,21 +219,42 @@ export default function ProfilePage() {
                                 onChange={(e) => handleFileUpload(e, "profilePhoto")}
                                 disabled={uploading === "profilePhoto"}
                             />
-                            <Label htmlFor="profilePhoto" className="cursor-pointer">
+                            <Label htmlFor="profilePhoto" className="cursor-pointer relative block">
                                 <Avatar className="w-full h-full border-4 border-background shadow-xl">
-                                    <AvatarImage src={formData.profilePhoto || "/avatars/doctor-default.png"} alt="Doctor" />
+                                    <AvatarImage src={formData.profilePhoto || "/avatars/doctor-default.png"} alt="Doctor" className="object-cover" />
                                     <AvatarFallback className="text-4xl bg-primary/10 text-primary">
                                         {formData.firstName?.[0]}{formData.lastName?.[0]}
                                     </AvatarFallback>
                                 </Avatar>
-                                <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    {uploading === "profilePhoto" ? (
-                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                                    ) : (
+
+                                {/* Loading Spinner Overlay */}
+                                {uploading === "profilePhoto" && (
+                                    <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center z-20">
+                                        <Loader2 className="h-8 w-8 text-white animate-spin" />
+                                    </div>
+                                )}
+
+                                {/* Hover Overlay with Camera Icon */}
+                                {!uploading && (
+                                    <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
                                         <Camera className="h-8 w-8 text-white" />
-                                    )}
-                                </div>
+                                    </div>
+                                )}
                             </Label>
+
+                            {/* Remove Button - Outside label to prevent triggering file input */}
+                            {formData.profilePhoto && !uploading && (
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleDeletePhoto();
+                                    }}
+                                    className="absolute -bottom-2 -right-2 p-2 bg-destructive text-destructive-foreground rounded-full shadow-lg hover:bg-destructive/90 transition-colors z-30"
+                                    title="Remove Photo"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </button>
+                            )}
                         </div>
                         <h2 className="text-xl font-bold">Dr. {formData.firstName} {formData.lastName}</h2>
                         <p className="text-sm text-muted-foreground flex items-center justify-center gap-1.5 mt-1">
