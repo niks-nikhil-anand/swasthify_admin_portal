@@ -26,11 +26,28 @@ import { Input } from "@/components/ui/input";
 export function Navbar() {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
+    const [adminEmail, setAdminEmail] = useState<string>("");
 
     // Effect to handle mounting state
     useEffect(() => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
         setMounted(true);
+
+        const fetchAdminProfile = async () => {
+            try {
+                const res = await fetch("/api/auth/me");
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.user?.email) {
+                        setAdminEmail(data.user.email);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch admin profile", error);
+            }
+        };
+
+        fetchAdminProfile();
     }, []);
 
     const toggleTheme = () => {
@@ -93,7 +110,7 @@ export function Navbar() {
                             </Avatar>
                             <div className="hidden md:flex flex-col items-start gap-0.5">
                                 <span className="text-xs font-semibold leading-none">Super Admin</span>
-                                <span className="text-[10px] text-muted-foreground leading-none">admin@swasthify.com</span>
+                                <span className="text-[10px] text-muted-foreground leading-none">{adminEmail || "Loading..."}</span>
                             </div>
                             <ChevronDown className="h-3 w-3 text-muted-foreground hidden md:block" />
                         </Button>
@@ -103,7 +120,7 @@ export function Navbar() {
                             <div className="flex flex-col space-y-1">
                                 <p className="text-sm font-medium leading-none">Super Admin</p>
                                 <p className="text-xs leading-none text-muted-foreground">
-                                    admin@swasthify.com
+                                    {adminEmail || "Loading..."}
                                 </p>
                             </div>
                         </DropdownMenuLabel>
