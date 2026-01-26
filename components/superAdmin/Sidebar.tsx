@@ -119,13 +119,13 @@ export function Sidebar({ className }: SidebarProps) {
             {/* Logo Section */}
             <div className="p-6 pb-2">
                 <div className="flex items-center gap-3 px-2 mb-6 ">
-                    <div className="bg-white p-1.5 rounded-xl shadow-sm border border-border group-hover:scale-105 transition-transform duration-300">
+                    <div className="bg-white rounded-xl shadow-sm border border-border group-hover:scale-105 transition-transform duration-300">
                         <Image
                             src="/logo.png"
                             alt="Swasthify Logo"
                             width={42}
                             height={42}
-                            className="h-8 w-8 object-contain"
+                            className="h-12 w-12 object-contain"
                         />
                     </div>
                     <div>
