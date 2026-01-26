@@ -2,17 +2,230 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, TrendingUp, Activity, ArrowUpRight, Clock, Plus, Megaphone } from "lucide-react";
+import { Calendar, Users, TrendingUp, Activity, ArrowUpRight, Clock, Plus, Megaphone, AlertCircle, FileText, CheckCircle, ShieldAlert } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+interface DoctorData {
+    user: {
+        id: string;
+        name: string;
+        email: string;
+        role: string;
+        status: "ACTIVE" | "BLOCKED" | "PENDING" | "ARCHIVED";
+        isVerified: boolean;
+    };
+    doctor: {
+        isProfileComplete: boolean;
+        profileCompletionPercentage: number;
+    } | null;
+}
 
 export default function DoctorPanelPage() {
+    const [loading, setLoading] = useState(true);
+    const [doctorData, setDoctorData] = useState<DoctorData | null>(null);
+
+    useEffect(() => {
+        const fetchDoctorData = async () => {
+            try {
+                const res = await fetch("/api/doctor/me");
+                if (res.ok) {
+                    const data = await res.json();
+                    setDoctorData(data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch doctor data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDoctorData();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="space-y-8">
+                <div className="flex flex-col gap-4">
+                    <Skeleton className="h-10 w-48" />
+                    <Skeleton className="h-4 w-96" />
+                </div>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    {[1, 2, 3, 4].map((i) => (
+                        <Skeleton key={i} className="h-32 rounded-xl" />
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    // 1. BLOCKED STATUS
+    if (doctorData?.user?.status === "BLOCKED") {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6 bg-destructive/5 rounded-3xl border border-destructive/20">
+                <div className="h-20 w-20 rounded-full bg-destructive/10 flex items-center justify-center mb-6">
+                    <ShieldAlert className="h-10 w-10 text-destructive" />
+                </div>
+                <h1 className="text-3xl font-bold tracking-tight text-foreground mb-3">Account Blocked</h1>
+                <p className="text-muted-foreground max-w-md mb-8 text-lg">
+                    Your account has been suspended due to policy violations or security concerns. Please contact our support team to resolve this issue.
+                </p>
+
+                <div className="grid gap-6 w-full max-w-lg md:grid-cols-2">
+                    <Card className="hover:shadow-lg transition-shadow duration-200 cursor-pointer border-destructive/10">
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-lg flex items-center gap-2">
+                                <Activity className="h-5 w-5 text-blue-500" />
+                                Support Center
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground mb-4">
+                                Raise a ticket or chat with our support executive.
+                            </p>
+                            <Button variant="outline" className="w-full">
+                                Contact Support
+                            </Button>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="hover:shadow-lg transition-shadow duration-200 cursor-pointer border-destructive/10">
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-lg flex items-center gap-2">
+                                <FileText className="h-5 w-5 text-orange-500" />
+                                Review Policy
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground mb-4">
+                                Read our terms of service and doctor guidelines.
+                            </p>
+                            <Button variant="outline" className="w-full">
+                                View Guidelines
+                            </Button>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        );
+    }
+
+    // 2. VERIFICATION PENDING STATUS
+    if (!doctorData?.user?.isVerified || doctorData?.user?.status === "PENDING") {
+        return (
+            <div className="space-y-8">
+                {/* Welcome Component for Unverified Users */}
+                <div className="bg-linear-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10 p-8 rounded-3xl border border-blue-100 dark:border-blue-900/30">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                        <div>
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold flex items-center gap-1">
+                                    <AlertCircle className="h-3 w-3" />
+                                    Verification Pending
+                                </span>
+                            </div>
+                            <h1 className="text-3xl font-bold tracking-tight mb-2">
+                                Welcome, Dr. {doctorData?.user?.name || "Doctor"}!
+                            </h1>
+                            <p className="text-muted-foreground max-w-2xl text-lg">
+                                Your profile is under review. Complete your profile and upload necessary documents to start receiving appointments.
+                            </p>
+                        </div>
+                        <Button size="lg" className="bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/20 rounded-full px-8">
+                            <Link href="/doctor-panel/profile">
+                                Complete Profile
+                            </Link>
+                        </Button>
+                    </div>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <Card className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-blue-500">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-lg">
+                                <FileText className="h-5 w-5 text-blue-500" />
+                                Document Upload
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground mb-4">
+                                Upload your Medical License, Degree Certificate, and ID Proof for verification.
+                            </p>
+                            <div className="flex items-center justify-between text-sm font-medium p-3 bg-muted rounded-lg mb-4">
+                                <span>Status</span>
+                                <span className="text-amber-600">Pending</span>
+                            </div>
+                            <Button asChild className="w-full" variant="secondary">
+                                <Link href="/doctor-panel/profile">Upload Documents</Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-indigo-500">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-lg">
+                                <Users className="h-5 w-5 text-indigo-500" />
+                                Profile Details
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground mb-4">
+                                Add your specializations, experience, and clinic details to help patients find you.
+                            </p>
+                            <div className="space-y-2 mb-4">
+                                <div className="flex justify-between text-sm">
+                                    <span>Completion</span>
+                                    <span className="font-bold">{doctorData?.doctor?.profileCompletionPercentage || 0}%</span>
+                                </div>
+                                <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-indigo-500 rounded-full transition-all duration-500"
+                                        style={{ width: `${doctorData?.doctor?.profileCompletionPercentage || 0}%` }}
+                                    />
+                                </div>
+                            </div>
+                            <Button asChild className="w-full" variant="secondary">
+                                <Link href="/doctor-panel/profile">Edit Profile</Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-emerald-500 opacity-60">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-lg">
+                                <Megaphone className="h-5 w-5 text-emerald-500" />
+                                Start Campaigns
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground mb-4">
+                                Once verified, you can run health campaigns to attract more patients.
+                            </p>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted p-2 rounded justify-center mb-4">
+                                <Clock className="h-4 w-4" />
+                                <span>Unlocks after verification</span>
+                            </div>
+                            <Button disabled className="w-full">
+                                Locked
+                            </Button>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        );
+    }
+
+    // 3. ACTIVE DASHBOARD
     return (
         <div className="space-y-8">
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-foreground">Doctor Dashboard</h1>
-                    <p className="text-muted-foreground mt-1">Welcome back, Dr. Anand. Here's your daily overview.</p>
+                    <p className="text-muted-foreground mt-1">
+                        Welcome back, Dr. {doctorData?.user?.name}. Here&apos;s your daily overview.
+                    </p>
                 </div>
                 <div className="flex items-center gap-3">
                     <Button asChild variant="outline" className="gap-2">
