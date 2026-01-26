@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, TrendingUp, Activity, ArrowUpRight, Clock, Plus, Megaphone, AlertCircle, FileText, CheckCircle, ShieldAlert, Edit } from "lucide-react";
+import { Calendar, Users, TrendingUp, Activity, ArrowUpRight, Clock, Plus, Megaphone, AlertCircle, FileText, CheckCircle, ShieldAlert, Edit, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,6 +13,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import DoctorProfileForm from "@/components/doctor/DoctorProfileForm";
+import { toast } from "sonner";
 
 interface DoctorData {
     user: {
@@ -34,6 +35,7 @@ export default function DoctorPanelPage() {
     const [doctorData, setDoctorData] = useState<DoctorData | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [verifying, setVerifying] = useState(false);
 
     const fetchDoctorData = useCallback(async () => {
         try {
@@ -55,12 +57,13 @@ export default function DoctorPanelPage() {
 
     const handleProfileUpdateSuccess = () => {
         setRefreshKey(prev => prev + 1); // Trigger re-fetch
-        // Don't necessarily close modal immediately, maybe show success?
-        // Actually, usually good to keep open or close? Let's keep open but maybe show a toast (handled in form).
-        // If it's a "Save" action, maybe close. But the form handles specific field updates.
-        // Let's assume the user might want to edit more.
-        // However, if we want to reflect changes in dashboard immediately:
-        fetchDoctorData();
+    };
+
+    const handleVerifyCheck = async () => {
+        setVerifying(true);
+        await fetchDoctorData();
+        setVerifying(false);
+        toast.info("Verification status refreshed");
     };
 
     if (loading) {
@@ -249,8 +252,15 @@ export default function DoctorPanelPage() {
                             Your documents are under review or pending upload. You cannot accept appointments or run campaigns until verified.
                         </p>
                         <div className="mt-3 flex gap-3">
-                            <Button size="sm" variant="outline" className="bg-white dark:bg-black/20 border-amber-200 hover:bg-amber-50 text-amber-700" onClick={() => setIsEditModalOpen(true)}>
-                                Check Verification Status
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="bg-white dark:bg-black/20 border-amber-200 hover:bg-amber-50 text-amber-700 gap-2"
+                                onClick={handleVerifyCheck}
+                                disabled={verifying}
+                            >
+                                <RefreshCw className={`h-3 w-3 ${verifying ? "animate-spin" : ""}`} />
+                                {verifying ? "Checking..." : "Check Verification Status"}
                             </Button>
                         </div>
                     </div>
