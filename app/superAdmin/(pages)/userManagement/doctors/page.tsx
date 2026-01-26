@@ -37,7 +37,8 @@ type Doctor = {
 const getColumns = (
     onViewDetails: (id: string) => void,
     onManagePermissions: (id: string) => void,
-    onDelete: (id: string, name: string) => void
+    onDelete: (id: string, name: string) => void,
+    onEdit: (id: string) => void
 ): ColumnDef<Doctor>[] => [
         {
             accessorKey: "name",
@@ -163,7 +164,7 @@ const getColumns = (
                                 <Shield className="mr-2 h-4 w-4" />
                                 Manage Permissions
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onViewDetails(doctor.id)}>
+                            <DropdownMenuItem onClick={() => onEdit(doctor.id)}>
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Doctor
                             </DropdownMenuItem>
@@ -193,6 +194,7 @@ export default function DoctorsPage() {
     const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null)
     const [selectedDoctorName, setSelectedDoctorName] = useState<string | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isEditingMode, setIsEditingMode] = useState(false)
     const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
@@ -217,6 +219,13 @@ export default function DoctorsPage() {
 
     const handleViewDetails = (id: string) => {
         setSelectedDoctorId(id)
+        setIsEditingMode(false)
+        setIsModalOpen(true)
+    }
+
+    const handleEdit = (id: string) => {
+        setSelectedDoctorId(id)
+        setIsEditingMode(true)
         setIsModalOpen(true)
     }
 
@@ -236,7 +245,7 @@ export default function DoctorsPage() {
         fetchDoctors() // Refresh list
     }
 
-    const columns = getColumns(handleViewDetails, handleManagePermissions, handleDeleteClick)
+    const columns = getColumns(handleViewDetails, handleManagePermissions, handleDeleteClick, handleEdit)
 
     if (!isMounted) {
         return null
@@ -246,9 +255,7 @@ export default function DoctorsPage() {
         <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold tracking-tight">Doctors Management</h1>
-                <Button>
-                    <Plus className="mr-2 h-4 w-4" /> Add Doctor
-                </Button>
+
             </div>
 
             <Card>
@@ -290,6 +297,7 @@ export default function DoctorsPage() {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 doctorId={selectedDoctorId}
+                defaultEditing={isEditingMode}
             />
             <PermissionModal
                 isOpen={isPermissionModalOpen}

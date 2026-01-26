@@ -47,7 +47,19 @@ interface DoctorDetailsModalProps {
     isOpen: boolean;
     onClose: () => void;
     doctorId: string | null;
+    defaultEditing?: boolean;
 }
+
+const AVAILABLE_PERMISSIONS = [
+    "profile",
+    "appointments",
+    "patients",
+    "medical_records",
+    "prescriptions",
+    "billing",
+    "analytics",
+    "support"
+];
 
 interface DoctorData {
     id: string;
@@ -84,10 +96,11 @@ export function DoctorDetailsModal({
     isOpen,
     onClose,
     doctorId,
+    defaultEditing = false,
 }: DoctorDetailsModalProps) {
     const [data, setData] = useState<DoctorData | null>(null);
     const [loading, setLoading] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
+    const [isEditing, setIsEditing] = useState(defaultEditing);
     const [saving, setSaving] = useState(false);
     const [viewingDoc, setViewingDoc] = useState<{ url: string; type: string } | null>(null);
 
@@ -97,9 +110,9 @@ export function DoctorDetailsModal({
     useEffect(() => {
         if (isOpen && doctorId) {
             fetchDoctorDetails();
-            setIsEditing(false);
+            setIsEditing(defaultEditing);
         }
-    }, [isOpen, doctorId]);
+    }, [isOpen, doctorId, defaultEditing]);
 
     const fetchDoctorDetails = async () => {
         try {
@@ -145,8 +158,28 @@ export function DoctorDetailsModal({
         }
     };
 
+
     const handleChange = (field: string, value: any) => {
+        if (field === "isVerified" && value === true) {
+            const completion = data?.profileCompletionPercentage || 0;
+            if (completion < 80) {
+                toast.error(`Cannot verify doctor. Profile completion is only ${completion}%. Minimum 80% required.`);
+                return;
+            }
+        }
         setFormData((prev) => ({ ...prev, [field]: value }));
+    };
+
+    const handlePermissionToggle = (permission: string) => {
+        setFormData(prev => {
+            const current = new Set(prev.permissions || data?.permissions || []);
+            if (current.has(permission)) {
+                current.delete(permission);
+            } else {
+                current.add(permission);
+            }
+            return { ...prev, permissions: Array.from(current) };
+        });
     };
 
     if (!isOpen) return null;
@@ -506,25 +539,55 @@ export function DoctorDetailsModal({
                                                         Access Permissions
                                                     </h3>
 
-                                                    {data.permissions && data.permissions.length > 0 ? (
+                                                    {isEditing ? (
                                                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                                                            {data.permissions.map((permission, index) => (
-                                                                <div key={index} className="flex items-center p-3 bg-muted/20 border rounded-lg">
-                                                                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mr-3 shrink-0">
-                                                                        <Lock className="w-4 h-4 text-blue-600" />
+                                                            {AVAILABLE_PERMISSIONS.map((permission) => {
+                                                                const currentPermissions = formData.permissions || data.permissions || [];
+                                                                const isSelected = currentPermissions.includes(permission);
+
+                                                                return (
+                                                                    <div
+                                                                        key={permission}
+                                                                        className={cn(
+                                                                            "flex items-center p-3 border rounded-lg cursor-pointer transition-all",
+                                                                            isSelected ? "bg-primary/5 border-primary" : "bg-muted/10 border-transparent hover:bg-muted/20"
+                                                                        )}
+                                                                        onClick={() => handlePermissionToggle(permission)}
+                                                                    >
+                                                                        <div className={cn(
+                                                                            "w-5 h-5 rounded border mr-3 flex items-center justify-center transition-colors",
+                                                                            isSelected ? "bg-primary border-primary" : "border-muted-foreground bg-white"
+                                                                        )}>
+                                                                            {isSelected && <CheckCircle className="w-3.5 h-3.5 text-white" />}
+                                                                        </div>
+                                                                        <span className="text-sm font-medium capitalize">
+                                                                            {permission.replace(/_/g, " ").toLowerCase()}
+                                                                        </span>
                                                                     </div>
-                                                                    <span className="text-sm font-medium capitalize">
-                                                                        {permission.replace(/_/g, " ").toLowerCase()}
-                                                                    </span>
-                                                                </div>
-                                                            ))}
+                                                                );
+                                                            })}
                                                         </div>
                                                     ) : (
-                                                        <div className="flex flex-col items-center justify-center py-10 text-center text-muted-foreground bg-muted/10 rounded-xl border border-dashed">
-                                                            <Lock className="w-10 h-10 mb-2 opacity-20" />
-                                                            <p>No specific permissions assigned.</p>
-                                                            <p className="text-xs mt-1">This user has default access only.</p>
-                                                        </div>
+                                                        data.permissions && data.permissions.length > 0 ? (
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                                                {data.permissions.map((permission, index) => (
+                                                                    <div key={index} className="flex items-center p-3 bg-muted/20 border rounded-lg">
+                                                                        <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mr-3 shrink-0">
+                                                                            <Lock className="w-4 h-4 text-blue-600" />
+                                                                        </div>
+                                                                        <span className="text-sm font-medium capitalize">
+                                                                            {permission.replace(/_/g, " ").toLowerCase()}
+                                                                        </span>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex flex-col items-center justify-center py-10 text-center text-muted-foreground bg-muted/10 rounded-xl border border-dashed">
+                                                                <Lock className="w-10 h-10 mb-2 opacity-20" />
+                                                                <p>No specific permissions assigned.</p>
+                                                                <p className="text-xs mt-1">This user has default access only.</p>
+                                                            </div>
+                                                        )
                                                     )}
                                                 </div>
                                             </TabsContent>
