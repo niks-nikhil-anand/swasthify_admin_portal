@@ -51,6 +51,7 @@ export default function ProfilePage() {
         idProof: "",
         associationProof: ""
     });
+    const [initialData, setInitialData] = useState<typeof formData | null>(null);
 
     const [completionPercentage, setCompletionPercentage] = useState(0);
 
@@ -76,8 +77,7 @@ export default function ProfilePage() {
                 if (data.success && data.doctor) {
                     const d = data.doctor;
                     console.log("Fetched Profile Photo URL:", d.profilePhoto);
-                    setFormData(prev => ({
-                        ...prev,
+                    const fetchedData = {
                         firstName: d.firstName || "",
                         lastName: d.lastName || "",
                         email: d.email || "",
@@ -90,7 +90,9 @@ export default function ProfilePage() {
                         profilePhoto: d.profilePhoto || "",
                         idProof: d.idProof || "",
                         associationProof: d.associationProof || ""
-                    }));
+                    };
+                    setFormData(fetchedData);
+                    setInitialData(fetchedData);
                 }
             } catch (error) {
                 console.error("Error fetching profile:", error);
@@ -213,6 +215,7 @@ export default function ProfilePage() {
                 throw new Error(`Update failed: ${res.status} ${errorText}`);
             }
 
+            setInitialData(formData);
             toast.success("Profile updated successfully.");
         } catch (error: any) {
             console.error(error);
@@ -221,6 +224,8 @@ export default function ProfilePage() {
             setLoading(false);
         }
     };
+
+    const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialData);
 
     if (isFetching) {
         return (
@@ -382,7 +387,7 @@ export default function ProfilePage() {
                         </p>
 
                         <div className="mt-6 flex flex-col gap-2">
-                            <Button className="w-full" onClick={handleSave} disabled={loading}>
+                            <Button className="w-full" onClick={handleSave} disabled={loading || !hasChanges}>
                                 {loading ? "Saving..." : "Save Changes"}
                             </Button>
                         </div>
@@ -616,8 +621,8 @@ export default function ProfilePage() {
                     </Card>
 
                     <div className="flex justify-end gap-4">
-                        <Button variant="outline">Cancel</Button>
-                        <Button onClick={handleSave} disabled={loading}>
+                        <Button variant="outline" onClick={() => initialData && setFormData(initialData)} disabled={!hasChanges}>Cancel</Button>
+                        <Button onClick={handleSave} disabled={loading || !hasChanges}>
                             {loading ? "Saving..." : "Save Changes"}
                         </Button>
                     </div>
