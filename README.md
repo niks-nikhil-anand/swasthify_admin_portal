@@ -1,36 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Swasthify V1 Application - Launch Scope & Deliverables
+Date: January 2, 2026
+Version: 1.0
 
-## Getting Started
+This document outlines the complete scope of features, functionalities, and site map for the Swasthify V1 launch.
 
-First, run the development server:
+================================================================================
+1. PUBLIC WEBSITE (Patient & General Access)
+================================================================================
+The public portal serves as the entry point for patients, doctors, and general users to learn about Swasthify and access services.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Site Map & Pages:
+-----------------
+1. Home Page [/]
+   - Description: Main landing page featuring service overview, value proposition, and call-to-action for patients and doctors.
+   
+2. About Us [/about-us]
+   - Description: Company mission, vision, and team information.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Services [/services]
+   - Description: Detailed catalog of medical services provided (e.g., Consultations, Lab Tests).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+4. Contact Us [/contact]
+   - Description: Inquiry form and contact details for support.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+5. How It Works [/how-it-works]
+   - Description: User guides for patients (booking appointments) and doctors (joining the platform).
 
-## Learn More
+6. Pricing [/pricing]
+   - Description: Service plans or subscription tiers (if applicable).
 
-To learn more about Next.js, take a look at the following resources:
+7. Doctor Onboarding (Join as a Doctor) [/doctor-profile]
+   - Description: Detailed portal for doctors to sign up and submit credentials.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+================================================================================
+2. DOCTOR ONBOARDING & VERIFICATION WORKFLOW
+================================================================================
+Objective: Ensure trust and safety by verifying every medical professional before they go live.
 
-## Deploy on Vercel
+Step 1: Registration
+- link: /doctor-profile
+- Action: Doctor signs up using Email and Phone Number.
+- Outcome: Account created in "Pending" state.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Step 2: Credential Submission
+Doctors must upload the following clear documents via the secure portal:
+A. Personal Identity Verification:
+   - Pan Card
+   - Aadhaar Card
+B. Professional Verification:
+   - Medical Registration / License Number
+   - Specialization Certificates
+C. Practice Details:
+   - Clinic/Hospital Name & Address
+   - Location Coordinates
+   - Clinic Photographs
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Step 3: Admin Review Process (Offline/Backend)
+- Status: The doctor's profile remains hidden from search results until verified.
+- Verification: Admin team reviews uploaded documents against public registries.
+- Decision: Admin approves (Go Live) or Rejects (Request Resubmission).
+
+
+================================================================================
+3. SUPER ADMIN PANEL (Management Console)
+================================================================================
+A centralized dashboard for the Swasthify Operations Team to manage the entire platform.
+
+Dashboard & Overview:
+---------------------
+1. Main Dashboard [/superAdmin/dashboard]
+   - Key metrics: Total Users, Active Doctors, Pending Verifications, Today's Appointments.
+
+User Management Modules:
+------------------------
+2. Doctor Management [/superAdmin/userManagement/doctors]
+   - View all registered doctors.
+   - Filter by status (Verified, Pending, Blocked).
+   - Action: Verify documents and approve "Live" status.
+
+3. Patient Management [/superAdmin/userManagement/patient]
+   - View all registered patient accounts.
+   - Manage user details and history.
+
+4. Lab Management [/superAdmin/userManagement/labs]
+   - Manage diagnostic lab partners.
+
+5. General Users [/superAdmin/userManagement/users]
+   - Internal staff or sub-admin account management.
+
+Operations & Workflows:
+-----------------------
+6. Appointments [/superAdmin/operations/appointment]
+   - Monitor booking status and flow.
+
+7. Complaints [/superAdmin/operations/complaints]
+   - Helpdesk ticketing system for user grievances.
+
+8. Support Tickets [/superAdmin/operations/tickets]
+   - Technical or account-related support requests.
+
+System & Analytics:
+-------------------
+9. Analytics [/superAdmin/analytics]
+   - Detailed reports on platform usage and performance.
+
+10. Reports [/superAdmin/system/reports]
+    - Downloadable data reports (Daily/Weekly/Monthly).
+
+11. Push Notifications [/superAdmin/system/pushNotification]
+    - Send alerts and updates to user apps.
+
+12. Platform Settings [/superAdmin/system/settings]
+    - Global configuration and variables.
+
+
+================================================================================
+4. LAUNCH READINESS
+================================================================================
+- All core public pages are responsive and content-ready.
+- Secure Doctor Onboarding pipeline is tested and active.
+- Admin Panel is equipped with full "verification" and "live" toggle capabilities.
+
+End of Document
