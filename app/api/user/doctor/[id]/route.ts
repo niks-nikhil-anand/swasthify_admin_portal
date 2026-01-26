@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { Resend } from "resend";
+import DoctorBlockedEmail from "@/emails/DoctorBlockedEmail";
+import DoctorActiveEmail from "@/emails/DoctorActiveEmail";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function GET(
     request: Request,
@@ -74,6 +79,8 @@ export async function PATCH(
             );
         }
 
+        const oldStatus = doctor.user.status;
+
         // Update Doctor and User
         const updatedDoctor = await db.$transaction(async (tx) => {
             // Update User if needed
@@ -112,6 +119,34 @@ export async function PATCH(
                 }
             });
         });
+
+        // Send Email Notifications based on status change
+        // We do this after the transaction to ensure data is committed
+        if (status && status !== oldStatus) {
+            try {
+                const userEmail = doctor.user.email;
+                const userName = doctor.user.name;
+
+                if (status === "BLOCKED") {
+                    await resend.emails.send({
+                        from: "Swasthify <noreply@swasthify.in>",
+                        to: userEmail,
+                        subject: "Your Swasthify Account Has Been Blocked",
+                        react: DoctorBlockedEmail({ name: userName }),
+                    });
+                } else if (status === "ACTIVE") {
+                    await resend.emails.send({
+                        from: "Swasthify <noreply@swasthify.in>",
+                        to: userEmail,
+                        subject: "Your Swasthify Account Is Now Active",
+                        react: DoctorActiveEmail({ name: userName }),
+                    });
+                }
+            } catch (emailError) {
+                console.error("Failed to send status change email:", emailError);
+                // We don't fail the request if email fails, just log it
+            }
+        }
 
         return NextResponse.json(updatedDoctor);
     } catch (error) {

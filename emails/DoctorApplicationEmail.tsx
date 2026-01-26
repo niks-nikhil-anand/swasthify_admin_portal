@@ -33,17 +33,10 @@ export const DoctorApplicationEmail = ({
                             Thank you for your interest in partnering with Swasthify. We have received your application.
                         </Text>
                         <Text style={paragraph}>
-                            To complete your registration and start your journey with us, please log in to your dashboard and submit the required documents for verification.
+                            Our team will contact you regarding the completion of documentation.
                         </Text>
-
-                        <Section style={buttonContainer}>
-                            <Link href="https://admin.swasthify.in/auth/doctor" style={button}>
-                                Login to Dashboard
-                            </Link>
-                        </Section>
-
                         <Text style={paragraph}>
-                            Once your documents are verified, your profile will be live, and you can start accepting appointments.
+                            Once the account is active, you can also login and submit your documents in the doctor panel.
                         </Text>
 
                         <Hr style={hr} />
