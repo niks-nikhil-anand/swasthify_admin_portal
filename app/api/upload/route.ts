@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { uploadToS3 } from "@/lib/s3";
 
 export async function POST(req: NextRequest) {
+    console.log("UPLOAD API HIT: POST /api/upload");
     try {
         const formData = await req.formData();
         const file = formData.get("file") as File;
