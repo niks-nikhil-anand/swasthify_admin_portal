@@ -150,13 +150,10 @@ export function DoctorDetailsModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-[60vw] w-[60vw] h-[85vh] sm:max-w-[60vw] flex flex-col p-0 overflow-hidden shadow-2xl md:rounded-2xl border-none ring-1 ring-black/5 bg-background">
+            <DialogContent showCloseButton={false} className="max-w-[60vw] w-[60vw] h-[85vh] sm:max-w-[60vw] flex flex-col p-0 overflow-hidden shadow-2xl md:rounded-2xl border-none ring-1 ring-black/5 bg-background">
                 {/* Header */}
                 <div className="flex items-center justify-between px-8 py-5 border-b bg-muted/30">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full">
-                            <X className="w-5 h-5 text-muted-foreground" />
-                        </Button>
                         <div>
                             <DialogTitle className="text-xl font-bold tracking-tight text-foreground">
                                 {isEditing ? "Edit Doctor Profile" : "Doctor Profile"}
@@ -167,6 +164,9 @@ export function DoctorDetailsModal({
                         </div>
                     </div>
                     <div className="flex gap-2">
+                        <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full">
+                            <X className="w-5 h-5 text-muted-foreground" />
+                        </Button>
 
                         {isEditing && (
                             <>
