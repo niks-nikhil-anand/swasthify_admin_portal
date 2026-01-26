@@ -38,7 +38,7 @@ const sidebarGroups = [
         items: [
             {
                 title: "Dashboard",
-                href: "/doctor-panel",
+                href: "/doctor-panel/dashboard",
                 icon: LayoutDashboard,
             },
             {
