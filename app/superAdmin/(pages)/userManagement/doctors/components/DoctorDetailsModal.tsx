@@ -36,7 +36,8 @@ import {
     User,
     FileText,
     Shield,
-    Eye
+    Eye,
+    Lock
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -65,7 +66,9 @@ interface DoctorData {
     associationProof: string | null;
     isProfileComplete: boolean;
     profileCompletionPercentage: number | null;
+
     specializations: { id: string; name: string }[];
+    permissions?: string[];
     // User relations
     user: {
         name: string;
@@ -307,6 +310,7 @@ export function DoctorDetailsModal({
                                                 <TabsTrigger value="professional" className="rounded-lg py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">Professional</TabsTrigger>
                                                 <TabsTrigger value="clinic" className="rounded-lg py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">Clinic & Hospital</TabsTrigger>
                                                 <TabsTrigger value="documents" className="rounded-lg py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">Documents</TabsTrigger>
+                                                <TabsTrigger value="permissions" className="rounded-lg py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">Permissions</TabsTrigger>
                                             </TabsList>
 
                                             {/* OVERVIEW TAB */}
@@ -491,6 +495,37 @@ export function DoctorDetailsModal({
                                                             )}
                                                         </div>
                                                     </div>
+                                                </div>
+                                            </TabsContent>
+
+                                            {/* PERMISSIONS TAB */}
+                                            <TabsContent value="permissions" className="space-y-6 mt-0">
+                                                <div className="bg-white p-6 rounded-xl border shadow-sm">
+                                                    <h3 className="text-lg font-semibold mb-6 flex items-center text-gray-800">
+                                                        <div className="w-1 h-6 bg-primary rounded-full mr-3"></div>
+                                                        Access Permissions
+                                                    </h3>
+
+                                                    {data.permissions && data.permissions.length > 0 ? (
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                                            {data.permissions.map((permission, index) => (
+                                                                <div key={index} className="flex items-center p-3 bg-muted/20 border rounded-lg">
+                                                                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mr-3 shrink-0">
+                                                                        <Lock className="w-4 h-4 text-blue-600" />
+                                                                    </div>
+                                                                    <span className="text-sm font-medium capitalize">
+                                                                        {permission.replace(/_/g, " ").toLowerCase()}
+                                                                    </span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex flex-col items-center justify-center py-10 text-center text-muted-foreground bg-muted/10 rounded-xl border border-dashed">
+                                                            <Lock className="w-10 h-10 mb-2 opacity-20" />
+                                                            <p>No specific permissions assigned.</p>
+                                                            <p className="text-xs mt-1">This user has default access only.</p>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </TabsContent>
 
