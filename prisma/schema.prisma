@@ -147,7 +147,74 @@ model Doctor {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  campaigns Campaign[]
+
   @@map("doctors")
+}
+
+model Campaign {
+  id String @id @default(uuid())
+
+  // Doctor Relation
+  doctorId String
+  doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  // Campaign Info
+  name        String       @map("campaign_name")
+  description String?
+  type        CampaignType @map("campaign_type")
+  status      CampaignStatus @default(DRAFT)
+
+  // Pricing
+  price              Float
+  currency           String @default("INR")
+  discountPercentage Float  @default(0.0) @map("discount_percentage")
+
+  // Location (Stored as JSON: { address, city, latitude, ... })
+  location Json
+
+  // Date Range
+  startDate DateTime @map("start_date")
+  endDate   DateTime @map("end_date")
+
+  // Schedule (Stored as JSON: [{ day_of_week, time_slots: [...] }])
+  schedule Json
+
+  // Booking Rules (Stored as JSON: { appointment_gap_minutes, ... })
+  bookingRules Json @map("booking_rules")
+
+  // Eligibility (Stored as JSON: { gender_preference, age_group_min, ... })
+  eligibility Json
+
+  // Stats (Stored as JSON: { views, bookings, ... } or default values)
+  stats Json?
+
+  // Media (Stored as JSON: [{ type, url }])
+  media Json?
+
+  // Compliance
+  isVerified Boolean @default(false)
+
+  // Meta
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("campaigns")
+  @@index([doctorId])
+}
+
+enum CampaignType {
+  OPD
+  HEALTH_CAMP
+  FREE_CHECKUP
+}
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  IN_REVIEW
+  PAUSED
+  COMPLETED
 }
 
 model Lab {
