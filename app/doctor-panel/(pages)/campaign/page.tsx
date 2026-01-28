@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Megaphone, Send, Users, Eye, MousePointerClick, MoreHorizontal, Calendar } from "lucide-react";
+import { Megaphone, Send, Users, Eye, MousePointerClick, MoreHorizontal, Calendar } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { CreateCampaignModal } from "@/components/doctor/campaign/CreateCampaignModal";
+import { Button } from "@/components/ui/button";
+import { CreateCampaign } from "./_components/CreateCampaign";
 
 const campaigns = [
     {
@@ -48,8 +47,6 @@ const campaigns = [
 ];
 
 export default function CampaignPage() {
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -57,10 +54,7 @@ export default function CampaignPage() {
                     <h1 className="text-3xl font-bold tracking-tight text-foreground">Campaigns</h1>
                     <p className="text-muted-foreground">Engage with your patients through targeted messages.</p>
                 </div>
-                <Button onClick={() => setIsCreateModalOpen(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Campaign
-                </Button>
+                <CreateCampaign />
             </div>
 
             {/* Campaign Stats */}
@@ -174,10 +168,7 @@ export default function CampaignPage() {
                 </CardContent>
             </Card>
 
-            <CreateCampaignModal
-                open={isCreateModalOpen}
-                onOpenChange={setIsCreateModalOpen}
-            />
+
         </div>
     );
 }
