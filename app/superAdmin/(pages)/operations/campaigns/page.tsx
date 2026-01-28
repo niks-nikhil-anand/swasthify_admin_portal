@@ -15,7 +15,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Copy, Edit, MoreHorizontal, Eye, Trash, CheckCircle, XCircle } from "lucide-react"
+import { CampaignDetailsModal } from "./components/CampaignDetailsModal"
+import { ArrowUpDown, Copy, Edit, MoreHorizontal, Eye, CheckCircle, XCircle } from "lucide-react"
 
 type Campaign = {
     id: string
@@ -168,11 +169,13 @@ export default function CampaignsPage() {
     const [isMounted, setIsMounted] = useState(false)
     const [campaigns, setCampaigns] = useState<Campaign[]>([])
     const [loading, setLoading] = useState(true)
+    const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null)
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     // Handlers
     const handleViewDetails = (id: string) => {
-        console.log("View Details", id)
-        // Implement view details logic
+        setSelectedCampaignId(id)
+        setIsModalOpen(true)
     }
 
     const handleEdit = (id: string) => {
@@ -251,6 +254,12 @@ export default function CampaignsPage() {
                     )}
                 </CardContent>
             </Card>
+
+            <CampaignDetailsModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                campaignId={selectedCampaignId}
+            />
         </div>
     )
 }
