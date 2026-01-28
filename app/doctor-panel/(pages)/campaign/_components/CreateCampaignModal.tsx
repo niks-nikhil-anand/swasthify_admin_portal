@@ -223,7 +223,8 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         }
     };
 
-    const handleNext = () => {
+    const handleNext = (e: React.MouseEvent) => {
+        e.preventDefault();
         if (validateStep(step)) {
             setStep((prev) => Math.min(prev + 1, 6));
         }
