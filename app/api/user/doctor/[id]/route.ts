@@ -18,6 +18,7 @@ export async function GET(
             include: {
                 user: true,
                 specializations: true,
+                campaigns: true, // Include campaigns
             },
         });
 
