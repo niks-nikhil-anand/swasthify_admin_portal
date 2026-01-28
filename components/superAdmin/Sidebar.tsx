@@ -85,6 +85,11 @@ const sidebarGroups = [
                 href: "/superAdmin/operations/complaints",
                 icon: MessageSquareWarning,
             },
+            {
+                title: "Campaigns",
+                href: "/superAdmin/operations/campaigns",
+                icon: Megaphone,
+            },
         ]
     },
     {
