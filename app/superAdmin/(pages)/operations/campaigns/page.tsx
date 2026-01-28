@@ -198,7 +198,10 @@ export default function CampaignsPage() {
             const response = await fetch("/api/admin/campaigns")
             if (response.ok) {
                 const data = await response.json()
-                setCampaigns(data)
+                const filteredData = data.filter((campaign: Campaign) =>
+                    !campaign.isVerified || campaign.status === "IN_REVIEW"
+                )
+                setCampaigns(filteredData)
             }
         } catch (error) {
             console.error("Failed to fetch campaigns", error)
