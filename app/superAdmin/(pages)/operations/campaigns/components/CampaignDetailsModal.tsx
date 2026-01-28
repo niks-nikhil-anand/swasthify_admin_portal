@@ -99,6 +99,9 @@ interface CampaignData {
         hospitalName?: string;
         profilePhoto?: string;
         isProfileComplete?: boolean;
+        profileCompletionPercentage?: number;
+        idProof?: string;
+        associationProof?: string;
     };
 
     // Stats
@@ -436,6 +439,34 @@ export function CampaignDetailsModal({
                                                         <span className="font-mono font-medium">{data.doctor?.licenseNumber || "Not Provided"}</span>
                                                     </div>
                                                 </div>
+
+                                                {(data.doctor?.idProof || data.doctor?.associationProof) && (
+                                                    <div>
+                                                        <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Documents</h4>
+                                                        <div className="flex flex-wrap gap-3">
+                                                            {data.doctor?.idProof && (
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    className="gap-2 h-9"
+                                                                    onClick={() => window.open(data.doctor.idProof, '_blank')}
+                                                                >
+                                                                    <FileText className="w-4 h-4 text-primary" /> View ID Proof
+                                                                </Button>
+                                                            )}
+                                                            {data.doctor?.associationProof && (
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    className="gap-2 h-9"
+                                                                    onClick={() => window.open(data.doctor.associationProof, '_blank')}
+                                                                >
+                                                                    <Building className="w-4 h-4 text-primary" /> View Association Proof
+                                                                </Button>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </TabsContent>

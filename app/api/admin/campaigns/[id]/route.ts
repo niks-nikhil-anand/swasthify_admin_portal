@@ -16,7 +16,19 @@ export async function GET(
             where: { id },
             include: {
                 doctor: {
-                    include: {
+                    select: {
+                        id: true,
+                        licenseNumber: true,
+                        bio: true,
+                        experienceYears: true,
+                        qualification: true,
+                        clinicName: true,
+                        hospitalName: true,
+                        profilePhoto: true,
+                        idProof: true,
+                        associationProof: true,
+                        isProfileComplete: true,
+                        profileCompletionPercentage: true,
                         user: {
                             select: {
                                 name: true,
