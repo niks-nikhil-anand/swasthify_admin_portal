@@ -1,0 +1,256 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { DataTable } from "@/components/superAdmin/DataTable"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { ColumnDef } from "@tanstack/react-table"
+import { ArrowUpDown, Copy, Edit, MoreHorizontal, Eye, Trash, CheckCircle, XCircle } from "lucide-react"
+
+type Campaign = {
+    id: string
+    name: string
+    doctorName: string
+    type: string
+    price: number
+    startDate: string
+    endDate: string
+    status: string
+    isVerified: boolean
+    dailyLimit: number
+    createdAt: string
+}
+
+const getColumns = (
+    onViewDetails: (id: string) => void,
+    onEdit: (id: string) => void,
+    onDelete: (id: string) => void
+): ColumnDef<Campaign>[] => [
+        {
+            accessorKey: "name",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        Name
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                )
+            },
+            cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
+        },
+        {
+            accessorKey: "doctorName",
+            header: "Doctor",
+            cell: ({ row }) => <div>{row.getValue("doctorName")}</div>,
+        },
+        {
+            accessorKey: "type",
+            header: "Type",
+        },
+        {
+            accessorKey: "price",
+            header: "Price",
+            cell: ({ row }) => {
+                const price = parseFloat(row.getValue("price"))
+                const formatted = new Intl.NumberFormat("en-IN", {
+                    style: "currency",
+                    currency: "INR",
+                }).format(price)
+                return <div>{formatted}</div>
+            },
+        },
+        {
+            accessorKey: "startDate",
+            header: "Start Date",
+            cell: ({ row }) => {
+                const date = row.getValue("startDate") as string
+                return <div>{new Date(date).toLocaleDateString()}</div>
+            },
+        },
+        {
+            accessorKey: "endDate",
+            header: "End Date",
+            cell: ({ row }) => {
+                const date = row.getValue("endDate") as string
+                return <div>{new Date(date).toLocaleDateString()}</div>
+            },
+        },
+        {
+            accessorKey: "status",
+            header: "Status",
+            cell: ({ row }) => {
+                const status = row.getValue("status") as string
+                return (
+                    <Badge
+                        variant={
+                            status === "ACTIVE"
+                                ? "success"
+                                : status === "DRAFT"
+                                    ? "secondary"
+                                    : status === "COMPLETED"
+                                        ? "outline"
+                                        : "warning"
+                        }
+                    >
+                        {status}
+                    </Badge>
+                )
+            },
+        },
+        {
+            accessorKey: "isVerified",
+            header: "Verified",
+            cell: ({ row }) => {
+                const isVerified = row.getValue("isVerified") as boolean
+                return (
+                    <div className="flex items-center gap-2">
+                        {isVerified ? (
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                        ) : (
+                            <XCircle className="h-4 w-4 text-muted-foreground" />
+                        )}
+                    </div>
+                )
+            },
+        },
+        {
+            id: "actions",
+            header: "Actions",
+            cell: ({ row }) => {
+                const campaign = row.original
+
+                return (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem
+                                onClick={() => navigator.clipboard.writeText(campaign.id)}
+                            >
+                                <Copy className="mr-2 h-4 w-4" />
+                                Copy ID
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => onViewDetails(campaign.id)}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                View Details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onEdit(campaign.id)}>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Edit Status
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )
+            },
+        },
+    ]
+
+export default function CampaignsPage() {
+    const [isMounted, setIsMounted] = useState(false)
+    const [campaigns, setCampaigns] = useState<Campaign[]>([])
+    const [loading, setLoading] = useState(true)
+
+    // Handlers
+    const handleViewDetails = (id: string) => {
+        console.log("View Details", id)
+        // Implement view details logic
+    }
+
+    const handleEdit = (id: string) => {
+        console.log("Edit Status", id)
+        // Implement edit logic
+    }
+
+    const handleDelete = (id: string) => {
+        console.log("Delete", id)
+        // Implement delete logic
+    }
+
+    useEffect(() => {
+        setIsMounted(true)
+        fetchCampaigns()
+    }, [])
+
+    const fetchCampaigns = async () => {
+        try {
+            const response = await fetch("/api/admin/campaigns")
+            if (response.ok) {
+                const data = await response.json()
+                setCampaigns(data)
+            }
+        } catch (error) {
+            console.error("Failed to fetch campaigns", error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const columns = getColumns(handleViewDetails, handleEdit, handleDelete)
+
+    if (!isMounted) {
+        return null
+    }
+
+    return (
+        <div className="p-6 space-y-6">
+            <div className="flex items-center justify-between">
+                <h1 className="text-3xl font-bold tracking-tight">Campaign Operations</h1>
+                {/* Add button if needed, but usually docs create campaigns */}
+            </div>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>All Campaigns</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    {loading ? (
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between py-4">
+                                <Skeleton className="h-10 w-[250px]" />
+                                <Skeleton className="h-10 w-[100px]" />
+                            </div>
+                            <div className="rounded-md border">
+                                <div className="h-12 border-b px-4 flex items-center gap-4">
+                                    <Skeleton className="h-4 w-[150px]" />
+                                    <Skeleton className="h-4 w-[150px]" />
+                                    <Skeleton className="h-4 w-[200px]" />
+                                    <Skeleton className="h-4 w-[100px]" />
+                                </div>
+                                {[...Array(5)].map((_, i) => (
+                                    <div key={i} className="h-16 border-b px-4 flex items-center gap-4">
+                                        <Skeleton className="h-10 w-10 rounded-full" />
+                                        <div className="space-y-2">
+                                            <Skeleton className="h-4 w-[200px]" />
+                                            <Skeleton className="h-3 w-[150px]" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
+                        <DataTable columns={columns} data={campaigns} searchKey="name" />
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+    )
+}
