@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Megaphone, Send, Users, Eye, MousePointerClick, MoreHorizontal, Calendar, Loader2 } from "lucide-react";
+import { Megaphone, Send, Users, Eye, MousePointerClick, MoreHorizontal, Calendar, Loader2, Copy } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { CreateCampaign } from "./_components/CreateCampaign";
 import { toast } from "sonner";
+import { CampaignDetailsModal } from "./_components/CampaignDetailsModal";
 
 interface Campaign {
     id: string;
@@ -24,11 +25,22 @@ interface Campaign {
         clicks?: number;
         reach?: number;
     };
+    // Detailed fields for modal (assuming API returns them)
+    location?: any;
+    schedule?: any;
+    dailyLimit?: number;
+    hourlyLimit?: number;
+    totalCapacity?: number | null;
+    requiredDetails?: string[];
+    isVerified?: boolean;
+    discountPercentage?: number;
 }
 
 export default function CampaignPage() {
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         fetchCampaigns();
@@ -51,6 +63,16 @@ export default function CampaignPage() {
         }
     };
 
+    const handleCopyId = (id: string) => {
+        navigator.clipboard.writeText(id);
+        toast.success("Campaign ID copied to clipboard");
+    };
+
+    const handleViewDetails = (campaign: Campaign) => {
+        setSelectedCampaign(campaign);
+        setIsModalOpen(true);
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -61,7 +83,7 @@ export default function CampaignPage() {
                 <CreateCampaign />
             </div>
 
-            {/* Campaign Stats - Placeholders for now as we don't have aggregate stats API yet */}
+            {/* Campaign Stats - Placeholders for now */}
             <div className="grid gap-4 md:grid-cols-3">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -169,6 +191,12 @@ export default function CampaignPage() {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                <DropdownMenuItem onClick={() => handleViewDetails(camp)}>
+                                                    <Eye className="w-4 h-4 mr-2" /> View Details
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => handleCopyId(camp.id)}>
+                                                    <Copy className="w-4 h-4 mr-2" /> Copy ID
+                                                </DropdownMenuItem>
                                                 <DropdownMenuItem>View Stats</DropdownMenuItem>
                                                 <DropdownMenuItem>Duplicate</DropdownMenuItem>
                                                 {camp.status === 'DRAFT' && <DropdownMenuItem>Edit</DropdownMenuItem>}
@@ -182,6 +210,12 @@ export default function CampaignPage() {
                     )}
                 </CardContent>
             </Card>
+
+            <CampaignDetailsModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                campaign={selectedCampaign as any}
+            />
         </div>
     );
 }
