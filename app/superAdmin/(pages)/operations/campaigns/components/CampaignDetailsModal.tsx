@@ -27,9 +27,15 @@ import {
     CreditCard,
     CheckCircle,
     XCircle,
-    Info
+    Info,
+    User,
+    Building,
+    Stethoscope,
+    FileText,
+    Globe
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -46,33 +52,57 @@ interface CampaignData {
     type: string;
     status: string;
     price: number;
+    currency?: string;
     discountPercentage: number;
     startDate: string;
     endDate: string;
     isVerified: boolean;
-    doctor: {
-        user: {
-            name: string;
-            email: string;
-        }
-    };
+    createdAt: string;
+    updatedAt: string;
+
+    // Location
     location: {
         address?: string;
         city?: string;
         state?: string;
         pincode?: string;
+        district?: string;
+        latitude?: number;
+        longitude?: number;
     };
-    schedule: any;
-    appointmentConfig: {
-        dailyLimit: number;
-        hourlyLimit: number;
-        totalCapacity: number | null;
+
+    // Schedule
+    schedule: {
+        days: string[];
+        startTime: string;
+        endTime: string;
     };
-    stats: {
-        views?: number;
-        bookings?: number;
-    } | null;
-    createdAt: string;
+
+    // Config
+    dailyLimit: number;
+    hourlyLimit: number;
+    totalCapacity: number | null;
+    requiredDetails: string[];
+
+    // Doctor
+    doctor: {
+        id: string;
+        user: {
+            name: string;
+            email: string;
+        };
+        licenseNumber?: string;
+        bio?: string;
+        experienceYears?: number;
+        qualification?: string;
+        clinicName?: string;
+        hospitalName?: string;
+        profilePhoto?: string;
+        isProfileComplete?: boolean;
+    };
+
+    // Stats
+    stats: any;
 }
 
 export function CampaignDetailsModal({
@@ -92,7 +122,6 @@ export function CampaignDetailsModal({
     const fetchCampaignDetails = async () => {
         try {
             setLoading(true);
-            // Assuming we will create this API route
             const res = await fetch(`/api/admin/campaigns/${campaignId}`);
             if (!res.ok) throw new Error("Failed to fetch campaign");
             const campaign = await res.json();
@@ -100,7 +129,6 @@ export function CampaignDetailsModal({
         } catch (error) {
             console.error(error);
             toast.error("Failed to load campaign details");
-            // Mock data for now if API fails (for development) or handle error gracefully
         } finally {
             setLoading(false);
         }
@@ -136,39 +164,39 @@ export function CampaignDetailsModal({
                             <div className="p-8 pb-20">
                                 {/* Overview Section */}
                                 <div className="flex justify-between items-start mb-6">
-                                    <div>
+                                    <div className="space-y-2">
                                         <h2 className="text-2xl font-bold text-foreground">{data.name}</h2>
-                                        <div className="flex items-center gap-2 mt-2">
-                                            <Badge variant="outline">{data.type}</Badge>
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <Badge variant="outline" className="text-sm py-1">{data.type}</Badge>
                                             <Badge
                                                 variant={
                                                     data.status === "ACTIVE"
                                                         ? "success"
                                                         : data.status === "DRAFT"
-                                                            ? "secondary" // Changed from warning to secondary for DRAFT
-                                                            : "warning" // Using warning for other states by default logic from previous files
+                                                            ? "secondary"
+                                                            : "warning"
                                                 }
+                                                className="text-sm py-1"
                                             >
                                                 {data.status}
                                             </Badge>
-                                            <Badge variant={data.isVerified ? "success" : "destructive"} className="gap-1">
-                                                {/* Using standard Lucide icons if checked/x-circle not available directly or just lucide-react import */}
-                                                {data.isVerified ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                                            <Badge variant={data.isVerified ? "success" : "destructive"} className="gap-1 text-sm py-1">
+                                                {data.isVerified ? <CheckCircle className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
                                                 {data.isVerified ? "Verified" : "Unverified"}
                                             </Badge>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <div className="text-2xl font-bold">
+                                        <div className="text-3xl font-bold text-primary">
                                             {new Intl.NumberFormat("en-IN", {
                                                 style: "currency",
-                                                currency: "INR",
+                                                currency: data.currency || "INR",
                                             }).format(data.price)}
                                         </div>
                                         {data.discountPercentage > 0 && (
-                                            <p className="text-sm text-green-600 font-medium">
-                                                {data.discountPercentage}% Discount
-                                            </p>
+                                            <Badge variant="success" className="mt-1">
+                                                {data.discountPercentage}% OFF
+                                            </Badge>
                                         )}
                                     </div>
                                 </div>
@@ -177,99 +205,257 @@ export function CampaignDetailsModal({
 
                                 <Tabs defaultValue="details" className="w-full">
                                     <TabsList className="mb-6 w-full justify-start h-auto p-1 bg-muted/50 rounded-xl">
-                                        <TabsTrigger value="details">Details</TabsTrigger>
+                                        <TabsTrigger value="details">Details & Schedule</TabsTrigger>
                                         <TabsTrigger value="location">Location</TabsTrigger>
-                                        <TabsTrigger value="schedule">Schedule & Config</TabsTrigger>
-                                        <TabsTrigger value="doctor">Doctor Info</TabsTrigger>
+                                        <TabsTrigger value="config">Configuration</TabsTrigger>
+                                        <TabsTrigger value="doctor">Doctor Profile</TabsTrigger>
                                     </TabsList>
 
+                                    {/* DETAILS TAB */}
                                     <TabsContent value="details" className="space-y-6">
-                                        <div className="bg-muted/10 p-4 rounded-lg border">
-                                            <h3 className="font-semibold mb-2 flex items-center gap-2">
-                                                <Info className="w-4 h-4" /> Description
-                                            </h3>
-                                            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                                                {data.description || "No description provided."}
-                                            </p>
-                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                            <div className="md:col-span-2 space-y-6">
+                                                <div className="bg-muted/10 p-5 rounded-xl border">
+                                                    <h3 className="font-semibold mb-3 flex items-center gap-2 text-foreground">
+                                                        <Info className="w-4 h-4 text-primary" /> Description
+                                                    </h3>
+                                                    <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                                                        {data.description || "No description provided."}
+                                                    </p>
+                                                </div>
 
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="p-4 border rounded-lg">
-                                                <div className="text-sm text-muted-foreground">Start Date</div>
-                                                <div className="font-medium flex items-center gap-2 mt-1">
-                                                    <Calendar className="w-4 h-4" />
-                                                    {new Date(data.startDate).toLocaleDateString()}
+                                                <div className="bg-muted/10 p-5 rounded-xl border">
+                                                    <h3 className="font-semibold mb-4 flex items-center gap-2 text-foreground">
+                                                        <Clock className="w-4 h-4 text-primary" /> Schedule
+                                                    </h3>
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div className="col-span-2">
+                                                            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-2">Active Days</span>
+                                                            <div className="flex flex-wrap gap-2">
+                                                                {data.schedule?.days && data.schedule.days.length > 0 ? (
+                                                                    data.schedule.days.map((day) => (
+                                                                        <Badge key={day} variant="secondary" className="bg-background border shadow-sm">
+                                                                            {day}
+                                                                        </Badge>
+                                                                    ))
+                                                                ) : (
+                                                                    <span className="text-sm text-muted-foreground">No specific days selected</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                        <div className="mt-2">
+                                                            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Start Time</span>
+                                                            <div className="text-lg font-medium mt-1">{data.schedule?.startTime || "N/A"}</div>
+                                                        </div>
+                                                        <div className="mt-2">
+                                                            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">End Time</span>
+                                                            <div className="text-lg font-medium mt-1">{data.schedule?.endTime || "N/A"}</div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className="p-4 border rounded-lg">
-                                                <div className="text-sm text-muted-foreground">End Date</div>
-                                                <div className="font-medium flex items-center gap-2 mt-1">
-                                                    <Calendar className="w-4 h-4" />
-                                                    {new Date(data.endDate).toLocaleDateString()}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </TabsContent>
 
-                                    <TabsContent value="location" className="space-y-6">
-                                        <div className="bg-muted/10 p-6 rounded-lg border flex items-start gap-4">
-                                            <MapPin className="w-6 h-6 text-primary mt-1" />
-                                            <div>
-                                                <h3 className="font-semibold text-lg mb-2">Location Details</h3>
-                                                <div className="space-y-1 text-sm">
-                                                    <p><span className="font-medium">Address:</span> {data.location?.address || "N/A"}</p>
-                                                    <p><span className="font-medium">City:</span> {data.location?.city || "N/A"}</p>
-                                                    <p><span className="font-medium">State:</span> {data.location?.state || "N/A"}</p>
-                                                    <p><span className="font-medium">Pincode:</span> {data.location?.pincode || "N/A"}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </TabsContent>
-
-                                    <TabsContent value="schedule" className="space-y-6">
-                                        <div className="grid grid-cols-2 gap-6">
                                             <div className="space-y-4">
-                                                <h3 className="font-semibold">Limits</h3>
-                                                <div className="grid grid-cols-1 gap-3">
-                                                    <div className="flex justify-between p-3 border rounded">
-                                                        <span className="text-sm text-muted-foreground">Daily Limit</span>
-                                                        <span className="font-medium">{data.appointmentConfig?.dailyLimit || 0}</span>
+                                                <div className="p-4 border rounded-xl bg-background shadow-sm">
+                                                    <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Duration</div>
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <Calendar className="w-4 h-4 text-primary" />
+                                                        <span className="text-sm font-medium">Start Date</span>
                                                     </div>
-                                                    <div className="flex justify-between p-3 border rounded">
-                                                        <span className="text-sm text-muted-foreground">Hourly Limit</span>
-                                                        <span className="font-medium">{data.appointmentConfig?.hourlyLimit || 0}</span>
+                                                    <div className="text-lg font-bold">{new Date(data.startDate).toLocaleDateString()}</div>
+                                                </div>
+
+                                                <div className="p-4 border rounded-xl bg-background shadow-sm">
+                                                    <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Duration</div>
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <Calendar className="w-4 h-4 text-primary" />
+                                                        <span className="text-sm font-medium">End Date</span>
                                                     </div>
-                                                    <div className="flex justify-between p-3 border rounded">
-                                                        <span className="text-sm text-muted-foreground">Total Capacity</span>
-                                                        <span className="font-medium">{data.appointmentConfig?.totalCapacity || "Unlimited"}</span>
-                                                    </div>
+                                                    <div className="text-lg font-bold">{new Date(data.endDate).toLocaleDateString()}</div>
                                                 </div>
                                             </div>
-                                            {/* Could add a JSON viewer or formatted schedule viewer here if schedule supports complex structure */}
                                         </div>
                                     </TabsContent>
 
-                                    <TabsContent value="doctor" className="space-y-6">
-                                        <div className="flex items-center gap-4 p-4 border rounded-lg bg-muted/10">
-                                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">
-                                                {data.doctor?.user?.name?.[0]}
+                                    {/* LOCATION TAB */}
+                                    <TabsContent value="location" className="space-y-6">
+                                        <div className="bg-muted/10 p-6 rounded-xl border">
+                                            <div className="flex items-start gap-4">
+                                                <div className="p-3 bg-primary/10 rounded-full">
+                                                    <MapPin className="w-6 h-6 text-primary" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h3 className="font-bold text-lg mb-4 text-foreground">Venue Details</h3>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
+                                                        <div>
+                                                            <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Address</p>
+                                                            <p className="text-base font-medium mt-1">{data.location?.address || "N/A"}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">City</p>
+                                                            <p className="text-base font-medium mt-1">{data.location?.city || "N/A"}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">District</p>
+                                                            <p className="text-base font-medium mt-1">{data.location?.district || "N/A"}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">State</p>
+                                                            <p className="text-base font-medium mt-1">{data.location?.state || "N/A"}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Pincode</p>
+                                                            <p className="text-base font-medium mt-1">{data.location?.pincode || "N/A"}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    {(data.location?.latitude && data.location?.longitude) && (
+                                                        <div className="mt-6 pt-4 border-t">
+                                                            <div className="flex items-center gap-4">
+                                                                <div>
+                                                                    <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Coordinates</p>
+                                                                    <p className="text-sm font-mono mt-1 text-foreground">
+                                                                        {data.location.latitude.toFixed(6)}, {data.location.longitude.toFixed(6)}
+                                                                    </p>
+                                                                </div>
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    className="ml-auto gap-2"
+                                                                    onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${data.location.latitude},${data.location.longitude}`, '_blank')}
+                                                                >
+                                                                    <Globe className="w-4 h-4" /> Open Maps
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h3 className="font-bold">{data.doctor?.user?.name}</h3>
-                                                <p className="text-sm text-muted-foreground">{data.doctor?.user?.email}</p>
+                                        </div>
+                                    </TabsContent>
+
+                                    {/* CONFIG TAB */}
+                                    <TabsContent value="config" className="space-y-6">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="bg-muted/10 p-5 rounded-xl border space-y-4">
+                                                <h3 className="font-semibold flex items-center gap-2">
+                                                    <Building className="w-4 h-4 text-primary" /> Booking Limits
+                                                </h3>
+                                                <div className="space-y-3">
+                                                    <div className="flex justify-between items-center p-3 bg-background border rounded-lg">
+                                                        <span className="text-sm text-muted-foreground">Daily Limit</span>
+                                                        <span className="font-bold text-lg">{data.dailyLimit || 0}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center p-3 bg-background border rounded-lg">
+                                                        <span className="text-sm text-muted-foreground">Hourly Limit</span>
+                                                        <span className="font-bold text-lg">{data.hourlyLimit || 0}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center p-3 bg-background border rounded-lg">
+                                                        <span className="text-sm text-muted-foreground">Total Capacity</span>
+                                                        <span className="font-bold text-lg">{data.totalCapacity || "Unlimited"}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="bg-muted/10 p-5 rounded-xl border space-y-4">
+                                                <h3 className="font-semibold flex items-center gap-2">
+                                                    <FileText className="w-4 h-4 text-primary" /> Required Patient Details
+                                                </h3>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {data.requiredDetails && data.requiredDetails.length > 0 ? (
+                                                        data.requiredDetails.map((detail) => (
+                                                            <Badge key={detail} variant="outline" className="bg-background py-1.5 px-3">
+                                                                {detail}
+                                                            </Badge>
+                                                        ))
+                                                    ) : (
+                                                        <p className="text-sm text-muted-foreground italic">No specific details required</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </TabsContent>
+
+                                    {/* DOCTOR TAB */}
+                                    <TabsContent value="doctor" className="space-y-6">
+                                        <div className="flex flex-col md:flex-row gap-6">
+                                            {/* Profile Card */}
+                                            <div className="w-full md:w-1/3 bg-muted/10 p-6 rounded-xl border flex flex-col items-center text-center">
+                                                <Avatar className="w-32 h-32 border-4 border-background shadow-lg mb-4">
+                                                    <AvatarImage src={data.doctor?.profilePhoto || ""} />
+                                                    <AvatarFallback className="text-4xl bg-primary/10 text-primary">
+                                                        {data.doctor?.user?.name?.[0]}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <h3 className="text-xl font-bold text-foreground">{data.doctor?.user?.name}</h3>
+                                                <p className="text-sm text-primary font-medium mb-1">{data.doctor?.qualification || "Doctor"}</p>
+                                                <p className="text-xs text-muted-foreground mb-4">{data.doctor?.user?.email}</p>
+
+                                                <div className="w-full grid grid-cols-2 gap-2 mt-2">
+                                                    <div className="p-2 bg-background rounded border">
+                                                        <div className="text-xs text-muted-foreground font-semibold">Experience</div>
+                                                        <div className="font-bold">{data.doctor?.experienceYears || 0} Yrs</div>
+                                                    </div>
+                                                    <div className="p-2 bg-background rounded border">
+                                                        <div className="text-xs text-muted-foreground font-semibold">Profile</div>
+                                                        <div className="font-bold text-green-600">{data.doctor?.profileCompletionPercentage || 0}%</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Doctor Details */}
+                                            <div className="flex-1 space-y-6">
+                                                <div>
+                                                    <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">About</h4>
+                                                    <div className="p-4 bg-muted/10 rounded-xl border text-sm leading-relaxed text-muted-foreground">
+                                                        {data.doctor?.bio || "No biography available."}
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Clinic</h4>
+                                                        <div className="p-3 bg-muted/10 rounded-lg border flex items-center gap-3">
+                                                            <Building className="w-4 h-4 text-primary shrink-0" />
+                                                            <span className="font-medium truncate">{data.doctor?.clinicName || "N/A"}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Hospital</h4>
+                                                        <div className="p-3 bg-muted/10 rounded-lg border flex items-center gap-3">
+                                                            <Building className="w-4 h-4 text-primary shrink-0" />
+                                                            <span className="font-medium truncate">{data.doctor?.hospitalName || "N/A"}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">License</h4>
+                                                    <div className="p-3 bg-muted/10 rounded-lg border flex items-center gap-3 inline-flex">
+                                                        <Stethoscope className="w-4 h-4 text-primary" />
+                                                        <span className="font-mono font-medium">{data.doctor?.licenseNumber || "Not Provided"}</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </TabsContent>
                                 </Tabs>
 
-                                <div className="mt-8 text-xs text-muted-foreground text-center">
-                                    Campaign ID: {data.id} • Created on {new Date(data.createdAt).toLocaleDateString()}
+                                <div className="mt-8 pt-6 border-t flex justify-between items-center text-xs text-muted-foreground">
+                                    <div>
+                                        Campaign ID: <span className="font-mono select-all">{data.id}</span>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <span>Created: {new Date(data.createdAt).toLocaleString()}</span>
+                                        <span>Updated: {new Date(data.updatedAt).toLocaleString()}</span>
+                                    </div>
                                 </div>
                             </div>
                         </ScrollArea>
                     ) : (
-                        <div className="flex items-center justify-center w-full h-full text-muted-foreground">
-                            No data available
+                        <div className="flex items-center justify-center w-full h-full text-muted-foreground flex-col gap-2">
+                            <Info className="w-8 h-8 opacity-20" />
+                            <p>No campaign details available</p>
                         </div>
                     )}
                 </div>
