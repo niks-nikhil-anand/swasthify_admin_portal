@@ -189,6 +189,12 @@ model Campaign {
   // Stats (Stored as JSON: { views, bookings, ... } or default values)
   stats Json?
 
+  // Appointment Configuration
+  dailyLimit    Int      @default(0) @map("daily_limit")
+  hourlyLimit   Int      @default(0) @map("hourly_limit")
+  totalCapacity Int?     @map("total_capacity")
+  requiredDetails String[] @default([]) @map("required_details")
+
   // Media (Stored as JSON: [{ type, url }])
   media Json?
 
