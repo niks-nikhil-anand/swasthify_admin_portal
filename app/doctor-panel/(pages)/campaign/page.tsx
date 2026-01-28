@@ -1,52 +1,56 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Megaphone, Send, Users, Eye, MousePointerClick, MoreHorizontal, Calendar } from "lucide-react";
+import { Megaphone, Send, Users, Eye, MousePointerClick, MoreHorizontal, Calendar, Loader2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { CreateCampaign } from "./_components/CreateCampaign";
+import { toast } from "sonner";
 
-const campaigns = [
-    {
-        id: 1,
-        title: "Monsoon Health Tips",
-        status: "Active",
-        sent: "2 days ago",
-        reach: 1200,
-        clicks: 450,
-        type: "Email"
-    },
-    {
-        id: 2,
-        title: "Free Dental Checkup Camp",
-        status: "Draft",
-        sent: "-",
-        reach: 0,
-        clicks: 0,
-        type: "SMS"
-    },
-    {
-        id: 3,
-        title: "Flu Shot Reminder",
-        status: "Completed",
-        sent: "1 week ago",
-        reach: 850,
-        clicks: 320,
-        type: "WhatsApp"
-    },
-    {
-        id: 4,
-        title: "New Clinic Opening",
-        status: "Completed",
-        sent: "1 month ago",
-        reach: 5000,
-        clicks: 1200,
-        type: "Email"
-    }
-];
+interface Campaign {
+    id: string;
+    name: string;
+    description: string | null;
+    type: string;
+    status: string;
+    price: number;
+    startDate: string;
+    endDate: string;
+    createdAt: string;
+    stats?: {
+        views?: number;
+        clicks?: number;
+        reach?: number;
+    };
+}
 
 export default function CampaignPage() {
+    const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchCampaigns();
+    }, []);
+
+    const fetchCampaigns = async () => {
+        try {
+            const res = await fetch("/api/doctor/campaigns");
+            if (res.ok) {
+                const data = await res.json();
+                setCampaigns(data);
+            } else {
+                toast.error("Failed to fetch campaigns");
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Something went wrong");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -57,7 +61,7 @@ export default function CampaignPage() {
                 <CreateCampaign />
             </div>
 
-            {/* Campaign Stats */}
+            {/* Campaign Stats - Placeholders for now as we don't have aggregate stats API yet */}
             <div className="grid gap-4 md:grid-cols-3">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -65,7 +69,7 @@ export default function CampaignPage() {
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">7,050</div>
+                        <div className="text-2xl font-bold">0</div>
                         <p className="text-xs text-muted-foreground mt-1">
                             Across all platforms
                         </p>
@@ -77,7 +81,7 @@ export default function CampaignPage() {
                         <MousePointerClick className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">28%</div>
+                        <div className="text-2xl font-bold">0%</div>
                         <p className="text-xs text-muted-foreground mt-1">
                             Click-through rate
                         </p>
@@ -89,7 +93,7 @@ export default function CampaignPage() {
                         <Send className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">12k</div>
+                        <div className="text-2xl font-bold">0</div>
                         <p className="text-xs text-muted-foreground mt-1">
                             This month
                         </p>
@@ -105,70 +109,79 @@ export default function CampaignPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-4">
-                        {campaigns.map((camp) => (
-                            <div key={camp.id} className="grid grid-cols-1 md:grid-cols-12 items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                                {/* Icon & Title */}
-                                <div className="md:col-span-4 flex items-center gap-4">
-                                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                        <Megaphone className="h-5 w-5" />
+                    {loading ? (
+                        <div className="flex justify-center py-8">
+                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                        </div>
+                    ) : campaigns.length === 0 ? (
+                        <div className="text-center py-8 text-muted-foreground">
+                            No campaigns found. Create your first campaign!
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {campaigns.map((camp) => (
+                                <div key={camp.id} className="grid grid-cols-1 md:grid-cols-12 items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                                    {/* Icon & Title */}
+                                    <div className="md:col-span-4 flex items-center gap-4">
+                                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                            <Megaphone className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-semibold text-sm">{camp.name}</h3>
+                                            <p className="text-xs text-muted-foreground mt-0.5">{camp.type} Campaign</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 className="font-semibold text-sm">{camp.title}</h3>
-                                        <p className="text-xs text-muted-foreground mt-0.5">{camp.type} Campaign</p>
-                                    </div>
-                                </div>
 
-                                {/* Status */}
-                                <div className="md:col-span-2">
-                                    <Badge variant={
-                                        camp.status === "Active" ? "default" :
-                                            camp.status === "Draft" ? "secondary" : "outline"
-                                    } className="font-normal">
-                                        {camp.status}
-                                    </Badge>
-                                </div>
+                                    {/* Status */}
+                                    <div className="md:col-span-2">
+                                        <Badge variant={
+                                            camp.status === "ACTIVE" ? "success" :
+                                                camp.status === "IN_REVIEW" ? "warning" :
+                                                    camp.status === "DRAFT" ? "secondary" : "outline"
+                                        } className="font-normal">
+                                            {camp.status.replace("_", " ")}
+                                        </Badge>
+                                    </div>
 
-                                {/* Stats Info */}
-                                <div className="md:col-span-4 grid grid-cols-3 gap-4 text-sm text-muted-foreground">
-                                    <div className="flex items-center gap-1.5" title="Sent Date">
-                                        <Calendar className="h-3.5 w-3.5" />
-                                        <span>{camp.sent}</span>
+                                    {/* Stats Info */}
+                                    <div className="md:col-span-4 grid grid-cols-3 gap-4 text-sm text-muted-foreground">
+                                        <div className="flex items-center gap-1.5" title="Start Date">
+                                            <Calendar className="h-3.5 w-3.5" />
+                                            <span>{new Date(camp.startDate).toLocaleDateString()}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5" title="Reach">
+                                            <Eye className="h-3.5 w-3.5" />
+                                            <span>{camp.stats?.reach || 0}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5" title="Clicks">
+                                            <MousePointerClick className="h-3.5 w-3.5" />
+                                            <span>{camp.stats?.clicks || 0}</span>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-1.5" title="Reach">
-                                        <Eye className="h-3.5 w-3.5" />
-                                        <span>{camp.reach}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1.5" title="Clicks">
-                                        <MousePointerClick className="h-3.5 w-3.5" />
-                                        <span>{camp.clicks}</span>
-                                    </div>
-                                </div>
 
-                                {/* Actions */}
-                                <div className="md:col-span-2 flex justify-end">
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                <MoreHorizontal className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                            <DropdownMenuItem>View Stats</DropdownMenuItem>
-                                            <DropdownMenuItem>Duplicate</DropdownMenuItem>
-                                            {camp.status === 'Draft' && <DropdownMenuItem>Edit</DropdownMenuItem>}
-                                            <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    {/* Actions */}
+                                    <div className="md:col-span-2 flex justify-end">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                <DropdownMenuItem>View Stats</DropdownMenuItem>
+                                                <DropdownMenuItem>Duplicate</DropdownMenuItem>
+                                                {camp.status === 'DRAFT' && <DropdownMenuItem>Edit</DropdownMenuItem>}
+                                                <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </CardContent>
             </Card>
-
-
         </div>
     );
 }
