@@ -30,8 +30,9 @@ const DAYS_OF_WEEK = [
 ];
 
 export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalProps) {
-    const [loading, setLoading] = useState(false);
+
     const [step, setStep] = useState(1);
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState<{
         name: string;
         description: string;
@@ -69,6 +70,41 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         price: "",
         discountPercentage: "",
     });
+
+    const [detectingLocation, setDetectingLocation] = useState(false);
+
+    // ... existing handlers
+
+    const handleDetectLocation = () => {
+        if (!navigator.geolocation) {
+            toast.error("Geolocation is not supported by your browser");
+            return;
+        }
+
+        setDetectingLocation(true);
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                setFormData((prev) => ({
+                    ...prev,
+                    latitude: latitude.toString(),
+                    longitude: longitude.toString(),
+                }));
+                toast.success("Location detected successfully");
+                setDetectingLocation(false);
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+                toast.error("Unable to retrieve your location. Please ensure location permissions are enabled.");
+                setDetectingLocation(false);
+            }
+        );
+    };
+
+    // ... existing render
+
+
+
 
     // Calculate progress based on step (1 to 4)
     const progress = (step / 4) * 100;
@@ -116,11 +152,11 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
     });
 
     const step2Schema = z.object({
-        address: z.string().optional(),
+        address: z.string().min(5, "Address must be at least 5 characters"),
         city: z.string().min(1, "City is required"),
-        state: z.string().optional(),
-        district: z.string().optional(),
-        pincode: z.string().optional().refine((val) => !val || /^\d{6}$/.test(val), "Pin Code must be exactly 6 digits"),
+        state: z.string().min(1, "State is required"),
+        district: z.string().min(1, "District is required"),
+        pincode: z.string().min(1, "Pin Code is required").regex(/^\d{6}$/, "Pin Code must be exactly 6 digits"),
         latitude: z.string().optional(),
         longitude: z.string().optional(),
     });
@@ -157,7 +193,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         } catch (error) {
             if (error instanceof z.ZodError) {
                 // Show the first error message
-                const firstError = error.errors[0];
+                const firstError = error.issues[0];
                 toast.error(firstError?.message || "Validation failed");
             }
             return false;
@@ -344,13 +380,25 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                     {/* STEP 2: LOCATION */}
                     {step === 2 && (
                         <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                            <div className="flex items-center gap-2 mb-2 text-muted-foreground bg-muted/50 p-2 rounded text-sm">
-                                <MapPin className="w-4 h-4" />
-                                <span>Ideally, this would use a map picker. For now, enter details manually.</span>
+                            <div className="flex justify-between items-center mb-2">
+                                <div className="flex items-center gap-2 text-muted-foreground bg-muted/50 p-2 rounded text-sm flex-1 mr-2">
+                                    <MapPin className="w-4 h-4" />
+                                    <span>Enter details manually or detect location.</span>
+                                </div>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleDetectLocation}
+                                    disabled={detectingLocation}
+                                >
+                                    {detectingLocation ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MapPin className="mr-2 h-4 w-4" />}
+                                    Detect Location
+                                </Button>
                             </div>
 
                             <div className="space-y-2 pb-2">
-                                <Label htmlFor="address" className="mb-2 block">Street Address</Label>
+                                <Label htmlFor="address" className="mb-2 block">Street Address <span className="text-destructive">*</span></Label>
                                 <Input
                                     id="address"
                                     name="address"
@@ -372,7 +420,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                     />
                                 </div>
                                 <div className="space-y-2 col-span-1">
-                                    <Label htmlFor="district" className="mb-2 block">District</Label>
+                                    <Label htmlFor="district" className="mb-2 block">District <span className="text-destructive">*</span></Label>
                                     <Input
                                         id="district"
                                         name="district"
@@ -382,7 +430,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                     />
                                 </div>
                                 <div className="space-y-2 col-span-1">
-                                    <Label htmlFor="state" className="mb-2 block">State</Label>
+                                    <Label htmlFor="state" className="mb-2 block">State <span className="text-destructive">*</span></Label>
                                     <Input
                                         id="state"
                                         name="state"
@@ -395,13 +443,19 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
 
                             <div className="grid grid-cols-3 gap-4 pb-2">
                                 <div className="space-y-2 col-span-1">
-                                    <Label htmlFor="pincode" className="mb-2 block">Pin Code</Label>
+                                    <Label htmlFor="pincode" className="mb-2 block">Pin Code <span className="text-destructive">*</span></Label>
                                     <Input
                                         id="pincode"
                                         name="pincode"
                                         placeholder="123456"
                                         value={formData.pincode}
-                                        onChange={handleChange}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            if (/^\d*$/.test(val) && val.length <= 6) {
+                                                setFormData((prev) => ({ ...prev, pincode: val }));
+                                            }
+                                        }}
+                                        maxLength={6}
                                     />
                                 </div>
                                 <div className="space-y-2 col-span-1">
