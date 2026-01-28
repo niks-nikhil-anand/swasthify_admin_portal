@@ -328,11 +328,12 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                 <DialogHeader>
                     <DialogTitle>Create New Campaign</DialogTitle>
                     <DialogDescription>
-                        Step {step} of 5: {
+                        Step {step} of 6: {
                             step === 1 ? "Campaign Details" :
                                 step === 2 ? "Location & Address" :
                                     step === 3 ? "Availability Schedule" :
-                                        step === 4 ? "Appointment Configuration" : "Pricing & Review"
+                                        step === 4 ? "Appointment Configuration" :
+                                            step === 5 ? "Pricing" : "Final Review"
                         }
                     </DialogDescription>
                 </DialogHeader>
@@ -749,7 +750,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                             </div>
 
                             <div className="flex items-center gap-2 p-3 bg-blue-50 text-blue-700 rounded-md text-sm border border-blue-100">
-                                <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                                <CheckCircle2 className="w-4 h-4 shrink-0" />
                                 <p>Please review all details carefully before creating the campaign.</p>
                             </div>
                         </div>
