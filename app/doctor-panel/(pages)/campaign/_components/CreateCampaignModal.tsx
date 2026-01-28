@@ -109,8 +109,8 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         );
     };
 
-    // Calculate progress based on step (1 to 5)
-    const progress = (step / 5) * 100;
+    // Calculate progress based on step (1 to 6)
+    const progress = (step / 6) * 100;
 
     // Calculate discounted price
     const price = parseFloat(formData.price) || 0;
@@ -209,6 +209,8 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                 case 5:
                     step5Schema.parse(formData);
                     return true;
+                case 6:
+                    return true; // No validation needed for review step
                 default:
                     return true;
             }
@@ -223,7 +225,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
 
     const handleNext = () => {
         if (validateStep(step)) {
-            setStep((prev) => Math.min(prev + 1, 5));
+            setStep((prev) => Math.min(prev + 1, 6));
         }
     };
 
@@ -233,7 +235,11 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!validateStep(5)) return;
+        // Validate all steps before submission
+        if (!validateStep(1) || !validateStep(2) || !validateStep(3) || !validateStep(4) || !validateStep(5)) {
+            toast.error("Please ensure all steps are correctly filled.");
+            return;
+        }
 
         setLoading(true);
 
@@ -641,7 +647,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                         </div>
                     )}
 
-                    {/* STEP 5: PRICING & REVIEW */}
+                    {/* STEP 5: PRICING */}
                     {step === 5 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
 
@@ -691,20 +697,61 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                     <span>₹{discountedPrice.toFixed(2)}</span>
                                 </div>
                             </div>
+                        </div>
+                    )}
 
-                            {/* Brief Review */}
-                            <div className="space-y-2 pt-2">
-                                <h4 className="font-semibold text-sm flex items-center gap-2">
-                                    <CheckCircle2 className="w-4 h-4 text-green-500" /> Verify Details
-                                </h4>
-                                <p className="text-xs text-muted-foreground">
-                                    <strong>Campaign:</strong> {formData.name} ({formData.type})<br />
-                                    <strong>Location:</strong> {formData.address}, {formData.city} {formData.district && `, ${formData.district}`} {formData.state && `, ${formData.state}`} {formData.pincode && `- ${formData.pincode}`} <br />
-                                    <strong>Schedule:</strong> {formData.selectedDays.length} days selected, {formData.scheduleStartTime} - {formData.scheduleEndTime}<br />
-                                    <strong>Capacity:</strong> {formData.dailyAppointmentLimit}/day, {formData.hourlyAppointmentLimit}/hr {formData.totalCampaignAppointments && `(Total: ${formData.totalCampaignAppointments})`}
-                                </p>
+                    {/* STEP 6: FINAL REVIEW */}
+                    {step === 6 && (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                            <div className="bg-muted/30 p-4 rounded-lg border space-y-4 text-sm">
+                                <div>
+                                    <h4 className="font-semibold text-foreground mb-1">Campaign Details</h4>
+                                    <p className="text-muted-foreground">{formData.name} ({formData.type})</p>
+                                    <p className="text-muted-foreground text-xs">{format(new Date(formData.startDate), "PPP p")} - {format(new Date(formData.endDate), "PPP p")}</p>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <h4 className="font-semibold text-foreground mb-1">Location</h4>
+                                        <p className="text-muted-foreground">{formData.address}</p>
+                                        <p className="text-muted-foreground">{formData.city}, {formData.state} - {formData.pincode}</p>
+                                        {formData.latitude && formData.longitude && <p className="text-xs text-muted-foreground mt-1">Lat: {formData.latitude}, Lng: {formData.longitude}</p>}
+                                    </div>
+                                    <div>
+                                        <h4 className="font-semibold text-foreground mb-1">Schedule</h4>
+                                        <p className="text-muted-foreground">{formData.selectedDays.map(d => d.slice(0, 3)).join(", ")}</p>
+                                        <p className="text-muted-foreground">{formData.scheduleStartTime} - {formData.scheduleEndTime}</p>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <h4 className="font-semibold text-foreground mb-1">Capacity</h4>
+                                        <p className="text-muted-foreground">{formData.dailyAppointmentLimit} / day</p>
+                                        <p className="text-muted-foreground">{formData.hourlyAppointmentLimit} / hour</p>
+                                        {formData.totalCampaignAppointments && <p className="text-muted-foreground">Total: {formData.totalCampaignAppointments}</p>}
+                                    </div>
+                                    <div>
+                                        <h4 className="font-semibold text-foreground mb-1">Patient Info</h4>
+                                        <p className="text-muted-foreground text-xs">{formData.appointmentRequirements.join(", ")}</p>
+                                    </div>
+                                </div>
+
+                                <div className="pt-2 border-t mt-2">
+                                    <div className="flex justify-between items-center font-bold text-lg">
+                                        <span>Final Price</span>
+                                        <div className="text-right">
+                                            <span className="text-muted-foreground line-through text-sm font-normal mr-2">₹{price.toFixed(2)}</span>
+                                            <span>₹{discountedPrice.toFixed(2)}</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
+                            <div className="flex items-center gap-2 p-3 bg-blue-50 text-blue-700 rounded-md text-sm border border-blue-100">
+                                <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                                <p>Please review all details carefully before creating the campaign.</p>
+                            </div>
                         </div>
                     )}
 
@@ -720,7 +767,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
 
                         {/* Next/Submit Button */}
                         <div>
-                            {step < 5 ? (
+                            {step < 6 ? (
                                 <Button type="button" onClick={handleNext}>
                                     Next <ArrowRight className="w-4 h-4 ml-2" />
                                 </Button>
