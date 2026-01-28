@@ -24,9 +24,15 @@ const campaignSchema = z.object({
         latitude: z.number().optional(),
         longitude: z.number().optional(),
     }),
-    schedule: z.any().optional(), // Can be more specific if we define the JSON structure
+    schedule: z.any().optional(),
     bookingRules: z.any().optional(),
     eligibility: z.any().optional(),
+    appointmentConfig: z.object({
+        dailyLimit: z.number().min(0),
+        hourlyLimit: z.number().min(0),
+        totalCapacity: z.number().nullable().optional(),
+        requiredDetails: z.array(z.string()).optional(),
+    }).optional(),
 });
 
 export async function POST(req: Request) {
@@ -87,6 +93,11 @@ export async function POST(req: Request) {
                 schedule: data.schedule || {},
                 bookingRules: data.bookingRules || {},
                 eligibility: data.eligibility || {},
+                // Appointment Configuration
+                dailyLimit: data.appointmentConfig?.dailyLimit || 0,
+                hourlyLimit: data.appointmentConfig?.hourlyLimit || 0,
+                totalCapacity: data.appointmentConfig?.totalCapacity || null,
+                requiredDetails: data.appointmentConfig?.requiredDetails || [],
                 status: "DRAFT", // Default status
             },
         });
