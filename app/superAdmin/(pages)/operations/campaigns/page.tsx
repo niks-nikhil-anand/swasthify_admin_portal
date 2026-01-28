@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table"
 import { CampaignDetailsModal } from "./components/CampaignDetailsModal"
+import { EditCampaignStatusModal } from "./components/EditCampaignStatusModal"
 import { ArrowUpDown, Copy, Edit, MoreHorizontal, Eye, CheckCircle, XCircle } from "lucide-react"
 
 type Campaign = {
@@ -65,7 +66,7 @@ const getColumns = (
             accessorKey: "price",
             header: "Price",
             cell: ({ row }) => {
-                const price = parseFloat(row.getValue("price"))
+                const price = row.getValue("price") as number
                 const formatted = new Intl.NumberFormat("en-IN", {
                     style: "currency",
                     currency: "INR",
@@ -172,6 +173,10 @@ export default function CampaignsPage() {
     const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
 
+    // Edit state
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+    const [campaignToEdit, setCampaignToEdit] = useState<Campaign | undefined>(undefined)
+
     // Handlers
     const handleViewDetails = (id: string) => {
         setSelectedCampaignId(id)
@@ -179,8 +184,12 @@ export default function CampaignsPage() {
     }
 
     const handleEdit = (id: string) => {
-        console.log("Edit Status", id)
-        // Implement edit logic
+        const campaign = campaigns.find(c => c.id === id)
+        if (campaign) {
+            setSelectedCampaignId(id) // Also set ID for update callback if needed
+            setCampaignToEdit(campaign)
+            setIsEditModalOpen(true)
+        }
     }
 
     const handleDelete = (id: string) => {
@@ -220,7 +229,6 @@ export default function CampaignsPage() {
         <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold tracking-tight">Campaign Operations</h1>
-                {/* Add button if needed, but usually docs create campaigns */}
             </div>
 
             <Card>
@@ -262,6 +270,15 @@ export default function CampaignsPage() {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 campaignId={selectedCampaignId}
+            />
+
+            <EditCampaignStatusModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                campaignId={selectedCampaignId}
+                currentStatus={campaignToEdit?.status}
+                isVerified={campaignToEdit?.isVerified}
+                onUpdate={fetchCampaigns}
             />
         </div>
     )

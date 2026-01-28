@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { z } from "zod";
+
+const updateSchema = z.object({
+    status: z.enum(["DRAFT", "ACTIVE", "IN_REVIEW", "PAUSED", "COMPLETED"]).optional(),
+    isVerified: z.boolean().optional(),
+});
 
 export async function GET(
     req: Request,
@@ -47,6 +53,41 @@ export async function GET(
         return NextResponse.json(campaign);
     } catch (error) {
         console.error("Error fetching campaign details:", error);
+        return NextResponse.json(
+            { error: "Internal Server Error" },
+            { status: 500 }
+        );
+    }
+}
+
+export async function PATCH(
+    req: Request,
+    { params }: { params: { id: string } }
+) {
+    try {
+        const { id } = await params;
+        const body = await req.json();
+
+        const validatedData = updateSchema.safeParse(body);
+
+        if (!validatedData.success) {
+            return NextResponse.json({ error: "Invalid input", details: validatedData.error.errors }, { status: 400 });
+        }
+
+        if (!id) {
+            return NextResponse.json({ error: "Campaign ID required" }, { status: 400 });
+        }
+
+        const campaign = await db.campaign.update({
+            where: { id },
+            data: {
+                ...validatedData.data,
+            },
+        });
+
+        return NextResponse.json(campaign);
+    } catch (error) {
+        console.error("Error updating campaign:", error);
         return NextResponse.json(
             { error: "Internal Server Error" },
             { status: 500 }
