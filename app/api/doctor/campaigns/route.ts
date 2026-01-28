@@ -102,13 +102,56 @@ export async function POST(req: Request) {
                 hourlyLimit: data.appointmentConfig?.hourlyLimit || 0,
                 totalCapacity: data.appointmentConfig?.totalCapacity || null,
                 requiredDetails: data.appointmentConfig?.requiredDetails || [],
-                status: "DRAFT", // Default status
+                status: "IN_REVIEW", // Default status
             },
         });
 
         return NextResponse.json({ campaign }, { status: 201 });
     } catch (error) {
         console.error("Error creating campaign:", error);
+        return NextResponse.json(
+            { error: "Internal server error" },
+            { status: 500 }
+        );
+    }
+}
+
+export async function GET(req: Request) {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get("DOCTOR");
+
+        if (!token) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const secret = new TextEncoder().encode(JWT_SECRET);
+        const { payload } = await jwtVerify(token.value, secret);
+
+        if (!payload.userId || payload.role !== "DOCTOR") {
+            return NextResponse.json({ error: "Invalid token" }, { status: 403 });
+        }
+
+        const user = await db.user.findUnique({
+            where: { id: payload.userId as string },
+            include: { doctor: true },
+        });
+
+        if (!user || !user.doctor) {
+            return NextResponse.json(
+                { error: "Doctor profile not found" },
+                { status: 404 }
+            );
+        }
+
+        const campaigns = await db.campaign.findMany({
+            where: { doctorId: user.doctor.id },
+            orderBy: { createdAt: "desc" },
+        });
+
+        return NextResponse.json(campaigns);
+    } catch (error) {
+        console.error("Error fetching campaigns:", error);
         return NextResponse.json(
             { error: "Internal server error" },
             { status: 500 }
