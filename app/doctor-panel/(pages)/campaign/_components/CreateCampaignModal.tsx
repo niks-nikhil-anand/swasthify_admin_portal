@@ -37,7 +37,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         name: string;
         description: string;
         type: string;
-        startDate: string; // ISO string format for input type="datetime-local" is YYYY-MM-DDTHH:mm
+        startDate: string;
         endDate: string;
         address: string;
         city: string;
@@ -49,6 +49,10 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         selectedDays: string[];
         scheduleStartTime: string;
         scheduleEndTime: string;
+        totalCampaignAppointments: string;
+        dailyAppointmentLimit: string;
+        hourlyAppointmentLimit: string;
+        appointmentRequirements: string[];
         price: string;
         discountPercentage: string;
     }>({
@@ -64,9 +68,13 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         pincode: "",
         latitude: "",
         longitude: "",
-        selectedDays: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"], // Default week days
+        selectedDays: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
         scheduleStartTime: "09:00",
         scheduleEndTime: "17:00",
+        totalCampaignAppointments: "",
+        dailyAppointmentLimit: "",
+        hourlyAppointmentLimit: "",
+        appointmentRequirements: ["Name", "Age", "Gender", "Phone Number"],
         price: "",
         discountPercentage: "",
     });
@@ -101,13 +109,8 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         );
     };
 
-    // ... existing render
-
-
-
-
-    // Calculate progress based on step (1 to 4)
-    const progress = (step / 4) * 100;
+    // Calculate progress based on step (1 to 5)
+    const progress = (step / 5) * 100;
 
     // Calculate discounted price
     const price = parseFloat(formData.price) || 0;
@@ -134,7 +137,16 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         });
     };
 
-
+    const handleRequirementToggle = (req: string) => {
+        setFormData((prev) => {
+            const currentReqs = prev.appointmentRequirements;
+            if (currentReqs.includes(req)) {
+                return { ...prev, appointmentRequirements: currentReqs.filter((r) => r !== req) };
+            } else {
+                return { ...prev, appointmentRequirements: [...currentReqs, req] };
+            }
+        });
+    };
 
     // Zod Schemas for each step
     const step1Schema = z.object({
@@ -168,6 +180,13 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
     });
 
     const step4Schema = z.object({
+        totalCampaignAppointments: z.string().optional().refine((val) => !val || (!isNaN(parseInt(val)) && parseInt(val) > 0), "Total Capacity must be a positive number"),
+        dailyAppointmentLimit: z.string().min(1, "Daily Limit is required").refine((val) => !isNaN(parseInt(val)) && parseInt(val) > 0, "Daily Limit must be a positive number"),
+        hourlyAppointmentLimit: z.string().min(1, "Hourly Limit is required").refine((val) => !isNaN(parseInt(val)) && parseInt(val) > 0, "Hourly Limit must be a positive number"),
+        appointmentRequirements: z.array(z.string()).min(1, "Select at least one required field"),
+    });
+
+    const step5Schema = z.object({
         price: z.string().min(1, "Base Price is required").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Price must be a positive number"),
         discountPercentage: z.string().optional().refine((val) => !val || (!isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100), "Discount must be between 0 and 100"),
     });
@@ -187,12 +206,14 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                 case 4:
                     step4Schema.parse(formData);
                     return true;
+                case 5:
+                    step5Schema.parse(formData);
+                    return true;
                 default:
                     return true;
             }
         } catch (error) {
             if (error instanceof z.ZodError) {
-                // Show the first error message
                 const firstError = error.issues[0];
                 toast.error(firstError?.message || "Validation failed");
             }
@@ -202,7 +223,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
 
     const handleNext = () => {
         if (validateStep(step)) {
-            setStep((prev) => Math.min(prev + 1, 4));
+            setStep((prev) => Math.min(prev + 1, 5));
         }
     };
 
@@ -212,7 +233,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!validateStep(4)) return;
+        if (!validateStep(5)) return;
 
         setLoading(true);
 
@@ -239,7 +260,12 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                     startTime: formData.scheduleStartTime,
                     endTime: formData.scheduleEndTime,
                 },
-                // Defaults
+                appointmentConfig: {
+                    totalCapacity: formData.totalCampaignAppointments ? parseInt(formData.totalCampaignAppointments) : null,
+                    dailyLimit: parseInt(formData.dailyAppointmentLimit),
+                    hourlyLimit: parseInt(formData.hourlyAppointmentLimit),
+                    requiredDetails: formData.appointmentRequirements,
+                },
                 bookingRules: {},
                 eligibility: {},
             };
@@ -258,7 +284,6 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
             toast.success("Campaign created successfully!");
             onOpenChange(false);
 
-            // Reset form after successful submission (optional, but good UX)
             setStep(1);
             setFormData({
                 name: "",
@@ -276,6 +301,10 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                 selectedDays: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
                 scheduleStartTime: "09:00",
                 scheduleEndTime: "17:00",
+                totalCampaignAppointments: "",
+                dailyAppointmentLimit: "",
+                hourlyAppointmentLimit: "",
+                appointmentRequirements: ["Name", "Age", "Gender", "Phone Number"],
                 price: "",
                 discountPercentage: "",
             });
@@ -293,10 +322,11 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                 <DialogHeader>
                     <DialogTitle>Create New Campaign</DialogTitle>
                     <DialogDescription>
-                        Step {step} of 4: {
+                        Step {step} of 5: {
                             step === 1 ? "Campaign Details" :
                                 step === 2 ? "Location & Address" :
-                                    step === 3 ? "Availability Schedule" : "Pricing & Review"
+                                    step === 3 ? "Availability Schedule" :
+                                        step === 4 ? "Appointment Configuration" : "Pricing & Review"
                         }
                     </DialogDescription>
                 </DialogHeader>
@@ -539,8 +569,80 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                         </div>
                     )}
 
-                    {/* STEP 4: PRICING & REVIEW */}
+                    {/* STEP 4: APPOINTMENT CONFIGURATION */}
                     {step === 4 && (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+
+                            <div className="space-y-4">
+                                <h4 className="font-semibold text-sm">Capacity Constraints</h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="totalCampaignAppointments" className="mb-2 block">Total Appointments (Optional)</Label>
+                                        <Input
+                                            id="totalCampaignAppointments"
+                                            name="totalCampaignAppointments"
+                                            type="number"
+                                            min="1"
+                                            placeholder="e.g. 500"
+                                            value={formData.totalCampaignAppointments}
+                                            onChange={handleChange}
+                                        />
+                                        <p className="text-xs text-muted-foreground">Limit total bookings for the entire campaign.</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="dailyAppointmentLimit" className="mb-2 block">Daily Limit <span className="text-destructive">*</span></Label>
+                                        <Input
+                                            id="dailyAppointmentLimit"
+                                            name="dailyAppointmentLimit"
+                                            type="number"
+                                            min="1"
+                                            placeholder="e.g. 50"
+                                            value={formData.dailyAppointmentLimit}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="hourlyAppointmentLimit" className="mb-2 block">Hourly Limit <span className="text-destructive">*</span></Label>
+                                        <Input
+                                            id="hourlyAppointmentLimit"
+                                            name="hourlyAppointmentLimit"
+                                            type="number"
+                                            min="1"
+                                            placeholder="e.g. 10"
+                                            value={formData.hourlyAppointmentLimit}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3 pt-2 border-t">
+                                <Label className="text-base font-semibold block mb-2">Required Patient Details <span className="text-destructive">*</span></Label>
+                                <p className="text-sm text-muted-foreground mb-3">Select the information patients must provide when booking.</p>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {["Name", "Age", "Gender", "Phone Number", "Email Address", "Current Symptoms", "Medical History"].map((req) => (
+                                        <div key={req} className="flex items-center space-x-2">
+                                            <Checkbox
+                                                id={`req-${req}`}
+                                                checked={formData.appointmentRequirements.includes(req)}
+                                                onCheckedChange={() => handleRequirementToggle(req)}
+                                            />
+                                            <label
+                                                htmlFor={`req-${req}`}
+                                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                            >
+                                                {req}
+                                            </label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                        </div>
+                    )}
+
+                    {/* STEP 5: PRICING & REVIEW */}
+                    {step === 5 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
 
                             <div className="grid grid-cols-2 gap-4 pb-2">
@@ -598,7 +700,8 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                 <p className="text-xs text-muted-foreground">
                                     <strong>Campaign:</strong> {formData.name} ({formData.type})<br />
                                     <strong>Location:</strong> {formData.address}, {formData.city} {formData.district && `, ${formData.district}`} {formData.state && `, ${formData.state}`} {formData.pincode && `- ${formData.pincode}`} <br />
-                                    <strong>Schedule:</strong> {formData.selectedDays.length} days selected, {formData.scheduleStartTime} - {formData.scheduleEndTime}
+                                    <strong>Schedule:</strong> {formData.selectedDays.length} days selected, {formData.scheduleStartTime} - {formData.scheduleEndTime}<br />
+                                    <strong>Capacity:</strong> {formData.dailyAppointmentLimit}/day, {formData.hourlyAppointmentLimit}/hr {formData.totalCampaignAppointments && `(Total: ${formData.totalCampaignAppointments})`}
                                 </p>
                             </div>
 
@@ -617,7 +720,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
 
                         {/* Next/Submit Button */}
                         <div>
-                            {step < 4 ? (
+                            {step < 5 ? (
                                 <Button type="button" onClick={handleNext}>
                                     Next <ArrowRight className="w-4 h-4 ml-2" />
                                 </Button>
