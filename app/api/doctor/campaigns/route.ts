@@ -18,6 +18,9 @@ const campaignSchema = z.object({
     location: z.object({
         address: z.string().optional(),
         city: z.string().optional(),
+        state: z.string().optional(),
+        district: z.string().optional(),
+        pincode: z.string().regex(/^\d{6}$/, "Pin Code must be 6 digits").optional(),
         latitude: z.number().optional(),
         longitude: z.number().optional(),
     }),

@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { Loader2, ArrowRight, ArrowLeft, MapPin, Calendar, DollarSign, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { z } from "zod";
 
 interface CreateCampaignModalProps {
     open: boolean;
@@ -39,6 +40,9 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         endDate: string;
         address: string;
         city: string;
+        state: string;
+        district: string;
+        pincode: string;
         latitude: string;
         longitude: string;
         selectedDays: string[];
@@ -54,6 +58,9 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         endDate: "",
         address: "",
         city: "",
+        state: "",
+        district: "",
+        pincode: "",
         latitude: "",
         longitude: "",
         selectedDays: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"], // Default week days
@@ -91,26 +98,70 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         });
     };
 
+
+
+    // Zod Schemas for each step
+    const step1Schema = z.object({
+        name: z.string().min(1, "Campaign Name is required"),
+        type: z.string(),
+        description: z.string().optional(),
+        startDate: z.string().min(1, "Start Date is required"),
+        endDate: z.string().min(1, "End Date is required"),
+    }).refine((data) => {
+        if (!data.startDate || !data.endDate) return true;
+        return new Date(data.startDate) < new Date(data.endDate);
+    }, {
+        message: "End Date must be after Start Date",
+        path: ["endDate"],
+    });
+
+    const step2Schema = z.object({
+        address: z.string().optional(),
+        city: z.string().min(1, "City is required"),
+        state: z.string().optional(),
+        district: z.string().optional(),
+        pincode: z.string().optional().refine((val) => !val || /^\d{6}$/.test(val), "Pin Code must be exactly 6 digits"),
+        latitude: z.string().optional(),
+        longitude: z.string().optional(),
+    });
+
+    const step3Schema = z.object({
+        selectedDays: z.array(z.string()).min(1, "Select at least one day"),
+        scheduleStartTime: z.string().min(1, "Opening Time is required"),
+        scheduleEndTime: z.string().min(1, "Closing Time is required"),
+    });
+
+    const step4Schema = z.object({
+        price: z.string().min(1, "Base Price is required").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Price must be a positive number"),
+        discountPercentage: z.string().optional().refine((val) => !val || (!isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100), "Discount must be between 0 and 100"),
+    });
+
     const validateStep = (currentStep: number) => {
-        switch (currentStep) {
-            case 1:
-                if (!formData.name) { toast.error("Campaign Name is required"); return false; }
-                if (!formData.startDate) { toast.error("Start Date is required"); return false; }
-                if (!formData.endDate) { toast.error("End Date is required"); return false; }
-                return true;
-            case 2:
-                // Location is optional but let's encourage at least city
-                if (!formData.city) { toast.error("City is required"); return false; }
-                return true;
-            case 3:
-                if (formData.selectedDays.length === 0) { toast.error("Select at least one day"); return false; }
-                if (!formData.scheduleStartTime || !formData.scheduleEndTime) { toast.error("Time range is required"); return false; }
-                return true;
-            case 4:
-                if (!formData.price) { toast.error("Price is required"); return false; }
-                return true;
+        try {
+            switch (currentStep) {
+                case 1:
+                    step1Schema.parse(formData);
+                    return true;
+                case 2:
+                    step2Schema.parse(formData);
+                    return true;
+                case 3:
+                    step3Schema.parse(formData);
+                    return true;
+                case 4:
+                    step4Schema.parse(formData);
+                    return true;
+                default:
+                    return true;
+            }
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                // Show the first error message
+                const firstError = error.errors[0];
+                toast.error(firstError?.message || "Validation failed");
+            }
+            return false;
         }
-        return true;
     };
 
     const handleNext = () => {
@@ -141,6 +192,9 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                 location: {
                     address: formData.address,
                     city: formData.city,
+                    state: formData.state,
+                    district: formData.district,
+                    pincode: formData.pincode,
                     latitude: formData.latitude ? parseFloat(formData.latitude) : undefined,
                     longitude: formData.longitude ? parseFloat(formData.longitude) : undefined,
                 },
@@ -178,6 +232,9 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                 endDate: "",
                 address: "",
                 city: "",
+                state: "",
+                district: "",
+                pincode: "",
                 latitude: "",
                 longitude: "",
                 selectedDays: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
@@ -220,7 +277,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                         <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="name">Campaign Name <span className="text-destructive">*</span></Label>
+                                    <Label htmlFor="name" className="mb-2 block">Campaign Name <span className="text-destructive">*</span></Label>
                                     <Input
                                         id="name"
                                         name="name"
@@ -230,7 +287,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="type">Campaign Type</Label>
+                                    <Label htmlFor="type" className="mb-2 block">Campaign Type</Label>
                                     <Select
                                         value={formData.type}
                                         onValueChange={(val) => handleSelectChange("type", val)}
@@ -248,7 +305,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="description">Description</Label>
+                                <Label htmlFor="description" className="mb-2 block">Description</Label>
                                 <Textarea
                                     id="description"
                                     name="description"
@@ -261,7 +318,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="startDate">Start Date <span className="text-destructive">*</span></Label>
+                                    <Label htmlFor="startDate" className="mb-2 block"> Campaign Start Date <span className="text-destructive">*</span></Label>
                                     <Input
                                         id="startDate"
                                         name="startDate"
@@ -271,7 +328,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="endDate">End Date <span className="text-destructive">*</span></Label>
+                                    <Label htmlFor="endDate" className="mb-2 block"> Campaign End Date <span className="text-destructive">*</span></Label>
                                     <Input
                                         id="endDate"
                                         name="endDate"
@@ -292,8 +349,8 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                 <span>Ideally, this would use a map picker. For now, enter details manually.</span>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="address">Street Address</Label>
+                            <div className="space-y-2 pb-2">
+                                <Label htmlFor="address" className="mb-2 block">Street Address</Label>
                                 <Input
                                     id="address"
                                     name="address"
@@ -303,9 +360,9 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                 />
                             </div>
 
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-3 gap-4 pb-2">
                                 <div className="space-y-2 col-span-1">
-                                    <Label htmlFor="city">City <span className="text-destructive">*</span></Label>
+                                    <Label htmlFor="city" className="mb-2 block">City <span className="text-destructive">*</span></Label>
                                     <Input
                                         id="city"
                                         name="city"
@@ -315,7 +372,40 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                     />
                                 </div>
                                 <div className="space-y-2 col-span-1">
-                                    <Label htmlFor="latitude">Latitude</Label>
+                                    <Label htmlFor="district" className="mb-2 block">District</Label>
+                                    <Input
+                                        id="district"
+                                        name="district"
+                                        placeholder="District"
+                                        value={formData.district}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div className="space-y-2 col-span-1">
+                                    <Label htmlFor="state" className="mb-2 block">State</Label>
+                                    <Input
+                                        id="state"
+                                        name="state"
+                                        placeholder="State"
+                                        value={formData.state}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-4 pb-2">
+                                <div className="space-y-2 col-span-1">
+                                    <Label htmlFor="pincode" className="mb-2 block">Pin Code</Label>
+                                    <Input
+                                        id="pincode"
+                                        name="pincode"
+                                        placeholder="123456"
+                                        value={formData.pincode}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div className="space-y-2 col-span-1">
+                                    <Label htmlFor="latitude" className="mb-2 block">Latitude</Label>
                                     <Input
                                         id="latitude"
                                         name="latitude"
@@ -327,7 +417,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                     />
                                 </div>
                                 <div className="space-y-2 col-span-1">
-                                    <Label htmlFor="longitude">Longitude</Label>
+                                    <Label htmlFor="longitude" className="mb-2 block">Longitude</Label>
                                     <Input
                                         id="longitude"
                                         name="longitude"
@@ -346,8 +436,8 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                     {step === 3 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
 
-                            <div className="space-y-3">
-                                <Label className="text-base font-semibold flex items-center gap-2">
+                            <div className="space-y-3 pb-2">
+                                <Label className="text-base font-semibold flex items-center gap-2 mb-2">
                                     <Calendar className="w-4 h-4" /> Available Days
                                 </Label>
                                 <div className="flex flex-wrap gap-2">
@@ -369,9 +459,9 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-6 pt-4 border-t">
+                            <div className="grid grid-cols-2 gap-6 pt-4 border-t pb-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="scheduleStartTime">Opening Time</Label>
+                                    <Label htmlFor="scheduleStartTime" className="mb-2 block">Opening Time</Label>
                                     <Input
                                         id="scheduleStartTime"
                                         name="scheduleStartTime"
@@ -381,7 +471,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="scheduleEndTime">Closing Time</Label>
+                                    <Label htmlFor="scheduleEndTime" className="mb-2 block">Closing Time</Label>
                                     <Input
                                         id="scheduleEndTime"
                                         name="scheduleEndTime"
@@ -399,9 +489,9 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                     {step === 4 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-4 pb-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="price" className="flex items-center gap-1">
+                                    <Label htmlFor="price" className="flex items-center gap-1 mb-2">
                                         <DollarSign className="w-3.5 h-3.5" /> Base Price ({'INR'}) <span className="text-destructive">*</span>
                                     </Label>
                                     <Input
@@ -415,7 +505,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="discountPercentage">Discount (%)</Label>
+                                    <Label htmlFor="discountPercentage" className="mb-2 block">Discount (%)</Label>
                                     <Input
                                         id="discountPercentage"
                                         name="discountPercentage"
@@ -453,7 +543,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                 </h4>
                                 <p className="text-xs text-muted-foreground">
                                     <strong>Campaign:</strong> {formData.name} ({formData.type})<br />
-                                    <strong>Location:</strong> {formData.city} <br />
+                                    <strong>Location:</strong> {formData.address}, {formData.city} {formData.district && `, ${formData.district}`} {formData.state && `, ${formData.state}`} {formData.pincode && `- ${formData.pincode}`} <br />
                                     <strong>Schedule:</strong> {formData.selectedDays.length} days selected, {formData.scheduleStartTime} - {formData.scheduleEndTime}
                                 </p>
                             </div>
