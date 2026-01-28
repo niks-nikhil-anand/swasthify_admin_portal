@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { DataTable } from "@/components/superAdmin/DataTable"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -173,6 +174,16 @@ const columns: ColumnDef<Appointment>[] = [
 ]
 
 export default function AppointmentsPage() {
+    const [isMounted, setIsMounted] = useState(false)
+
+    useEffect(() => {
+        setIsMounted(true)
+    }, [])
+
+    if (!isMounted) {
+        return null
+    }
+
     return (
         <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
