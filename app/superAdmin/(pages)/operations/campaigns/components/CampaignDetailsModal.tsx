@@ -110,7 +110,7 @@ export function CampaignDetailsModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent showCloseButton={false} className="max-w-[800px] w-full h-[85vh] flex flex-col p-0 overflow-hidden shadow-2xl md:rounded-2xl border-none ring-1 ring-black/5 bg-background">
+            <DialogContent showCloseButton={false} className="sm:max-w-[60vw] w-full h-[70vh] flex flex-col p-0 overflow-hidden shadow-2xl md:rounded-2xl border-none ring-1 ring-black/5 bg-background">
                 {/* Header */}
                 <div className="flex items-center justify-between px-8 py-5 border-b bg-muted/30">
                     <div>
