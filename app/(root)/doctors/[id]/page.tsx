@@ -8,7 +8,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Calendar, Clock, MapPin, Stethoscope, User, CalendarDays, IndianRupee, Info, CheckCircle, Share2, Phone } from "lucide-react";
+import { Calendar, Clock, MapPin, Stethoscope, User, CalendarDays, IndianRupee, Info, CheckCircle, Share2, Phone, Linkedin, Mail, MessageCircle, Copy } from "lucide-react";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import Link from "next/link";
 
@@ -172,19 +180,63 @@ export default function CampaignDetailsPage() {
                                     </h1>
                                 </div>
                                 <div className="flex gap-2">
-                                    <Button variant="outline" size="sm" className="hidden sm:flex h-9 rounded-full" onClick={() => {
-                                        navigator.clipboard.writeText(window.location.href);
-                                        toast.success("Link copied to clipboard");
-                                    }}>
-                                        <Share2 className="w-4 h-4 mr-2" />
-                                        Share
-                                    </Button>
-                                    <Button variant="outline" size="icon" className="sm:hidden rounded-full" onClick={() => {
-                                        navigator.clipboard.writeText(window.location.href);
-                                        toast.success("Link copied to clipboard");
-                                    }}>
-                                        <Share2 className="w-4 h-4" />
-                                    </Button>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="outline" size="sm" className="h-9 rounded-full gap-2 px-4 shadow-sm hover:bg-gray-50 bg-white">
+                                                <Share2 className="w-4 h-4" />
+                                                <span className="hidden sm:inline">Share</span>
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="w-56 rounded-xl shadow-lg border-gray-100 p-2">
+                                            <DropdownMenuLabel className="font-normal text-xs text-muted-foreground uppercase tracking-wider px-2 py-1.5">
+                                                Share via
+                                            </DropdownMenuLabel>
+                                            <DropdownMenuItem className="gap-3 p-2.5 rounded-lg focus:bg-primary/5 cursor-pointer" onClick={() => {
+                                                const url = window.location.href;
+                                                const text = `Check out this healthcare campaign by ${campaign.doctor.user.name}`;
+                                                window.open(`https://wa.me/?text=${encodeURIComponent(text)}%20${encodeURIComponent(url)}`, '_blank');
+                                            }}>
+                                                <div className="w-8 h-8 rounded-full bg-[#E6FCE5] flex items-center justify-center text-[#25D366]">
+                                                    <MessageCircle className="w-4 h-4" />
+                                                </div>
+                                                <span className="font-medium">WhatsApp</span>
+                                            </DropdownMenuItem>
+
+                                            <DropdownMenuItem className="gap-3 p-2.5 rounded-lg focus:bg-primary/5 cursor-pointer" onClick={() => {
+                                                const url = window.location.href;
+                                                window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+                                            }}>
+                                                <div className="w-8 h-8 rounded-full bg-[#E5F1FC] flex items-center justify-center text-[#0A66C2]">
+                                                    <Linkedin className="w-4 h-4" />
+                                                </div>
+                                                <span className="font-medium">LinkedIn</span>
+                                            </DropdownMenuItem>
+
+                                            <DropdownMenuItem className="gap-3 p-2.5 rounded-lg focus:bg-primary/5 cursor-pointer" onClick={() => {
+                                                const url = window.location.href;
+                                                const subject = `Check out this campaign: ${campaign.name}`;
+                                                const body = `I found this interesting healthcare campaign: ${campaign.name}\n\nCheck it out here: ${url}`;
+                                                window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                                            }}>
+                                                <div className="w-8 h-8 rounded-full bg-[#FCE5E5] flex items-center justify-center text-[#EA4335]">
+                                                    <Mail className="w-4 h-4" />
+                                                </div>
+                                                <span className="font-medium">Email</span>
+                                            </DropdownMenuItem>
+
+                                            <DropdownMenuSeparator className="my-1 bg-gray-100" />
+
+                                            <DropdownMenuItem className="gap-3 p-2.5 rounded-lg focus:bg-primary/5 cursor-pointer" onClick={() => {
+                                                navigator.clipboard.writeText(window.location.href);
+                                                toast.success("Link copied to clipboard");
+                                            }}>
+                                                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+                                                    <Copy className="w-4 h-4" />
+                                                </div>
+                                                <span className="font-medium">Copy Link</span>
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
                             </div>
 
