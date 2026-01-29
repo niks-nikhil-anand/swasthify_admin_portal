@@ -239,35 +239,47 @@ export default function CampaignDetailsPage() {
                                         Schedule & Timing
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent className="p-0">
-                                    <div className="divide-y border-t border-b md:border-t-0 md:border-b-0">
-                                        {campaign.schedule?.days?.map((day: string) => {
-                                            const formatTime = (t: string) => {
-                                                if (!t) return "";
-                                                const [h, m] = t.split(':');
-                                                const H = parseInt(h);
-                                                if (isNaN(H)) return t;
-                                                return `${H % 12 || 12}:${m} ${H >= 12 ? 'PM' : 'AM'}`;
-                                            };
+                                <CardContent className="p-6">
+                                    {campaign.schedule?.days && campaign.schedule.days.length > 0 ? (
+                                        <div className="space-y-6">
+                                            <div>
+                                                <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                                                    <CalendarDays className="w-4 h-4" />
+                                                    Available Days
+                                                </h4>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {campaign.schedule.days.map((day: string) => (
+                                                        <Badge key={day} variant="secondary" className="px-3 py-1.5 text-sm bg-primary/5 hover:bg-primary/10 text-primary border-primary/10 capitalize">
+                                                            {day.toLowerCase()}
+                                                        </Badge>
+                                                    ))}
+                                                </div>
+                                            </div>
 
-                                            return (
-                                                <div key={day} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 hover:bg-muted/30 transition-colors gap-2">
-                                                    <span className="font-medium text-gray-900 capitalize flex items-center gap-3">
-                                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                                                            <Calendar className="w-4 h-4" />
-                                                        </div>
-                                                        {day.toLowerCase()}
-                                                    </span>
-                                                    <span className="text-sm font-medium text-gray-600 bg-secondary px-3 py-1.5 rounded-full border text-center whitespace-nowrap">
-                                                        {formatTime(campaign.schedule?.startTime)} - {formatTime(campaign.schedule?.endTime)}
+                                            <div>
+                                                <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                                                    <Clock className="w-4 h-4" />
+                                                    Timing
+                                                </h4>
+                                                <div className="p-3 bg-gray-50 rounded-lg border flex items-center gap-3 w-fit">
+                                                    <span className="text-base font-semibold text-gray-900">
+                                                        {(() => {
+                                                            const formatTime = (t: string) => {
+                                                                if (!t) return "";
+                                                                const [h, m] = t.split(':');
+                                                                const H = parseInt(h);
+                                                                if (isNaN(H)) return t;
+                                                                return `${H % 12 || 12}:${m} ${H >= 12 ? 'PM' : 'AM'}`;
+                                                            };
+                                                            return `${formatTime(campaign.schedule?.startTime)} - ${formatTime(campaign.schedule?.endTime)}`;
+                                                        })()}
                                                     </span>
                                                 </div>
-                                            );
-                                        })}
-                                        {(!campaign.schedule?.days || campaign.schedule.days.length === 0) && (
-                                            <p className="p-6 text-muted-foreground">Detailed schedule details available upon booking.</p>
-                                        )}
-                                    </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <p className="text-muted-foreground">Detailed schedule details available upon booking.</p>
+                                    )}
                                 </CardContent>
                             </Card>
 
