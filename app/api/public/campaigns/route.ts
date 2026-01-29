@@ -6,12 +6,25 @@ export async function GET(req: Request) {
         const { searchParams } = new URL(req.url);
         const query = searchParams.get("query");
         const type = searchParams.get("type");
+        const specialization = searchParams.get("specialization");
 
         const campaigns = await db.campaign.findMany({
             where: {
                 status: "ACTIVE",
                 isVerified: true,
                 ...(type ? { type: type as any } : {}),
+                ...(specialization ? {
+                    doctor: {
+                        specializations: {
+                            some: {
+                                name: {
+                                    equals: specialization,
+                                    mode: "insensitive"
+                                }
+                            }
+                        }
+                    }
+                } : {}),
                 ...(query ? {
                     OR: [
                         { name: { contains: query, mode: "insensitive" } },

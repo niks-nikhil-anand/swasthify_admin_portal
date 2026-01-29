@@ -16,11 +16,28 @@ import { Search } from "lucide-react";
 import { toast } from "sonner";
 import { CampaignCard, Campaign } from "./components/CampaignCard";
 
+const SPECIALIZATIONS = [
+    { id: "ALL", label: "All Specializations" },
+    { id: "general_physician", label: "General Physician" },
+    { id: "cardiologist", label: "Cardiologist" },
+    { id: "dermatologist", label: "Dermatologist" },
+    { id: "pediatrician", label: "Pediatrician" },
+    { id: "neurologist", label: "Neurologist" },
+    { id: "orthopedist", label: "Orthopedist" },
+    { id: "gynecologist", label: "Gynecologist" },
+    { id: "dentist", label: "Dentist" },
+    { id: "ent", label: "ENT Specialist" },
+    { id: "psychiatrist", label: "Psychiatrist" },
+    { id: "ophthalmologist", label: "Ophthalmologist" },
+    { id: "urologist", label: "Urologist" },
+];
+
 export default function DoctorCampaignsPage() {
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedType, setSelectedType] = useState<string>("ALL");
+    const [selectedSpecialization, setSelectedSpecialization] = useState<string>("ALL");
 
     const fetchCampaigns = async () => {
         setLoading(true);
@@ -28,6 +45,7 @@ export default function DoctorCampaignsPage() {
             const params = new URLSearchParams();
             if (searchQuery) params.append("query", searchQuery);
             if (selectedType && selectedType !== "ALL") params.append("type", selectedType);
+            if (selectedSpecialization && selectedSpecialization !== "ALL") params.append("specialization", selectedSpecialization);
 
             const response = await fetch(`/api/public/campaigns?${params.toString()}`);
             if (!response.ok) throw new Error("Failed to fetch campaigns");
@@ -47,7 +65,7 @@ export default function DoctorCampaignsPage() {
             fetchCampaigns();
         }, 500);
         return () => clearTimeout(timer);
-    }, [searchQuery, selectedType]);
+    }, [searchQuery, selectedType, selectedSpecialization]);
 
     return (
         <div className="container mx-auto py-12 px-4 space-y-8">
@@ -75,9 +93,22 @@ export default function DoctorCampaignsPage() {
                     />
                     <Button className="rounded-full px-6 h-10 shadow-lg" onClick={fetchCampaigns}>Search</Button>
                 </div>
-                <div className="w-full md:w-auto flex gap-3">
+                <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
+                    <Select value={selectedSpecialization} onValueChange={setSelectedSpecialization}>
+                        <SelectTrigger className="w-full sm:w-[200px] rounded-full shadow-md border-border/50">
+                            <SelectValue placeholder="Specialization" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {SPECIALIZATIONS.map((spec) => (
+                                <SelectItem key={spec.id} value={spec.id}>
+                                    {spec.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
                     <Select value={selectedType} onValueChange={setSelectedType}>
-                        <SelectTrigger className="w-[180px] rounded-full shadow-md border-border/50">
+                        <SelectTrigger className="w-full sm:w-[180px] rounded-full shadow-md border-border/50">
                             <SelectValue placeholder="Campaign Type" />
                         </SelectTrigger>
                         <SelectContent>
