@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Calendar, Clock, MapPin, Stethoscope, User, CalendarDays, IndianRupee, Info, CheckCircle, Share2, Phone, Linkedin, Mail, MessageCircle, Copy } from "lucide-react";
+import { Calendar, Clock, MapPin, Stethoscope, User, CalendarDays, IndianRupee, Info, CheckCircle, Share2, Phone, Linkedin, Mail, MessageCircle, Copy, Star } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -192,6 +192,38 @@ export default function CampaignDetailsPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-8">
+                        {/* Mobile/Tablet Doctor Profile Header - HIDDEN ON DESKTOP */}
+                        <div className="bg-white p-6 rounded-2xl border shadow-sm flex flex-col items-center text-center space-y-4 lg:hidden">
+                            <Avatar className="w-24 h-24 border-4 border-white shadow-md">
+                                <AvatarImage src={campaign.doctor.profilePhoto || ""} className="object-cover" />
+                                <AvatarFallback className="text-2xl font-bold bg-primary/5 text-primary">
+                                    {campaign.doctor.user.name.charAt(0)}
+                                </AvatarFallback>
+                            </Avatar>
+
+                            <div className="space-y-1">
+                                <h3 className="font-bold text-xl text-gray-900">{campaign.doctor.user.name}</h3>
+                                <p className="text-primary font-medium flex items-center justify-center gap-1.5 flex-wrap">
+                                    {campaign.doctor.specializations.map(s => s.name).join(", ")}
+                                </p>
+                                <div className="text-sm text-muted-foreground flex items-center justify-center gap-2 mt-1">
+                                    <span>{campaign.doctor.qualification || "MBBS"}</span>
+                                    <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                                    <span>{campaign.doctor.experienceYears} Yrs Exp.</span>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-4 text-sm">
+                                <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-lg border border-yellow-100">
+                                    <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                                    <span className="font-bold text-gray-900">{campaign.doctor.averageRating || "New"}</span>
+                                </div>
+                                <div className="text-muted-foreground">
+                                    {campaign.doctor.totalReviews || 0} Reviews
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Title Section */}
                         <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
                             <div className="flex items-start justify-between gap-4">
