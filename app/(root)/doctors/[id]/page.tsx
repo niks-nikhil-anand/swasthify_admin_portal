@@ -103,24 +103,7 @@ export default function CampaignDetailsPage() {
 
     return (
         <div className="min-h-screen bg-gray-50/50">
-            {/* Header Banner */}
-            <div className="bg-white border-b sticky top-0 z-10 shadow-sm">
-                <div className="container mx-auto py-4 px-4 flex justify-between items-center">
-                    <Button variant="ghost" size="sm" asChild>
-                        <Link href="/doctor">← Back to Campaigns</Link>
-                    </Button>
-                    <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm" onClick={() => {
-                            navigator.clipboard.writeText(window.location.href);
-                            toast.success("Link copied to clipboard");
-                        }}>
-                            <Share2 className="w-4 h-4 mr-2" />
-                            Share
-                        </Button>
-                        <Button size="sm">Book Appointment</Button>
-                    </div>
-                </div>
-            </div>
+
 
             <div className="container mx-auto py-8 px-4 max-w-6xl">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -147,6 +130,19 @@ export default function CampaignDetailsPage() {
                                         {campaign.name}
                                     </h1>
                                 </div>
+                                <Button variant="outline" size="sm" className="hidden sm:flex" onClick={() => {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    toast.success("Link copied to clipboard");
+                                }}>
+                                    <Share2 className="w-4 h-4 mr-2" />
+                                    Share
+                                </Button>
+                                <Button variant="outline" size="icon" className="sm:hidden" onClick={() => {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    toast.success("Link copied to clipboard");
+                                }}>
+                                    <Share2 className="w-4 h-4" />
+                                </Button>
                             </div>
 
                             <p className="text-lg text-muted-foreground leading-relaxed">
