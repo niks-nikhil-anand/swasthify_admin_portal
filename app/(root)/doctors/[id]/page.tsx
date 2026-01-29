@@ -332,8 +332,8 @@ export default function CampaignDetailsPage() {
                     </div>
 
                     {/* Sidebar - Doctor Profile */}
-                    <div className="space-y-6">
-                        <div className="sticky top-8 space-y-6">
+                    <div className="space-y-6 h-fit">
+                        <div className="sticky top-28 space-y-6 max-h-[calc(100vh-8rem)] overflow-y-auto hide-scrollbar">
                             <Card className="border-0 shadow-lg ring-1 ring-black/5 overflow-hidden">
                                 <div className="h-24 bg-gradient-to-r from-primary/10 to-primary/5"></div>
                                 <CardContent className="relative pt-0 px-6 pb-6 text-center -mt-12">
