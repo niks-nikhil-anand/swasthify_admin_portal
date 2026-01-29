@@ -320,8 +320,22 @@ export default function CampaignDetailsPage() {
                                         </div>
 
                                         {/* Simple Map Placeholder - In production use a real map component */}
-                                        <div className="w-full md:w-1/3 h-32 bg-slate-100 rounded-lg border flex items-center justify-center text-muted-foreground text-sm">
-                                            Map View
+                                        <div className="w-full md:w-1/3 h-48 bg-slate-100 rounded-lg border overflow-hidden relative">
+                                            {campaign.location?.latitude && campaign.location?.longitude ? (
+                                                <iframe
+                                                    width="100%"
+                                                    height="100%"
+                                                    frameBorder="0"
+                                                    title="map"
+                                                    scrolling="no"
+                                                    src={`https://maps.google.com/maps?q=${campaign.location.latitude},${campaign.location.longitude}&z=14&output=embed`}
+                                                    className="w-full h-full"
+                                                ></iframe>
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
+                                                    Map not available
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </CardContent>
