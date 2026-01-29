@@ -194,26 +194,7 @@ export default function CampaignDetailsPage() {
                         </div>
 
                         {/* Key Metrics Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Card className="bg-gradient-to-br from-blue-50 to-blue-100/50 border-blue-100 shadow-sm overflow-hidden relative">
-                                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-100 rounded-full -mr-12 -mt-12 opacity-50 blur-xl" />
-                                <CardContent className="p-5 flex items-start gap-4 relative">
-                                    <div className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-blue-600 shrink-0">
-                                        <CalendarDays className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold text-gray-900 mb-1">Duration</p>
-                                        <p className="text-sm text-gray-600 font-medium">
-                                            {new Date(campaign.startDate).toLocaleDateString("en-IN", {
-                                                day: "numeric", month: "short"
-                                            })} - {new Date(campaign.endDate).toLocaleDateString("en-IN", {
-                                                day: "numeric", month: "short", year: "numeric"
-                                            })}
-                                        </p>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
+                        <div className="grid grid-cols-1 gap-4">
                             <Card className="bg-gradient-to-br from-green-50 to-green-100/50 border-green-100 shadow-sm overflow-hidden relative">
                                 <div className="absolute top-0 right-0 w-24 h-24 bg-green-100 rounded-full -mr-12 -mt-12 opacity-50 blur-xl" />
                                 <CardContent className="p-5 flex items-start gap-4 relative">
