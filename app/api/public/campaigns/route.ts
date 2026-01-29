@@ -8,36 +8,47 @@ export async function GET(req: Request) {
         const type = searchParams.get("type");
         const specialization = searchParams.get("specialization");
 
-        const campaigns = await db.campaign.findMany({
-            where: {
-                status: "ACTIVE",
-                isVerified: true,
-                ...(type ? { type: type as any } : {}),
-                ...(specialization ? {
-                    doctor: {
-                        specializations: {
-                            some: {
-                                name: {
-                                    equals: specialization,
-                                    mode: "insensitive"
-                                }
+        const page = parseInt(searchParams.get("page") || "1");
+        const limit = parseInt(searchParams.get("limit") || "9");
+        const skip = (page - 1) * limit;
+
+        const whereClause = {
+            status: "ACTIVE",
+            isVerified: true,
+            ...(type ? { type: type as any } : {}),
+            ...(specialization ? {
+                doctor: {
+                    specializations: {
+                        some: {
+                            name: {
+                                equals: specialization,
+                                mode: "insensitive" as const
                             }
                         }
                     }
-                } : {}),
-                ...(query ? {
-                    OR: [
-                        { name: { contains: query, mode: "insensitive" } },
-                        {
-                            doctor: {
-                                user: {
-                                    name: { contains: query, mode: "insensitive" }
-                                }
+                }
+            } : {}),
+            ...(query ? {
+                OR: [
+                    { name: { contains: query, mode: "insensitive" as const } },
+                    {
+                        doctor: {
+                            user: {
+                                name: { contains: query, mode: "insensitive" as const }
                             }
                         }
-                    ]
-                } : {})
-            },
+                    }
+                ]
+            } : {})
+        };
+
+        // Get total count for pagination
+        // @ts-ignore
+        const total = await db.campaign.count({ where: whereClause });
+
+        // @ts-ignore
+        const campaigns = await db.campaign.findMany({
+            where: whereClause,
             include: {
                 doctor: {
                     include: {
@@ -52,10 +63,20 @@ export async function GET(req: Request) {
             },
             orderBy: {
                 createdAt: "desc"
-            }
+            },
+            skip,
+            take: limit
         });
 
-        return NextResponse.json(campaigns);
+        return NextResponse.json({
+            data: campaigns,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit)
+            }
+        });
     } catch (error) {
         console.error("[PUBLIC_CAMPAIGNS_GET]", error);
         return new NextResponse("Internal Error", { status: 500 });
