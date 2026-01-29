@@ -84,19 +84,23 @@ export default function DoctorCampaignsPage() {
             </div>
 
             {/* Filters */}
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-xl border shadow-sm">
-                <div className="relative w-full md:w-96">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div className="w-full max-w-md p-2 bg-background border border-border/50 rounded-full shadow-xl shadow-primary/5 flex items-center gap-2 focus-within:ring-2 ring-primary/20 transition-all">
+                    <div className="pl-4 text-muted-foreground">
+                        <Search className="w-5 h-5" />
+                    </div>
                     <Input
+                        type="text"
                         placeholder="Search by campaign or doctor..."
-                        className="pl-9"
+                        className="border-0 shadow-none focus-visible:ring-0 px-2 h-10 text-base bg-transparent"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
+                    <Button className="rounded-full px-6 h-10 shadow-lg" onClick={fetchCampaigns}>Search</Button>
                 </div>
                 <div className="w-full md:w-auto flex gap-3">
                     <Select value={selectedType} onValueChange={setSelectedType}>
-                        <SelectTrigger className="w-[180px]">
+                        <SelectTrigger className="w-[180px] rounded-full shadow-md border-border/50">
                             <SelectValue placeholder="Campaign Type" />
                         </SelectTrigger>
                         <SelectContent>
