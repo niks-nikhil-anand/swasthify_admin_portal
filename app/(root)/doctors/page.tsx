@@ -156,19 +156,10 @@ export default function DoctorCampaignsPage() {
                             <CardContent className="p-5 flex-1">
                                 <div className="space-y-4">
                                     {/* Date */}
-                                    <div className="flex items-center gap-3 text-sm p-3 bg-muted/30 rounded-lg">
-                                        <Calendar className="w-4 h-4 text-primary" />
-                                        <div>
-                                            <p className="font-medium">
-                                                {new Date(campaign.startDate).toLocaleDateString("en-IN", {
-                                                    day: "numeric", month: "short"
-                                                })}
-                                                {" - "}
-                                                {new Date(campaign.endDate).toLocaleDateString("en-IN", {
-                                                    day: "numeric", month: "short"
-                                                })}
-                                            </p>
-                                        </div>
+                                    {/* Description */}
+                                    <div className="text-sm text-gray-600 line-clamp-3">
+                                        {/* @ts-ignore */}
+                                        {campaign.description || "Join us for this special healthcare campaign."}
                                     </div>
 
                                     {/* Doctor Mini Profile */}
