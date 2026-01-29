@@ -9,7 +9,7 @@ const updateSchema = z.object({
 
 export async function GET(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const { id } = await params;
@@ -62,7 +62,7 @@ export async function GET(
 
 export async function PATCH(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const { id } = await params;
@@ -71,7 +71,7 @@ export async function PATCH(
         const validatedData = updateSchema.safeParse(body);
 
         if (!validatedData.success) {
-            return NextResponse.json({ error: "Invalid input", details: validatedData.error.errors }, { status: 400 });
+            return NextResponse.json({ error: "Invalid input", details: validatedData.error.issues }, { status: 400 });
         }
 
         if (!id) {
