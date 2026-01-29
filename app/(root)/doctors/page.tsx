@@ -100,7 +100,7 @@ export default function DoctorCampaignsPage() {
     };
 
     return (
-        <div className="container mx-auto py-12 px-4 space-y-8">
+        <div className="container mx-auto py-12 px-4 space-y-8 lg:min-h-[80vh]">
             <div className="text-center space-y-4 max-w-2xl mx-auto">
                 <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
                     Find Healthcare Campaigns
