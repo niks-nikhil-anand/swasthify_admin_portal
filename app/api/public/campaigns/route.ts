@@ -13,7 +13,7 @@ export async function GET(req: Request) {
         const skip = (page - 1) * limit;
 
         const whereClause = {
-            status: "ACTIVE",
+            status: "ACTIVE" as any,
             isVerified: true,
             ...(type ? { type: type as any } : {}),
             ...(specialization ? {
