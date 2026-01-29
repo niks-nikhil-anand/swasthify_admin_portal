@@ -91,11 +91,11 @@ export function Hero() {
                             className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto pt-4"
                         >
                             <Link href="/doctors" className="w-full sm:w-auto">
-                                <Button size="lg" className="w-full sm:w-auto rounded-full text-base font-semibold shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all">
+                                <Button size="lg" className="w-full sm:w-auto cursor-pointer rounded-full text-base font-semibold shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all">
                                     Book Appointment <ArrowRight className="w-4 h-4 ml-2" />
                                 </Button>
                             </Link>
-                            <Link href="/about-us" className="w-full sm:w-auto">
+                            <Link href="/how-it-works" className="w-full sm:w-auto">
                                 <Button variant="outline" size="lg" className="w-full sm:w-auto rounded-full text-base font-semibold border-primary/20 bg-background/50 backdrop-blur-sm hover:bg-background/80">
                                     Learn More
                                 </Button>
