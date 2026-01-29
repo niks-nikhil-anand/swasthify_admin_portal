@@ -239,31 +239,34 @@ export default function CampaignDetailsPage() {
                                         Schedule & Timing
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent className="p-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        <div className="space-y-4">
-                                            <div className="flex justify-between items-center p-3 rounded-lg bg-secondary/50 border">
-                                                <span className="text-sm font-medium text-muted-foreground">Timing</span>
-                                                <span className="font-semibold">
-                                                    {campaign.schedule?.startTime} - {campaign.schedule?.endTime}
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between items-center p-3 rounded-lg bg-secondary/50 border">
-                                                <span className="text-sm font-medium text-muted-foreground">Daily Limit</span>
-                                                <span className="font-semibold">{campaign.dailyLimit} Patients</span>
-                                            </div>
-                                        </div>
+                                <CardContent className="p-0">
+                                    <div className="divide-y border-t border-b md:border-t-0 md:border-b-0">
+                                        {campaign.schedule?.days?.map((day: string) => {
+                                            const formatTime = (t: string) => {
+                                                if (!t) return "";
+                                                const [h, m] = t.split(':');
+                                                const H = parseInt(h);
+                                                if (isNaN(H)) return t;
+                                                return `${H % 12 || 12}:${m} ${H >= 12 ? 'PM' : 'AM'}`;
+                                            };
 
-                                        <div>
-                                            <p className="text-sm font-medium text-muted-foreground mb-3">Available Days</p>
-                                            <div className="flex flex-wrap gap-2">
-                                                {campaign.schedule?.days?.map((day: string) => (
-                                                    <Badge key={day} variant="outline" className="px-3 py-1 bg-white">
-                                                        {day.charAt(0) + day.slice(1).toLowerCase()}
-                                                    </Badge>
-                                                )) || <span className="text-sm text-muted-foreground">All days available</span>}
-                                            </div>
-                                        </div>
+                                            return (
+                                                <div key={day} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 hover:bg-muted/30 transition-colors gap-2">
+                                                    <span className="font-medium text-gray-900 capitalize flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                                                            <Calendar className="w-4 h-4" />
+                                                        </div>
+                                                        {day.toLowerCase()}
+                                                    </span>
+                                                    <span className="text-sm font-medium text-gray-600 bg-secondary px-3 py-1.5 rounded-full border text-center whitespace-nowrap">
+                                                        {formatTime(campaign.schedule?.startTime)} - {formatTime(campaign.schedule?.endTime)}
+                                                    </span>
+                                                </div>
+                                            );
+                                        })}
+                                        {(!campaign.schedule?.days || campaign.schedule.days.length === 0) && (
+                                            <p className="p-6 text-muted-foreground">Detailed schedule details available upon booking.</p>
+                                        )}
                                     </div>
                                 </CardContent>
                             </Card>
