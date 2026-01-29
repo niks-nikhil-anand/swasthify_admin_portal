@@ -306,9 +306,13 @@ export default function CampaignDetailsPage() {
                                                 </p>
                                             </div>
 
-                                            <Button variant="outline" className="gap-2" onClick={() => {
-                                                const query = `${campaign.location?.address}, ${campaign.location?.city}, ${campaign.location?.state}`;
-                                                window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, '_blank');
+                                            <Button variant="outline" className="gap-2 cursor-pointer" onClick={() => {
+                                                if (campaign.location?.latitude && campaign.location?.longitude) {
+                                                    window.open(`https://www.google.com/maps/search/?api=1&query=${campaign.location.latitude},${campaign.location.longitude}`, '_blank');
+                                                } else {
+                                                    const query = `${campaign.location?.address}, ${campaign.location?.city}, ${campaign.location?.state}`;
+                                                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, '_blank');
+                                                }
                                             }}>
                                                 <MapPin className="w-4 h-4" />
                                                 Get Directions
