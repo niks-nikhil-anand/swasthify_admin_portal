@@ -33,7 +33,7 @@ export function Footer() {
                             <div className="relative h-20 w-20 transition-transform group-hover:scale-110 duration-300">
                                 <Image src="/logo.png" alt="Swasthify Logo" fill className="object-contain" />
                             </div>
-                            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                            <span className="text-2xl font-bold bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
                                 Swasthify
                             </span>
                         </Link>

@@ -2,8 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
     Select,
@@ -25,6 +23,7 @@ import {
 } from "@/components/ui/pagination";
 import { CampaignCard, Campaign } from "./components/CampaignCard";
 import { CampaignCardSkeleton } from "./components/CampaignCardSkeleton";
+import { Search as SearchBar } from "./components/Search";
 
 const SPECIALIZATIONS = [
     { id: "ALL", label: "All Specializations" },
@@ -113,19 +112,7 @@ export default function DoctorCampaignsPage() {
 
             {/* Filters */}
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div className="w-full max-w-md p-2 bg-background border border-border/50 rounded-full shadow-xl shadow-primary/5 flex items-center gap-2 focus-within:ring-2 ring-primary/20 transition-all">
-                    <div className="pl-4 text-muted-foreground">
-                        <Search className="w-5 h-5" />
-                    </div>
-                    <Input
-                        type="text"
-                        placeholder="Search by campaign or doctor..."
-                        className="border-0 shadow-none focus-visible:ring-0 px-2 h-10 text-base bg-transparent"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    <Button className="rounded-full px-6 h-10 shadow-lg" onClick={fetchCampaigns}>Search</Button>
-                </div>
+                <SearchBar onSearch={setSearchQuery} placeholder="Search by campaign or doctor..." />
                 <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
                     <Select value={selectedSpecialization} onValueChange={setSelectedSpecialization}>
                         <SelectTrigger className="w-full sm:w-[200px] rounded-full shadow-md border-border/50">
