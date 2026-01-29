@@ -203,7 +203,7 @@ export default function DoctorCampaignsPage() {
                                             {campaign.price === 0 ? (
                                                 "Free"
                                             ) : (
-                                                <div className="flex flex-col">
+                                                <div className="flex items-center gap-2">
                                                     {campaign.discountPercentage > 0 && (
                                                         <span className="text-xs text-muted-foreground line-through font-normal">
                                                             ₹{campaign.price}
