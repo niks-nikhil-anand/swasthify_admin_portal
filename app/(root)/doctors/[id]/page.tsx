@@ -323,27 +323,7 @@ export default function CampaignDetailsPage() {
                                 </CardContent>
                             </Card>
 
-                            {/* Requirements */}
-                            {campaign.requiredDetails && campaign.requiredDetails.length > 0 && (
-                                <Card className="shadow-sm border-muted">
-                                    <CardHeader className="border-b bg-muted/20 pb-4">
-                                        <CardTitle className="flex items-center gap-2 text-lg">
-                                            <Info className="w-5 h-5 text-primary" />
-                                            Required Information
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="p-6">
-                                        <p className="text-sm text-muted-foreground mb-4">Please keep the following details ready for booking:</p>
-                                        <div className="flex flex-wrap gap-2">
-                                            {campaign.requiredDetails.map((detail: string) => (
-                                                <Badge key={detail} variant="secondary" className="px-3 py-1">
-                                                    {detail}
-                                                </Badge>
-                                            ))}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            )}
+
                         </div>
                     </div>
 
