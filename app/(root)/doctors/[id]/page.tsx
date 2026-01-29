@@ -359,6 +359,24 @@ export default function CampaignDetailsPage() {
                             </Card>
                         </div>
 
+                        {/* Mobile Actions - About Doctor & Book Appointment (HIDDEN ON DESKTOP) */}
+                        <div className="space-y-4 lg:hidden">
+                            <div className="text-left bg-white p-4 rounded-xl border shadow-sm">
+                                <p className="text-xs font-semibold text-gray-500 uppercase mb-2">About Doctor</p>
+                                <p className="text-sm text-gray-600 line-clamp-4 leading-relaxed">
+                                    {campaign.doctor.bio || `Dr. ${campaign.doctor.user.name} is a dedicated professional committed to providing excellent healthcare services.`}
+                                </p>
+                            </div>
+
+                            <Button className="w-full h-12 text-base font-semibold shadow-xl shadow-primary/20 rounded-xl">
+                                Book Appointment
+                            </Button>
+
+                            <p className="text-xs text-muted-foreground text-center">
+                                Instant confirmation • secure booking
+                            </p>
+                        </div>
+
                         {/* Detailed Information Tabs */}
                         <div className="space-y-6">
                             {/* Schedule & Timing */}
@@ -476,7 +494,7 @@ export default function CampaignDetailsPage() {
                     </div>
 
                     {/* Sidebar - Doctor Profile */}
-                    <div className="space-y-6 h-fit">
+                    <div className="space-y-6 h-fit hidden lg:block">
                         <div className="sticky top-28 space-y-6 max-h-[calc(100vh-8rem)] overflow-y-auto hide-scrollbar">
                             <Card className="border-0 shadow-lg ring-1 ring-black/5 overflow-hidden">
                                 <div className="h-24 bg-gradient-to-r from-primary/10 to-primary/5"></div>
