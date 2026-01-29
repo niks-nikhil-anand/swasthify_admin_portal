@@ -96,7 +96,7 @@ export function Hero() {
                                 </Button>
                             </Link>
                             <Link href="/how-it-works" className="w-full sm:w-auto">
-                                <Button variant="outline" size="lg" className="w-full sm:w-auto rounded-full text-base font-semibold border-primary/20 bg-background/50 backdrop-blur-sm hover:bg-background/80">
+                                <Button variant="outline" size="lg" className="w-full sm:w-auto cursor-pointer rounded-full text-base font-semibold border-primary/20 bg-background/50 backdrop-blur-sm hover:bg-background/80">
                                     Learn More
                                 </Button>
                             </Link>
