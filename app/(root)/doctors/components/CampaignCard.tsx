@@ -129,7 +129,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                             )}
                         </span>
                     </div>
-                    <Button size="sm" className="gap-2" onClick={() => window.location.href = `/doctor/${campaign.id}`}>
+                    <Button size="sm" className="gap-2 cursor-pointer" onClick={() => window.location.href = `/doctors/${campaign.id}`}>
                         View Details
                         <Stethoscope className="w-4 h-4" />
                     </Button>
