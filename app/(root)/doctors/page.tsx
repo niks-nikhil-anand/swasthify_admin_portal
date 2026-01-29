@@ -22,6 +22,7 @@ interface Campaign {
     type: string;
     status: string;
     price: number;
+    discountPercentage: number;
     startDate: string;
     endDate: string;
     location: any;
@@ -199,7 +200,23 @@ export default function DoctorCampaignsPage() {
                                     <div className="flex flex-col">
                                         <span className="text-xs text-muted-foreground uppercase tracking-wider">Price</span>
                                         <span className="text-lg font-bold text-primary">
-                                            {campaign.price === 0 ? "Free" : `₹${campaign.price}`}
+                                            {campaign.price === 0 ? (
+                                                "Free"
+                                            ) : (
+                                                <div className="flex flex-col">
+                                                    {campaign.discountPercentage > 0 && (
+                                                        <span className="text-xs text-muted-foreground line-through font-normal">
+                                                            ₹{campaign.price}
+                                                        </span>
+                                                    )}
+                                                    <span>
+                                                        ₹
+                                                        {campaign.discountPercentage > 0
+                                                            ? Math.round(campaign.price - (campaign.price * campaign.discountPercentage) / 100)
+                                                            : campaign.price}
+                                                    </span>
+                                                </div>
+                                            )}
                                         </span>
                                     </div>
                                     <Button size="sm" className="gap-2" onClick={() => window.location.href = `/doctor/${campaign.id}`}>
