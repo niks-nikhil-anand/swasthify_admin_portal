@@ -7,13 +7,6 @@ import { motion } from "framer-motion";
 
 const services = [
     {
-        title: "Video Consultation",
-        description: "Connect with top specialists from the comfort of your home via secure video calls.",
-        icon: Video,
-        href: "/consultation",
-        color: "bg-blue-50 text-blue-600",
-    },
-    {
         title: "Find Doctor Near Me",
         description: "Locate and book appointments with the best doctors in your neighborhood.",
         icon: MapPin,
@@ -34,6 +27,14 @@ const services = [
         href: "/surgeries",
         color: "bg-orange-50 text-orange-600",
     },
+    {
+        title: "Video Consultation",
+        description: "Connect with top specialists from the comfort of your home via secure video calls.",
+        icon: Video,
+        href: "/consultation",
+        color: "bg-blue-50 text-blue-600",
+    },
+
 ];
 
 const container = {
@@ -75,31 +76,31 @@ export function Services() {
                     initial="hidden"
                     whileInView="show"
                     viewport={{ once: true }}
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+                    className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8"
                 >
                     {services.map((service, index) => (
                         <motion.div
                             key={index}
                             variants={item}
                             whileHover={{ scale: 1.03 }}
-                            className="bg-card hover:shadow-xl transition-all duration-300 p-8 rounded-2xl border border-border flex flex-col items-start h-full"
+                            className="bg-card hover:shadow-xl transition-all duration-300 p-3 md:p-8 rounded-2xl border border-border flex flex-col items-start h-full"
                         >
-                            <div className={`p-4 rounded-xl mb-6 ${service.color} transition-colors`}>
-                                <service.icon className="w-8 h-8" />
+                            <div className={`p-2 md:p-4 rounded-xl mb-3 md:mb-6 ${service.color} transition-colors`}>
+                                <service.icon className="w-5 h-5 md:w-8 md:h-8" />
                             </div>
 
-                            <h3 className="text-xl font-bold text-foreground mb-3">
+                            <h3 className="text-sm md:text-xl font-bold text-foreground mb-2 md:mb-3">
                                 {service.title}
                             </h3>
 
-                            <p className="text-muted-foreground mb-8 grow">
+                            <p className="text-muted-foreground text-xs md:text-base mb-4 md:mb-8 grow line-clamp-3 md:line-clamp-none">
                                 {service.description}
                             </p>
 
                             <Link href={service.href} className="w-full mt-auto">
-                                <Button variant="outline" className="w-full group justify-between">
+                                <Button variant="outline" size="sm" className="w-full group justify-between h-8 md:h-10 text-xs md:text-sm px-2 md:px-4">
                                     Book Now
-                                    <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
+                                    <ArrowRight className="w-3 h-3 md:w-4 md:h-4 ml-1 transition-transform group-hover:translate-x-1" />
                                 </Button>
                             </Link>
                         </motion.div>
