@@ -72,7 +72,7 @@ export function HowItWorks() {
                     initial="hidden"
                     whileInView="show"
                     viewport={{ once: true }}
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+                    className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8"
                 >
                     {steps.map((step, index) => (
                         <motion.div key={index} variants={item} className="relative flex flex-col items-center text-center group">
@@ -83,13 +83,13 @@ export function HowItWorks() {
 
                             <motion.div
                                 whileHover={{ scale: 1.1, rotate: 5 }}
-                                className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 transition-transform duration-300"
+                                className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-3 md:mb-6 transition-transform duration-300"
                             >
-                                <step.icon className="w-8 h-8 text-primary" />
+                                <step.icon className="w-6 h-6 md:w-8 md:h-8 text-primary" />
                             </motion.div>
 
-                            <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
-                            <p className="text-muted-foreground leading-relaxed">
+                            <h3 className="text-sm md:text-xl font-semibold mb-2 md:mb-3">{step.title}</h3>
+                            <p className="text-muted-foreground leading-relaxed text-xs md:text-base">
                                 {step.description}
                             </p>
                         </motion.div>
