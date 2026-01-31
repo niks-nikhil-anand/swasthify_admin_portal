@@ -140,14 +140,14 @@ export function HealthPackages() {
                                     initial="hidden"
                                     whileInView="show"
                                     viewport={{ once: true }}
-                                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                                    className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6"
                                 >
                                     {items.map((pkg) => (
                                         <motion.div key={pkg.id} variants={item} whileHover={{ scale: 1.03 }}>
                                             <Card className="overflow-hidden border-2 hover:shadow-lg transition-all duration-300 flex flex-col h-full group">
-                                                <div className="relative h-56 w-full bg-gray-200 overflow-hidden">
-                                                    <div className="absolute top-4 left-4 z-10">
-                                                        <Badge className="bg-emerald-600 hover:bg-emerald-700">{pkg.discount}</Badge>
+                                                <div className="relative h-32 md:h-56 w-full bg-gray-200 overflow-hidden">
+                                                    <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10">
+                                                        <Badge className="bg-emerald-600 hover:bg-emerald-700 text-[10px] md:text-xs px-1.5 py-0.5 md:px-2.5 md:py-0.5">{pkg.discount}</Badge>
                                                     </div>
                                                     <Image
                                                         src={pkg.image}
@@ -155,22 +155,22 @@ export function HealthPackages() {
                                                         fill
                                                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                                                     />
-                                                    <div className="absolute bottom-0 left-0 right-0 bg-white/95 p-2 text-center text-sm font-medium text-gray-800 border-t backdrop-blur-sm">
+                                                    <div className="absolute bottom-0 left-0 right-0 bg-white/95 p-1 md:p-2 text-center text-[10px] md:text-sm font-medium text-gray-800 border-t backdrop-blur-sm">
                                                         Includes {pkg.testsCount} tests
                                                     </div>
                                                 </div>
-                                                <CardHeader className="flex-1 pb-2">
-                                                    <CardTitle className="text-xl line-clamp-2 min-h-14">{pkg.name}</CardTitle>
-                                                    <p className="text-sm text-muted-foreground mt-2">For Age: {pkg.ageRange}</p>
+                                                <CardHeader className="flex-1 p-3 md:p-6 pb-2 md:pb-2">
+                                                    <CardTitle className="text-sm md:text-xl line-clamp-2 min-h-[2.5rem] md:min-h-[3.5rem] leading-tight">{pkg.name}</CardTitle>
+                                                    <p className="text-[10px] md:text-sm text-muted-foreground mt-1 md:mt-2">For Age: {pkg.ageRange}</p>
                                                 </CardHeader>
-                                                <CardContent className="pt-0 pb-2">
+                                                <CardContent className="p-3 pt-0 md:p-6 md:pt-0 pb-2">
                                                     <div className="flex items-baseline space-x-2">
-                                                        <span className="text-2xl font-bold text-emerald-600">₹{pkg.price}</span>
-                                                        <span className="text-sm text-gray-400 line-through">₹{pkg.originalPrice}</span>
+                                                        <span className="text-base md:text-2xl font-bold text-emerald-600">₹{pkg.price}</span>
+                                                        <span className="text-[10px] md:text-sm text-gray-400 line-through">₹{pkg.originalPrice}</span>
                                                     </div>
                                                 </CardContent>
-                                                <CardFooter>
-                                                    <Button variant="outline" className="w-full border-gray-300 font-semibold hover:bg-gray-50 text-gray-700">
+                                                <CardFooter className="p-3 pt-0 md:p-6 md:pt-0">
+                                                    <Button variant="outline" size="sm" className="w-full border-gray-300 font-semibold hover:bg-gray-50 text-gray-700 h-8 md:h-10 text-xs md:text-sm">
                                                         Book Now
                                                     </Button>
                                                 </CardFooter>
