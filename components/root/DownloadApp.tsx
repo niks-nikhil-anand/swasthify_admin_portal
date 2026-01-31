@@ -15,18 +15,18 @@ export function DownloadApp() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="w-full lg:w-5/12 flex justify-center lg:justify-end relative order-2 lg:order-1"
+                        className="w-full lg:w-5/12 flex justify-center lg:justify-end relative order-2 lg:order-1 px-4 lg:px-0"
                     >
                         {/* Decorative Elements */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-100/50 rounded-full blur-3xl -z-10" />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100%] h-[100%] lg:w-[120%] lg:h-[120%] bg-blue-100/50 rounded-full blur-3xl -z-10" />
 
-                        <div className="relative z-10">
+                        <div className="relative z-10 w-full max-w-[280px] md:max-w-md lg:max-w-full">
                             <Image
                                 src="/images/swasthify_app_mockup.png"
                                 alt="Swasthify Mobile App Interface"
                                 width={500}
                                 height={500}
-                                className="object-contain drop-shadow-2xl rounded-lg"
+                                className="object-contain drop-shadow-2xl rounded-lg w-full h-auto"
                                 priority
                             />
                         </div>
