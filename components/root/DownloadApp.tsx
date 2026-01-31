@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export function DownloadApp() {
     return (
-        <section className="py-24 bg-linear-to-br from-primary/5 to-accent/5 overflow-hidden">
+        <section className="py-24 bg-linear-to-br from-blue-50/50 via-white to-purple-50/50 overflow-hidden">
             <div className="container mx-auto px-4">
                 <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-0">
 
@@ -45,9 +45,9 @@ export function DownloadApp() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2, duration: 0.6 }}
-                            className="text-3xl md:text-5xl font-bold text-foreground mb-6 leading-tight"
+                            className="text-3xl md:text-5xl font-bold tracking-tight text-foreground mb-6 leading-tight"
                         >
-                            Download the <span className="text-primary">Swasthify</span> app
+                            Download the <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-purple-600">Swasthify</span> app
                         </motion.h2>
 
                         <motion.p
@@ -72,17 +72,17 @@ export function DownloadApp() {
                                 Get the link to download the app
                             </label>
                             <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto lg:mx-0 w-full">
-                                <div className="flex flex-1 gap-3">
-                                    <span className="inline-flex items-center px-4 py-3 border border-border bg-background text-foreground font-medium rounded-xl shadow-sm">
+                                <div className="flex flex-1 gap-3 bg-white/80 backdrop-blur-md p-1.5 rounded-2xl border border-gray-100 shadow-xl shadow-blue-500/5 items-center">
+                                    <span className="inline-flex items-center px-4 py-2.5 text-foreground font-medium rounded-xl bg-gray-50/50">
                                         +91
                                     </span>
                                     <input
                                         type="tel"
                                         placeholder="Enter phone number"
-                                        className="flex-1 px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-background shadow-sm text-base w-full"
+                                        className="flex-1 px-2 py-2.5 bg-transparent border-none focus:ring-0 focus:outline-none text-base w-full placeholder:text-gray-400"
                                     />
                                 </div>
-                                <button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 py-3 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 w-full sm:w-auto">
+                                <button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-4 rounded-xl transition-all shadow-lg shadow-primary/25 hover:shadow-primary/30 hover:-translate-y-0.5 w-full sm:w-auto">
                                     Send SMS
                                 </button>
                             </div>
@@ -93,12 +93,12 @@ export function DownloadApp() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.5, duration: 0.6 }}
-                            className="flex gap-3 justify-center lg:justify-start w-full"
+                            className="flex gap-4 justify-center lg:justify-start w-full"
                         >
-                            <button className="flex flex-1 md:flex-none items-center justify-center md:justify-start gap-2 md:gap-3 bg-foreground text-background px-3 py-3 md:px-6 md:py-3.5 rounded-xl hover:bg-foreground/90 transition-all hover:-translate-y-1 shadow-xl min-w-0 md:min-w-[200px]">
+                            <button className="flex flex-1 md:flex-none items-center justify-center md:justify-start gap-3 bg-foreground text-background px-4 py-3.5 rounded-xl hover:bg-foreground/90 transition-all hover:shadow-lg hover:-translate-y-1 shadow-md min-w-0 md:min-w-[200px] border border-transparent hover:border-gray-700">
                                 <svg
                                     viewBox="0 0 24 24"
-                                    className="w-5 h-5 md:w-7 md:h-7 fill-current shrink-0"
+                                    className="w-6 h-6 md:w-7 md:h-7 fill-current shrink-0"
                                     xmlns="http://www.w3.org/2000/svg"
                                 >
                                     <path d="M5 20.5v-13l13.5 6.5-13.5 6.5z" />
@@ -106,22 +106,22 @@ export function DownloadApp() {
                                     <path d="M14.6 12.8L11 9.2l-6.5 6.4 10.1-2.8z" fillOpacity="0.1" />
                                 </svg>
                                 <div className="text-left min-w-0">
-                                    <div className="text-[8px] md:text-[10px] font-medium leading-none mb-0.5 md:mb-1 opacity-80 truncate">GET IT ON</div>
-                                    <div className="text-xs md:text-base font-bold leading-none truncate">Google Play</div>
+                                    <div className="text-[10px] font-medium leading-none mb-1 opacity-80 truncate">GET IT ON</div>
+                                    <div className="text-sm md:text-base font-bold leading-none truncate">Google Play</div>
                                 </div>
                             </button>
 
-                            <button className="flex flex-1 md:flex-none items-center justify-center md:justify-start gap-2 md:gap-3 bg-foreground text-background px-3 py-3 md:px-6 md:py-3.5 rounded-xl hover:bg-foreground/90 transition-all hover:-translate-y-1 shadow-xl min-w-0 md:min-w-[200px]">
+                            <button className="flex flex-1 md:flex-none items-center justify-center md:justify-start gap-3 bg-foreground text-background px-4 py-3.5 rounded-xl hover:bg-foreground/90 transition-all hover:shadow-lg hover:-translate-y-1 shadow-md min-w-0 md:min-w-[200px] border border-transparent hover:border-gray-700">
                                 <svg
                                     viewBox="0 0 24 24"
-                                    className="w-5 h-5 md:w-7 md:h-7 fill-current shrink-0"
+                                    className="w-6 h-6 md:w-7 md:h-7 fill-current shrink-0"
                                     xmlns="http://www.w3.org/2000/svg"
                                 >
                                     <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.74 1.18 0 2.21-.93 3.8-.93.62 0 2.45.19 3.6 1.92-3.72 1.8-3.1 6.55 1.76 8.5-.88 1.85-2.09 3.73-4.24 2.74zm-2.8-15.6c.92-1.13.68-2.65.65-2.68-1.55.19-2.86 1.05-3.32 2.15-.3.72-.19 2.05 1.05 2.54.34-.69.88-1.42 1.62-2.01z" />
                                 </svg>
                                 <div className="text-left min-w-0">
-                                    <div className="text-[8px] md:text-[10px] font-medium leading-none mb-0.5 md:mb-1 opacity-80 truncate">Download on the</div>
-                                    <div className="text-xs md:text-base font-bold leading-none truncate">App Store</div>
+                                    <div className="text-[10px] font-medium leading-none mb-1 opacity-80 truncate">Download on the</div>
+                                    <div className="text-sm md:text-base font-bold leading-none truncate">App Store</div>
                                 </div>
                             </button>
                         </motion.div>
