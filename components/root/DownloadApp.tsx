@@ -71,16 +71,18 @@ export function DownloadApp() {
                             <label className="block text-sm font-semibold text-foreground mb-4 opacity-80">
                                 Get the link to download the app
                             </label>
-                            <div className="flex gap-3 max-w-md mx-auto lg:mx-0 w-full">
-                                <span className="inline-flex items-center px-4 py-3 border border-border bg-background text-foreground font-medium rounded-xl shadow-sm">
-                                    +91
-                                </span>
-                                <input
-                                    type="tel"
-                                    placeholder="Enter phone number"
-                                    className="flex-1 px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-background shadow-sm text-base"
-                                />
-                                <button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 py-3 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto lg:mx-0 w-full">
+                                <div className="flex flex-1 gap-3">
+                                    <span className="inline-flex items-center px-4 py-3 border border-border bg-background text-foreground font-medium rounded-xl shadow-sm">
+                                        +91
+                                    </span>
+                                    <input
+                                        type="tel"
+                                        placeholder="Enter phone number"
+                                        className="flex-1 px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-background shadow-sm text-base w-full"
+                                    />
+                                </div>
+                                <button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 py-3 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 w-full sm:w-auto">
                                     Send SMS
                                 </button>
                             </div>
