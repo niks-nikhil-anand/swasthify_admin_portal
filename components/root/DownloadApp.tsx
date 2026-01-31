@@ -20,7 +20,7 @@ export function DownloadApp() {
                         {/* Decorative Elements */}
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100%] h-[100%] lg:w-[120%] lg:h-[120%] bg-blue-100/50 rounded-full blur-3xl -z-10" />
 
-                        <div className="relative z-10 w-full max-w-[280px] md:max-w-md lg:max-w-full">
+                        <div className="relative z-10 w-full max-w-[360px] md:max-w-md lg:max-w-full">
                             <Image
                                 src="/images/swasthify_app_mockup.png"
                                 alt="Swasthify Mobile App Interface"
@@ -96,15 +96,13 @@ export function DownloadApp() {
                             className="flex gap-4 justify-center lg:justify-start w-full"
                         >
                             <button className="flex flex-1 md:flex-none items-center justify-center md:justify-start gap-3 bg-foreground text-background px-4 py-3.5 rounded-xl hover:bg-foreground/90 transition-all hover:shadow-lg hover:-translate-y-1 shadow-md min-w-0 md:min-w-[200px] border border-transparent hover:border-gray-700">
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    className="w-6 h-6 md:w-7 md:h-7 fill-current shrink-0"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path d="M5 20.5v-13l13.5 6.5-13.5 6.5z" />
-                                    <path d="M14.6 11.2L4.4 1a1.5 1.5 0 0 0-1.8.2l8.4 10z" fillOpacity="0.1" />
-                                    <path d="M14.6 12.8L11 9.2l-6.5 6.4 10.1-2.8z" fillOpacity="0.1" />
-                                </svg>
+                                <Image
+                                    src="/icons/playstore.png"
+                                    alt="Google Play"
+                                    width={28}
+                                    height={28}
+                                    className="w-6 h-6 md:w-7 md:h-7 object-contain shrink-0"
+                                />
                                 <div className="text-left min-w-0">
                                     <div className="text-[10px] font-medium leading-none mb-1 opacity-80 truncate">GET IT ON</div>
                                     <div className="text-sm md:text-base font-bold leading-none truncate">Google Play</div>
@@ -112,13 +110,13 @@ export function DownloadApp() {
                             </button>
 
                             <button className="flex flex-1 md:flex-none items-center justify-center md:justify-start gap-3 bg-foreground text-background px-4 py-3.5 rounded-xl hover:bg-foreground/90 transition-all hover:shadow-lg hover:-translate-y-1 shadow-md min-w-0 md:min-w-[200px] border border-transparent hover:border-gray-700">
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    className="w-6 h-6 md:w-7 md:h-7 fill-current shrink-0"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.74 1.18 0 2.21-.93 3.8-.93.62 0 2.45.19 3.6 1.92-3.72 1.8-3.1 6.55 1.76 8.5-.88 1.85-2.09 3.73-4.24 2.74zm-2.8-15.6c.92-1.13.68-2.65.65-2.68-1.55.19-2.86 1.05-3.32 2.15-.3.72-.19 2.05 1.05 2.54.34-.69.88-1.42 1.62-2.01z" />
-                                </svg>
+                                <Image
+                                    src="/icons/app-store.png"
+                                    alt="App Store"
+                                    width={28}
+                                    height={28}
+                                    className="w-6 h-6 md:w-7 md:h-7 object-contain shrink-0"
+                                />
                                 <div className="text-left min-w-0">
                                     <div className="text-[10px] font-medium leading-none mb-1 opacity-80 truncate">Download on the</div>
                                     <div className="text-sm md:text-base font-bold leading-none truncate">App Store</div>
