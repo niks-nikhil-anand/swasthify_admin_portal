@@ -160,7 +160,7 @@ export function HealthPackages() {
                                                     </div>
                                                 </div>
                                                 <CardHeader className="flex-1 p-3 md:p-6 pb-2 md:pb-2">
-                                                    <CardTitle className="text-sm md:text-xl line-clamp-2 min-h-[2.5rem] md:min-h-[3.5rem] leading-tight">{pkg.name}</CardTitle>
+                                                    <CardTitle className="text-sm md:text-xl line-clamp-2 min-h-10 md:min-h-14 leading-tight">{pkg.name}</CardTitle>
                                                     <p className="text-[10px] md:text-sm text-muted-foreground mt-1 md:mt-2">For Age: {pkg.ageRange}</p>
                                                 </CardHeader>
                                                 <CardContent className="p-3 pt-0 md:p-6 md:pt-0 pb-2">
