@@ -74,7 +74,7 @@ export function Specialities() {
                         <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                             25+ Specialities
                         </h2>
-                        <p className="text-muted-foreground text-lg">
+                        <p className="text-muted-foreground text-lg text-center">
                             Consult with top doctors across specialities
                         </p>
                     </motion.div>
