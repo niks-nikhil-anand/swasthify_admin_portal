@@ -2,6 +2,10 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { LabValidation } from "@/lib/validators"
 import { Role, UserStatus } from "@prisma/client"
+import { Resend } from "resend";
+import LabApplicationEmail from "@/emails/LabApplicationEmail";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
     try {
@@ -73,6 +77,21 @@ export async function POST(req: Request) {
 
             return user
         })
+
+        // Send email notification
+        try {
+            await resend.emails.send({
+                from: "Swasthify <onboarding@swasthify.in>",
+                to: validatedData.email,
+                subject: "Welcome to Swasthify - Lab Partner Application Received",
+                react: LabApplicationEmail({
+                    name: validatedData.labName
+                })
+            });
+        } catch (emailError) {
+            console.error("Failed to send welcome email:", emailError);
+            // Non-blocking error
+        }
 
         return NextResponse.json({
             message: "Lab registration successful",
