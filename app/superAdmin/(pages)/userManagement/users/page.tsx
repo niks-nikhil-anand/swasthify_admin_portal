@@ -4,7 +4,7 @@ import { DataTable } from "@/components/superAdmin/DataTable"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, Mail, Shield } from "lucide-react"
 import { UserActions } from "@/components/superAdmin/UserActions"
@@ -161,21 +161,10 @@ const filters: FacetedFilter[] = [
 export default function UsersPage() {
     const [data, setData] = useState<AppUser[]>([])
     const [loading, setLoading] = useState(true)
-    const [progress, setProgress] = useState(0)
+
 
     useEffect(() => {
         const fetchUsers = async () => {
-            // Start progress simulation
-            const interval = setInterval(() => {
-                setProgress((prev) => {
-                    if (prev >= 90) {
-                        clearInterval(interval)
-                        return 90
-                    }
-                    return prev + 10
-                })
-            }, 100)
-
             try {
                 const response = await fetch("/api/user")
                 if (response.ok) {
@@ -187,12 +176,7 @@ export default function UsersPage() {
             } catch (error) {
                 console.error("Error fetching users:", error)
             } finally {
-                // Ensure progress completes before showing content
-                setProgress(100)
-                clearInterval(interval)
-                setTimeout(() => {
-                    setLoading(false)
-                }, 500)
+                setLoading(false)
             }
         }
 
@@ -215,12 +199,47 @@ export default function UsersPage() {
                 </CardHeader>
                 <CardContent>
                     {loading ? (
-                        <div className="flex flex-col items-center justify-center py-10 space-y-4">
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                                <span>Loading users...</span>
-                                <span className="font-mono">{progress}%</span>
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between py-4">
+                                <Skeleton className="h-10 w-[250px]" />
+                                <div className="flex gap-2">
+                                    <Skeleton className="h-10 w-[100px]" />
+                                    <Skeleton className="h-10 w-[100px]" />
+                                </div>
                             </div>
-                            <Progress value={progress} className="w-[60%]" />
+                            <div className="rounded-md border">
+                                <div className="h-12 border-b px-4 flex items-center gap-4 bg-muted/5">
+                                    <Skeleton className="h-4 w-[150px]" />
+                                    <Skeleton className="h-4 w-[200px]" />
+                                    <Skeleton className="h-4 w-[100px]" />
+                                    <Skeleton className="h-4 w-[100px]" />
+                                    <Skeleton className="h-4 w-[150px]" />
+                                    <Skeleton className="h-8 w-8 ml-auto rounded-full" />
+                                </div>
+                                {[...Array(5)].map((_, i) => (
+                                    <div key={i} className="h-16 border-b px-4 flex items-center gap-4">
+                                        <div className="w-[150px]">
+                                            <Skeleton className="h-4 w-[120px]" />
+                                        </div>
+                                        <div className="flex items-center gap-2 w-[200px]">
+                                            <Skeleton className="h-4 w-4 rounded-full" />
+                                            <Skeleton className="h-4 w-[150px]" />
+                                        </div>
+                                        <div className="w-[100px]">
+                                            <Skeleton className="h-5 w-[80px] rounded-full" />
+                                        </div>
+                                        <div className="w-[100px]">
+                                            <Skeleton className="h-5 w-[70px] rounded-full" />
+                                        </div>
+                                        <div className="w-[150px]">
+                                            <Skeleton className="h-4 w-[100px]" />
+                                        </div>
+                                        <div className="ml-auto">
+                                            <Skeleton className="h-8 w-8 rounded-md" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     ) : (
                         <DataTable columns={columns} data={data} searchKey="name" facetedFilters={filters} />
