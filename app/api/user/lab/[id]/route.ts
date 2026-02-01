@@ -96,7 +96,7 @@ export async function PATCH(
                     testTypes,
                     permissions,
                     isProfileComplete,
-                    profileCompletionPercentage: profileCompletionPercentage ? Number(profileCompletionPercentage) : undefined,
+                    profileCompletionPercentage: profileCompletionPercentage !== undefined ? Number(profileCompletionPercentage) : undefined,
                 },
                 include: {
                     user: true,
