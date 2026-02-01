@@ -116,6 +116,7 @@ export async function GET(req: Request) {
                 ? `${lab.addresses.find(a => a.isDefault || a.label === "Main Lab")?.city}, ${lab.addresses.find(a => a.isDefault || a.label === "Main Lab")?.state}`
                 : "Location N/A",
             status: lab.user.status,
+            isVerified: lab.user.isVerified,
             rating: lab.averageRating,
             description: lab.description,
             website: lab.website,

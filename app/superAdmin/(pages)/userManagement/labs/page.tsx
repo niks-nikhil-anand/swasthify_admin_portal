@@ -31,6 +31,7 @@ type Lab = {
     website: string | null
     licenseNumber: string | null
     testTypes: string[]
+    isVerified: boolean
 }
 
 const getColumns = (
@@ -98,6 +99,18 @@ const getColumns = (
                         }
                     >
                         {status}
+                    </Badge>
+                )
+            },
+        },
+        {
+            accessorKey: "isVerified",
+            header: "Verified",
+            cell: ({ row }) => {
+                const isVerified = row.getValue("isVerified") as boolean
+                return (
+                    <Badge variant={isVerified ? "success" : "secondary"}>
+                        {isVerified ? "Verified" : "Not Verified"}
                     </Badge>
                 )
             },
