@@ -64,7 +64,7 @@ export default function ContactPage() {
         <div className="flex flex-col min-h-screen bg-background">
             {/* Hero Section */}
             <section className="relative w-full py-20 md:py-32 overflow-hidden bg-primary/5">
-                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-background to-primary/5 opacity-50" />
+                <div className="absolute top-0 left-0 w-full h-full bg-linear-to-b from-background to-primary/5 opacity-50" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 rounded-full blur-3xl -z-10" />
 
                 <div className="container mx-auto px-4 relative z-10 text-center">
@@ -98,7 +98,7 @@ export default function ContactPage() {
                                     {
                                         icon: Phone,
                                         title: "Phone Number",
-                                        lines: ["+91 98765 43210", "+91 12345 67890"],
+                                        lines: ["+91 97592 25515"],
                                         color: "text-blue-500",
                                         bg: "bg-blue-500/10"
                                     },
@@ -144,7 +144,7 @@ export default function ContactPage() {
                         {/* Contact Form */}
                         <div className="animate-in fade-in slide-in-from-right-8 duration-700 delay-300 lg:mt-16">
                             <Card className="border-border/50 shadow-xl overflow-hidden relative">
-                                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-accent" />
+                                <div className="absolute top-0 left-0 w-full h-2 bg-linear-to-r from-primary to-accent" />
                                 <CardContent className="p-8">
                                     <div className="flex items-center gap-3 mb-8">
                                         <div className="p-3 rounded-full bg-primary/10 text-primary">
