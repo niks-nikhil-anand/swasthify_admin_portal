@@ -14,7 +14,7 @@ export default function DoctorLoginPage() {
             title="Doctor Login"
             description="Enter your credentials to access the doctor dashboard"
             backButtonLabel="Don't have an account? Register"
-            backButtonHref="/register/doctor"
+            backButtonHref="/doctor-profile"
             showSocial
         >
             <LoginForm redirectTo="/doctor-panel/profile" role="doctor" />

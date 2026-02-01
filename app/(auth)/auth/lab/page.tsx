@@ -14,10 +14,10 @@ export default function LabLoginPage() {
             title="Lab Login"
             description="Enter your credentials to access the lab dashboard"
             backButtonLabel="Don't have an account? Register"
-            backButtonHref="/register/lab"
+            backButtonHref="/lab-partner"
             showSocial
         >
-            <LoginForm redirectTo="/admin-panel/dashboard" role="lab" />
+            <LoginForm redirectTo="/lab-panel/dashboard" role="lab" />
         </AuthWrapper>
     )
 }
