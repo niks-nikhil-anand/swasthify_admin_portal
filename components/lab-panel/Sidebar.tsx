@@ -29,8 +29,8 @@ const sidebarGroups = [
                 icon: LayoutDashboard,
             },
             {
-                title: "Campaigns",
-                href: "/lab-panel/campaigns",
+                title: "My Tests",
+                href: "/lab-panel/tests",
                 icon: TestTube2,
             },
             {
@@ -64,11 +64,11 @@ const sidebarGroups = [
 
 const PERMISSION_MAPPING: Record<string, string> = {
     "/lab-panel/dashboard": "dashboard",
-    "/lab-panel/campaigns": "campaigns",
-    "/lab-panel/appointments": "appointments",
+    "/lab-panel/tests": "tests",
+    "/lab-panel/appointments": "appointment",
     "/lab-panel/reports": "reports",
     "/lab-panel/profile": "profile",
-    "/lab-panel/settings": "settings",
+    "/lab-panel/settings": "setting",
 };
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
