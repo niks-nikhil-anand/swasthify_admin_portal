@@ -141,7 +141,13 @@ export async function GET(req: Request) {
             website: lab.website,
             licenseNumber: lab.licenseNumber,
             testTypes: lab.testTypes,
-            userId: lab.userId
+            userId: lab.userId,
+            profileCompletionPercentage: lab.profileCompletionPercentage,
+            isProfileComplete: lab.isProfileComplete,
+            ownerIdProof: lab.ownerIdProof,
+            addressProof: lab.addressProof,
+            profilePhoto: lab.profilePhoto, // Ensure this field is populated
+            permissions: lab.permissions,
         }))
 
         return NextResponse.json(formattedLabs)

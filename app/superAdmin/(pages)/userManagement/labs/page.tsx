@@ -78,15 +78,7 @@ const getColumns = (
                 </div>
             ),
         },
-        {
-            accessorKey: "rating",
-            header: "Rating",
-            cell: ({ row }) => (
-                <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-200">
-                    ⭐ {(row.getValue("rating") as number).toFixed(1)}
-                </Badge>
-            ),
-        },
+
         {
             accessorKey: "status",
             header: "Status",
