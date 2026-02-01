@@ -87,3 +87,49 @@ export async function POST(req: Request) {
         )
     }
 }
+
+export async function GET(req: Request) {
+    try {
+        const labs = await db.lab.findMany({
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        phone: true,
+                        status: true,
+                        isVerified: true,
+                    }
+                },
+                addresses: true
+            }
+        })
+
+        // Transform data to match UI needs
+        const formattedLabs = labs.map(lab => ({
+            id: lab.id,
+            name: lab.user.name,
+            email: lab.user.email,
+            contact: lab.user.phone || "N/A",
+            location: lab.addresses.find(a => a.isDefault || a.label === "Main Lab")?.city
+                ? `${lab.addresses.find(a => a.isDefault || a.label === "Main Lab")?.city}, ${lab.addresses.find(a => a.isDefault || a.label === "Main Lab")?.state}`
+                : "Location N/A",
+            status: lab.user.status,
+            rating: lab.averageRating,
+            description: lab.description,
+            website: lab.website,
+            licenseNumber: lab.licenseNumber,
+            testTypes: lab.testTypes,
+            userId: lab.userId
+        }))
+
+        return NextResponse.json(formattedLabs)
+    } catch (error) {
+        console.error("Error fetching labs:", error)
+        return NextResponse.json(
+            { error: "Internal Server Error" },
+            { status: 500 }
+        )
+    }
+}
