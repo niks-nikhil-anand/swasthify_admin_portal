@@ -231,6 +231,7 @@ model Lab {
   licenseNumber String?
   description   String?
   website       String?
+  testTypes     String[] @default([])
 
   averageRating Float @default(0.0)
   totalReviews  Int   @default(0)
