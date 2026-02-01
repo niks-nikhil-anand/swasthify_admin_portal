@@ -53,6 +53,9 @@ export async function PATCH(
             description,
             website,
             testTypes,
+            permissions,
+            isProfileComplete,
+            profileCompletionPercentage,
         } = body;
 
         // First check if lab exists
@@ -91,6 +94,9 @@ export async function PATCH(
                     description,
                     website,
                     testTypes,
+                    permissions,
+                    isProfileComplete,
+                    profileCompletionPercentage: profileCompletionPercentage ? Number(profileCompletionPercentage) : undefined,
                 },
                 include: {
                     user: true,

@@ -38,7 +38,11 @@ export default async function LabPanelLayout({
         <div className="min-h-screen bg-muted/20 w-full">
             {/* Sidebar: Hidden on mobile, fixed on desktop */}
             <div className="hidden md:flex flex-col w-64 fixed inset-y-0 z-50">
-                <Sidebar className="w-full h-full" />
+                <Sidebar
+                    className="w-full h-full"
+                    permissions={lab?.permissions || []}
+                    isProfileComplete={lab?.isProfileComplete || false}
+                />
             </div>
 
             {/* Main Content Area */}

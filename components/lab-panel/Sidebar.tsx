@@ -62,12 +62,22 @@ const sidebarGroups = [
     }
 ];
 
+const PERMISSION_MAPPING: Record<string, string> = {
+    "/lab-panel/dashboard": "dashboard",
+    "/lab-panel/campaigns": "campaigns",
+    "/lab-panel/appointments": "appointments",
+    "/lab-panel/reports": "reports",
+    "/lab-panel/profile": "profile",
+    "/lab-panel/settings": "settings",
+};
+
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-    // Basic props, removed permissions/isProfileComplete for now as they aren't on Lab model
     className?: string;
+    permissions?: string[];
+    isProfileComplete?: boolean;
 }
 
-export function Sidebar({ className }: SidebarProps) {
+export function Sidebar({ className, permissions = [], isProfileComplete = false }: SidebarProps) {
     const pathname = usePathname();
     const router = useRouter();
 
@@ -121,13 +131,30 @@ export function Sidebar({ className }: SidebarProps) {
             <ScrollArea className="flex-1 px-4">
                 <div className="space-y-6">
                     {sidebarGroups.map((group, index) => {
+                        // Filter items based on permissions
+                        const filteredItems = group.items.filter((link) => {
+                            const permissionKey = PERMISSION_MAPPING[link.href];
+
+                            // If profile is incomplete, ONLY show profile page
+                            if (!isProfileComplete) {
+                                return permissionKey === "profile";
+                            }
+
+                            // Otherwise check if lab has permission
+                            if (!permissionKey) return true;
+
+                            return permissions.includes(permissionKey);
+                        });
+
+                        if (filteredItems.length === 0) return null;
+
                         return (
                             <div key={index} className="px-2">
                                 <h3 className="mb-2 px-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 select-none">
                                     {group.label}
                                 </h3>
                                 <div className="space-y-1">
-                                    {group.items.map((link) => {
+                                    {filteredItems.map((link) => {
                                         const Icon = link.icon;
                                         const isActive = pathname === link.href;
                                         return (

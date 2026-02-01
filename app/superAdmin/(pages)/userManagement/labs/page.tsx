@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Progress } from "@/components/ui/progress"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -15,9 +16,10 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Copy, Edit, FlaskConical, Mail, MoreHorizontal, Phone, Trash, Eye, Globe } from "lucide-react"
+import { ArrowUpDown, Copy, Edit, FlaskConical, Mail, MoreHorizontal, Phone, Trash, Eye, Globe, Shield } from "lucide-react"
 import { LabDetailsModal } from "./components/LabDetailsModal"
 import { DeleteLabModal } from "./components/DeleteLabModal"
+import { LabPermissionModal } from "./components/LabPermissionModal"
 
 type Lab = {
     id: string
@@ -32,10 +34,12 @@ type Lab = {
     licenseNumber: string | null
     testTypes: string[]
     isVerified: boolean
+    profileCompletionPercentage: number
 }
 
 const getColumns = (
     onViewDetails: (id: string) => void,
+    onManagePermissions: (id: string) => void,
     onEdit: (id: string) => void,
     onDelete: (id: string, name: string) => void
 ): ColumnDef<Lab>[] => [
@@ -116,6 +120,19 @@ const getColumns = (
             },
         },
         {
+            accessorKey: "profileCompletionPercentage",
+            header: "Profile Status",
+            cell: ({ row }) => {
+                const percentage = row.getValue("profileCompletionPercentage") as number || 0
+                return (
+                    <div className="flex flex-col gap-1 w-[120px]">
+                        <span className="text-xs font-medium text-muted-foreground">{percentage}% Completed</span>
+                        <Progress value={percentage} className="h-2" />
+                    </div>
+                )
+            },
+        },
+        {
             id: "actions",
             header: "Actions",
             cell: ({ row }) => {
@@ -141,6 +158,10 @@ const getColumns = (
                             <DropdownMenuItem onClick={() => onViewDetails(lab.id)}>
                                 <Eye className="mr-2 h-4 w-4" />
                                 View Details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onManagePermissions(lab.id)}>
+                                <Shield className="mr-2 h-4 w-4" />
+                                Manage Permissions
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => onEdit(lab.id)}>
                                 <Edit className="mr-2 h-4 w-4" />
@@ -168,6 +189,7 @@ export default function LabsPage() {
     const [selectedLabName, setSelectedLabName] = useState<string | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isEditingMode, setIsEditingMode] = useState(false)
+    const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
     useEffect(() => {
@@ -201,6 +223,11 @@ export default function LabsPage() {
         setIsModalOpen(true)
     }
 
+    const handleManagePermissions = (id: string) => {
+        setSelectedLabId(id)
+        setIsPermissionModalOpen(true)
+    }
+
     const handleDeleteClick = (id: string, name: string) => {
         setSelectedLabId(id)
         setSelectedLabName(name)
@@ -212,7 +239,7 @@ export default function LabsPage() {
         fetchLabs() // Refresh list
     }
 
-    const columns = getColumns(handleViewDetails, handleEdit, handleDeleteClick)
+    const columns = getColumns(handleViewDetails, handleManagePermissions, handleEdit, handleDeleteClick)
 
     if (!isMounted) {
         return null
@@ -268,6 +295,11 @@ export default function LabsPage() {
                 labId={selectedLabId}
                 defaultEditing={isEditingMode}
             />
+            <LabPermissionModal
+                isOpen={isPermissionModalOpen}
+                onClose={() => setIsPermissionModalOpen(false)}
+                labId={selectedLabId}
+            />
             <DeleteLabModal
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
@@ -278,3 +310,4 @@ export default function LabsPage() {
         </div>
     )
 }
+
