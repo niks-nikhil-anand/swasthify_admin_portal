@@ -83,9 +83,9 @@ export default function LabProfileForm({ onSuccess, showCompletion = true }: Lab
                 if (data.success && data.lab) {
                     const l = data.lab;
                     const fetchedData = {
-                        labName: l.user.name || "",
-                        email: l.user.email || "",
-                        phone: l.user.phone || "",
+                        labName: l.labName || "", // Flattened from API
+                        email: l.email || "",
+                        phone: l.phone || "",
                         description: l.description || "",
                         website: l.website || "",
                         licenseNumber: l.licenseNumber || "",

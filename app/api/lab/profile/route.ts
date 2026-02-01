@@ -29,9 +29,12 @@ async function getAuthenticatedLabId() {
 
 export async function GET(req: NextRequest) {
     try {
+        console.log("LAB PROFILE GET: Request Received");
         const labId = await getAuthenticatedLabId();
+        console.log("LAB PROFILE GET: Lab ID:", labId);
 
         if (!labId) {
+            console.error("LAB PROFILE GET: Unauthorized");
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
@@ -41,18 +44,24 @@ export async function GET(req: NextRequest) {
         });
 
         if (!lab) {
+            console.error("LAB PROFILE GET: Lab not found");
             return NextResponse.json({ error: "Lab profile not found" }, { status: 404 });
         }
 
         // Fetch address
         const address = await prisma.address.findFirst({
-            where: { userId: lab.userId, label: "Main Lab" } // Matching create logic
+            where: { userId: lab.userId, label: "Main Lab" }
         });
+
+        console.log("LAB PROFILE GET: Success", { labId, name: lab.user.name });
 
         return NextResponse.json({
             success: true,
             lab: {
                 ...lab,
+                labName: lab.user.name || "",
+                email: lab.user.email,
+                phone: lab.user.phone,
                 address: address?.street || "",
                 city: address?.city || "",
                 zip: address?.zipCode || ""
@@ -67,13 +76,17 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
     try {
+        console.log("LAB PROFILE PATCH: Request Received");
         const labId = await getAuthenticatedLabId();
+        console.log("LAB PROFILE PATCH: Lab ID:", labId);
 
         if (!labId) {
+            console.error("LAB PROFILE PATCH: Unauthorized");
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
         const body = await req.json();
+        console.log("LAB PROFILE PATCH: Body:", JSON.stringify(body, null, 2));
 
         const {
             labName,
@@ -104,6 +117,7 @@ export async function PATCH(req: NextRequest) {
         });
 
         const percentage = Math.round((filledFields / fieldsToCheck.length) * 100);
+        console.log("LAB PROFILE PATCH: Calculated Completion:", percentage);
 
         const lab = await prisma.lab.findUnique({
             where: { id: labId },
@@ -117,6 +131,7 @@ export async function PATCH(req: NextRequest) {
         // Transaction
         const updatedLab = await prisma.$transaction(async (tx: any) => {
             // Update User
+            console.log("LAB PROFILE PATCH: Updating User...", { userId: lab.userId, name: labName });
             await tx.user.update({
                 where: { id: lab.userId },
                 data: {
@@ -127,6 +142,7 @@ export async function PATCH(req: NextRequest) {
             });
 
             // Update Lab
+            console.log("LAB PROFILE PATCH: Updating Lab...");
             return await tx.lab.update({
                 where: { id: labId },
                 data: {
@@ -143,6 +159,7 @@ export async function PATCH(req: NextRequest) {
         });
 
         // Handle Address
+        console.log("LAB PROFILE PATCH: Handling Address...");
         const existingAddress = await prisma.address.findFirst({
             where: { userId: lab.userId, label: "Main Lab" }
         });
@@ -170,12 +187,14 @@ export async function PATCH(req: NextRequest) {
             });
         }
 
+        console.log("LAB PROFILE PATCH: Success");
         return NextResponse.json({ success: true, lab: updatedLab });
 
     } catch (error: any) {
         console.error("Profile update error:", error);
         if (error.code === 'P2002') {
             const field = error.meta?.target?.[0] || 'Field';
+            console.error("LAB PROFILE PATCH: Unique Constraint Violation:", field);
             return NextResponse.json(
                 { error: `${field} is already in use.` },
                 { status: 409 }

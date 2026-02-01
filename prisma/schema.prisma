@@ -160,9 +160,9 @@ model Campaign {
   doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 
   // Campaign Info
-  name        String       @map("campaign_name")
+  name        String         @map("campaign_name")
   description String?
-  type        CampaignType @map("campaign_type")
+  type        CampaignType   @map("campaign_type")
   status      CampaignStatus @default(DRAFT)
 
   // Pricing
@@ -190,9 +190,9 @@ model Campaign {
   stats Json?
 
   // Appointment Configuration
-  dailyLimit    Int      @default(0) @map("daily_limit")
-  hourlyLimit   Int      @default(0) @map("hourly_limit")
-  totalCapacity Int?     @map("total_capacity")
+  dailyLimit      Int      @default(0) @map("daily_limit")
+  hourlyLimit     Int      @default(0) @map("hourly_limit")
+  totalCapacity   Int?     @map("total_capacity")
   requiredDetails String[] @default([]) @map("required_details")
 
   // Media (Stored as JSON: [{ type, url }])
@@ -205,8 +205,8 @@ model Campaign {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("campaigns")
   @@index([doctorId])
+  @@map("campaigns")
 }
 
 enum CampaignType {
@@ -233,9 +233,9 @@ model Lab {
   website       String?
   testTypes     String[] @default([])
 
-  ownerIdProof  String?
-  addressProof  String?
-  profilePhoto  String?
+  ownerIdProof String?
+  addressProof String?
+  profilePhoto String?
 
   averageRating Float @default(0.0)
   totalReviews  Int   @default(0)
