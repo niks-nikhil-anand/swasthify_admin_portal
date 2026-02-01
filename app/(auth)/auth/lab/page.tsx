@@ -17,7 +17,7 @@ export default function LabLoginPage() {
             backButtonHref="/lab-partner"
             showSocial
         >
-            <LoginForm redirectTo="/lab-panel/dashboard" role="lab" />
+            <LoginForm redirectTo="/lab-panel/profile" role="lab" />
         </AuthWrapper>
     )
 }

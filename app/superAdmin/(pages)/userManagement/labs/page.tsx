@@ -15,7 +15,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Copy, Edit, FlaskConical, MapPin, MoreHorizontal, Phone, Trash, Eye, Globe } from "lucide-react"
+import { ArrowUpDown, Copy, Edit, FlaskConical, Mail, MoreHorizontal, Phone, Trash, Eye, Globe } from "lucide-react"
 import { LabDetailsModal } from "./components/LabDetailsModal"
 import { DeleteLabModal } from "./components/DeleteLabModal"
 
@@ -55,12 +55,12 @@ const getColumns = (
             cell: ({ row }) => <div className="font-medium">{row.getValue("name") || "N/A"}</div>,
         },
         {
-            accessorKey: "location",
-            header: "Location",
+            accessorKey: "email",
+            header: "Email",
             cell: ({ row }) => (
                 <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                    {row.getValue("location") || "N/A"}
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    {row.getValue("email") || "N/A"}
                 </div>
             ),
         },
