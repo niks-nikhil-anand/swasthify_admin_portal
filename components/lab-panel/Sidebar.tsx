@@ -29,8 +29,8 @@ const sidebarGroups = [
                 icon: LayoutDashboard,
             },
             {
-                title: "My Tests",
-                href: "/lab-panel/tests",
+                title: "Campaigns",
+                href: "/lab-panel/campaigns",
                 icon: TestTube2,
             },
             {

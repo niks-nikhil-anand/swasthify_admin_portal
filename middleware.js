@@ -16,19 +16,22 @@ export async function middleware(req) {
     const superAdminAuthToken = cookies.SUPER_ADMIN;
     const doctorAuthToken = cookies.DOCTOR;
     const patientAuthToken = cookies.PATIENT;
+    const labAuthToken = cookies.LAB;
 
     const token = await getToken({ req });
     const { pathname } = req.nextUrl;
-
-    // Define protected routes
-    const isSuperAdminRoute = pathname.startsWith("/superAdmin");
-    const isDoctorRoute = pathname.startsWith("/doctor-panel");
-    const isPatientRoute = pathname.startsWith("/me");
 
     // Define auth routes (where logged-in users shouldn't go)
     const isSuperAdminAuthRoute = pathname === "/auth/superAdmin";
     const isDoctorAuthRoute = pathname === "/auth/doctor";
     const isPatientAuthRoute = pathname === "/login" || pathname === "/register";
+    const isLabAuthRoute = pathname === "/auth/lab";
+
+    // Define protected routes
+    const isSuperAdminRoute = pathname.startsWith("/superAdmin");
+    const isDoctorRoute = pathname.startsWith("/doctor-panel");
+    const isPatientRoute = pathname.startsWith("/me");
+    const isLabRoute = pathname.startsWith("/lab-panel");
 
     // --- Protection Logic ---
 
@@ -57,6 +60,15 @@ export async function middleware(req) {
     // Redirect if already logged in as Patient
     if (isPatientAuthRoute && patientAuthToken) {
         return NextResponse.redirect(new URL("/me", req.nextUrl.origin)); // Assuming /me or home /
+    }
+
+    // 4. Lab Protection
+    if (isLabRoute && !labAuthToken) {
+        return NextResponse.redirect(new URL("/auth/lab", req.nextUrl.origin));
+    }
+    // Redirect if already logged in as Lab
+    if (isLabAuthRoute && labAuthToken) {
+        return NextResponse.redirect(new URL("/lab-panel", req.nextUrl.origin));
     }
 
     return NextResponse.next();
