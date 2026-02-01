@@ -17,7 +17,7 @@ import {
 import { ColumnDef } from "@tanstack/react-table"
 import { CampaignDetailsModal } from "./components/CampaignDetailsModal"
 import { EditCampaignStatusModal } from "./components/EditCampaignStatusModal"
-import { ArrowUpDown, Copy, Edit, MoreHorizontal, Eye, CheckCircle, XCircle } from "lucide-react"
+import { ArrowUpDown, Copy, Edit, MoreHorizontal, Eye, CheckCircle, XCircle, Megaphone } from "lucide-react"
 
 type Campaign = {
     id: string
@@ -258,6 +258,26 @@ export default function CampaignsPage() {
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+                    ) : campaigns.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-16 text-center space-y-6 animate-in fade-in zoom-in duration-500">
+                            <div className="bg-primary/5 p-6 rounded-full ring-1 ring-primary/20">
+                                <div className="bg-primary/10 p-4 rounded-full">
+                                    <Megaphone className="h-10 w-10 text-primary" />
+                                </div>
+                            </div>
+                            <div className="space-y-2 max-w-md">
+                                <h3 className="text-xl font-bold tracking-tight">No Pending Campaigns</h3>
+                                <p className="text-muted-foreground text-sm leading-relaxed">
+                                    There are currently no campaigns waiting for verification or review. All caught up!
+                                </p>
+                            </div>
+                            <div className="pt-2">
+                                <Button variant="outline" onClick={fetchCampaigns} className="gap-2">
+                                    <ArrowUpDown className="h-4 w-4" />
+                                    Refresh List
+                                </Button>
                             </div>
                         </div>
                     ) : (

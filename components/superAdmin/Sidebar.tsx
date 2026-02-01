@@ -72,6 +72,11 @@ const sidebarGroups = [
         label: "Operations",
         items: [
             {
+                title: "Campaigns",
+                href: "/superAdmin/operations/campaigns",
+                icon: Megaphone,
+            },
+            {
                 title: "Appointments",
                 href: "/superAdmin/operations/appointment",
                 icon: Calendar,
@@ -86,11 +91,7 @@ const sidebarGroups = [
                 href: "/superAdmin/operations/complaints",
                 icon: MessageSquareWarning,
             },
-            {
-                title: "Campaigns",
-                href: "/superAdmin/operations/campaigns",
-                icon: Megaphone,
-            },
+            
         ]
     },
     {
