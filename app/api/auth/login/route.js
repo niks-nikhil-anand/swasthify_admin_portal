@@ -149,6 +149,8 @@ export async function POST(req) {
       cookieName = "PATIENT";
     } else if (normalizedInputRole === "DOCTOR") {
       cookieName = "DOCTOR";
+    } else if (normalizedInputRole === "LAB") {
+      cookieName = "LAB";
     }
 
     console.log(`Setting cookie: ${cookieName}`);
