@@ -1,9 +1,11 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { DataTable } from "@/components/superAdmin/DataTable"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,7 +15,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Copy, Edit, FlaskConical, MapPin, MoreHorizontal, Phone, Trash, Eye } from "lucide-react"
+import { ArrowUpDown, Copy, Edit, FlaskConical, MapPin, MoreHorizontal, Phone, Trash, Eye, Globe } from "lucide-react"
+import { LabDetailsModal } from "./components/LabDetailsModal"
+import { DeleteLabModal } from "./components/DeleteLabModal"
 
 type Lab = {
     id: string
@@ -21,164 +25,193 @@ type Lab = {
     contact: string
     email: string
     location: string
-    status: "Active" | "Inactive" | "Maintenance"
+    status: string
     rating: number
+    description: string | null
+    website: string | null
+    licenseNumber: string | null
+    testTypes: string[]
 }
 
-const data: Lab[] = [
-    {
-        id: "1",
-        name: "City Path Labs",
-        contact: "+91 80000 11111",
-        email: "contact@citypath.com",
-        location: "Mumbai, MH",
-        status: "Active",
-        rating: 4.5,
-    },
-    {
-        id: "2",
-        name: "Global Diagnostics",
-        contact: "+91 80000 22222",
-        email: "info@globaldiag.com",
-        location: "Delhi, DL",
-        status: "Active",
-        rating: 4.2,
-    },
-    {
-        id: "3",
-        name: "TrustCare Labs",
-        contact: "+91 80000 33333",
-        email: "support@trustcare.com",
-        location: "Bangalore, KA",
-        status: "Maintenance",
-        rating: 4.8,
-    },
-    {
-        id: "4",
-        name: "HealthFirst Diagnostics",
-        contact: "+91 80000 44444",
-        email: "lab@healthfirst.com",
-        location: "Hyderabad, TS",
-        status: "Inactive",
-        rating: 3.9,
-    },
-]
-
-const columns: ColumnDef<Lab>[] = [
-    {
-        accessorKey: "name",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Lab Name
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
+const getColumns = (
+    onViewDetails: (id: string) => void,
+    onEdit: (id: string) => void,
+    onDelete: (id: string, name: string) => void
+): ColumnDef<Lab>[] => [
+        {
+            accessorKey: "name",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        Lab Name
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                )
+            },
+            cell: ({ row }) => <div className="font-medium">{row.getValue("name") || "N/A"}</div>,
         },
-        cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
-    },
-    {
-        accessorKey: "location",
-        header: "Location",
-        cell: ({ row }) => (
-            <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                {row.getValue("location")}
-            </div>
-        ),
-    },
-    {
-        accessorKey: "contact",
-        header: "Contact",
-        cell: ({ row }) => (
-            <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                {row.getValue("contact")}
-            </div>
-        ),
-    },
-    {
-        accessorKey: "rating",
-        header: "Rating",
-        cell: ({ row }) => (
-            <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-200">
-                ⭐ {row.getValue("rating")}
-            </Badge>
-        ),
-    },
-    {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => {
-            const status = row.getValue("status") as string
-            return (
-                <Badge
-                    variant={
-                        status === "Active"
-                            ? "success"
-                            : status === "Inactive"
-                                ? "secondary"
-                                : "warning"
-                    }
-                >
-                    {status}
+        {
+            accessorKey: "location",
+            header: "Location",
+            cell: ({ row }) => (
+                <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    {row.getValue("location") || "N/A"}
+                </div>
+            ),
+        },
+        {
+            accessorKey: "contact",
+            header: "Contact",
+            cell: ({ row }) => (
+                <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    {row.getValue("contact") || "N/A"}
+                </div>
+            ),
+        },
+        {
+            accessorKey: "rating",
+            header: "Rating",
+            cell: ({ row }) => (
+                <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                    ⭐ {(row.getValue("rating") as number).toFixed(1)}
                 </Badge>
-            )
+            ),
         },
-    },
-    {
-        id: "actions",
-        header: "Actions",
-        cell: ({ row }) => {
-            const lab = row.original
+        {
+            accessorKey: "status",
+            header: "Status",
+            cell: ({ row }) => {
+                const status = row.getValue("status") as string
+                return (
+                    <Badge
+                        variant={
+                            status === "ACTIVE"
+                                ? "success"
+                                : status === "INACTIVE" || status === "BLOCKED"
+                                    ? "secondary"
+                                    : "warning"
+                        }
+                    >
+                        {status}
+                    </Badge>
+                )
+            },
+        },
+        {
+            id: "actions",
+            header: "Actions",
+            cell: ({ row }) => {
+                const lab = row.original
 
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(lab.id)}
-                        >
-                            <Copy className="mr-2 h-4 w-4" />
-                            Copy ID
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            <Eye className="mr-2 h-4 w-4" />
-                            View Details
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit Lab
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">
-                            <Trash className="mr-2 h-4 w-4" />
-                            Delete Lab
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
+                return (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem
+                                onClick={() => navigator.clipboard.writeText(lab.id)}
+                            >
+                                <Copy className="mr-2 h-4 w-4" />
+                                Copy ID
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => onViewDetails(lab.id)}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                View Details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onEdit(lab.id)}>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Edit Lab
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                className="text-red-600 cursor-pointer"
+                                onClick={() => onDelete(lab.id, lab.name)}
+                            >
+                                <Trash className="mr-2 h-4 w-4" />
+                                Delete Lab
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )
+            },
         },
-    },
-]
+    ]
 
 export default function LabsPage() {
+    const [isMounted, setIsMounted] = useState(false)
+    const [labs, setLabs] = useState<Lab[]>([])
+    const [loading, setLoading] = useState(true)
+    const [selectedLabId, setSelectedLabId] = useState<string | null>(null)
+    const [selectedLabName, setSelectedLabName] = useState<string | null>(null)
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isEditingMode, setIsEditingMode] = useState(false)
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+
+    useEffect(() => {
+        setIsMounted(true)
+        fetchLabs()
+    }, [])
+
+    const fetchLabs = async () => {
+        try {
+            const response = await fetch("/api/user/lab")
+            if (response.ok) {
+                const data = await response.json()
+                setLabs(data)
+            }
+        } catch (error) {
+            console.error("Failed to fetch labs", error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleViewDetails = (id: string) => {
+        setSelectedLabId(id)
+        setIsEditingMode(false)
+        setIsModalOpen(true)
+    }
+
+    const handleEdit = (id: string) => {
+        setSelectedLabId(id)
+        setIsEditingMode(true)
+        setIsModalOpen(true)
+    }
+
+    const handleDeleteClick = (id: string, name: string) => {
+        setSelectedLabId(id)
+        setSelectedLabName(name)
+        setIsDeleteModalOpen(true)
+    }
+
+    const handleDeleteSuccess = () => {
+        setIsDeleteModalOpen(false)
+        fetchLabs() // Refresh list
+    }
+
+    const columns = getColumns(handleViewDetails, handleEdit, handleDeleteClick)
+
+    if (!isMounted) {
+        return null
+    }
+
     return (
         <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold tracking-tight">Labs Management</h1>
-                <Button>
+                {/* <Button>
                     <FlaskConical className="mr-2 h-4 w-4" /> Add Lab
-                </Button>
+                </Button> */}
             </div>
 
             <Card>
@@ -186,10 +219,49 @@ export default function LabsPage() {
                     <CardTitle>All Labs</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <DataTable columns={columns} data={data} searchKey="name" />
+                    {loading ? (
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between py-4">
+                                <Skeleton className="h-10 w-[250px]" />
+                                <Skeleton className="h-10 w-[100px]" />
+                            </div>
+                            <div className="rounded-md border">
+                                <div className="h-12 border-b px-4 flex items-center gap-4">
+                                    <Skeleton className="h-4 w-[150px]" />
+                                    <Skeleton className="h-4 w-[150px]" />
+                                    <Skeleton className="h-4 w-[200px]" />
+                                    <Skeleton className="h-4 w-[100px]" />
+                                </div>
+                                {[...Array(5)].map((_, i) => (
+                                    <div key={i} className="h-16 border-b px-4 flex items-center gap-4">
+                                        <Skeleton className="h-10 w-10 rounded-full" />
+                                        <div className="space-y-2">
+                                            <Skeleton className="h-4 w-[200px]" />
+                                            <Skeleton className="h-3 w-[150px]" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
+                        <DataTable columns={columns} data={labs} searchKey="name" />
+                    )}
                 </CardContent>
             </Card>
 
+            <LabDetailsModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                labId={selectedLabId}
+                defaultEditing={isEditingMode}
+            />
+            <DeleteLabModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                labId={selectedLabId}
+                labName={selectedLabName}
+                onSuccess={handleDeleteSuccess}
+            />
         </div>
     )
 }
