@@ -14,6 +14,7 @@ import {
     FileText,
     Mail,
     Phone,
+    Microscope,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Badge } from "@/components/ui/badge"
 import {
     Select,
     SelectContent,
@@ -41,6 +43,21 @@ import { motion, AnimatePresence } from "framer-motion"
 type LabFormValues = z.infer<typeof LabValidation>
 type FieldName = keyof LabFormValues
 
+const TEST_TYPES = [
+    { id: "blood_test", label: "Blood Test" },
+    { id: "urine_test", label: "Urine Analysis" },
+    { id: "x_ray", label: "X-Ray" },
+    { id: "ultrasound", label: "Ultrasound" },
+    { id: "mri", label: "MRI Scan" },
+    { id: "ct_scan", label: "CT Scan" },
+    { id: "ecg", label: "ECG/EKO" },
+    { id: "diabetes", label: "Diabetes Screening" },
+    { id: "thyroid", label: "Thyroid Profile" },
+    { id: "allergy", label: "Allergy Testing" },
+    { id: "covid", label: "COVID-19 RT-PCR" },
+    { id: "genetic", label: "Genetic Testing" },
+]
+
 export default function LabRegistrationForm() {
     const [isLoading, setIsLoading] = useState(false)
     const [currentStep, setCurrentStep] = useState(1)
@@ -53,6 +70,7 @@ export default function LabRegistrationForm() {
             email: "",
             phone: "",
             licenseNumber: "",
+            testTypes: [],
             website: "",
             description: "",
             street: "",
@@ -63,6 +81,13 @@ export default function LabRegistrationForm() {
         } as LabFormValues,
     })
 
+    const toggleTestType = (id: string, currentValues: string[], onChange: (value: string[]) => void) => {
+        const newValues = currentValues.includes(id)
+            ? currentValues.filter(v => v !== id)
+            : [...currentValues, id]
+        onChange(newValues)
+    }
+
     const steps = [
         {
             id: 1,
@@ -72,7 +97,7 @@ export default function LabRegistrationForm() {
         {
             id: 2,
             title: "Professional",
-            fields: ["licenseNumber", "website", "description"] as FieldName[]
+            fields: ["licenseNumber", "testTypes", "website", "description"] as FieldName[]
         },
         {
             id: 3,
@@ -303,6 +328,36 @@ export default function LabRegistrationForm() {
                                             <div className="grid grid-cols-1 gap-6">
                                                 <FormField
                                                     control={form.control}
+                                                    name="testTypes"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Types of Tests Provided</FormLabel>
+                                                            <FormControl>
+                                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                                    {TEST_TYPES.map((type) => {
+                                                                        const isSelected = field.value?.includes(type.id)
+                                                                        return (
+                                                                            <Badge
+                                                                                key={type.id}
+                                                                                variant={isSelected ? "default" : "outline"}
+                                                                                className={`cursor-pointer py-2 px-4 rounded-full transition-all ${isSelected ? "shadow-md scale-105" : "hover:bg-accent"
+                                                                                    }`}
+                                                                                onClick={() => toggleTestType(type.id, field.value || [], field.onChange)}
+                                                                            >
+                                                                                {isSelected && <Check className="w-3 h-3 mr-2" />}
+                                                                                {type.label}
+                                                                            </Badge>
+                                                                        )
+                                                                    })}
+                                                                </div>
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
                                                     name="licenseNumber"
                                                     render={({ field }) => (
                                                         <FormItem>
@@ -335,7 +390,7 @@ export default function LabRegistrationForm() {
                                                     name="description"
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel>About Layout (Optional)</FormLabel>
+                                                            <FormLabel>About Lab (Optional)</FormLabel>
                                                             <FormControl>
                                                                 <div className="relative">
                                                                     <FileText className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
