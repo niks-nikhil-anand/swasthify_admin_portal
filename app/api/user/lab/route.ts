@@ -54,6 +54,7 @@ export async function POST(req: Request) {
                     licenseNumber: validatedData.licenseNumber,
                     website: validatedData.website,
                     description: validatedData.description,
+                    testTypes: validatedData.testTypes,
                 }
             })
 

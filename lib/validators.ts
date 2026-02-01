@@ -71,6 +71,7 @@ export const LabValidation = z.object({
     message: "Phone number must be exactly 10 digits.",
   }),
   licenseNumber: z.string().optional(),
+  testTypes: z.array(z.string()).min(1, "Please select at least one test type"),
   website: z.string().url().optional().or(z.literal("")),
   description: z.string().optional(),
 
