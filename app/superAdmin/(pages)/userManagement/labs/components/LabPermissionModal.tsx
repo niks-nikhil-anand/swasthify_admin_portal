@@ -89,13 +89,16 @@ export function LabPermissionModal({
                 }),
             });
 
-            if (!res.ok) throw new Error("Failed to update permissions");
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.details || errorData.error || "Failed to update permissions");
+            }
 
             toast.success("Permissions updated successfully");
             onClose();
         } catch (error) {
             console.error(error);
-            toast.error("Failed to update permissions");
+            toast.error(error instanceof Error ? error.message : "Failed to update permissions");
         } finally {
             setSaving(false);
         }

@@ -1,0 +1,604 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Camera, Mail, MapPin, Phone, FileText, Loader2, Trash2, Upload, Microscope } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+
+interface LabProfileFormProps {
+    onSuccess?: () => void;
+    showCompletion?: boolean;
+}
+
+export default function LabProfileForm({ onSuccess, showCompletion = true }: LabProfileFormProps) {
+    const [loading, setLoading] = useState(false);
+    const [isFetching, setIsFetching] = useState(true);
+    const [uploading, setUploading] = useState<string | null>(null);
+    const [viewingDoc, setViewingDoc] = useState<{ url: string; type: string } | null>(null);
+
+    // Form State
+    const [formData, setFormData] = useState({
+        labName: "",
+        email: "",
+        phone: "",
+        description: "",
+        website: "",
+        licenseNumber: "",
+        address: "",
+        city: "",
+        zip: "",
+        profilePhoto: "",
+        ownerIdProof: "",
+        addressProof: ""
+    });
+    const [initialData, setInitialData] = useState<typeof formData | null>(null);
+
+    const [completionPercentage, setCompletionPercentage] = useState(0);
+
+    // Calculate completion percentage
+    useEffect(() => {
+        const fields = [
+            formData.labName, formData.email, formData.phone,
+            formData.description, formData.licenseNumber,
+            formData.address, formData.city, formData.zip,
+            formData.profilePhoto, formData.ownerIdProof, formData.addressProof
+        ];
+        const filled = fields.filter(f => f && f.trim() !== "").length;
+        setCompletionPercentage(Math.round((filled / fields.length) * 100));
+    }, [formData]);
+
+    // Fetch Profile Data on Mount
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const res = await fetch("/api/lab/profile");
+                if (!res.ok) throw new Error("Failed to fetch profile");
+                const data = await res.json();
+
+                if (data.success && data.lab) {
+                    const l = data.lab;
+                    const fetchedData = {
+                        labName: l.user.name || "",
+                        email: l.user.email || "",
+                        phone: l.user.phone || "",
+                        description: l.description || "",
+                        website: l.website || "",
+                        licenseNumber: l.licenseNumber || "",
+                        address: l.address || "",
+                        city: l.city || "",
+                        zip: l.zip || "",
+                        profilePhoto: l.profilePhoto || "",
+                        ownerIdProof: l.ownerIdProof || "",
+                        addressProof: l.addressProof || ""
+                    };
+                    setFormData(fetchedData);
+                    setInitialData(fetchedData);
+                }
+            } catch (error) {
+                console.error("Error fetching profile:", error);
+                toast.error("Failed to load profile data.");
+            } finally {
+                setIsFetching(false);
+            }
+        };
+
+        fetchProfile();
+    }, []);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { id, value } = e.target;
+        setFormData(prev => ({ ...prev, [id]: value }));
+    };
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(type);
+        const uploadFormData = new FormData();
+        uploadFormData.append("file", file);
+        uploadFormData.append("type", type);
+
+        try {
+            const res = await fetch("/api/upload", {
+                method: "POST",
+                body: uploadFormData,
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`Upload failed: ${res.status} ${errorText}`);
+            }
+
+            const data = await res.json();
+            const uploadedUrl = data.url;
+
+            setFormData(prev => ({ ...prev, [type]: uploadedUrl }));
+
+            if (type === "profilePhoto") {
+                const patchRes = await fetch("/api/lab/profile", {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ ...formData, profilePhoto: uploadedUrl })
+                });
+
+                if (!patchRes.ok) throw new Error("Failed to save photo to profile.");
+
+                toast.success("Profile photo updated successfully.");
+                if (onSuccess) onSuccess();
+            } else {
+                toast.success(`${type === "ownerIdProof" ? "Owner ID Proof" : "Address Proof"} uploaded successfully.`);
+            }
+
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error.message || "There was an error uploading your file.");
+        } finally {
+            setUploading(null);
+        }
+    };
+
+    const handleDeletePhoto = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch("/api/lab/profile/photo", { method: "DELETE" });
+            if (!res.ok) throw new Error("Delete failed");
+
+            setFormData(prev => ({ ...prev, profilePhoto: "" }));
+            toast.success("Profile photo removed.");
+            if (onSuccess) onSuccess();
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to remove profile photo.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleDeleteDocument = async (type: "ownerIdProof" | "addressProof") => {
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/lab/profile/document?type=${type}`, { method: "DELETE" });
+            if (!res.ok) throw new Error("Delete failed");
+
+            setFormData(prev => ({ ...prev, [type]: "" }));
+            toast.success("Document removed successfully.");
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to remove document.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSave = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch("/api/lab/profile", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`Update failed: ${res.status} ${errorText}`);
+            }
+
+            setInitialData(formData);
+            toast.success("Profile updated successfully.");
+            if (onSuccess) onSuccess();
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error.message || "Could not save profile changes.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialData);
+
+    if (isFetching) {
+        return (
+            <div className="space-y-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="space-y-2">
+                        <Skeleton className="h-9 w-48" />
+                        <Skeleton className="h-5 w-64" />
+                    </div>
+                </div>
+                <div className="grid gap-6 md:grid-cols-12">
+                    <div className="md:col-span-4 lg:col-span-3">
+                        <Card>
+                            <CardContent className="pt-6">
+                                <Skeleton className="h-32 w-32 rounded-full mx-auto mb-4" />
+                                <Skeleton className="h-8 w-full mb-2" />
+                                <Skeleton className="h-4 w-24 mx-auto" />
+                            </CardContent>
+                        </Card>
+                    </div>
+                    <div className="md:col-span-8 lg:col-span-9 space-y-6">
+                        <Card>
+                            <CardHeader><Skeleton className="h-6 w-32" /></CardHeader>
+                            <CardContent className="h-64" />
+                        </Card>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-6">
+            {showCompletion && (
+                <div className="flex items-center gap-4 bg-card p-4 rounded-lg border shadow-sm">
+                    <div className="space-y-1 w-full">
+                        <div className="flex justify-between text-sm font-medium">
+                            <span>Profile Completion</span>
+                            <span className={completionPercentage === 100 ? "text-green-600" : "text-primary"}>
+                                {completionPercentage}%
+                            </span>
+                        </div>
+                        <Progress value={completionPercentage} className="h-2" />
+                        <p className="text-xs text-muted-foreground">
+                            {completionPercentage < 100 ? "Complete your profile to get better visibility." : "Your profile is fully complete!"}
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            <div className="grid gap-6 md:grid-cols-12">
+                {/* Profile Sidebar */}
+                <Card className="md:col-span-4 lg:col-span-3 h-fit">
+                    <CardContent className="pt-6 text-center">
+                        <div className="relative mx-auto w-32 h-32 mb-4 group">
+                            <input
+                                type="file"
+                                id="profilePhoto"
+                                className="hidden"
+                                accept="image/*"
+                                onChange={(e) => handleFileUpload(e, "profilePhoto")}
+                                disabled={uploading === "profilePhoto"}
+                            />
+                            <Label htmlFor="profilePhoto" className="cursor-pointer relative block">
+                                <Avatar className="w-full h-full border-4 border-background shadow-xl">
+                                    <AvatarImage src={formData.profilePhoto || "/icons/lab.png"} alt="Lab" className="object-cover" />
+                                    <AvatarFallback className="text-4xl bg-primary/10 text-primary">
+                                        {formData.labName?.[0]}
+                                    </AvatarFallback>
+                                </Avatar>
+
+                                {uploading === "profilePhoto" && (
+                                    <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center z-20">
+                                        <Loader2 className="h-8 w-8 text-white animate-spin" />
+                                    </div>
+                                )}
+
+                                {!uploading && (
+                                    <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                        <Camera className="h-8 w-8 text-white" />
+                                    </div>
+                                )}
+                            </Label>
+
+                            {formData.profilePhoto && !uploading && (
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <button
+                                            className="absolute -bottom-2 -right-2 p-2 bg-destructive text-destructive-foreground rounded-full shadow-lg hover:bg-destructive/90 transition-colors z-30"
+                                            title="Remove Photo"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Delete Profile Photo?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Are you sure you want to remove your profile photo? This action cannot be undone.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={handleDeletePhoto} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                Delete
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            )}
+                        </div>
+                        <h2 className="text-xl font-bold">{formData.labName}</h2>
+                        <p className="text-sm text-muted-foreground flex items-center justify-center gap-1.5 mt-1">
+                            <Microscope className="h-3.5 w-3.5" />
+                            Diagnostic Lab
+                        </p>
+
+                        <div className="mt-6 flex flex-col gap-2">
+                            {/* Save button in sidebar for mobile/convenience */}
+                            <Button className="w-full" onClick={handleSave} disabled={loading || !hasChanges}>
+                                {loading ? "Saving..." : "Save Changes"}
+                            </Button>
+                        </div>
+
+                        <div className="mt-6 text-left space-y-4 text-sm">
+                            <Separator />
+                            <div className="flex items-center gap-3">
+                                <Mail className="h-4 w-4 text-muted-foreground" />
+                                <span className="truncate">{formData.email}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <Phone className="h-4 w-4 text-muted-foreground" />
+                                <span>{formData.phone}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <MapPin className="h-4 w-4 text-muted-foreground" />
+                                <span>{formData.city || "Location not set"}</span>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Profile Details Form */}
+                <div className="md:col-span-8 lg:col-span-9 space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Lab Information</CardTitle>
+                            <CardDescription>
+                                Update your lab details and contact information.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="labName">Lab Name</Label>
+                                <Input id="labName" value={formData.labName} onChange={handleInputChange} />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="email">Email Address</Label>
+                                    <Input id="email" type="email" value={formData.email} onChange={handleInputChange} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="phone">Phone Number</Label>
+                                    <div className="flex">
+                                        <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground text-sm">
+                                            +91
+                                        </span>
+                                        <Input
+                                            id="phone"
+                                            type="tel"
+                                            value={formData.phone}
+                                            onChange={handleInputChange}
+                                            className="rounded-l-none"
+                                            placeholder="98765 43210"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="description">About Lab</Label>
+                                <Textarea
+                                    id="description"
+                                    className="min-h-[80px]"
+                                    value={formData.description}
+                                    onChange={handleInputChange}
+                                    placeholder="Brief description about the lab..."
+                                />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="website">Website (Optional)</Label>
+                                    <Input id="website" value={formData.website} onChange={handleInputChange} placeholder="https://..." />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="licenseNumber">License Number</Label>
+                                    <Input id="licenseNumber" value={formData.licenseNumber} onChange={handleInputChange} />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Location Details</CardTitle>
+                            <CardDescription>
+                                Information about your primary lab location.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="address">Address</Label>
+                                <Input id="address" value={formData.address} onChange={handleInputChange} />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="city">City</Label>
+                                    <Input id="city" value={formData.city} onChange={handleInputChange} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="zip">Pincode</Label>
+                                    <Input id="zip" value={formData.zip} onChange={handleInputChange} />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Documents & Verification</CardTitle>
+                            <CardDescription>
+                                Upload necessary documents for verification.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Owner ID Proof */}
+                                <div className="space-y-3">
+                                    <Label>Owner ID Proof (Aadhar/PAN/Passport)</Label>
+                                    <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors relative h-48">
+                                        {formData.ownerIdProof ? (
+                                            <div className="flex flex-col items-center gap-3 w-full">
+                                                <FileText className="h-10 w-10 text-primary" />
+                                                <p className="text-sm font-medium text-primary break-all max-w-[200px] truncate">Document Uploaded</p>
+                                                <div className="flex gap-2 w-full justify-center">
+                                                    <Button variant="outline" size="sm" onClick={() => setViewingDoc({ url: formData.ownerIdProof, type: "Owner ID Proof" })}>
+                                                        View
+                                                    </Button>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button variant="destructive" size="sm" disabled={loading}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Delete ID Proof?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    Are you sure you want to remove this document? This action cannot be undone.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={() => handleDeleteDocument("ownerIdProof")} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                                    Delete
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                                                <p className="text-sm font-medium">Click to upload</p>
+                                                <p className="text-xs text-muted-foreground">PDF, JPG or PNG (Max 5MB)</p>
+                                            </>
+                                        )}
+                                        <input
+                                            type="file"
+                                            className={`absolute inset-0 opacity-0 cursor-pointer ${formData.ownerIdProof ? 'hidden pointer-events-none' : ''}`}
+                                            accept="application/pdf,image/*"
+                                            onChange={(e) => handleFileUpload(e, "ownerIdProof")}
+                                            disabled={uploading === "ownerIdProof" || !!formData.ownerIdProof}
+                                        />
+                                        {uploading === "ownerIdProof" && (
+                                            <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
+                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Address Proof */}
+                                <div className="space-y-3">
+                                    <Label>Address Proof</Label>
+                                    <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors relative h-48">
+                                        {formData.addressProof ? (
+                                            <div className="flex flex-col items-center gap-3 w-full">
+                                                <FileText className="h-10 w-10 text-primary" />
+                                                <p className="text-sm font-medium text-primary break-all max-w-[200px] truncate">Document Uploaded</p>
+                                                <div className="flex gap-2 w-full justify-center">
+                                                    <Button variant="outline" size="sm" onClick={() => setViewingDoc({ url: formData.addressProof, type: "Address Proof" })}>
+                                                        View
+                                                    </Button>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button variant="destructive" size="sm" disabled={loading}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Delete Address Proof?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    Are you sure you want to remove this document? This action cannot be undone.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={() => handleDeleteDocument("addressProof")} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                                    Delete
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                                                <p className="text-sm font-medium">Click to upload</p>
+                                                <p className="text-xs text-muted-foreground">PDF, JPG or PNG (Max 5MB)</p>
+                                            </>
+                                        )}
+                                        <input
+                                            type="file"
+                                            className={`absolute inset-0 opacity-0 cursor-pointer ${formData.addressProof ? 'hidden pointer-events-none' : ''}`}
+                                            accept="application/pdf,image/*"
+                                            onChange={(e) => handleFileUpload(e, "addressProof")}
+                                            disabled={uploading === "addressProof" || !!formData.addressProof}
+                                        />
+                                        {uploading === "addressProof" && (
+                                            <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
+                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <div className="flex justify-end gap-4">
+                        <Button variant="outline" onClick={() => initialData && setFormData(initialData)} disabled={!hasChanges}>Cancel</Button>
+                        <Button onClick={handleSave} disabled={loading || !hasChanges}>
+                            {loading ? "Saving..." : "Save Changes"}
+                        </Button>
+                    </div>
+                </div>
+            </div>
+
+            <Dialog open={!!viewingDoc} onOpenChange={(open) => !open && setViewingDoc(null)}>
+                <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+                    <DialogHeader>
+                        <DialogTitle>Document Preview - {viewingDoc?.type}</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex-1 w-full bg-muted/20 rounded-md overflow-hidden relative border flex items-center justify-center">
+                        {viewingDoc?.url && (
+                            viewingDoc.url.toLowerCase().endsWith('.pdf') ? (
+                                <iframe src={viewingDoc.url} className="w-full h-full" title="Document Preview" />
+                            ) : (
+                                <img src={viewingDoc.url} alt="Document" className="max-w-full max-h-full object-contain" />
+                            )
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </div>
+    );
+}
