@@ -233,6 +233,10 @@ model Lab {
   website       String?
   testTypes     String[] @default([])
 
+  ownerIdProof  String?
+  addressProof  String?
+  profilePhoto  String?
+
   averageRating Float @default(0.0)
   totalReviews  Int   @default(0)
 
