@@ -24,6 +24,10 @@ export async function POST(req: Request) {
             cookieName = "DOCTOR";
         } else if (roleUpper === "PATIENT") {
             cookieName = "PATIENT";
+        } else if (roleUpper === "LAB") {
+            cookieName = "LAB";
+        } else if (roleUpper === "PHARMACY") {
+            cookieName = "PHARMACY";
         }
 
         console.log(`Clearing cookie: ${cookieName}`);
