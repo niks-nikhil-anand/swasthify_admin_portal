@@ -153,7 +153,7 @@ export function HealthPackages() {
                                                         src={pkg.image}
                                                         alt={pkg.name}
                                                         fill
-                                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                                        className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                                                     />
                                                     <div className="absolute bottom-0 left-0 right-0 bg-white/95 p-1 md:p-2 text-center text-[10px] md:text-sm font-medium text-gray-800 border-t backdrop-blur-sm">
                                                         Includes {pkg.testsCount} tests
