@@ -2,6 +2,7 @@
 
 import { Video, MapPin, FlaskConical, Stethoscope, ArrowRight, Ambulance, HeartPulse, Building2 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { CTA } from "@/components/shared/CTA";
@@ -86,12 +87,13 @@ export default function ServicesPage() {
                                 From online consultations to complex surgeries, Swasthify is your one-stop solution for all medical needs. Reliable, Affordable, and Accessible.
                             </p>
                         </div>
-                        <div className="flex-1 relative w-full h-64 sm:h-80 md:h-auto animate-in fade-in slide-in-from-right-8 duration-700 delay-200">
-                            <div className="relative z-10 rounded-2xl overflow-hidden shadow-xl md:shadow-2xl border border-border/50 rotate-2 hover:rotate-0 transition-all duration-500 h-full">
-                                <img
+                        <div className="flex-1 relative w-full aspect-video md:aspect-[4/3] animate-in fade-in slide-in-from-right-8 duration-700 delay-200">
+                            <div className="relative z-10 rounded-2xl overflow-hidden shadow-xl md:shadow-2xl border border-border/50 w-full h-full">
+                                <Image
                                     src="/images/empowering.png"
                                     alt="Empowering Healthcare"
-                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                                    fill
+                                    className="object-cover hover:scale-105 transition-transform duration-700"
                                 />
                             </div>
                             {/* Decorative elements behind image */}
