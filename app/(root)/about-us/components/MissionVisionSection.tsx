@@ -44,7 +44,7 @@ export function MissionVisionSection() {
 
                     <div className="relative animate-in fade-in slide-in-from-right-8 duration-700 delay-300 group order-1 md:order-2 mb-8 md:mb-0">
                         <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-accent/20 rounded-3xl blur-2xl opacity-50 -z-10 group-hover:opacity-70 transition-opacity duration-500" />
-                        <div className="relative rounded-3xl overflow-hidden border border-border bg-card shadow-2xl rotate-3 group-hover:rotate-0 transition-all duration-700">
+                        <div className="relative rounded-3xl overflow-hidden border border-border bg-card shadow-2xl transition-all duration-700">
                             <Image
                                 src="/images/specialties/our_services.png"
                                 alt="Our Services"
