@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 
 interface CTAProps {
     title?: React.ReactNode;
@@ -22,29 +22,37 @@ export function CTA({
     secondaryAction = { text: "View Services", href: "/services" }
 }: CTAProps) {
     return (
-        <section className="pb-24 pt-0">
+        <section className="py-20 md:py-32">
             <div className="container mx-auto px-4">
-                <div className="bg-gray-100 rounded-[2.5rem] p-12 md:p-20 text-center text-gray-900 relative overflow-hidden shadow-2xl">
-                    {/* Abstract Shapes */}
-                    <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/40 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-                    <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-white/40 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+                <div className="relative overflow-hidden rounded-[2rem] border border-border/50 bg-gradient-to-b from-background to-muted/50 p-8 md:p-20 text-center">
 
-                    <div className="relative z-10 max-w-3xl mx-auto space-y-8">
-                        <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
+                    {/* Decorative Elements */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-full bg-gradient-to-b from-primary/5 to-transparent blur-3xl -z-10" />
+
+                    <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center space-y-8">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <Sparkles className="w-4 h-4" />
+                            <span>Transform your health journey</span>
+                        </div>
+
+                        <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground leading-[1.1] animate-in fade-in slide-in-from-bottom-6 duration-700">
                             {title}
                         </h2>
-                        <p className="text-gray-600 text-lg md:text-xl">
+
+                        <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
                             {description}
                         </p>
-                        <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-                            <Button asChild size="lg" className="h-14 px-8 rounded-full text-base font-bold shadow-lg hover:shadow-xl transition-all">
+
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-10 duration-700 delay-200">
+                            <Button asChild size="lg" className="h-14 px-8 rounded-full text-base font-semibold w-full sm:w-auto shadow-none transition-all hover:scale-105">
                                 <Link href={primaryAction.href}>
                                     {primaryAction.text}
                                 </Link>
                             </Button>
-                            <Button asChild size="lg" variant="outline" className="h-14 px-8 rounded-full text-base font-bold bg-white/50 border-gray-300 text-gray-900 hover:bg-white hover:text-primary transition-all">
+                            <Button asChild size="lg" variant="ghost" className="h-14 px-8 rounded-full text-base font-medium w-full sm:w-auto hover:bg-transparent hover:text-primary transition-colors group">
                                 <Link href={secondaryAction.href} className="flex items-center gap-2">
                                     {secondaryAction.text}
+                                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                                 </Link>
                             </Button>
                         </div>
