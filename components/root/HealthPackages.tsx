@@ -110,7 +110,7 @@ export function HealthPackages() {
                     </motion.h2>
 
                     <Tabs defaultValue="featured" className="w-full">
-                        <div className="flex justify-start mb-6 overflow-x-auto pb-2 scrollbar-none w-full">
+                        <div className="flex justify-start mb-6 overflow-x-auto pb-2 w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                             <TabsList className="bg-transparent h-auto p-0 space-x-6 w-max mx-auto md:mx-0">
                                 <TabsTrigger
                                     value="featured"
