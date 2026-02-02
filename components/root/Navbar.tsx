@@ -5,9 +5,23 @@ import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
+    const pathname = usePathname();
+
+    const navItems = [
+        { name: "Home", href: "/" },
+        { name: "About", href: "/about-us" },
+        { name: "Services", href: "/services" },
+        { name: "Contact", href: "/contact" },
+        { name: "Lab Tests", href: "/lab-test" },
+        { name: "How It Works", href: "/how-it-works" },
+        { name: "Pricing", href: "/pricing" },
+    ];
+
+    const isActive = (path: string) => pathname === path;
 
     return (
         <>
@@ -22,27 +36,18 @@ export function Navbar() {
 
                     {/* Desktop Menu */}
                     <div className="hidden md:flex gap-8 items-center">
-                        <Link href="/" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-                            Home
-                        </Link>
-                        <Link href="/about-us" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-                            About
-                        </Link>
-                        <Link href="/services" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-                            Services
-                        </Link>
-                        <Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-                            Contact
-                        </Link>
-                        <Link href="/lab-test" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-                            Lab Tests
-                        </Link>
-                        <Link href="/how-it-works" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-                            How It Works
-                        </Link>
-                        <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-                            Pricing
-                        </Link>
+                        {navItems.map((item) => (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className={`text-sm font-medium transition-colors ${isActive(item.href)
+                                    ? "text-primary font-semibold"
+                                    : "text-muted-foreground hover:text-primary"
+                                    }`}
+                            >
+                                {item.name}
+                            </Link>
+                        ))}
                     </div>
 
                     <div className="hidden md:flex gap-4">
@@ -105,27 +110,19 @@ export function Navbar() {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <Link href="/" onClick={() => setIsOpen(false)} className="px-4 py-3 text-base font-medium text-foreground hover:bg-primary/5 hover:text-primary rounded-xl transition-colors">
-                                    Home
-                                </Link>
-                                <Link href="/about-us" onClick={() => setIsOpen(false)} className="px-4 py-3 text-base font-medium text-muted-foreground hover:bg-primary/5 hover:text-primary rounded-xl transition-colors">
-                                    About
-                                </Link>
-                                <Link href="/services" onClick={() => setIsOpen(false)} className="px-4 py-3 text-base font-medium text-muted-foreground hover:bg-primary/5 hover:text-primary rounded-xl transition-colors">
-                                    Services
-                                </Link>
-                                <Link href="/contact" onClick={() => setIsOpen(false)} className="px-4 py-3 text-base font-medium text-muted-foreground hover:bg-primary/5 hover:text-primary rounded-xl transition-colors">
-                                    Contact
-                                </Link>
-                                <Link href="/lab-test" onClick={() => setIsOpen(false)} className="px-4 py-3 text-base font-medium text-muted-foreground hover:bg-primary/5 hover:text-primary rounded-xl transition-colors">
-                                    Lab Tests
-                                </Link>
-                                <Link href="/how-it-works" onClick={() => setIsOpen(false)} className="px-4 py-3 text-base font-medium text-muted-foreground hover:bg-primary/5 hover:text-primary rounded-xl transition-colors">
-                                    How It Works
-                                </Link>
-                                <Link href="/pricing" onClick={() => setIsOpen(false)} className="px-4 py-3 text-base font-medium text-muted-foreground hover:bg-primary/5 hover:text-primary rounded-xl transition-colors">
-                                    Pricing
-                                </Link>
+                                {navItems.map((item) => (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        onClick={() => setIsOpen(false)}
+                                        className={`px-4 py-3 text-base font-medium rounded-xl transition-colors ${isActive(item.href)
+                                            ? "bg-primary/10 text-primary"
+                                            : "text-muted-foreground hover:bg-primary/5 hover:text-primary"
+                                            }`}
+                                    >
+                                        {item.name}
+                                    </Link>
+                                ))}
                             </div>
 
                             <div className="mt-auto flex flex-col gap-3">
