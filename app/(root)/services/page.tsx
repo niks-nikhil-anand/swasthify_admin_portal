@@ -69,60 +69,60 @@ export default function ServicesPage() {
     return (
         <div className="flex flex-col min-h-screen bg-background">
             {/* Hero Section */}
-            <section className="relative w-full py-20 md:py-32 overflow-hidden bg-primary/5">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 -z-10" />
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 -z-10" />
+            <section className="relative w-full py-12 md:py-32 overflow-hidden bg-primary/5">
+                <div className="absolute top-0 right-0 w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 -z-10" />
+                <div className="absolute bottom-0 left-0 w-[200px] h-[200px] md:w-[400px] md:h-[400px] bg-accent/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 -z-10" />
 
                 <div className="container mx-auto px-4 relative z-10">
-                    <div className="flex flex-col md:flex-row items-center gap-12">
+                    <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
                         <div className="flex-1 text-center md:text-left">
-                            <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-medium text-sm md:text-base mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-medium text-xs md:text-base mb-4 md:mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 360° Healthcare
                             </div>
-                            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground tracking-tight animate-in fade-in slide-in-from-bottom-6 duration-700">
+                            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 md:mb-6 text-foreground tracking-tight animate-in fade-in slide-in-from-bottom-6 duration-700">
                                 Comprehensive <span className="text-primary">Healthcare Services</span>
                             </h1>
-                            <p className="text-xl text-muted-foreground mb-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+                            <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 md:mb-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
                                 From online consultations to complex surgeries, Swasthify is your one-stop solution for all medical needs. Reliable, Affordable, and Accessible.
                             </p>
                         </div>
-                        <div className="flex-1 relative animate-in fade-in slide-in-from-right-8 duration-700 delay-200">
-                            <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl border border-border/50 rotate-2 hover:rotate-0 transition-all duration-500">
+                        <div className="flex-1 relative w-full h-64 sm:h-80 md:h-auto animate-in fade-in slide-in-from-right-8 duration-700 delay-200">
+                            <div className="relative z-10 rounded-2xl overflow-hidden shadow-xl md:shadow-2xl border border-border/50 rotate-2 hover:rotate-0 transition-all duration-500 h-full">
                                 <img
                                     src="/images/empowering.png"
                                     alt="Empowering Healthcare"
-                                    className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700"
+                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                                 />
                             </div>
                             {/* Decorative elements behind image */}
-                            <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-primary/20 rounded-full blur-xl animate-pulse" />
-                            <div className="absolute -top-6 -left-6 w-32 h-32 bg-accent/20 rounded-full blur-xl animate-pulse" />
+                            <div className="absolute -bottom-4 -right-4 md:-bottom-6 md:-right-6 w-16 h-16 md:w-24 md:h-24 bg-primary/20 rounded-full blur-xl animate-pulse" />
+                            <div className="absolute -top-4 -left-4 md:-top-6 md:-left-6 w-24 h-24 md:w-32 md:h-32 bg-accent/20 rounded-full blur-xl animate-pulse" />
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Services Grid */}
-            <section className="py-20">
+            <section className="py-12 md:py-20">
                 <div className="container mx-auto px-4">
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                         {allServices.map((service, index) => (
                             <Card
                                 key={index}
                                 className="group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border-border/50 overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-8 fill-mode-backwards"
                                 style={{ animationDelay: `${index * 100}ms` }}
                             >
-                                <CardHeader className="relative">
-                                    <div className={`w-14 h-14 rounded-xl mb-4 ${service.color} flex items-center justify-center transition-transform group-hover:scale-110 duration-300`}>
-                                        <service.icon className="w-7 h-7" />
+                                <CardHeader className="relative p-6">
+                                    <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl mb-4 ${service.color} flex items-center justify-center transition-transform group-hover:scale-110 duration-300`}>
+                                        <service.icon className="w-6 h-6 md:w-7 md:h-7" />
                                     </div>
-                                    <CardTitle className="text-2xl font-bold group-hover:text-primary transition-colors">
+                                    <CardTitle className="text-xl md:text-2xl font-bold group-hover:text-primary transition-colors">
                                         {service.title}
                                     </CardTitle>
                                 </CardHeader>
 
-                                <CardContent className="flex-1">
-                                    <p className="text-muted-foreground mb-6 leading-relaxed">
+                                <CardContent className="flex-1 p-6 pt-0">
+                                    <p className="text-sm md:text-base text-muted-foreground mb-6 leading-relaxed">
                                         {service.description}
                                     </p>
                                     <div className="space-y-3">
@@ -135,7 +135,7 @@ export default function ServicesPage() {
                                     </div>
                                 </CardContent>
 
-                                <CardFooter className="pt-6 border-t border-border/50 bg-muted/5">
+                                <CardFooter className="p-6 pt-4 border-t border-border/50 bg-muted/5">
                                     <Button variant="link" asChild className="p-0 h-auto font-bold text-primary hover:no-underline group/btn">
                                         <Link href={service.href} className="flex items-center gap-1">
                                             Book Now <ArrowRight className="w-4 h-4 ml-1 group-hover/btn:translate-x-1 transition-transform" />
