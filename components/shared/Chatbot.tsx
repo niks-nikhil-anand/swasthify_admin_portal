@@ -21,6 +21,8 @@ export default function Chatbot() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
 
+    const [suggestions, setSuggestions] = useState<{ id: string; question: string }[]>([]);
+
     // Scroll detection
     useEffect(() => {
         const handleScroll = () => {
@@ -38,12 +40,26 @@ export default function Chatbot() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Scroll to bottom when messages change
+    // Scroll to bottom when messages or suggestions change
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+    }, [messages, suggestions]);
 
-    // Add welcome message when chat opens
+
+    const fetchSuggestions = async () => {
+        try {
+            const currentPanel = getCurrentPanel();
+            const response = await fetch(`/api/chatbot/suggestions?panel=${currentPanel}`);
+            if (response.ok) {
+                const data = await response.json();
+                setSuggestions(data.suggestions || []);
+            }
+        } catch (error) {
+            console.error('Failed to fetch suggestions:', error);
+        }
+    };
+
+    // Add welcome message and fetch suggestions when chat opens
     useEffect(() => {
         if (isOpen && messages.length === 0) {
             setMessages([
@@ -54,6 +70,7 @@ export default function Chatbot() {
                     timestamp: new Date(),
                 },
             ]);
+            fetchSuggestions();
         }
     }, [isOpen, messages.length]);
 
@@ -65,18 +82,27 @@ export default function Chatbot() {
         return 'general';
     };
 
-    const handleSendMessage = async () => {
-        if (!inputValue.trim() || isLoading) return;
+    const handleSuggestionClick = (question: string) => {
+        setInputValue(question);
+        // Optional: Auto-send or just populate
+        // Let's auto-send for better UX
+        handleSendMessage(question);
+    };
+
+    const handleSendMessage = async (textOverride?: string) => {
+        const textToSend = textOverride || inputValue;
+        if (!textToSend.trim() || isLoading) return;
 
         const userMessage: Message = {
             id: Date.now().toString(),
-            text: inputValue,
+            text: textToSend,
             sender: 'user',
             timestamp: new Date(),
         };
 
         setMessages((prev) => [...prev, userMessage]);
         setInputValue('');
+        setSuggestions([]); // Clear suggestions while loading
         setIsLoading(true);
 
         try {
@@ -86,7 +112,7 @@ export default function Chatbot() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    message: inputValue,
+                    message: textToSend,
                     context: {
                         panel: getCurrentPanel(),
                         pathname,
@@ -108,6 +134,19 @@ export default function Chatbot() {
             };
 
             setMessages((prev) => [...prev, botMessage]);
+
+            // Set dynamic suggestions from Gemini response if available
+            if (data.suggestions && Array.isArray(data.suggestions) && data.suggestions.length > 0) {
+                const newSuggestions = data.suggestions.map((q: string, i: number) => ({
+                    id: `sugg-${Date.now()}-${i}`,
+                    question: q
+                }));
+                setSuggestions(newSuggestions);
+            } else {
+                // Fallback to static suggestions if none returned
+                fetchSuggestions();
+            }
+
         } catch (error) {
             console.error('Chatbot error:', error);
             const errorMessage: Message = {
@@ -276,6 +315,41 @@ export default function Chatbot() {
                                 </motion.div>
                             )}
 
+                            {/* Suggestions */}
+                            <AnimatePresence>
+                                {!isLoading && suggestions.length > 0 && (
+                                    <motion.div
+                                        className="flex flex-col gap-2 mt-2 px-2"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                    >
+                                        <p className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 ml-1">Suggested questions:</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {suggestions.map((suggestion, index) => (
+                                                <motion.button
+                                                    key={suggestion.id}
+                                                    onClick={() => handleSuggestionClick(suggestion.question)}
+                                                    initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                    transition={{
+                                                        duration: 0.2,
+                                                        delay: index * 0.1,
+                                                        type: "spring",
+                                                        stiffness: 200
+                                                    }}
+                                                    whileHover={{ scale: 1.05 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    className="px-3 py-1.5 text-xs bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded-xl border border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-700 transition-colors shadow-sm text-left"
+                                                >
+                                                    {suggestion.question}
+                                                </motion.button>
+                                            ))}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+
                             <div ref={messagesEndRef} />
                         </div>
 
@@ -292,7 +366,7 @@ export default function Chatbot() {
                                     disabled={isLoading}
                                 />
                                 <button
-                                    onClick={handleSendMessage}
+                                    onClick={() => handleSendMessage()}
                                     disabled={!inputValue.trim() || isLoading}
                                     className="flex-shrink-0 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 p-1.5 md:p-2 text-white hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
                                     aria-label="Send message"

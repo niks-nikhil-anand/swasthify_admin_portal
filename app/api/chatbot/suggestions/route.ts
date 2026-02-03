@@ -61,8 +61,8 @@ export async function GET(request: NextRequest) {
             }
         });
 
-        // Limit to 6 suggestions total
-        const limitedSuggestions = suggestions.slice(0, 6);
+        // Limit to 4 suggestions total
+        const limitedSuggestions = suggestions.slice(0, 4);
 
         return NextResponse.json({
             suggestions: limitedSuggestions,

@@ -1,275 +1,505 @@
 {
-  "systemContext": {
-    "platformName": "Swasthify Healthcare Professionals",
-    "description": "An integrated healthcare management platform connecting doctors, diagnostic laboratories, patients, and administrators through a unified digital ecosystem.",
-    "version": "1.0.0"
-  },
-  "categories": {
-    "general": {
-      "name": "General Information",
-      "faqs": [
-        {
-          "id": "gen_001",
-          "question": "What is Swasthify?",
-          "answer": "Swasthify is an end-to-end healthcare management platform designed to streamline interactions between doctors, diagnostic laboratories, and patients. It enables appointment scheduling, campaign management, profile verification, and centralized administrative control.",
-          "keywords": ["swasthify", "healthcare platform", "overview", "about"],
-          "relatedTopics": ["gen_002", "gen_003"]
-        },
-        {
-          "id": "gen_002",
-          "question": "Who can use the Swasthify platform?",
-          "answer": "Swasthify supports three primary user roles: Doctors, who provide medical consultations and services; Diagnostic Lab Partners, who offer testing and diagnostic services; and Super Admins, who manage and oversee platform operations.",
-          "keywords": ["users", "roles", "access", "user types"],
-          "relatedTopics": ["gen_001", "doc_001", "lab_001"]
-        },
-        {
-          "id": "gen_003",
-          "question": "How can I reset my password?",
-          "answer": "To reset your password, select the 'Forgot Password' option on the login page. Enter your registered email address to receive a secure password reset link and follow the instructions provided.",
-          "keywords": ["password reset", "forgot password", "login"],
-          "relatedTopics": ["gen_004"]
-        },
-        {
-          "id": "gen_004",
-          "question": "How do I update my profile information?",
-          "answer": "You can update your profile by navigating to the Profile section from the main menu. Select 'Edit Profile', make the necessary changes, and save to apply updates.",
-          "keywords": ["profile update", "edit profile", "account settings"],
-          "relatedTopics": ["doc_002", "lab_002"]
-        }
-      ]
+    "systemContext": {
+        "platformName": "Swasthify Healthcare",
+        "description": "An integrated healthcare management platform connecting doctors, diagnostic laboratories, patients, and administrators through a unified digital ecosystem.",
+        "version": "1.0.0"
     },
-
-    "doctor_panel": {
-      "name": "Doctor Panel",
-      "faqs": [
-        {
-          "id": "doc_001",
-          "question": "How do I access the Doctor Panel?",
-          "answer": "Once logged in using your doctor credentials, you will be automatically redirected to the Doctor Panel. Alternatively, you may access it via the '/doctor-panel' route.",
-          "keywords": ["doctor panel", "doctor dashboard", "login"],
-          "relatedTopics": ["doc_002", "doc_003"]
+    "categories": {
+        "general": {
+            "name": "General Information",
+            "faqs": [
+                {
+                    "id": "gen_001",
+                    "question": "What is Swasthify?",
+                    "answer": "Swasthify is an end-to-end healthcare management platform designed to streamline interactions between doctors, diagnostic laboratories, and patients. It enables appointment scheduling, campaign management, profile verification, and centralized administrative control.",
+                    "keywords": [
+                        "swasthify",
+                        "healthcare platform",
+                        "overview",
+                        "about"
+                    ],
+                    "relatedTopics": [
+                        "gen_002",
+                        "gen_003"
+                    ]
+                },
+                {
+                    "id": "gen_002",
+                    "question": "Who can use the Swasthify platform?",
+                    "answer": "Swasthify supports three primary user roles: Doctors, who provide medical consultations and services; Diagnostic Lab Partners, who offer testing and diagnostic services; and Super Admins, who manage and oversee platform operations.",
+                    "keywords": [
+                        "users",
+                        "roles",
+                        "access",
+                        "user types"
+                    ],
+                    "relatedTopics": [
+                        "gen_001",
+                        "doc_001",
+                        "lab_001"
+                    ]
+                },
+                {
+                    "id": "gen_003",
+                    "question": "How can I reset my password?",
+                    "answer": "To reset your password, select the 'Forgot Password' option on the login page. Enter your registered email address to receive a secure password reset link and follow the instructions provided.",
+                    "keywords": [
+                        "password reset",
+                        "forgot password",
+                        "login"
+                    ],
+                    "relatedTopics": [
+                        "gen_004"
+                    ]
+                },
+                {
+                    "id": "gen_004",
+                    "question": "How do I update my profile information?",
+                    "answer": "You can update your profile by navigating to the Profile section from the main menu. Select 'Edit Profile', make the necessary changes, and save to apply updates.",
+                    "keywords": [
+                        "profile update",
+                        "edit profile",
+                        "account settings"
+                    ],
+                    "relatedTopics": [
+                        "doc_002",
+                        "lab_002"
+                    ]
+                }
+            ]
         },
-        {
-          "id": "doc_002",
-          "question": "How do I complete my doctor profile?",
-          "answer": "Within the Doctor Panel, navigate to the Profile section and complete all mandatory fields, including specialization, qualifications, experience, registration number, and supporting documents. A completed profile is mandatory for verification.",
-          "keywords": ["doctor profile", "verification", "documents"],
-          "relatedTopics": ["doc_001", "doc_004"]
+        "doctor_panel": {
+            "name": "Doctor Panel",
+            "faqs": [
+                {
+                    "id": "doc_profile_creation",
+                    "question": "How do I create a doctor profile?",
+                    "answer": "To register and create your doctor profile, please visit /auth/doctor.",
+                    "keywords": [
+                        "create profile",
+                        "sign up",
+                        "register",
+                        "join as doctor"
+                    ],
+                    "relatedTopics": [
+                        "doc_001",
+                        "doc_002"
+                    ]
+                },
+                {
+                    "id": "doc_001",
+                    "question": "How do I access the Doctor Panel?",
+                    "answer": "Once logged in using your doctor credentials, you will be automatically redirected to the Doctor Panel. Alternatively, you may access it via the '/doctor-panel' route.",
+                    "keywords": [
+                        "doctor panel",
+                        "doctor dashboard",
+                        "login"
+                    ],
+                    "relatedTopics": [
+                        "doc_002",
+                        "doc_003"
+                    ]
+                },
+                {
+                    "id": "doc_002",
+                    "question": "How do I complete my doctor profile?",
+                    "answer": "Within the Doctor Panel, navigate to the Profile section and complete all mandatory fields, including specialization, qualifications, experience, registration number, and supporting documents. A completed profile is mandatory for verification.",
+                    "keywords": [
+                        "doctor profile",
+                        "verification",
+                        "documents"
+                    ],
+                    "relatedTopics": [
+                        "doc_001",
+                        "doc_004"
+                    ]
+                },
+                {
+                    "id": "doc_003",
+                    "question": "How can I create a campaign?",
+                    "answer": "To create a campaign, go to the Campaigns section and select 'Create New Campaign'. Configure campaign details such as service type, pricing, availability schedule, location, appointment limits, and required patient information before submitting.",
+                    "keywords": [
+                        "create campaign",
+                        "doctor campaign",
+                        "services"
+                    ],
+                    "relatedTopics": [
+                        "doc_005",
+                        "doc_006",
+                        "doc_007"
+                    ]
+                },
+                {
+                    "id": "doc_004",
+                    "question": "Which documents are required for verification?",
+                    "answer": "Doctors must upload a valid medical registration certificate, government-issued ID proof (Aadhaar, PAN, or Passport), and an optional professional profile photograph.",
+                    "keywords": [
+                        "verification documents",
+                        "medical license",
+                        "id proof"
+                    ],
+                    "relatedTopics": [
+                        "doc_002"
+                    ]
+                },
+                {
+                    "id": "doc_005",
+                    "question": "What types of campaigns can doctors create?",
+                    "answer": "Doctors can create campaigns for General Consultations, Specialist Consultations, Preventive Health Checkups, Follow-up Visits, and Customized Care Programs.",
+                    "keywords": [
+                        "campaign types",
+                        "consultations",
+                        "health programs"
+                    ],
+                    "relatedTopics": [
+                        "doc_003",
+                        "doc_006"
+                    ]
+                },
+                {
+                    "id": "doc_006",
+                    "question": "How are appointment limits configured?",
+                    "answer": "During campaign setup, doctors can define daily appointment limits, hourly capacity, and total campaign capacity to efficiently manage schedules.",
+                    "keywords": [
+                        "appointment limits",
+                        "capacity",
+                        "scheduling"
+                    ],
+                    "relatedTopics": [
+                        "doc_003",
+                        "doc_007"
+                    ]
+                },
+                {
+                    "id": "doc_007",
+                    "question": "Can campaigns be edited or deleted?",
+                    "answer": "Campaign details can be edited or paused at any time. Campaigns with active appointments cannot be deleted to protect existing bookings.",
+                    "keywords": [
+                        "edit campaign",
+                        "pause campaign",
+                        "delete campaign"
+                    ],
+                    "relatedTopics": [
+                        "doc_003",
+                        "doc_005"
+                    ]
+                },
+                {
+                    "id": "doc_008",
+                    "question": "How do I manage appointments?",
+                    "answer": "The Appointments section allows doctors to view, filter, reschedule, cancel, or mark appointments as completed based on their status.",
+                    "keywords": [
+                        "manage appointments",
+                        "schedule",
+                        "bookings"
+                    ],
+                    "relatedTopics": [
+                        "doc_006"
+                    ]
+                },
+                {
+                    "id": "doc_009",
+                    "question": "What is the doctor verification process?",
+                    "answer": "After profile completion and document submission, verification is performed by a Super Admin. Campaign creation is enabled only after successful verification.",
+                    "keywords": [
+                        "doctor verification",
+                        "admin approval"
+                    ],
+                    "relatedTopics": [
+                        "doc_002",
+                        "doc_004"
+                    ]
+                }
+            ]
         },
-        {
-          "id": "doc_003",
-          "question": "How can I create a campaign?",
-          "answer": "To create a campaign, go to the Campaigns section and select 'Create New Campaign'. Configure campaign details such as service type, pricing, availability schedule, location, appointment limits, and required patient information before submitting.",
-          "keywords": ["create campaign", "doctor campaign", "services"],
-          "relatedTopics": ["doc_005", "doc_006", "doc_007"]
+        "lab_panel": {
+            "name": "Lab Panel",
+            "faqs": [
+                {
+                    "id": "lab_profile_creation",
+                    "question": "How do I create a lab profile?",
+                    "answer": "To register and create your lab profile, please visit /auth/lab.",
+                    "keywords": [
+                        "create profile",
+                        "sign up",
+                        "register",
+                        "join as lab"
+                    ],
+                    "relatedTopics": [
+                        "lab_001",
+                        "lab_002"
+                    ]
+                },
+                {
+                    "id": "lab_001",
+                    "question": "How do I access the Lab Panel?",
+                    "answer": "Lab users are redirected to the Lab Panel upon successful login. The panel can also be accessed via the '/lab-panel' route.",
+                    "keywords": [
+                        "lab panel",
+                        "lab dashboard"
+                    ],
+                    "relatedTopics": [
+                        "lab_002",
+                        "lab_003"
+                    ]
+                },
+                {
+                    "id": "lab_002",
+                    "question": "How do I complete my lab profile?",
+                    "answer": "Lab partners must complete their profile by providing registration details, available test categories, infrastructure information, contact details, and mandatory verification documents.",
+                    "keywords": [
+                        "lab profile",
+                        "verification",
+                        "registration"
+                    ],
+                    "relatedTopics": [
+                        "lab_001",
+                        "lab_004"
+                    ]
+                },
+                {
+                    "id": "lab_003",
+                    "question": "What diagnostic services can be offered?",
+                    "answer": "Labs may offer services such as Pathology, Radiology, Biochemistry, Microbiology, Blood Tests, Urine Tests, and specialized diagnostics based on their capabilities.",
+                    "keywords": [
+                        "diagnostic services",
+                        "lab tests"
+                    ],
+                    "relatedTopics": [
+                        "lab_002",
+                        "lab_005"
+                    ]
+                },
+                {
+                    "id": "lab_004",
+                    "question": "Which documents are required for lab verification?",
+                    "answer": "Labs must submit a valid registration certificate, owner identification proof, address proof, and an optional lab profile image for verification.",
+                    "keywords": [
+                        "lab documents",
+                        "verification"
+                    ],
+                    "relatedTopics": [
+                        "lab_002"
+                    ]
+                },
+                {
+                    "id": "lab_005",
+                    "question": "How do I create a lab campaign?",
+                    "answer": "Lab campaigns can be created from the Campaigns section by configuring test details, pricing, sample collection options, schedules, and capacity limits.",
+                    "keywords": [
+                        "lab campaign",
+                        "test packages"
+                    ],
+                    "relatedTopics": [
+                        "lab_003",
+                        "lab_006"
+                    ]
+                },
+                {
+                    "id": "lab_006",
+                    "question": "Can labs provide home sample collection?",
+                    "answer": "Yes. Labs can enable home sample collection, specify serviceable areas, and configure additional charges during campaign creation.",
+                    "keywords": [
+                        "home collection",
+                        "sample collection"
+                    ],
+                    "relatedTopics": [
+                        "lab_005"
+                    ]
+                },
+                {
+                    "id": "lab_007",
+                    "question": "How are lab bookings managed?",
+                    "answer": "The Bookings section allows labs to manage appointments, update booking statuses, schedule sample collections, and upload test reports.",
+                    "keywords": [
+                        "lab bookings",
+                        "test management"
+                    ],
+                    "relatedTopics": [
+                        "lab_005"
+                    ]
+                },
+                {
+                    "id": "lab_008",
+                    "question": "What is the lab verification process?",
+                    "answer": "Lab verification is conducted by the Super Admin after reviewing registration details, licenses, and facilities. Verified labs can activate campaigns and accept bookings.",
+                    "keywords": [
+                        "lab verification",
+                        "approval"
+                    ],
+                    "relatedTopics": [
+                        "lab_002",
+                        "lab_004"
+                    ]
+                }
+            ]
         },
-        {
-          "id": "doc_004",
-          "question": "Which documents are required for verification?",
-          "answer": "Doctors must upload a valid medical registration certificate, government-issued ID proof (Aadhaar, PAN, or Passport), and an optional professional profile photograph.",
-          "keywords": ["verification documents", "medical license", "id proof"],
-          "relatedTopics": ["doc_002"]
+        "super_admin": {
+            "name": "Super Admin",
+            "faqs": [
+                {
+                    "id": "admin_001",
+                    "question": "What responsibilities does a Super Admin have?",
+                    "answer": "Super Admins oversee the entire platform, including user verification, permissions management, analytics monitoring, campaign oversight, and compliance enforcement.",
+                    "keywords": [
+                        "super admin",
+                        "platform control"
+                    ],
+                    "relatedTopics": [
+                        "admin_002",
+                        "admin_003"
+                    ]
+                },
+                {
+                    "id": "admin_002",
+                    "question": "How are doctor profiles verified?",
+                    "answer": "Doctor verification is managed through the User Management module, where submitted documents and credentials are reviewed before approval.",
+                    "keywords": [
+                        "doctor verification",
+                        "admin review"
+                    ],
+                    "relatedTopics": [
+                        "admin_003",
+                        "admin_004"
+                    ]
+                },
+                {
+                    "id": "admin_003",
+                    "question": "How are lab profiles verified?",
+                    "answer": "Super Admins review lab registration details, licenses, and facilities through the Lab Management interface before granting approval.",
+                    "keywords": [
+                        "lab verification",
+                        "approval"
+                    ],
+                    "relatedTopics": [
+                        "admin_002",
+                        "admin_004"
+                    ]
+                },
+                {
+                    "id": "admin_004",
+                    "question": "How are user permissions managed?",
+                    "answer": "Admins can configure user permissions such as campaign creation, booking access, and profile visibility from the User Management section.",
+                    "keywords": [
+                        "permissions",
+                        "access control"
+                    ],
+                    "relatedTopics": [
+                        "admin_002",
+                        "admin_003"
+                    ]
+                },
+                {
+                    "id": "admin_005",
+                    "question": "Where can platform analytics be viewed?",
+                    "answer": "The Admin Dashboard provides insights into user growth, campaigns, bookings, and revenue metrics with exportable reports.",
+                    "keywords": [
+                        "analytics",
+                        "dashboard",
+                        "reports"
+                    ],
+                    "relatedTopics": [
+                        "admin_001"
+                    ]
+                },
+                {
+                    "id": "admin_006",
+                    "question": "Can Super Admins edit user details?",
+                    "answer": "Yes. Admins may edit user information while maintaining audit logs for compliance and transparency.",
+                    "keywords": [
+                        "edit user",
+                        "audit logs"
+                    ],
+                    "relatedTopics": [
+                        "admin_002",
+                        "admin_003"
+                    ]
+                },
+                {
+                    "id": "admin_007",
+                    "question": "How are user complaints handled?",
+                    "answer": "Complaints and support requests can be managed through the Support module, enabling responses, escalations, and enforcement actions.",
+                    "keywords": [
+                        "support",
+                        "complaints"
+                    ],
+                    "relatedTopics": [
+                        "admin_004"
+                    ]
+                }
+            ]
         },
-        {
-          "id": "doc_005",
-          "question": "What types of campaigns can doctors create?",
-          "answer": "Doctors can create campaigns for General Consultations, Specialist Consultations, Preventive Health Checkups, Follow-up Visits, and Customized Care Programs.",
-          "keywords": ["campaign types", "consultations", "health programs"],
-          "relatedTopics": ["doc_003", "doc_006"]
-        },
-        {
-          "id": "doc_006",
-          "question": "How are appointment limits configured?",
-          "answer": "During campaign setup, doctors can define daily appointment limits, hourly capacity, and total campaign capacity to efficiently manage schedules.",
-          "keywords": ["appointment limits", "capacity", "scheduling"],
-          "relatedTopics": ["doc_003", "doc_007"]
-        },
-        {
-          "id": "doc_007",
-          "question": "Can campaigns be edited or deleted?",
-          "answer": "Campaign details can be edited or paused at any time. Campaigns with active appointments cannot be deleted to protect existing bookings.",
-          "keywords": ["edit campaign", "pause campaign", "delete campaign"],
-          "relatedTopics": ["doc_003", "doc_005"]
-        },
-        {
-          "id": "doc_008",
-          "question": "How do I manage appointments?",
-          "answer": "The Appointments section allows doctors to view, filter, reschedule, cancel, or mark appointments as completed based on their status.",
-          "keywords": ["manage appointments", "schedule", "bookings"],
-          "relatedTopics": ["doc_006"]
-        },
-        {
-          "id": "doc_009",
-          "question": "What is the doctor verification process?",
-          "answer": "After profile completion and document submission, verification is performed by a Super Admin. Campaign creation is enabled only after successful verification.",
-          "keywords": ["doctor verification", "admin approval"],
-          "relatedTopics": ["doc_002", "doc_004"]
+        "troubleshooting": {
+            "name": "Troubleshooting",
+            "faqs": [
+                {
+                    "id": "trouble_001",
+                    "question": "I am unable to log in. What should I do?",
+                    "answer": "Verify your login credentials, reset your password if required, and clear browser cache. If the issue persists, contact support.",
+                    "keywords": [
+                        "login issue",
+                        "access problem"
+                    ],
+                    "relatedTopics": [
+                        "gen_003"
+                    ]
+                },
+                {
+                    "id": "trouble_002",
+                    "question": "Document upload is failing.",
+                    "answer": "Ensure files are in supported formats (PDF, JPG, PNG) and under the size limit. Try again using a stable internet connection.",
+                    "keywords": [
+                        "upload error",
+                        "documents"
+                    ],
+                    "relatedTopics": [
+                        "doc_004",
+                        "lab_004"
+                    ]
+                }
+            ]
         }
-      ]
     },
-
-    "lab_panel": {
-      "name": "Lab Panel",
-      "faqs": [
+    "quickActions": [
         {
-          "id": "lab_001",
-          "question": "How do I access the Lab Panel?",
-          "answer": "Lab users are redirected to the Lab Panel upon successful login. The panel can also be accessed via the '/lab-panel' route.",
-          "keywords": ["lab panel", "lab dashboard"],
-          "relatedTopics": ["lab_002", "lab_003"]
+            "action": "Create Campaign",
+            "description": "Initiate a new healthcare service campaign",
+            "relevantFor": [
+                "doctor",
+                "lab"
+            ],
+            "relatedTopics": [
+                "doc_003",
+                "lab_005"
+            ]
         },
         {
-          "id": "lab_002",
-          "question": "How do I complete my lab profile?",
-          "answer": "Lab partners must complete their profile by providing registration details, available test categories, infrastructure information, contact details, and mandatory verification documents.",
-          "keywords": ["lab profile", "verification", "registration"],
-          "relatedTopics": ["lab_001", "lab_004"]
+            "action": "Complete Profile",
+            "description": "Finalize profile details for verification",
+            "relevantFor": [
+                "doctor",
+                "lab"
+            ],
+            "relatedTopics": [
+                "doc_002",
+                "lab_002"
+            ]
         },
         {
-          "id": "lab_003",
-          "question": "What diagnostic services can be offered?",
-          "answer": "Labs may offer services such as Pathology, Radiology, Biochemistry, Microbiology, Blood Tests, Urine Tests, and specialized diagnostics based on their capabilities.",
-          "keywords": ["diagnostic services", "lab tests"],
-          "relatedTopics": ["lab_002", "lab_005"]
-        },
-        {
-          "id": "lab_004",
-          "question": "Which documents are required for lab verification?",
-          "answer": "Labs must submit a valid registration certificate, owner identification proof, address proof, and an optional lab profile image for verification.",
-          "keywords": ["lab documents", "verification"],
-          "relatedTopics": ["lab_002"]
-        },
-        {
-          "id": "lab_005",
-          "question": "How do I create a lab campaign?",
-          "answer": "Lab campaigns can be created from the Campaigns section by configuring test details, pricing, sample collection options, schedules, and capacity limits.",
-          "keywords": ["lab campaign", "test packages"],
-          "relatedTopics": ["lab_003", "lab_006"]
-        },
-        {
-          "id": "lab_006",
-          "question": "Can labs provide home sample collection?",
-          "answer": "Yes. Labs can enable home sample collection, specify serviceable areas, and configure additional charges during campaign creation.",
-          "keywords": ["home collection", "sample collection"],
-          "relatedTopics": ["lab_005"]
-        },
-        {
-          "id": "lab_007",
-          "question": "How are lab bookings managed?",
-          "answer": "The Bookings section allows labs to manage appointments, update booking statuses, schedule sample collections, and upload test reports.",
-          "keywords": ["lab bookings", "test management"],
-          "relatedTopics": ["lab_005"]
-        },
-        {
-          "id": "lab_008",
-          "question": "What is the lab verification process?",
-          "answer": "Lab verification is conducted by the Super Admin after reviewing registration details, licenses, and facilities. Verified labs can activate campaigns and accept bookings.",
-          "keywords": ["lab verification", "approval"],
-          "relatedTopics": ["lab_002", "lab_004"]
+            "action": "Verify Users",
+            "description": "Review and approve pending user verifications",
+            "relevantFor": [
+                "admin"
+            ],
+            "relatedTopics": [
+                "admin_002",
+                "admin_003"
+            ]
         }
-      ]
-    },
-
-    "super_admin": {
-      "name": "Super Admin",
-      "faqs": [
-        {
-          "id": "admin_001",
-          "question": "What responsibilities does a Super Admin have?",
-          "answer": "Super Admins oversee the entire platform, including user verification, permissions management, analytics monitoring, campaign oversight, and compliance enforcement.",
-          "keywords": ["super admin", "platform control"],
-          "relatedTopics": ["admin_002", "admin_003"]
-        },
-        {
-          "id": "admin_002",
-          "question": "How are doctor profiles verified?",
-          "answer": "Doctor verification is managed through the User Management module, where submitted documents and credentials are reviewed before approval.",
-          "keywords": ["doctor verification", "admin review"],
-          "relatedTopics": ["admin_003", "admin_004"]
-        },
-        {
-          "id": "admin_003",
-          "question": "How are lab profiles verified?",
-          "answer": "Super Admins review lab registration details, licenses, and facilities through the Lab Management interface before granting approval.",
-          "keywords": ["lab verification", "approval"],
-          "relatedTopics": ["admin_002", "admin_004"]
-        },
-        {
-          "id": "admin_004",
-          "question": "How are user permissions managed?",
-          "answer": "Admins can configure user permissions such as campaign creation, booking access, and profile visibility from the User Management section.",
-          "keywords": ["permissions", "access control"],
-          "relatedTopics": ["admin_002", "admin_003"]
-        },
-        {
-          "id": "admin_005",
-          "question": "Where can platform analytics be viewed?",
-          "answer": "The Admin Dashboard provides insights into user growth, campaigns, bookings, and revenue metrics with exportable reports.",
-          "keywords": ["analytics", "dashboard", "reports"],
-          "relatedTopics": ["admin_001"]
-        },
-        {
-          "id": "admin_006",
-          "question": "Can Super Admins edit user details?",
-          "answer": "Yes. Admins may edit user information while maintaining audit logs for compliance and transparency.",
-          "keywords": ["edit user", "audit logs"],
-          "relatedTopics": ["admin_002", "admin_003"]
-        },
-        {
-          "id": "admin_007",
-          "question": "How are user complaints handled?",
-          "answer": "Complaints and support requests can be managed through the Support module, enabling responses, escalations, and enforcement actions.",
-          "keywords": ["support", "complaints"],
-          "relatedTopics": ["admin_004"]
-        }
-      ]
-    },
-
-    "troubleshooting": {
-      "name": "Troubleshooting",
-      "faqs": [
-        {
-          "id": "trouble_001",
-          "question": "I am unable to log in. What should I do?",
-          "answer": "Verify your login credentials, reset your password if required, and clear browser cache. If the issue persists, contact support.",
-          "keywords": ["login issue", "access problem"],
-          "relatedTopics": ["gen_003"]
-        },
-        {
-          "id": "trouble_002",
-          "question": "Document upload is failing.",
-          "answer": "Ensure files are in supported formats (PDF, JPG, PNG) and under the size limit. Try again using a stable internet connection.",
-          "keywords": ["upload error", "documents"],
-          "relatedTopics": ["doc_004", "lab_004"]
-        }
-      ]
+    ],
+    "metadata": {
+        "lastUpdated": "2026-02-03",
+        "totalFAQs": 35,
+        "version": "1.0.0"
     }
-  },
-
-  "quickActions": [
-    {
-      "action": "Create Campaign",
-      "description": "Initiate a new healthcare service campaign",
-      "relevantFor": ["doctor", "lab"],
-      "relatedTopics": ["doc_003", "lab_005"]
-    },
-    {
-      "action": "Complete Profile",
-      "description": "Finalize profile details for verification",
-      "relevantFor": ["doctor", "lab"],
-      "relatedTopics": ["doc_002", "lab_002"]
-    },
-    {
-      "action": "Verify Users",
-      "description": "Review and approve pending user verifications",
-      "relevantFor": ["admin"],
-      "relatedTopics": ["admin_002", "admin_003"]
-    }
-  ],
-
-  "metadata": {
-    "lastUpdated": "2026-02-03",
-    "totalFAQs": 35,
-    "version": "1.0.0"
-  }
 }

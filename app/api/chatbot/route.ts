@@ -125,6 +125,13 @@ Guidelines:
 5. If asked about technical issues, provide basic troubleshooting steps
 6. Always maintain user privacy and security
 
+IMPORTANT: You must respond in valid JSON format with the following structure:
+{
+  "response": "Your answer here...",
+  "suggestions": ["Question 1", "Question 2", "Question 3", "Question 4"]
+}
+The "suggestions" array must contain exactly 4 short, relevant follow-up questions or actions based on your response and the context.
+
 Knowledge Base Context:
 ${kbContext}
 
@@ -134,12 +141,29 @@ Please provide a helpful, accurate response based on the knowledge base context.
 
         // Call Gemini API
         const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-        const result = await model.generateContent(systemPrompt);
+        const result = await model.generateContent({
+            contents: [{ role: 'user', parts: [{ text: systemPrompt }] }],
+            generationConfig: {
+                responseMimeType: "application/json"
+            }
+        });
         const response = await result.response;
         const text = response.text();
 
+        let parsedResponse;
+        try {
+            parsedResponse = JSON.parse(text);
+        } catch (e) {
+            // Fallback if JSON parsing fails
+            parsedResponse = {
+                response: text,
+                suggestions: []
+            };
+        }
+
         return NextResponse.json({
-            response: text,
+            response: parsedResponse.response,
+            suggestions: parsedResponse.suggestions || [],
             timestamp: new Date().toISOString(),
         });
 
