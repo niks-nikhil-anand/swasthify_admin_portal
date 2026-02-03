@@ -133,7 +133,7 @@ User's Question: ${message}
 Please provide a helpful, accurate response based on the knowledge base context. If the context doesn't contain relevant information, provide a general helpful response or suggest contacting support.`;
 
         // Call Gemini API
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
         const result = await model.generateContent(systemPrompt);
         const response = await result.response;
         const text = response.text();
