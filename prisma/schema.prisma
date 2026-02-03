@@ -156,14 +156,26 @@ model Campaign {
   id String @id @default(uuid())
 
   // Doctor Relation
-  doctorId String
-  doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  doctorId String?
+  doctor   Doctor? @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  // Lab Relation
+  labId String?
+  lab   Lab?    @relation(fields: [labId], references: [id], onDelete: Cascade)
 
   // Campaign Info
   name        String         @map("campaign_name")
   description String?
   type        CampaignType   @map("campaign_type")
   status      CampaignStatus @default(DRAFT)
+
+  // Lab Campaign Specifics
+  healthConcern            String[] @default([]) @map("health_concern")
+  gender                   String? // "Male", "Female", "Both", "Children"
+  isFreeHomeSampleCollection Boolean  @default(false) @map("is_free_home_sample_collection")
+  reportTime               String?  @map("report_time")
+  testCategory             String[] @default([]) @map("test_category")
+  testsIncluded            String[] @default([]) @map("tests_included")
 
   // Pricing
   price              Float
@@ -206,6 +218,7 @@ model Campaign {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([doctorId])
+  @@index([labId])
   @@map("campaigns")
 }
 
@@ -213,6 +226,11 @@ enum CampaignType {
   OPD
   HEALTH_CAMP
   FREE_CHECKUP
+  // Lab Types
+  HEALTH_CHECKUP_CAMP
+  DISCOUNTED_TESTS
+  HOME_COLLECTION_DRIVE
+  COMMUNITY_SCREENING
 }
 
 enum CampaignStatus {
@@ -250,6 +268,7 @@ model Lab {
   tests        LabTest[]
   appointments Appointment[]
   availability LabAvailability[]
+  campaigns    Campaign[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
