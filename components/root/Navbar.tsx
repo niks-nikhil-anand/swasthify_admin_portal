@@ -6,6 +6,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -50,7 +51,8 @@ export function Navbar() {
                         ))}
                     </div>
 
-                    <div className="hidden md:flex gap-4">
+                    <div className="hidden md:flex gap-4 items-center">
+                        <ModeToggle />
                         <Link href={"/login"}>
                             <button className="px-5 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-full hover:bg-primary/90 transition-all shadow-md hover:shadow-primary/20">
                                 Log in
@@ -101,12 +103,15 @@ export function Navbar() {
                                         Swasthify
                                     </span>
                                 </Link>
-                                <button
-                                    onClick={() => setIsOpen(false)}
-                                    className="p-2 -mr-2 text-muted-foreground hover:text-foreground rounded-full hover:bg-muted/20"
-                                >
-                                    <X className="h-6 w-6" />
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    <ModeToggle />
+                                    <button
+                                        onClick={() => setIsOpen(false)}
+                                        className="p-2 -mr-2 text-muted-foreground hover:text-foreground rounded-full hover:bg-muted/20"
+                                    >
+                                        <X className="h-6 w-6" />
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="flex flex-col gap-1">
