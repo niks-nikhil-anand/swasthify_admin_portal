@@ -6,81 +6,73 @@ import path from 'path';
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
-// Load knowledge base
-let knowledgeBase: any = null;
+// Load knowledge base embeddings
+let kbEmbeddings: any[] | null = null;
 
-function loadKnowledgeBase() {
-    if (!knowledgeBase) {
-        const filePath = path.join(process.cwd(), 'public', 'chatbot-knowledge.json');
-        const fileContent = fs.readFileSync(filePath, 'utf-8');
-        knowledgeBase = JSON.parse(fileContent);
+function loadKbEmbeddings() {
+    if (!kbEmbeddings) {
+        try {
+            const filePath = path.join(process.cwd(), 'public', 'chatbot-embeddings.json');
+            const fileContent = fs.readFileSync(filePath, 'utf-8');
+            kbEmbeddings = JSON.parse(fileContent);
+        } catch (error) {
+            console.error('Failed to load embeddings:', error);
+            kbEmbeddings = [];
+        }
     }
-    return knowledgeBase;
+    return kbEmbeddings;
 }
 
-// Search knowledge base for relevant context
-function searchKnowledgeBase(query: string, userContext?: string): string {
-    const kb = loadKnowledgeBase();
-    const queryLower = query.toLowerCase();
-    const keywords = queryLower.split(' ').filter(word => word.length > 3);
+// Cosine similarity
+function cosineSimilarity(vecA: number[], vecB: number[]) {
+    let dotProduct = 0;
+    let normA = 0;
+    let normB = 0;
+    for (let i = 0; i < vecA.length; i++) {
+        dotProduct += vecA[i] * vecB[i];
+        normA += vecA[i] * vecA[i];
+        normB += vecB[i] * vecB[i];
+    }
+    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+}
 
-    let relevantFAQs: any[] = [];
-    let scores: Map<string, number> = new Map();
-
-    // Search through all categories
-    Object.keys(kb.categories).forEach(categoryKey => {
-        const category = kb.categories[categoryKey];
-
-        category.faqs.forEach((faq: any) => {
-            let score = 0;
-
-            // Check if question matches
-            if (faq.question.toLowerCase().includes(queryLower)) {
-                score += 10;
-            }
-
-            // Check keywords
-            faq.keywords.forEach((keyword: string) => {
-                if (queryLower.includes(keyword.toLowerCase())) {
-                    score += 5;
-                }
-            });
-
-            // Check individual query words
-            keywords.forEach(word => {
-                if (faq.question.toLowerCase().includes(word) ||
-                    faq.answer.toLowerCase().includes(word)) {
-                    score += 2;
-                }
-            });
-
-            // Boost score if category matches user context
-            if (userContext && categoryKey.includes(userContext.toLowerCase())) {
-                score += 3;
-            }
-
-            if (score > 0) {
-                scores.set(faq.id, score);
-                relevantFAQs.push({ ...faq, category: category.name, score });
-            }
-        });
-    });
-
-    // Sort by score and take top 3
-    relevantFAQs.sort((a, b) => b.score - a.score);
-    const topFAQs = relevantFAQs.slice(0, 3);
-
-    // Build context string
-    if (topFAQs.length === 0) {
-        return 'No specific FAQ found in knowledge base.';
+// Search knowledge base using embeddings
+async function searchKnowledgeBase(query: string, userContext?: string): Promise<string> {
+    const embeddings = loadKbEmbeddings();
+    if (!embeddings || embeddings.length === 0) {
+        return "Knowledge base not available.";
     }
 
-    let context = 'Relevant information from knowledge base:\n\n';
-    topFAQs.forEach((faq, index) => {
-        context += `${index + 1}. Q: ${faq.question}\n   A: ${faq.answer}\n   Category: ${faq.category}\n\n`;
-    });
+    try {
+        const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
+        const result = await model.embedContent(query);
+        const queryEmbedding = result.embedding.values;
 
-    return context;
+        const scoredDocs = embeddings.map((doc: any) => ({
+            ...doc,
+            score: cosineSimilarity(queryEmbedding, doc.embedding)
+        }));
+
+        // Sort by score descending
+        scoredDocs.sort((a: any, b: any) => b.score - a.score);
+
+        // Take top 5 relevant chunks
+        const topDocs = scoredDocs.slice(0, 5);
+
+        if (topDocs.length === 0 || topDocs[0].score < 0.3) {
+            return "No highly relevant information found in knowledge base.";
+        }
+
+        let context = 'Relevant information from knowledge base:\n\n';
+        topDocs.forEach((doc: any, index: number) => {
+            context += `${index + 1}. Q: ${doc.original.question}\n   A: ${doc.original.answer}\n   Category: ${doc.category}\n\n`;
+        });
+
+        return context;
+    } catch (error) {
+        console.error("Error performing similarity search:", error);
+        return "Error searching knowledge base.";
+    }
 }
 
 export async function POST(request: NextRequest) {
@@ -105,7 +97,7 @@ export async function POST(request: NextRequest) {
 
         // Search knowledge base for relevant context
         const userPanel = context?.panel || '';
-        const kbContext = searchKnowledgeBase(message, userPanel);
+        const kbContext = await searchKnowledgeBase(message, userPanel);
 
         // Construct prompt with context
         const systemPrompt = `You are a helpful AI assistant for the Swasthify Admin Portal, a healthcare management platform. 

@@ -259,7 +259,7 @@ export default function CampaignDetailsPage() {
                                 <div className="flex gap-2">
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" size="sm" className="h-9 rounded-full gap-2 px-4 shadow-sm hover:bg-muted bg-background">
+                                            <Button variant="outline" size="sm" className="h-9 rounded-full gap-2 px-4 shadow-sm hover:bg-muted bg-background" suppressHydrationWarning>
                                                 <Share2 className="w-4 h-4" />
                                                 <span className="hidden sm:inline">Share</span>
                                             </Button>
