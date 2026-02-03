@@ -10,37 +10,37 @@ const specialities = [
         title: "Gynaecology",
         price: "₹599",
         image: "/icon-gynaecology.png",
-        color: "bg-pink-50/50",
+        color: "bg-pink-50/50 dark:bg-pink-900/20",
     },
     {
         title: "Sexology",
         price: "₹599",
         image: "/icon-sexology.png",
-        color: "bg-indigo-50/50",
+        color: "bg-indigo-50/50 dark:bg-indigo-900/20",
     },
     {
         title: "General physician",
         price: "₹499",
         image: "/icon-general-physician.png",
-        color: "bg-blue-50/50",
+        color: "bg-blue-50/50 dark:bg-blue-900/20",
     },
     {
         title: "Dermatology",
         price: "₹549",
         image: "/icon-dermatology.png",
-        color: "bg-teal-50/50",
+        color: "bg-teal-50/50 dark:bg-teal-900/20",
     },
     {
         title: "Psychiatry",
         price: "₹599",
         image: "/icon-psychiatry.png",
-        color: "bg-green-50/50",
+        color: "bg-green-50/50 dark:bg-green-900/20",
     },
     {
         title: "Stomach and digestion",
         price: "₹499",
         image: "/icon-stomach.png",
-        color: "bg-orange-50/50",
+        color: "bg-orange-50/50 dark:bg-orange-900/20",
     },
 ];
 
@@ -98,7 +98,7 @@ export function Specialities() {
                             className="group flex flex-col items-center text-center p-3 md:p-4 rounded-2xl border border-border bg-card hover:shadow-xl transition-all cursor-pointer h-full"
                         >
                             <div className={`w-16 h-16 md:w-32 md:h-32 relative mb-2 md:mb-4 ${speciality.color} rounded-full flex items-center justify-center transition-transform group-hover:scale-105`}>
-                                <div className="absolute inset-0 rounded-full bg-linear-to-tr from-white/40 to-transparent pointer-events-none" />
+                                <div className="absolute inset-0 rounded-full bg-linear-to-tr from-white/40 dark:from-background/20 to-transparent pointer-events-none" />
                                 <Image
                                     src={speciality.image}
                                     alt={speciality.title}
