@@ -6,6 +6,13 @@ import path from 'path';
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
+// Canonical Answer Cache
+const canonicalCache = new Map<string, any>();
+
+function normalizeQuery(query: string): string {
+    return query.toLowerCase().trim().replace(/[?.!]+$/, '');
+}
+
 // Load knowledge base embeddings
 let kbEmbeddings: any[] | null = null;
 
@@ -43,32 +50,92 @@ async function searchKnowledgeBase(query: string, userContext?: string): Promise
         return "Knowledge base not available.";
     }
 
+    // 1. Filter by Category (Metadata Filtering)
+    // Map user context (panel) to allowed categories
+    const allowedCategories = new Set(['general', 'troubleshooting']);
+    if (userContext === 'doctor') allowedCategories.add('Doctor Panel');
+    else if (userContext === 'lab') allowedCategories.add('Lab Panel');
+    else if (userContext === 'admin') allowedCategories.add('Super Admin');
+
+    // FAQ Fast-Path: Detect definition queries
+    const queryLower = query.toLowerCase();
+    const isDefinitionQuery =
+        queryLower.startsWith("who") ||
+        queryLower.startsWith("what") ||
+        queryLower.includes("platform") ||
+        queryLower.includes("about");
+
+    // Filter embeddings
+    const filteredEmbeddings = embeddings.filter((doc: any) =>
+        (isDefinitionQuery ? doc.category === 'General Information' : true) &&
+        (allowedCategories.has(doc.category) || doc.category === 'General Information' || doc.category === 'Troubleshooting')
+    );
+
     try {
         const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
         const result = await model.embedContent(query);
         const queryEmbedding = result.embedding.values;
 
-        const scoredDocs = embeddings.map((doc: any) => ({
+        const scoredDocs = filteredEmbeddings.map((doc: any) => ({
             ...doc,
             score: cosineSimilarity(queryEmbedding, doc.embedding)
         }));
 
         // Sort by score descending
+        // Sort by score descending
         scoredDocs.sort((a: any, b: any) => b.score - a.score);
 
-        // Take top 5 relevant chunks
-        const topDocs = scoredDocs.slice(0, 5);
+        // 2a. Filter Low-Signal Documents
+        const validDocs = scoredDocs.filter((doc: any) => doc.score >= 0.45);
 
-        if (topDocs.length === 0 || topDocs[0].score < 0.3) {
+        // 2b. Adaptive Retrieval
+        const topScore = validDocs.length > 0 ? validDocs[0].score : 0;
+        const topCategory = validDocs.length > 0 ? validDocs[0].category : '';
+
+        let topDocs = [];
+
+        // Lower threshold for "General" content queries
+        if (topCategory === 'General Information' && topScore > 0.75) {
+            topDocs = validDocs.slice(0, 1);
+        } else if (topScore > 0.85) {
+            topDocs = validDocs.slice(0, 1);
+        } else {
+            topDocs = validDocs.slice(0, 3);
+        }
+
+        // 2c. Semantic De-duplication
+        if (topDocs.length > 1) {
+            const uniqueDocs = [topDocs[0]];
+            for (let i = 1; i < topDocs.length; i++) {
+                const currentDoc = topDocs[i];
+                const isRedundant = uniqueDocs.some(existing =>
+                    cosineSimilarity(currentDoc.embedding, existing.embedding) > 0.9
+                );
+                if (!isRedundant) {
+                    uniqueDocs.push(currentDoc);
+                } else {
+                    console.log(`Skipping redundant doc [${currentDoc.id}] (Similarity > 0.9)`);
+                }
+            }
+            topDocs = uniqueDocs;
+        }
+
+        console.log(`Top Score: ${topScore.toFixed(4)} | Retrieving: ${topDocs.length} docs`);
+        topDocs.forEach((doc: any, i: number) => {
+            console.log(`  ${i + 1}. [${doc.id}] Score: ${doc.score.toFixed(4)} - ${doc.category}`);
+        });
+
+        if (topDocs.length === 0) {
+            console.log("No relevant documents found (threshold 0.45)");
             return "No highly relevant information found in knowledge base.";
         }
 
-        let context = 'Relevant information from knowledge base:\n\n';
+        let context = '';
         topDocs.forEach((doc: any, index: number) => {
-            context += `${index + 1}. Q: ${doc.original.question}\n   A: ${doc.original.answer}\n   Category: ${doc.category}\n\n`;
+            context += `Q: ${doc.original.question}\nA: ${doc.original.answer}\n\n`;
         });
 
-        return context;
+        return context.trim(); // Trim to remove trailing newlines
     } catch (error) {
         console.error("Error performing similarity search:", error);
         return "Error searching knowledge base.";
@@ -96,40 +163,46 @@ export async function POST(request: NextRequest) {
         }
 
         // Search knowledge base for relevant context
+        console.log(`\n--- Chatbot Request Analysis ---`);
+        console.log(`User Query: "${message}"`);
+
+        // Check Cache
+        const normalizedQuery = normalizeQuery(message);
+        if (canonicalCache.has(normalizedQuery)) {
+            console.log(`Cache HIT for query: "${normalizedQuery}"`);
+            const cachedResponse = canonicalCache.get(normalizedQuery);
+            return NextResponse.json({
+                response: cachedResponse.response,
+                suggestions: cachedResponse.suggestions || [],
+                timestamp: new Date().toISOString(),
+                cached: true
+            });
+        }
+
         const userPanel = context?.panel || '';
         const kbContext = await searchKnowledgeBase(message, userPanel);
 
-        // Construct prompt with context
-        const systemPrompt = `You are a helpful AI assistant for the Swasthify Admin Portal, a healthcare management platform. 
-Your role is to help users (doctors, lab partners, and administrators) navigate the platform and answer their questions.
+        console.log(`Context Length: ${kbContext.length} characters`);
 
-Platform Overview:
-- Swasthify connects doctors, diagnostic labs, and patients
-- Doctors can create campaigns, manage appointments, and update profiles
-- Lab partners can offer test packages, manage bookings, and provide sample collection services
-- Super admins oversee the platform, verify users, and manage permissions
+        // Optimised System Prompt (Answer-First + Length Caps)
+        const systemPrompt = `You are Swasthify AI. Answer the user query based ONLY on the provided Context.
 
-Guidelines:
-1. Be friendly, professional, and concise
-2. Use the knowledge base context provided below to answer questions accurately
-3. If the question is outside your knowledge base, politely say you don't have that specific information and suggest contacting support
-4. Provide step-by-step instructions when relevant
-5. If asked about technical issues, provide basic troubleshooting steps
-6. Always maintain user privacy and security
-
-IMPORTANT: You must respond in valid JSON format with the following structure:
-{
-  "response": "Your answer here...",
-  "suggestions": ["Question 1", "Question 2", "Question 3", "Question 4"]
-}
-The "suggestions" array must contain exactly 4 short, relevant follow-up questions or actions based on your response and the context.
-
-Knowledge Base Context:
+Context:
 ${kbContext}
 
-User's Question: ${message}
+User Query: ${message}
 
-Please provide a helpful, accurate response based on the knowledge base context. If the context doesn't contain relevant information, provide a general helpful response or suggest contacting support.`;
+Instructions:
+1. If the Context contains the answer, provide it immediately.
+2. For informational queries (what/who/how), keep the answer under 80 words (3-5 bullet points).
+3. If Context is missing/irrelevant, output "I don't have that information" and suggest support.
+4. Do NOT ramble or add filler.
+
+Output JSON format:
+{
+  "response": "Direct answer...",
+  "suggestions": ["Follow-up Q1", "Follow-up Q2", "Follow-up Q3", "Follow-up Q4"]
+}`;
 
         // Call Gemini API
         const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
@@ -142,9 +215,22 @@ Please provide a helpful, accurate response based on the knowledge base context.
         const response = await result.response;
         const text = response.text();
 
+        // Log Token Usage
+        if (response.usageMetadata) {
+            console.log(`Token Usage:`);
+            console.log(`- Prompt Tokens: ${response.usageMetadata.promptTokenCount}`);
+            console.log(`- Response Tokens: ${response.usageMetadata.candidatesTokenCount}`);
+            console.log(`- Total Tokens: ${response.usageMetadata.totalTokenCount}`);
+        } else {
+            console.log(`Token usage metadata not available.`);
+        }
+        console.log(`--------------------------------\n`);
+
         let parsedResponse;
         try {
             parsedResponse = JSON.parse(text);
+            // Store in cache
+            canonicalCache.set(normalizedQuery, parsedResponse);
         } catch (e) {
             // Fallback if JSON parsing fails
             parsedResponse = {
@@ -156,7 +242,7 @@ Please provide a helpful, accurate response based on the knowledge base context.
         return NextResponse.json({
             response: parsedResponse.response,
             suggestions: parsedResponse.suggestions || [],
-            timestamp: new Date().toISOString(),
+            timestamp: new Date().toISOString()
         });
 
     } catch (error: any) {
