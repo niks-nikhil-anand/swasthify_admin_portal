@@ -1,0 +1,567 @@
+{
+    "systemContext": {
+        "platformName": "Swasthify Admin Portal",
+        "description": "Healthcare management platform for doctors, labs, and administrators",
+        "version": "1.0.0"
+    },
+    "categories": {
+        "general": {
+            "name": "General Information",
+            "faqs": [
+                {
+                    "id": "gen_001",
+                    "question": "What is Swasthify?",
+                    "answer": "Swasthify is a comprehensive healthcare management platform that connects doctors, diagnostic labs, and patients. It provides tools for campaign management, appointment scheduling, profile management, and administrative oversight.",
+                    "keywords": [
+                        "swasthify",
+                        "platform",
+                        "what is",
+                        "about",
+                        "overview"
+                    ],
+                    "relatedTopics": [
+                        "gen_002",
+                        "gen_003"
+                    ]
+                },
+                {
+                    "id": "gen_002",
+                    "question": "Who can use this platform?",
+                    "answer": "The platform has three main user types: Doctors (who can create campaigns and manage appointments), Lab Partners (who can manage lab tests and services), and Super Admins (who oversee the entire platform and manage users).",
+                    "keywords": [
+                        "users",
+                        "who",
+                        "access",
+                        "roles",
+                        "user types"
+                    ],
+                    "relatedTopics": [
+                        "gen_001",
+                        "doc_001",
+                        "lab_001"
+                    ]
+                },
+                {
+                    "id": "gen_003",
+                    "question": "How do I reset my password?",
+                    "answer": "To reset your password, go to the login page and click on 'Forgot Password'. Enter your registered email address, and you'll receive a password reset link. Follow the instructions in the email to set a new password.",
+                    "keywords": [
+                        "password",
+                        "reset",
+                        "forgot",
+                        "login",
+                        "authentication"
+                    ],
+                    "relatedTopics": [
+                        "gen_004"
+                    ]
+                },
+                {
+                    "id": "gen_004",
+                    "question": "How do I update my profile?",
+                    "answer": "Navigate to your profile section from the main menu. Click on 'Edit Profile' to update your personal information, contact details, and professional credentials. Don't forget to save your changes.",
+                    "keywords": [
+                        "profile",
+                        "update",
+                        "edit",
+                        "personal information"
+                    ],
+                    "relatedTopics": [
+                        "doc_002",
+                        "lab_002"
+                    ]
+                }
+            ]
+        },
+        "doctor_panel": {
+            "name": "Doctor Panel",
+            "faqs": [
+                {
+                    "id": "doc_001",
+                    "question": "How do I access the Doctor Panel?",
+                    "answer": "After logging in with your doctor credentials, you'll be automatically redirected to the Doctor Panel. You can also access it by navigating to the '/doctor-panel' section from the main menu.",
+                    "keywords": [
+                        "doctor panel",
+                        "access",
+                        "login",
+                        "dashboard"
+                    ],
+                    "relatedTopics": [
+                        "doc_002",
+                        "doc_003"
+                    ]
+                },
+                {
+                    "id": "doc_002",
+                    "question": "How do I complete my doctor profile?",
+                    "answer": "Go to the Profile section in your Doctor Panel. Fill in all required fields including your specialty, experience, qualifications, registration number, and upload necessary documents like your medical license and ID proof. A complete profile helps patients trust your services.",
+                    "keywords": [
+                        "profile",
+                        "complete",
+                        "doctor profile",
+                        "documents",
+                        "verification"
+                    ],
+                    "relatedTopics": [
+                        "doc_001",
+                        "doc_004"
+                    ]
+                },
+                {
+                    "id": "doc_003",
+                    "question": "How do I create a campaign?",
+                    "answer": "Navigate to the Campaigns section and click 'Create New Campaign'. Follow the step-by-step wizard to set up your campaign details including campaign type (consultation, health checkup, etc.), pricing, schedule, location details, daily/hourly limits, and required patient details. Review and submit for activation.",
+                    "keywords": [
+                        "campaign",
+                        "create",
+                        "new campaign",
+                        "consultation",
+                        "setup"
+                    ],
+                    "relatedTopics": [
+                        "doc_005",
+                        "doc_006",
+                        "doc_007"
+                    ]
+                },
+                {
+                    "id": "doc_004",
+                    "question": "What documents do I need to upload?",
+                    "answer": "You need to upload your medical registration certificate, ID proof (Aadhaar, PAN, or Passport), and optionally your profile photo. These documents are required for verification and to build patient trust.",
+                    "keywords": [
+                        "documents",
+                        "upload",
+                        "verification",
+                        "medical license",
+                        "id proof"
+                    ],
+                    "relatedTopics": [
+                        "doc_002"
+                    ]
+                },
+                {
+                    "id": "doc_005",
+                    "question": "What types of campaigns can I create?",
+                    "answer": "You can create various campaign types including General Consultation, Specialist Consultation, Health Checkup Packages, Follow-up Consultations, and Preventive Care Programs. Each type has specific configuration options tailored to the service.",
+                    "keywords": [
+                        "campaign types",
+                        "consultation",
+                        "health checkup",
+                        "services"
+                    ],
+                    "relatedTopics": [
+                        "doc_003",
+                        "doc_006"
+                    ]
+                },
+                {
+                    "id": "doc_006",
+                    "question": "How do I set appointment limits?",
+                    "answer": "When creating a campaign, you can set daily limits (maximum appointments per day), hourly limits (appointments per hour), and total capacity (overall campaign limit). This helps you manage your schedule effectively.",
+                    "keywords": [
+                        "appointment limits",
+                        "daily limit",
+                        "hourly limit",
+                        "capacity",
+                        "schedule"
+                    ],
+                    "relatedTopics": [
+                        "doc_003",
+                        "doc_007"
+                    ]
+                },
+                {
+                    "id": "doc_007",
+                    "question": "Can I edit or delete a campaign?",
+                    "answer": "Yes, you can edit campaign details from the Campaigns section. Click on the campaign you want to modify and select 'Edit'. You can also pause or delete campaigns, but note that campaigns with active appointments cannot be deleted.",
+                    "keywords": [
+                        "edit campaign",
+                        "delete",
+                        "modify",
+                        "pause",
+                        "campaign management"
+                    ],
+                    "relatedTopics": [
+                        "doc_003",
+                        "doc_005"
+                    ]
+                },
+                {
+                    "id": "doc_008",
+                    "question": "How do I manage appointments?",
+                    "answer": "Go to the Appointments section to view all your scheduled appointments. You can filter by date, status, or campaign. You can also mark appointments as completed, cancelled, or reschedule them as needed.",
+                    "keywords": [
+                        "appointments",
+                        "manage",
+                        "schedule",
+                        "bookings"
+                    ],
+                    "relatedTopics": [
+                        "doc_006"
+                    ]
+                },
+                {
+                    "id": "doc_009",
+                    "question": "What is the verification process?",
+                    "answer": "After completing your profile and uploading documents, the Super Admin will review your credentials. You'll receive a notification once verified. Verification is required before you can create active campaigns.",
+                    "keywords": [
+                        "verification",
+                        "approval",
+                        "admin review",
+                        "verified status"
+                    ],
+                    "relatedTopics": [
+                        "doc_002",
+                        "doc_004"
+                    ]
+                }
+            ]
+        },
+        "lab_panel": {
+            "name": "Lab Panel",
+            "faqs": [
+                {
+                    "id": "lab_001",
+                    "question": "How do I access the Lab Panel?",
+                    "answer": "After logging in with your lab credentials, you'll be redirected to the Lab Panel. You can also navigate to '/lab-panel' from the main menu to access lab-specific features.",
+                    "keywords": [
+                        "lab panel",
+                        "access",
+                        "login",
+                        "dashboard"
+                    ],
+                    "relatedTopics": [
+                        "lab_002",
+                        "lab_003"
+                    ]
+                },
+                {
+                    "id": "lab_002",
+                    "question": "How do I complete my lab profile?",
+                    "answer": "Navigate to the Profile section and fill in all required information including lab name, registration details, test types offered, facilities, contact information, and upload necessary documents like lab license, owner ID proof, and address proof.",
+                    "keywords": [
+                        "lab profile",
+                        "complete",
+                        "registration",
+                        "documents"
+                    ],
+                    "relatedTopics": [
+                        "lab_001",
+                        "lab_004"
+                    ]
+                },
+                {
+                    "id": "lab_003",
+                    "question": "What test types can I offer?",
+                    "answer": "You can select from various test categories including Blood Tests, Urine Tests, Radiology (X-Ray, CT, MRI), Pathology, Microbiology, Biochemistry, and specialized diagnostic tests. Select all test types your lab is equipped to perform.",
+                    "keywords": [
+                        "test types",
+                        "tests",
+                        "diagnostics",
+                        "lab services"
+                    ],
+                    "relatedTopics": [
+                        "lab_002",
+                        "lab_005"
+                    ]
+                },
+                {
+                    "id": "lab_004",
+                    "question": "What documents do I need to upload?",
+                    "answer": "You need to upload your lab registration certificate, owner ID proof (Aadhaar, PAN, or Passport), address proof, and optionally your lab profile photo. These are required for verification.",
+                    "keywords": [
+                        "documents",
+                        "upload",
+                        "verification",
+                        "lab license"
+                    ],
+                    "relatedTopics": [
+                        "lab_002"
+                    ]
+                },
+                {
+                    "id": "lab_005",
+                    "question": "How do I create a lab campaign?",
+                    "answer": "Go to the Campaigns section and click 'Create New Campaign'. Set up your test package details, pricing, sample collection options (home collection or lab visit), schedule, and capacity limits. You can create campaigns for individual tests or test packages.",
+                    "keywords": [
+                        "lab campaign",
+                        "create",
+                        "test package",
+                        "sample collection"
+                    ],
+                    "relatedTopics": [
+                        "lab_003",
+                        "lab_006"
+                    ]
+                },
+                {
+                    "id": "lab_006",
+                    "question": "Can I offer home sample collection?",
+                    "answer": "Yes, when creating a campaign, you can specify if you offer home sample collection services. You can set additional charges for home collection and define the service areas where you provide this facility.",
+                    "keywords": [
+                        "home collection",
+                        "sample collection",
+                        "home service"
+                    ],
+                    "relatedTopics": [
+                        "lab_005"
+                    ]
+                },
+                {
+                    "id": "lab_007",
+                    "question": "How do I manage test bookings?",
+                    "answer": "Navigate to the Bookings section to view all test appointments. You can filter by date, test type, or status. Update booking status, upload test results, and manage sample collection schedules.",
+                    "keywords": [
+                        "bookings",
+                        "manage",
+                        "test appointments",
+                        "results"
+                    ],
+                    "relatedTopics": [
+                        "lab_005"
+                    ]
+                },
+                {
+                    "id": "lab_008",
+                    "question": "What is the verification process for labs?",
+                    "answer": "After completing your profile and uploading all required documents, the Super Admin will verify your lab credentials and facilities. Once verified, you can create active campaigns and accept bookings.",
+                    "keywords": [
+                        "verification",
+                        "approval",
+                        "lab verification"
+                    ],
+                    "relatedTopics": [
+                        "lab_002",
+                        "lab_004"
+                    ]
+                }
+            ]
+        },
+        "super_admin": {
+            "name": "Super Admin",
+            "faqs": [
+                {
+                    "id": "admin_001",
+                    "question": "What can I do as a Super Admin?",
+                    "answer": "As a Super Admin, you have full control over the platform. You can manage users (doctors and labs), verify profiles, manage permissions, view analytics, handle user management, monitor campaigns, and oversee all platform activities.",
+                    "keywords": [
+                        "super admin",
+                        "admin",
+                        "permissions",
+                        "control"
+                    ],
+                    "relatedTopics": [
+                        "admin_002",
+                        "admin_003"
+                    ]
+                },
+                {
+                    "id": "admin_002",
+                    "question": "How do I verify doctor profiles?",
+                    "answer": "Go to User Management > Doctors. Review pending verification requests, check uploaded documents and credentials, and update the verification status. You can also manage permissions like profile visibility and campaign creation rights.",
+                    "keywords": [
+                        "verify",
+                        "doctor verification",
+                        "approve",
+                        "user management"
+                    ],
+                    "relatedTopics": [
+                        "admin_003",
+                        "admin_004"
+                    ]
+                },
+                {
+                    "id": "admin_003",
+                    "question": "How do I verify lab profiles?",
+                    "answer": "Navigate to User Management > Labs. Review lab registration details, check uploaded licenses and documents, verify facilities and test types, and update verification status. You can also manage lab permissions.",
+                    "keywords": [
+                        "verify",
+                        "lab verification",
+                        "approve labs"
+                    ],
+                    "relatedTopics": [
+                        "admin_002",
+                        "admin_004"
+                    ]
+                },
+                {
+                    "id": "admin_004",
+                    "question": "How do I manage user permissions?",
+                    "answer": "In the User Management section, click on 'Manage Permissions' for any user. You can enable/disable profile visibility, campaign creation rights, booking acceptance, and other permissions. You can also view profile completion status.",
+                    "keywords": [
+                        "permissions",
+                        "manage permissions",
+                        "user rights",
+                        "access control"
+                    ],
+                    "relatedTopics": [
+                        "admin_002",
+                        "admin_003"
+                    ]
+                },
+                {
+                    "id": "admin_005",
+                    "question": "How do I view platform analytics?",
+                    "answer": "The Dashboard provides comprehensive analytics including total users, active campaigns, bookings, revenue metrics, and user growth trends. You can filter by date range and export reports.",
+                    "keywords": [
+                        "analytics",
+                        "dashboard",
+                        "reports",
+                        "statistics"
+                    ],
+                    "relatedTopics": [
+                        "admin_001"
+                    ]
+                },
+                {
+                    "id": "admin_006",
+                    "question": "Can I edit user information?",
+                    "answer": "Yes, you can view and edit user details from the User Management section. Click on any user to view their full profile and click 'Edit' to modify information. Changes are logged for audit purposes.",
+                    "keywords": [
+                        "edit user",
+                        "modify",
+                        "user details"
+                    ],
+                    "relatedTopics": [
+                        "admin_002",
+                        "admin_003"
+                    ]
+                },
+                {
+                    "id": "admin_007",
+                    "question": "How do I handle user complaints?",
+                    "answer": "Navigate to the Support section to view user complaints and queries. You can respond to users, escalate issues, or take necessary actions like suspending accounts if needed.",
+                    "keywords": [
+                        "complaints",
+                        "support",
+                        "issues",
+                        "user queries"
+                    ],
+                    "relatedTopics": [
+                        "admin_004"
+                    ]
+                }
+            ]
+        },
+        "troubleshooting": {
+            "name": "Troubleshooting",
+            "faqs": [
+                {
+                    "id": "trouble_001",
+                    "question": "I can't log in to my account",
+                    "answer": "First, ensure you're using the correct email and password. If you've forgotten your password, use the 'Forgot Password' link. If issues persist, clear your browser cache and cookies, or try a different browser. Contact support if the problem continues.",
+                    "keywords": [
+                        "login",
+                        "can't login",
+                        "login error",
+                        "access denied"
+                    ],
+                    "relatedTopics": [
+                        "gen_003",
+                        "trouble_002"
+                    ]
+                },
+                {
+                    "id": "trouble_002",
+                    "question": "My documents are not uploading",
+                    "answer": "Ensure your documents are in supported formats (PDF, JPG, PNG) and under 5MB in size. Check your internet connection. If the issue persists, try compressing the file or using a different browser.",
+                    "keywords": [
+                        "upload",
+                        "document upload",
+                        "file upload",
+                        "upload error"
+                    ],
+                    "relatedTopics": [
+                        "doc_004",
+                        "lab_004"
+                    ]
+                },
+                {
+                    "id": "trouble_003",
+                    "question": "I'm not receiving email notifications",
+                    "answer": "Check your spam/junk folder. Add notifications@swasthify.com to your contacts. Verify your email address is correct in your profile settings. If issues continue, contact support.",
+                    "keywords": [
+                        "email",
+                        "notifications",
+                        "not receiving",
+                        "email issues"
+                    ],
+                    "relatedTopics": [
+                        "gen_004"
+                    ]
+                },
+                {
+                    "id": "trouble_004",
+                    "question": "The page is loading slowly",
+                    "answer": "This could be due to slow internet connection or browser issues. Try refreshing the page, clearing your browser cache, or using a different browser. Ensure you have a stable internet connection.",
+                    "keywords": [
+                        "slow",
+                        "loading",
+                        "performance",
+                        "page load"
+                    ],
+                    "relatedTopics": [
+                        "trouble_001"
+                    ]
+                },
+                {
+                    "id": "trouble_005",
+                    "question": "I made a mistake in my campaign, how do I fix it?",
+                    "answer": "You can edit your campaign from the Campaigns section. Click on the campaign and select 'Edit'. Make your changes and save. If the campaign has active bookings, some fields may be locked to protect existing appointments.",
+                    "keywords": [
+                        "edit",
+                        "mistake",
+                        "fix",
+                        "campaign error"
+                    ],
+                    "relatedTopics": [
+                        "doc_007",
+                        "lab_005"
+                    ]
+                }
+            ]
+        }
+    },
+    "quickActions": [
+        {
+            "action": "Create Campaign",
+            "description": "Start creating a new campaign",
+            "relevantFor": [
+                "doctor",
+                "lab"
+            ],
+            "relatedTopics": [
+                "doc_003",
+                "lab_005"
+            ]
+        },
+        {
+            "action": "Complete Profile",
+            "description": "Finish setting up your profile",
+            "relevantFor": [
+                "doctor",
+                "lab"
+            ],
+            "relatedTopics": [
+                "doc_002",
+                "lab_002"
+            ]
+        },
+        {
+            "action": "Verify Users",
+            "description": "Review and verify pending users",
+            "relevantFor": [
+                "admin"
+            ],
+            "relatedTopics": [
+                "admin_002",
+                "admin_003"
+            ]
+        }
+    ],
+    "metadata": {
+        "lastUpdated": "2026-02-03",
+        "totalFAQs": 35,
+        "version": "1.0.0"
+    }
+}
