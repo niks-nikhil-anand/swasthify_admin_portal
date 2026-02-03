@@ -102,7 +102,7 @@ export default function DoctorCampaignsPage() {
     return (
         <div className="container mx-auto py-12 px-4 space-y-8 lg:min-h-[80vh]">
             <div className="text-center space-y-4 max-w-2xl mx-auto">
-                <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+                <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
                     Find Healthcare Campaigns
                 </h1>
                 <p className="text-lg text-muted-foreground">
@@ -217,7 +217,7 @@ export default function DoctorCampaignsPage() {
             ) : (
                 <div className="text-center py-20 bg-muted/10 rounded-xl border border-dashed">
                     <Search className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900">No active campaigns found</h3>
+                    <h3 className="text-lg font-medium text-foreground">No active campaigns found</h3>
                     <p className="text-muted-foreground mt-1">
                         Try adjusting your search or filters to find what you're looking for.
                     </p>
