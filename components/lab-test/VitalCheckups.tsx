@@ -44,7 +44,7 @@ export function VitalCheckups() {
     ];
 
     return (
-        <section className="w-full py-16 px-4 md:px-6 bg-gray-50/50">
+        <section className="w-full py-16 px-4 md:px-6 bg-muted/30">
             <div className="container mx-auto">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-10">Recommended Vital Checkups</h2>
                 <ScrollArea className="w-full whitespace-nowrap">
@@ -53,18 +53,18 @@ export function VitalCheckups() {
                             <Card key={index} className="w-[300px] shrink-0 hover:shadow-md transition-shadow">
                                 <CardContent className="p-6">
                                     <div className="flex items-start space-x-4 mb-4">
-                                        <div className="p-2 bg-gray-100 rounded-lg">
+                                        <div className="p-2 bg-muted rounded-lg">
                                             {checkup.icon}
                                         </div>
                                         <div>
                                             <h3 className="font-semibold">{checkup.title}</h3>
                                         </div>
                                     </div>
-                                    <p className="text-sm text-gray-500 mb-6 h-10 whitespace-normal line-clamp-2">
+                                    <p className="text-sm text-muted-foreground mb-6 h-10 whitespace-normal line-clamp-2">
                                         {checkup.tests}
                                     </p>
                                     <div className="flex justify-end">
-                                        <Button variant="outline" className="border-emerald-600 text-emerald-600 hover:bg-emerald-50">
+                                        <Button variant="outline" className="border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30">
                                             Book
                                         </Button>
                                     </div>
