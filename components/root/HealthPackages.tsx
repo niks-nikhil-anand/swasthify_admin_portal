@@ -96,7 +96,7 @@ const item = {
 
 export function HealthPackages() {
     return (
-        <div className="bg-gray-50 bg-opacity-50">
+        <div className="bg-gray-50 dark:bg-muted/10 bg-opacity-50">
             <section className=" container mx-auto py-12 px-4 md:px-6 ">
                 <div className=" flex flex-col space-y-6">
                     <motion.h2
@@ -106,7 +106,7 @@ export function HealthPackages() {
                         transition={{ duration: 0.5 }}
                         className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl"
                     >
-                        Popular <span className="text-emerald-600 bg-emerald-100 px-2 rounded-md">Health Checkup Packages</span>
+                        Popular <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-2 rounded-md">Health Checkup Packages</span>
                     </motion.h2>
 
                     <Tabs defaultValue="featured" className="w-full">
@@ -155,7 +155,7 @@ export function HealthPackages() {
                                                         fill
                                                         className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                                                     />
-                                                    <div className="absolute bottom-0 left-0 right-0 bg-white/95 p-1 md:p-2 text-center text-[10px] md:text-sm font-medium text-gray-800 border-t backdrop-blur-sm">
+                                                    <div className="absolute bottom-0 left-0 right-0 bg-white/95 dark:bg-background/95 p-1 md:p-2 text-center text-[10px] md:text-sm font-medium text-gray-800 dark:text-gray-200 border-t backdrop-blur-sm">
                                                         Includes {pkg.testsCount} tests
                                                     </div>
                                                 </div>
@@ -165,7 +165,7 @@ export function HealthPackages() {
                                                 </CardHeader>
                                                 <CardContent className="p-3 pt-0 md:p-6 md:pt-0 pb-2">
                                                     <div className="flex items-baseline space-x-2">
-                                                        <span className="text-base md:text-2xl font-bold text-emerald-600">₹{pkg.price}</span>
+                                                        <span className="text-base md:text-2xl font-bold text-emerald-600 dark:text-emerald-400">₹{pkg.price}</span>
                                                         <span className="text-[10px] md:text-sm text-gray-400 line-through">₹{pkg.originalPrice}</span>
                                                     </div>
                                                 </CardContent>
