@@ -153,10 +153,10 @@ export function Hero() {
                                 className="absolute top-12 right-8 bg-background/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-border/50 max-w-[170px] hover:scale-110 transition-transform cursor-pointer"
                             >
                                 <div className="flex items-center gap-3 mb-2">
-                                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                    <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
                                         <MapPin className="w-5 h-5" />
                                     </div>
-                                    <span className="text-2xl font-bold bg-gradient-to-tr from-green-600 to-emerald-500 bg-clip-text text-transparent">500+</span>
+                                    <span className="text-2xl font-bold bg-gradient-to-tr from-green-600 to-emerald-500 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">500+</span>
                                 </div>
                                 <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Specialist Doctors</p>
                             </motion.div>
@@ -169,7 +169,7 @@ export function Hero() {
                                 className="absolute bottom-12 left-8 bg-background/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-border/50 max-w-[190px] hover:scale-110 transition-transform cursor-pointer"
                             >
                                 <div className="flex items-center gap-2 mb-1">
-                                    <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                                    <div className="w-3 h-3 rounded-full bg-green-500 dark:bg-green-400 animate-pulse" />
                                     <span className="text-sm font-bold">24/7 Support</span>
                                 </div>
                                 <p className="text-xs text-muted-foreground">Always here for you.</p>
