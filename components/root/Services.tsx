@@ -11,28 +11,28 @@ const services = [
         description: "Locate and book appointments with the best doctors in your neighborhood.",
         icon: MapPin,
         href: "/find-doctor",
-        color: "bg-green-50 text-green-600",
+        color: "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400",
     },
     {
         title: "Lab Tests",
         description: "Book diagnostic tests online and get sample collection from your doorstep.",
         icon: FlaskConical,
         href: "/lab-tests",
-        color: "bg-purple-50 text-purple-600",
+        color: "bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400",
     },
     {
         title: "Surgeries",
         description: "Expert surgical care with end-to-end assistance and cashless insurance support.",
         icon: Stethoscope,
         href: "/surgeries",
-        color: "bg-orange-50 text-orange-600",
+        color: "bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400",
     },
     {
         title: "Video Consultation",
         description: "Connect with top specialists from the comfort of your home via secure video calls.",
         icon: Video,
         href: "/consultation",
-        color: "bg-blue-50 text-blue-600",
+        color: "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400",
     },
 
 ];
