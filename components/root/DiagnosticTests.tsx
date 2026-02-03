@@ -11,37 +11,37 @@ const tests = [
         title: "Lipid Profile",
         subtitle: "Known as Lipid Profile Blood",
         price: 434,
-        color: "text-emerald-500",
+        color: "text-emerald-500 dark:text-emerald-400",
     },
     {
         title: "Liver Function Test",
         subtitle: "Known as Liver Function Tests Blood",
         price: 673,
-        color: "text-emerald-500",
+        color: "text-emerald-500 dark:text-emerald-400",
     },
     {
         title: "HbA1c",
         subtitle: "Known as Glycosylated Haemoglobin Blood",
         price: 300,
-        color: "text-emerald-500",
+        color: "text-emerald-500 dark:text-emerald-400",
     },
     {
         title: "Vitamin B 12",
         subtitle: "Known as Vitamin B12 Conventional Blood",
         price: 490,
-        color: "text-emerald-500",
+        color: "text-emerald-500 dark:text-emerald-400",
     },
     {
         title: "Beta HCG",
         subtitle: "Known as Beta Hcg Automated Blood",
         price: 850,
-        color: "text-emerald-500",
+        color: "text-emerald-500 dark:text-emerald-400",
     },
     {
         title: "Fasting Blood Sugar",
         subtitle: "Known as Glucose Fasting Blood",
         price: 199,
-        color: "text-emerald-500",
+        color: "text-emerald-500 dark:text-emerald-400",
     },
 ];
 
@@ -72,8 +72,8 @@ export function DiagnosticTests() {
                     className="space-y-2"
                 >
                     <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Top Booked Diagnostic Tests</h2>
-                    <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-emerald-100 text-emerald-800 w-fit">
-                        <Zap className="mr-1 h-3 w-3 fill-emerald-800" />
+                    <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-400 w-fit">
+                        <Zap className="mr-1 h-3 w-3 fill-emerald-800 dark:fill-emerald-400" />
                         Get reports within 24hrs
                     </div>
                 </motion.div>
@@ -89,7 +89,7 @@ export function DiagnosticTests() {
                         >
                             {tests.map((test, index) => (
                                 <motion.div key={index} variants={item} whileHover={{ scale: 1.02 }}>
-                                    <Card className="w-[300px] shrink-0 border-2 hover:border-emerald-500 transition-all duration-300">
+                                    <Card className="w-[300px] shrink-0 border-2 hover:border-emerald-500 dark:hover:border-emerald-400 transition-all duration-300">
                                         <CardHeader className="pb-2">
                                             <div className="flex justify-between items-start">
                                                 <CardTitle className="text-lg font-bold truncate pr-2" title={test.title}>{test.title}</CardTitle>
@@ -98,7 +98,7 @@ export function DiagnosticTests() {
                                             <p className="text-sm text-muted-foreground whitespace-normal h-10 line-clamp-2">{test.subtitle}</p>
                                         </CardHeader>
                                         <CardFooter>
-                                            <Button className="w-full text-sky-500 bg-transparent border border-sky-200 hover:bg-sky-50 hover:text-sky-600 uppercase font-semibold">
+                                            <Button className="w-full text-sky-500 dark:text-sky-400 bg-transparent border border-sky-200 dark:border-sky-800/40 hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:text-sky-600 dark:hover:text-sky-300 uppercase font-semibold">
                                                 Add to Cart
                                             </Button>
                                         </CardFooter>
