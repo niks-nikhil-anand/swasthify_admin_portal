@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export function DownloadApp() {
     return (
-        <section className="py-24 bg-linear-to-br from-blue-50/50 via-white to-purple-50/50 overflow-hidden">
+        <section className="py-24 bg-linear-to-br from-blue-50/50 via-white dark:via-background to-purple-50/50 overflow-hidden">
             <div className="container mx-auto px-4">
                 <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-0">
 
@@ -18,7 +18,7 @@ export function DownloadApp() {
                         className="w-full lg:w-5/12 flex justify-center lg:justify-end relative order-2 lg:order-1 px-4 lg:px-0"
                     >
                         {/* Decorative Elements */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100%] h-[100%] lg:w-[120%] lg:h-[120%] bg-blue-100/50 rounded-full blur-3xl -z-10" />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100%] h-[100%] lg:w-[120%] lg:h-[120%] bg-blue-100/50 dark:bg-blue-900/20 rounded-full blur-3xl -z-10" />
 
                         <div className="relative z-10 w-full max-w-[360px] md:max-w-md lg:max-w-full">
                             <Image
@@ -72,8 +72,8 @@ export function DownloadApp() {
                                 Get the link to download the app
                             </label>
                             <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto lg:mx-0 w-full">
-                                <div className="flex flex-1 gap-3 bg-white/80 backdrop-blur-md p-1.5 rounded-2xl border border-gray-100 shadow-xl shadow-blue-500/5 items-center">
-                                    <span className="inline-flex items-center px-4 py-2.5 text-foreground font-medium rounded-xl bg-gray-50/50">
+                                <div className="flex flex-1 gap-3 bg-white/80 dark:bg-background/80 backdrop-blur-md p-1.5 rounded-2xl border border-gray-100 dark:border-border shadow-xl shadow-blue-500/5 items-center">
+                                    <span className="inline-flex items-center px-4 py-2.5 text-foreground font-medium rounded-xl bg-gray-50/50 dark:bg-muted/50">
                                         +91
                                     </span>
                                     <input
