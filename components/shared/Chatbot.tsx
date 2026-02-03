@@ -171,6 +171,29 @@ export default function Chatbot() {
     return (
         <>
 
+            {/* "How can I help you?" Tooltip */}
+            <AnimatePresence>
+                {showChatbot && !isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, x: 20, scale: 0.9 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, x: 20, scale: 0.9 }}
+                        transition={{ duration: 0.3, delay: 0.5 }}
+                        className="fixed bottom-5 right-20 md:bottom-6 md:right-24 lg:bottom-8 lg:right-24 z-50 bg-white dark:bg-gray-800 px-4 py-2 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 flex items-center gap-2 pointer-events-none"
+                    >
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                        </span>
+                        <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                            How can I help you?
+                        </p>
+                        {/* Arrow */}
+                        <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-white dark:bg-gray-800 rotate-45 border-r border-t border-gray-100 dark:border-gray-700"></div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Chat Bubble Button */}
             <AnimatePresence>
                 {showChatbot && (
