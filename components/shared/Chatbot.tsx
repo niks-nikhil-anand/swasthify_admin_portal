@@ -239,13 +239,12 @@ export default function Chatbot() {
             <AnimatePresence>
                 {isOpen && showChatbot && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0, y: 100, x: 100 }}
+                        initial={{ opacity: 0, scale: 0.5, y: 100, x: 50 }}
                         animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
-                        exit={{ opacity: 0, scale: 0, y: 100, x: 100 }}
+                        exit={{ opacity: 0, scale: 0.5, y: 100, x: 50 }}
                         transition={{
-                            type: "spring",
-                            stiffness: 260,
-                            damping: 20
+                            duration: 0.5,
+                            ease: [0.16, 1, 0.3, 1] // Apple-like smooth ease
                         }}
                         style={{ transformOrigin: 'bottom right' }}
                         className="fixed bottom-16 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:bottom-20 md:right-4 lg:bottom-24 lg:right-24 z-50 flex h-[70vh] md:h-[550px] lg:h-[500px] w-[90%] md:w-[400px] lg:w-[380px] flex-col rounded-xl md:rounded-xl lg:rounded-2xl bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden"
