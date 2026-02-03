@@ -39,12 +39,12 @@ export function HowItWorksLab() {
                         <div key={index} className="flex flex-col items-center text-center animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-backwards" style={{ animationDelay: `${index * 200}ms` }}>
                             <Card className="border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-card w-full h-full relative overflow-hidden group">
                                 <CardContent className="p-8 flex flex-col items-center h-full">
-                                    <div className="bg-emerald-50 p-2 rounded-full mb-6 border-4 border-white shadow-sm z-10">
-                                        <div className="bg-emerald-100 p-5 rounded-full transition-transform group-hover:scale-110 duration-500">
+                                    <div className="bg-emerald-50 dark:bg-emerald-900/20 p-2 rounded-full mb-6 border-4 border-white dark:border-background shadow-sm z-10">
+                                        <div className="bg-emerald-100 dark:bg-emerald-900/40 p-5 rounded-full transition-transform group-hover:scale-110 duration-500">
                                             {step.icon}
                                         </div>
                                     </div>
-                                    <h3 className="text-xl font-bold mb-3">{step.title}</h3>
+                                    <h3 className="text-xl font-bold mb-3 text-foreground">{step.title}</h3>
                                     <p className="text-muted-foreground leading-relaxed">
                                         {step.description}
                                     </p>
