@@ -193,8 +193,8 @@ export default function CampaignDetailsPage() {
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-8">
                         {/* Mobile/Tablet Doctor Profile Header - HIDDEN ON DESKTOP */}
-                        <div className="bg-white p-6 rounded-2xl border shadow-sm flex flex-col items-center text-center space-y-4 lg:hidden">
-                            <Avatar className="w-24 h-24 border-4 border-white shadow-md">
+                        <div className="bg-card p-6 rounded-2xl border shadow-sm flex flex-col items-center text-center space-y-4 lg:hidden">
+                            <Avatar className="w-24 h-24 border-4 border-background shadow-md">
                                 <AvatarImage src={campaign.doctor.profilePhoto || ""} className="object-cover" />
                                 <AvatarFallback className="text-2xl font-bold bg-primary/5 text-primary">
                                     {campaign.doctor.user.name.charAt(0)}
@@ -202,7 +202,7 @@ export default function CampaignDetailsPage() {
                             </Avatar>
 
                             <div className="space-y-1">
-                                <h3 className="font-bold text-xl text-gray-900">{campaign.doctor.user.name}</h3>
+                                <h3 className="font-bold text-xl text-foreground">{campaign.doctor.user.name}</h3>
                                 <p className="text-primary font-medium flex items-center justify-center gap-1.5 flex-wrap">
                                     {campaign.doctor.specializations.map(s => s.name).join(", ")}
                                 </p>
@@ -214,9 +214,9 @@ export default function CampaignDetailsPage() {
                             </div>
 
                             <div className="flex items-center gap-4 text-sm">
-                                <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-lg border border-yellow-100">
+                                <div className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded-lg border border-yellow-100 dark:border-yellow-900/40">
                                     <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                                    <span className="font-bold text-gray-900">{campaign.doctor.averageRating || "New"}</span>
+                                    <span className="font-bold text-foreground">{campaign.doctor.averageRating || "New"}</span>
                                 </div>
                                 <div className="text-muted-foreground">
                                     {campaign.doctor.totalReviews || 0} Reviews
@@ -252,14 +252,14 @@ export default function CampaignDetailsPage() {
                                             </Badge>
                                         )}
                                     </div>
-                                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+                                    <h1 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
                                         {campaign.name}
                                     </h1>
                                 </div>
                                 <div className="flex gap-2">
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" size="sm" className="h-9 rounded-full gap-2 px-4 shadow-sm hover:bg-gray-50 bg-white">
+                                            <Button variant="outline" size="sm" className="h-9 rounded-full gap-2 px-4 shadow-sm hover:bg-muted bg-background">
                                                 <Share2 className="w-4 h-4" />
                                                 <span className="hidden sm:inline">Share</span>
                                             </Button>
@@ -325,14 +325,14 @@ export default function CampaignDetailsPage() {
 
                         {/* Key Metrics Grid */}
                         <div className="grid grid-cols-1 gap-4">
-                            <Card className="bg-gradient-to-br from-green-50 to-green-100/50 border-green-100 shadow-sm overflow-hidden relative">
-                                <div className="absolute top-0 right-0 w-24 h-24 bg-green-100 rounded-full -mr-12 -mt-12 opacity-50 blur-xl" />
+                            <Card className="bg-linear-to-br from-green-50 to-green-100/50 dark:from-green-950/40 dark:to-green-900/20 border-green-100 dark:border-green-900/40 shadow-sm overflow-hidden relative">
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-green-100 dark:bg-green-900/20 rounded-full -mr-12 -mt-12 opacity-50 blur-xl" />
                                 <CardContent className="p-5 flex items-start gap-4 relative">
-                                    <div className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-green-600 shrink-0">
+                                    <div className="w-12 h-12 rounded-xl bg-background shadow-sm flex items-center justify-center text-green-600 dark:text-green-500 shrink-0">
                                         <IndianRupee className="w-6 h-6" />
                                     </div>
                                     <div>
-                                        <p className="font-semibold text-gray-900 mb-1">Consultation Fee</p>
+                                        <p className="font-semibold text-foreground mb-1">Consultation Fee</p>
                                         <div className="flex flex-col">
                                             {campaign.price === 0 ? (
                                                 <span className="font-bold text-green-700 text-lg">Free of Cost</span>
@@ -346,7 +346,7 @@ export default function CampaignDetailsPage() {
                                                             <span className="text-sm text-muted-foreground line-through decoration-red-500/50">
                                                                 ₹{campaign.price}
                                                             </span>
-                                                            <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100 text-[10px] px-1.5 h-5">
+                                                            <Badge variant="secondary" className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 text-[10px] px-1.5 h-5">
                                                                 {campaign.discountPercentage}% OFF
                                                             </Badge>
                                                         </>
@@ -361,9 +361,9 @@ export default function CampaignDetailsPage() {
 
                         {/* Mobile Actions - About Doctor & Book Appointment (HIDDEN ON DESKTOP) */}
                         <div className="space-y-4 lg:hidden">
-                            <div className="text-left bg-white p-4 rounded-xl border shadow-sm">
-                                <p className="text-xs font-semibold text-gray-500 uppercase mb-2">About Doctor</p>
-                                <p className="text-sm text-gray-600 line-clamp-4 leading-relaxed">
+                            <div className="text-left bg-card p-4 rounded-xl border shadow-sm">
+                                <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">About Doctor</p>
+                                <p className="text-sm text-muted-foreground line-clamp-4 leading-relaxed">
                                     {campaign.doctor.bio || `Dr. ${campaign.doctor.user.name} is a dedicated professional committed to providing excellent healthcare services.`}
                                 </p>
                             </div>
@@ -409,8 +409,8 @@ export default function CampaignDetailsPage() {
                                                     <Clock className="w-4 h-4" />
                                                     Timing
                                                 </h4>
-                                                <div className="p-3 bg-gray-50 rounded-lg border flex items-center gap-3 w-fit">
-                                                    <span className="text-base font-semibold text-gray-900">
+                                                <div className="p-3 bg-muted/50 rounded-lg border flex items-center gap-3 w-fit">
+                                                    <span className="text-base font-semibold text-foreground">
                                                         {(() => {
                                                             const formatTime = (t: string) => {
                                                                 if (!t) return "";
@@ -443,7 +443,7 @@ export default function CampaignDetailsPage() {
                                     <div className="flex flex-col md:flex-row gap-6">
                                         <div className="flex-1 space-y-4">
                                             <div>
-                                                <h4 className="font-semibold text-lg text-gray-900">
+                                                <h4 className="font-semibold text-lg text-foreground">
                                                     {campaign.doctor.clinicName || campaign.doctor.hospitalName || "Medical Center"}
                                                 </h4>
                                                 <p className="text-muted-foreground mt-1">
@@ -499,7 +499,7 @@ export default function CampaignDetailsPage() {
                             <Card className="border-0 shadow-lg ring-1 ring-black/5 overflow-hidden">
                                 <div className="h-24 bg-gradient-to-r from-primary/10 to-primary/5"></div>
                                 <CardContent className="relative pt-0 px-6 pb-6 text-center -mt-12">
-                                    <Avatar className="w-24 h-24 mx-auto border-4 border-white shadow-md mb-4 bg-white">
+                                    <Avatar className="w-24 h-24 mx-auto border-4 border-background shadow-md mb-4 bg-background">
                                         <AvatarImage src={campaign.doctor.profilePhoto || ""} className="object-cover" />
                                         <AvatarFallback className="text-2xl font-bold bg-primary/5 text-primary">
                                             {campaign.doctor.user.name.charAt(0)}
@@ -507,7 +507,7 @@ export default function CampaignDetailsPage() {
                                     </Avatar>
 
                                     <div className="space-y-1 mb-6">
-                                        <h3 className="font-bold text-xl text-gray-900">{campaign.doctor.user.name}</h3>
+                                        <h3 className="font-bold text-xl text-foreground">{campaign.doctor.user.name}</h3>
                                         <p className="text-primary font-medium flex items-center justify-center gap-1.5 flex-wrap">
                                             {campaign.doctor.specializations.slice(0, 2).map(s => s.name).join(", ")}
                                             {campaign.doctor.specializations.length > 2 && <span className="text-xs text-muted-foreground">+{campaign.doctor.specializations.length - 2} more</span>}
@@ -520,19 +520,19 @@ export default function CampaignDetailsPage() {
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-3 mb-6">
-                                        <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
-                                            <div className="font-bold text-gray-900 text-lg">{campaign.doctor.averageRating || "New"}</div>
+                                        <div className="p-3 bg-muted/50 rounded-xl border border-border">
+                                            <div className="font-bold text-foreground text-lg">{campaign.doctor.averageRating || "New"}</div>
                                             <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Rating</div>
                                         </div>
-                                        <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
-                                            <div className="font-bold text-gray-900 text-lg">{campaign.doctor.totalReviews || 0}</div>
+                                        <div className="p-3 bg-muted/50 rounded-xl border border-border">
+                                            <div className="font-bold text-foreground text-lg">{campaign.doctor.totalReviews || 0}</div>
                                             <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Reviews</div>
                                         </div>
                                     </div>
 
                                     <div className="text-left bg-muted/30 p-4 rounded-xl mb-6">
                                         <p className="text-xs font-semibold text-gray-500 uppercase mb-2">About Doctor</p>
-                                        <p className="text-sm text-gray-600 line-clamp-4 leading-relaxed">
+                                        <p className="text-sm text-muted-foreground line-clamp-4 leading-relaxed">
                                             {campaign.doctor.bio || `Dr. ${campaign.doctor.user.name} is a dedicated professional committed to providing excellent healthcare services.`}
                                         </p>
                                     </div>
