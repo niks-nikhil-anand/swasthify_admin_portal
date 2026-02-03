@@ -38,7 +38,7 @@ export default function PharmacyPartnerPage() {
             <section className="relative bg-linear-to-br from-primary/10 via-background to-background pt-24 pb-20 md:pt-40 md:pb-40 overflow-hidden w-full">
                 <div className="container mx-auto px-4 md:px-6 relative z-10">
                     <div className="max-w-4xl mx-auto text-center space-y-6 md:space-y-8 mb-12">
-                        <div className="inline-block px-4 py-1.5 rounded-full bg-blue-500/10 text-blue-600 font-medium text-sm md:text-base mb-2 md:mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="inline-block px-4 py-1.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 font-medium text-sm md:text-base mb-2 md:mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             Coming Soon to Swasthify
                         </div>
                         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground animate-in fade-in slide-in-from-bottom-6 duration-700">
