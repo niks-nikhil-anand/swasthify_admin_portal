@@ -108,7 +108,9 @@ export default function HowItWorksPage() {
                             {/* Gradient Border/Header */}
                             <div className="h-2 w-full bg-linear-to-r from-primary via-accent to-primary" />
 
-                            <div className="absolute inset-0 bg-grid-black/5 mask-[linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
+                            <div className="absolute inset-0 bg-[grid-template-columns:repeat(20,minmax(0,1fr))] bg-[size:50px_50px] [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10 opacity-5 dark:opacity-[0.03]">
+                                <div className="absolute inset-0 bg-grid-black/[0.05] dark:bg-grid-white/[0.05]" />
+                            </div>
 
                             <CardContent className="p-6 md:p-12 text-center md:text-left">
                                 <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-center">
