@@ -30,8 +30,8 @@ export default function Chatbot() {
             const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
             const scrollPercentage = (scrollPosition / documentHeight) * 100;
 
-            // Show chatbot only when NOT in bottom 30% (hide when scrolled to bottom 30%)
-            setShowChatbot(scrollPercentage < 70);
+            // Show chatbot only after 10% scroll and hide when in bottom 20%
+            setShowChatbot(scrollPercentage > 10 && scrollPercentage < 80);
         };
 
         window.addEventListener('scroll', handleScroll);
