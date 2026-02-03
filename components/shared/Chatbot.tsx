@@ -141,7 +141,7 @@ export default function Chatbot() {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.8 }}
                         transition={{ duration: 0.2 }}
-                        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg hover:shadow-xl transition-shadow"
+                        className="fixed bottom-4 right-4 md:bottom-5 md:right-5 lg:bottom-6 lg:right-6 z-50 flex h-12 w-12 md:h-13 md:w-13 lg:h-14 lg:w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg hover:shadow-xl transition-shadow"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                         aria-label="Toggle chatbot"
@@ -181,15 +181,15 @@ export default function Chatbot() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="fixed bottom-24 right-24 z-50 flex h-[500px] w-[380px] flex-col rounded-2xl bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden"
+                        className="fixed bottom-16 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:bottom-20 md:right-4 lg:bottom-24 lg:right-24 z-50 flex h-[70vh] md:h-[550px] lg:h-[500px] w-[90%] md:w-[400px] lg:w-[380px] flex-col rounded-xl md:rounded-xl lg:rounded-2xl bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden"
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-3 text-white">
+                        <div className="flex items-center justify-between bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-2.5 md:px-3.5 md:py-2.5 lg:px-4 lg:py-3 text-white">
                             <div className="flex items-center gap-2">
-                                <Bot className="h-5 w-5" />
+                                <Bot className="h-4 w-4 md:h-5 md:w-5" />
                                 <div>
-                                    <h3 className="font-semibold text-sm">Swasthify Assistant</h3>
-                                    <p className="text-xs opacity-90">Always here to help</p>
+                                    <h3 className="font-semibold text-xs md:text-sm">Swasthify Assistant</h3>
+                                    <p className="text-[10px] md:text-xs opacity-90">Always here to help</p>
                                 </div>
                             </div>
                             <button
@@ -197,12 +197,12 @@ export default function Chatbot() {
                                 className="rounded-full p-1 hover:bg-white/20 transition-colors"
                                 aria-label="Close chat"
                             >
-                                <X className="h-5 w-5" />
+                                <X className="h-4 w-4 md:h-5 md:w-5" />
                             </button>
                         </div>
 
                         {/* Messages */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-950">
+                        <div className="flex-1 overflow-y-auto p-2 md:p-3 lg:p-4 space-y-2 md:space-y-3 lg:space-y-4 bg-gray-50 dark:bg-gray-950">
                             {messages.map((message) => (
                                 <motion.div
                                     key={message.id}
@@ -213,19 +213,19 @@ export default function Chatbot() {
                                         }`}
                                 >
                                     {message.sender === 'bot' && (
-                                        <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white">
-                                            <Bot className="h-4 w-4" />
+                                        <div className="flex-shrink-0 h-7 w-7 md:h-7.5 md:w-7.5 lg:h-8 lg:w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white">
+                                            <Bot className="h-3.5 w-3.5 md:h-4 md:w-4" />
                                         </div>
                                     )}
                                     <div
-                                        className={`max-w-[75%] rounded-2xl px-4 py-2 ${message.sender === 'user'
+                                        className={`max-w-[80%] md:max-w-[75%] rounded-2xl px-3 py-2 md:px-4 md:py-2 ${message.sender === 'user'
                                             ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white'
                                             : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700'
                                             }`}
                                     >
-                                        <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+                                        <p className="text-xs md:text-sm whitespace-pre-wrap">{message.text}</p>
                                         <p
-                                            className={`text-xs mt-1 ${message.sender === 'user'
+                                            className={`text-[10px] md:text-xs mt-1 ${message.sender === 'user'
                                                 ? 'text-white/70'
                                                 : 'text-gray-500 dark:text-gray-400'
                                                 }`}
@@ -237,8 +237,8 @@ export default function Chatbot() {
                                         </p>
                                     </div>
                                     {message.sender === 'user' && (
-                                        <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300">
-                                            <User className="h-4 w-4" />
+                                        <div className="flex-shrink-0 h-7 w-7 md:h-7.5 md:w-7.5 lg:h-8 lg:w-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300">
+                                            <User className="h-3.5 w-3.5 md:h-4 md:w-4" />
                                         </div>
                                     )}
                                 </motion.div>
@@ -251,23 +251,23 @@ export default function Chatbot() {
                                     animate={{ opacity: 1, y: 0 }}
                                     className="flex gap-2 justify-start"
                                 >
-                                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white">
-                                        <Bot className="h-4 w-4" />
+                                    <div className="flex-shrink-0 h-7 w-7 md:h-7.5 md:w-7.5 lg:h-8 lg:w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white">
+                                        <Bot className="h-3.5 w-3.5 md:h-4 md:w-4" />
                                     </div>
-                                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3">
+                                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-3 py-2 md:px-4 md:py-3">
                                         <div className="flex gap-1">
                                             <motion.div
-                                                className="h-2 w-2 rounded-full bg-gray-400"
+                                                className="h-1.5 w-1.5 md:h-2 md:w-2 rounded-full bg-gray-400"
                                                 animate={{ y: [0, -5, 0] }}
                                                 transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
                                             />
                                             <motion.div
-                                                className="h-2 w-2 rounded-full bg-gray-400"
+                                                className="h-1.5 w-1.5 md:h-2 md:w-2 rounded-full bg-gray-400"
                                                 animate={{ y: [0, -5, 0] }}
                                                 transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
                                             />
                                             <motion.div
-                                                className="h-2 w-2 rounded-full bg-gray-400"
+                                                className="h-1.5 w-1.5 md:h-2 md:w-2 rounded-full bg-gray-400"
                                                 animate={{ y: [0, -5, 0] }}
                                                 transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
                                             />
@@ -280,7 +280,7 @@ export default function Chatbot() {
                         </div>
 
                         {/* Input */}
-                        <div className="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
+                        <div className="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-2 md:p-3 lg:p-4">
                             <div className="flex gap-2">
                                 <input
                                     type="text"
@@ -288,19 +288,19 @@ export default function Chatbot() {
                                     onChange={(e) => setInputValue(e.target.value)}
                                     onKeyPress={handleKeyPress}
                                     placeholder="Type your message..."
-                                    className="flex-1 rounded-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-500"
+                                    className="flex-1 rounded-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-500"
                                     disabled={isLoading}
                                 />
                                 <button
                                     onClick={handleSendMessage}
                                     disabled={!inputValue.trim() || isLoading}
-                                    className="flex-shrink-0 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 p-2 text-white hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex-shrink-0 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 p-1.5 md:p-2 text-white hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
                                     aria-label="Send message"
                                 >
                                     {isLoading ? (
-                                        <Loader2 className="h-5 w-5 animate-spin" />
+                                        <Loader2 className="h-4 w-4 md:h-5 md:w-5 animate-spin" />
                                     ) : (
-                                        <Send className="h-5 w-5" />
+                                        <Send className="h-4 w-4 md:h-5 md:w-5" />
                                     )}
                                 </button>
                             </div>
