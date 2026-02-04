@@ -5,7 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { CreateCampaignModal } from "./CreateCampaignModal";
 
-export function CreateCampaign() {
+interface CreateCampaignProps {
+    onSuccess?: () => void;
+}
+
+export function CreateCampaign({ onSuccess }: CreateCampaignProps) {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     return (
@@ -18,6 +22,7 @@ export function CreateCampaign() {
             <CreateCampaignModal
                 open={isCreateModalOpen}
                 onOpenChange={setIsCreateModalOpen}
+                onSuccess={onSuccess}
             />
         </>
     );

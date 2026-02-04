@@ -17,6 +17,7 @@ import { z } from "zod";
 interface CreateCampaignModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    onSuccess?: () => void;
 }
 
 const DAYS_OF_WEEK = [
@@ -29,7 +30,7 @@ const DAYS_OF_WEEK = [
     { id: "SUNDAY", label: "Sun" },
 ];
 
-export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalProps) {
+export function CreateCampaignModal({ open, onOpenChange, onSuccess }: CreateCampaignModalProps) {
 
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -37,6 +38,14 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         name: string;
         description: string;
         type: string;
+        // Lab Fields
+        healthConcern: string[];
+        gender: string;
+        isFreeHomeSampleCollection: boolean;
+        reportTime: string;
+        testCategory: string[];
+        testsIncluded: string[];
+
         startDate: string;
         endDate: string;
         address: string;
@@ -59,6 +68,14 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         name: "",
         description: "",
         type: "HEALTH_CHECKUP_CAMP",
+        // Lab Fields
+        healthConcern: [],
+        gender: "Both",
+        isFreeHomeSampleCollection: false,
+        reportTime: "24-48 Hrs",
+        testCategory: [],
+        testsIncluded: [],
+
         startDate: "",
         endDate: "",
         address: "",
@@ -121,7 +138,11 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
     };
 
     const handleSelectChange = (name: string, value: string) => {
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        if (name === "healthConcern" || name === "testCategory") {
+            setFormData((prev) => ({ ...prev, [name]: [value] }));
+        } else {
+            setFormData((prev) => ({ ...prev, [name]: value }));
+        }
     };
 
     const handleDayToggle = (dayId: string) => {
@@ -153,6 +174,11 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         description: z.string().optional(),
         startDate: z.string().min(1, "Start Date is required"),
         endDate: z.string().min(1, "End Date is required"),
+        // Lab Fields Validation
+        healthConcern: z.array(z.string()).min(1, "Please select at least one Health Concern"),
+        gender: z.string().min(1, "Target Gender is required"),
+        reportTime: z.string().min(1, "Report Time is required"),
+        testsIncluded: z.array(z.string()).refine((tests) => tests.some(t => t.trim() !== ""), "At least one test must be included"),
     }).refine((data) => {
         if (!data.startDate || !data.endDate) return true;
         return new Date(data.startDate) < new Date(data.endDate);
@@ -243,17 +269,40 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         setLoading(true);
 
         try {
-            // MOCK API CALL for Demo Purposes
-            await new Promise((resolve) => setTimeout(resolve, 1500));
+            // Clean data before sending
+            const cleanedData = {
+                ...formData,
+                testsIncluded: formData.testsIncluded.filter(t => t.trim() !== ""),
+            };
+
+            const res = await fetch("/api/lab/campaigns", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(cleanedData),
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || "Failed to create campaign");
+            }
 
             toast.success("Campaign created successfully!");
             onOpenChange(false);
+            if (onSuccess) onSuccess();
 
             setStep(1);
             setFormData({
                 name: "",
                 description: "",
                 type: "HEALTH_CHECKUP_CAMP",
+                // Lab Fields
+                healthConcern: [],
+                gender: "Both",
+                isFreeHomeSampleCollection: false,
+                reportTime: "24-48 Hrs",
+                testCategory: [],
+                testsIncluded: [],
+
                 startDate: "",
                 endDate: "",
                 address: "",
@@ -347,6 +396,89 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                     onChange={handleChange}
                                     className="h-24"
                                 />
+                            </div>
+
+                            {/* Lab Specific Fields */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="mb-2 block">Health Concern</Label>
+                                    <Select
+                                        value={formData.healthConcern[0] || ""}
+                                        onValueChange={(val) => handleSelectChange("healthConcern", val)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select Concern" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {["Diabetic", "Skin", "Kidney", "Digestion", "Cancer", "Bone", "Sexual Wellness"].map((c) => (
+                                                <SelectItem key={c} value={c}>{c}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="mb-2 block">Target Gender</Label>
+                                    <Select
+                                        value={formData.gender || "Both"}
+                                        onValueChange={(val) => handleSelectChange("gender", val)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select Gender" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {["Women", "Men", "Both", "Children"].map((g) => (
+                                                <SelectItem key={g} value={g}>{g}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="mb-2 block">Report Time</Label>
+                                    <Select
+                                        value={formData.reportTime || ""}
+                                        onValueChange={(val) => handleSelectChange("reportTime", val)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select Duration" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {["Same Day", "24 Hours", "24-48 Hours", "3-4 Days", "1 Week"].map((t) => (
+                                                <SelectItem key={t} value={t}>{t}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="flex items-center space-x-2 pt-8">
+                                    <Checkbox
+                                        id="freeHome"
+                                        checked={formData.isFreeHomeSampleCollection}
+                                        onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isFreeHomeSampleCollection: checked === true }))}
+                                    />
+                                    <label
+                                        htmlFor="freeHome"
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    >
+                                        FREE Home Sample Collection
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="mb-2 block">Tests Included (AI Powered)</Label>
+                                <div className="flex gap-2">
+                                    <Input
+                                        placeholder="e.g. CBC, Lipid Profile, Thyroid..."
+                                        value={formData.testsIncluded.join(", ")}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, testsIncluded: e.target.value.split(",").map(s => s.trim()) }))}
+                                    />
+                                    <Button type="button" variant="secondary" size="sm">
+                                        Auto-Suggest
+                                    </Button>
+                                </div>
+                                <p className="text-xs text-muted-foreground">Separate multiple tests with commas.</p>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
