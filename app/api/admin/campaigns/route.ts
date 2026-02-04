@@ -13,6 +13,15 @@ export async function GET(req: Request) {
                             }
                         }
                     }
+                },
+                lab: {
+                    include: {
+                        user: {
+                            select: {
+                                name: true,
+                            }
+                        }
+                    }
                 }
             },
             orderBy: {
@@ -20,19 +29,23 @@ export async function GET(req: Request) {
             }
         });
 
-        const formattedCampaigns = campaigns.map(campaign => ({
-            id: campaign.id,
-            name: campaign.name,
-            doctorName: campaign.doctor.user.name,
-            type: campaign.type,
-            price: campaign.price,
-            startDate: campaign.startDate,
-            endDate: campaign.endDate,
-            status: campaign.status,
-            isVerified: campaign.isVerified,
-            dailyLimit: campaign.dailyLimit,
-            createdAt: campaign.createdAt,
-        }));
+        const formattedCampaigns = campaigns.map(campaign => {
+            const organizerName = campaign.doctor?.user.name || campaign.lab?.user.name || "Unknown";
+
+            return {
+                id: campaign.id,
+                name: campaign.name,
+                doctorName: organizerName, // Keeping key as doctorName for frontend compatibility
+                type: campaign.type,
+                price: campaign.price,
+                startDate: campaign.startDate,
+                endDate: campaign.endDate,
+                status: campaign.status,
+                isVerified: campaign.isVerified,
+                dailyLimit: campaign.dailyLimit,
+                createdAt: campaign.createdAt,
+            };
+        });
 
         return NextResponse.json(formattedCampaigns);
     } catch (error) {
