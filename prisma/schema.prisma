@@ -167,7 +167,7 @@ model Campaign {
   name        String         @map("campaign_name")
   description String?
   type        CampaignType   @map("campaign_type")
-  status      CampaignStatus @default(DRAFT)
+  status      CampaignStatus @default(IN_REVIEW)
 
   // Lab Campaign Specifics
   healthConcern            String[] @default([]) @map("health_concern")
