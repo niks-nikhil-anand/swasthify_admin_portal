@@ -15,7 +15,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table"
-import { CampaignDetailsModal } from "./components/CampaignDetailsModal"
+import { DoctorCampaignDetailsModal } from "./components/DoctorCampaignDetailsModal"
+import { LabCampaignDetailsModal } from "./components/LabCampaignDetailsModal"
 import { EditCampaignStatusModal } from "./components/EditCampaignStatusModal"
 import { ArrowUpDown, Copy, Edit, MoreHorizontal, Eye, CheckCircle, XCircle, Megaphone } from "lucide-react"
 
@@ -31,10 +32,11 @@ type Campaign = {
     isVerified: boolean
     dailyLimit: number
     createdAt: string
+    organizerType: string
 }
 
 const getColumns = (
-    onViewDetails: (id: string) => void,
+    onViewDetails: (id: string, type: string) => void,
     onEdit: (id: string) => void,
     onDelete: (id: string) => void
 ): ColumnDef<Campaign>[] => [
@@ -55,8 +57,20 @@ const getColumns = (
         },
         {
             accessorKey: "doctorName",
-            header: "Doctor",
+            header: "Organizer",
             cell: ({ row }) => <div>{row.getValue("doctorName")}</div>,
+        },
+        {
+            accessorKey: "organizerType",
+            header: "Role",
+            cell: ({ row }) => {
+                const type = row.getValue("organizerType") as string
+                return (
+                    <Badge variant={type === "Doctor" ? "default" : "secondary"}>
+                        {type}
+                    </Badge>
+                )
+            },
         },
         {
             accessorKey: "type",
@@ -151,7 +165,7 @@ const getColumns = (
                                 Copy ID
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => onViewDetails(campaign.id)}>
+                            <DropdownMenuItem onClick={() => onViewDetails(campaign.id, campaign.organizerType)}>
                                 <Eye className="mr-2 h-4 w-4" />
                                 View Details
                             </DropdownMenuItem>
@@ -171,6 +185,7 @@ export default function CampaignsPage() {
     const [campaigns, setCampaigns] = useState<Campaign[]>([])
     const [loading, setLoading] = useState(true)
     const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null)
+    const [selectedCampaignType, setSelectedCampaignType] = useState<string | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
 
     // Edit state
@@ -178,8 +193,9 @@ export default function CampaignsPage() {
     const [campaignToEdit, setCampaignToEdit] = useState<Campaign | undefined>(undefined)
 
     // Handlers
-    const handleViewDetails = (id: string) => {
+    const handleViewDetails = (id: string, type: string) => {
         setSelectedCampaignId(id)
+        setSelectedCampaignType(type)
         setIsModalOpen(true)
     }
 
@@ -286,11 +302,19 @@ export default function CampaignsPage() {
                 </CardContent>
             </Card>
 
-            <CampaignDetailsModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                campaignId={selectedCampaignId}
-            />
+            {selectedCampaignType === "Doctor" ? (
+                <DoctorCampaignDetailsModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    campaignId={selectedCampaignId}
+                />
+            ) : (
+                <LabCampaignDetailsModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    campaignId={selectedCampaignId}
+                />
+            )}
 
             <EditCampaignStatusModal
                 isOpen={isEditModalOpen}
