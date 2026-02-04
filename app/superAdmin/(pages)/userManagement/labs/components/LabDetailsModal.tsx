@@ -38,7 +38,8 @@ import {
     Eye,
     Lock,
     Megaphone,
-    FlaskConical
+    FlaskConical,
+
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -498,6 +499,38 @@ export function LabDetailsModal({
 
                                                 {/* LOCATION TAB */}
                                                 <TabsContent value="location" className="space-y-6 mt-0">
+                                                    {/* Contact Info */}
+                                                    <div className="bg-white p-5 rounded-xl border shadow-sm mb-6">
+                                                        <h3 className="text-lg font-semibold mb-4 flex items-center text-gray-800">
+                                                            <div className="w-1 h-6 bg-primary rounded-full mr-3"></div>
+                                                            Contact Information
+                                                        </h3>
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg border border-gray-100">
+                                                                <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                                                                    <Mail className="w-5 h-5" />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Email Address</p>
+                                                                    <p className="font-medium text-gray-900">{data.user.email}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg border border-gray-100">
+                                                                <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600">
+                                                                    <Phone className="w-5 h-5" />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Phone Number</p>
+                                                                    <p className="font-medium text-gray-900">{data.user.phone || "N/A"}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <h3 className="text-lg font-semibold mb-4 flex items-center text-gray-800 px-1">
+                                                        <div className="w-1 h-6 bg-primary rounded-full mr-3"></div>
+                                                        Registered Addresses
+                                                    </h3>
                                                     {data.addresses && data.addresses.length > 0 ? (
                                                         data.addresses.map((addr, idx) => (
                                                             <div key={addr.id} className="border rounded-xl bg-muted/5 p-4 relative">
