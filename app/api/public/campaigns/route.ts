@@ -7,6 +7,7 @@ export async function GET(req: Request) {
         const query = searchParams.get("query");
         const type = searchParams.get("type");
         const specialization = searchParams.get("specialization");
+        const source = searchParams.get("source"); // "doctor" or "lab"
 
         const page = parseInt(searchParams.get("page") || "1");
         const limit = parseInt(searchParams.get("limit") || "9");
@@ -16,6 +17,8 @@ export async function GET(req: Request) {
             status: "ACTIVE" as any,
             isVerified: true,
             ...(type ? { type: type as any } : {}),
+            ...(source === "doctor" ? { doctorId: { not: null } } : {}),
+            ...(source === "lab" ? { labId: { not: null } } : {}),
             ...(specialization ? {
                 doctor: {
                     specializations: {

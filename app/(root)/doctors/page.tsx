@@ -62,6 +62,7 @@ export default function DoctorCampaignsPage() {
 
             params.append("page", page.toString());
             params.append("limit", "9");
+            params.append("source", "doctor"); // Only fetch doctor campaigns
 
             const response = await fetch(`/api/public/campaigns?${params.toString()}`);
             if (!response.ok) throw new Error("Failed to fetch campaigns");
