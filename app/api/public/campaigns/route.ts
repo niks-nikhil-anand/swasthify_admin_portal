@@ -62,6 +62,15 @@ export async function GET(req: Request) {
                         },
                         specializations: true,
                     }
+                },
+                lab: {
+                    include: {
+                        user: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
                 }
             },
             orderBy: {
