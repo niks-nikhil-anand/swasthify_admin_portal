@@ -36,10 +36,13 @@ import {
     MapPin,
     Shield,
     Eye,
-    Lock
+    Lock,
+    Megaphone,
+    FlaskConical
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { LabCampaignDetailsModal } from "../../../operations/campaigns/components/LabCampaignDetailsModal";
 
 interface LabDetailsModalProps {
     isOpen: boolean;
@@ -68,6 +71,7 @@ interface LabData {
     testTypes: string[];
     averageRating: number;
     totalReviews: number;
+    profilePhoto: string | null;
     ownerIdProof: string | null;
     addressProof: string | null;
     isProfileComplete: boolean;
@@ -92,6 +96,17 @@ interface LabData {
         label: string | null;
         isDefault: boolean;
     }[];
+    campaigns?: Campaign[];
+}
+
+interface Campaign {
+    id: string;
+    name: string;
+    type: string;
+    status: string;
+    startDate: string;
+    endDate: string;
+    isVerified: boolean;
 }
 
 export function LabDetailsModal({
@@ -105,6 +120,10 @@ export function LabDetailsModal({
     const [isEditing, setIsEditing] = useState(defaultEditing);
     const [saving, setSaving] = useState(false);
     const [viewingDoc, setViewingDoc] = useState<{ url: string; type: string } | null>(null);
+
+    // Campaign Details State
+    const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
+    const [showCampaignDetails, setShowCampaignDetails] = useState(false);
 
     // Form state
     const [formData, setFormData] = useState<Partial<LabData> & { name?: string; phone?: string; isVerified?: boolean; status?: string }>({});
@@ -253,7 +272,7 @@ export function LabDetailsModal({
                                     <div className="flex flex-col items-center text-center">
                                         <div className="relative mb-4">
                                             <Avatar className="w-32 h-32 border-4 border-background shadow-xl">
-                                                <AvatarImage src="" className="object-cover" /> {/* Placeholder for lab logo */}
+                                                <AvatarImage src={data.profilePhoto || ""} className="object-cover" />
                                                 <AvatarFallback className="text-4xl bg-primary/10 text-primary">
                                                     {data.user.name?.[0]}
                                                 </AvatarFallback>
@@ -348,6 +367,7 @@ export function LabDetailsModal({
                                                     <TabsTrigger value="location" className="rounded-lg py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">Contact & Location</TabsTrigger>
                                                     <TabsTrigger value="documents" className="rounded-lg py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">Documents</TabsTrigger>
                                                     <TabsTrigger value="permissions" className="rounded-lg py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">Permissions</TabsTrigger>
+                                                    <TabsTrigger value="campaigns" className="rounded-lg py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">Campaigns</TabsTrigger>
                                                 </TabsList>
 
                                                 {/* OVERVIEW TAB */}
@@ -441,27 +461,35 @@ export function LabDetailsModal({
                                                     </div>
 
                                                     <div className="space-y-3">
-                                                        <Label>Test Types Available</Label>
+                                                        <Label className="text-sm font-semibold text-gray-700 mb-3 block">Test Types Available</Label>
                                                         {isEditing ? (
                                                             <div className="space-y-2">
                                                                 <Input
                                                                     value={formData.testTypes?.join(", ") || ""}
                                                                     onChange={handleTestTypeChange}
                                                                     placeholder="e.g. Blood Test, MRI, CT Scan (comma separated)"
+                                                                    className="border-gray-300 focus:border-primary focus:ring-primary/20"
                                                                 />
-                                                                <p className="text-xs text-muted-foreground">Separate multiple types with commas.</p>
+                                                                <p className="text-xs text-muted-foreground">Separate multiple types with commas</p>
                                                             </div>
-
                                                         ) : (
-                                                            <div className="flex flex-wrap gap-2">
+                                                            <div className="bg-muted/30 rounded-xl p-4 border border-dashed border-gray-200">
                                                                 {data.testTypes && data.testTypes.length > 0 ? (
-                                                                    data.testTypes.map((type, index) => (
-                                                                        <Badge key={index} variant="secondary" className="px-3 py-1">
-                                                                            {type}
-                                                                        </Badge>
-                                                                    ))
+                                                                    <div className="grid grid-cols-2 gap-3">
+                                                                        {data.testTypes.map((type, index) => (
+                                                                            <div key={index} className="flex items-center gap-3 p-3 bg-white border border-gray-100 rounded-lg shadow-sm hover:shadow-md transition-shadow group">
+                                                                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                                                                                    <FlaskConical className="w-4 h-4" />
+                                                                                </div>
+                                                                                <span className="font-medium text-sm text-gray-700">{type}</span>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
                                                                 ) : (
-                                                                    <span className="text-muted-foreground text-sm italic">No test types listed</span>
+                                                                    <div className="text-center py-6 text-muted-foreground bg-white rounded-lg border border-gray-100">
+                                                                        <FlaskConical className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                                                                        <p className="text-sm">No test types listed</p>
+                                                                    </div>
                                                                 )}
                                                             </div>
                                                         )}
@@ -613,6 +641,74 @@ export function LabDetailsModal({
                                                         )}
                                                     </div>
                                                 </TabsContent>
+
+                                                {/* CAMPAIGNS TAB */}
+                                                <TabsContent value="campaigns" className="space-y-6 mt-0">
+                                                    <div className="bg-white p-6 rounded-xl border shadow-sm">
+                                                        <h3 className="text-lg font-semibold mb-6 flex items-center text-gray-800">
+                                                            <div className="w-1 h-6 bg-primary rounded-full mr-3"></div>
+                                                            Lab Campaigns
+                                                        </h3>
+
+                                                        {data.campaigns && data.campaigns.length > 0 ? (
+                                                            <div className="space-y-4">
+                                                                {data.campaigns.map((campaign) => (
+                                                                    <div key={campaign.id} className="flex items-center justify-between p-4 bg-muted/10 rounded-lg border hover:bg-muted/20 transition-all">
+                                                                        <div className="flex items-center gap-4">
+                                                                            <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
+                                                                                <Megaphone className="w-5 h-5" />
+                                                                            </div>
+                                                                            <div>
+                                                                                <h4 className="font-semibold text-gray-900">{campaign.name}</h4>
+                                                                                <div className="flex items-center gap-2 mt-1">
+                                                                                    <Badge variant="outline" className="text-xs font-normal">
+                                                                                        {campaign.type.replace("_", " ")}
+                                                                                    </Badge>
+                                                                                    <span className="text-xs text-muted-foreground">
+                                                                                        {new Date(campaign.startDate).toLocaleDateString()} - {new Date(campaign.endDate).toLocaleDateString()}
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="flex flex-col items-end gap-2">
+                                                                            <Badge variant={
+                                                                                campaign.status === "ACTIVE" ? "success" :
+                                                                                    campaign.status === "IN_REVIEW" ? "warning" :
+                                                                                        campaign.status === "DRAFT" ? "secondary" : "outline"
+                                                                            }>
+                                                                                {campaign.status}
+                                                                            </Badge>
+                                                                            {campaign.isVerified && (
+                                                                                <div className="flex items-center text-xs text-green-600 font-medium">
+                                                                                    <CheckCircle className="w-3 h-3 mr-1" /> Verified
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="flex gap-2 mt-2">
+                                                                            <Button
+                                                                                variant="outline"
+                                                                                size="sm"
+                                                                                className="h-7 text-xs gap-1"
+                                                                                onClick={() => {
+                                                                                    setSelectedCampaignId(campaign.id);
+                                                                                    setShowCampaignDetails(true);
+                                                                                }}
+                                                                            >
+                                                                                <Eye className="w-3 h-3" /> View Details
+                                                                            </Button>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground bg-muted/10 rounded-xl border border-dashed">
+                                                                <Megaphone className="w-12 h-12 mb-3 text-muted-foreground/20" />
+                                                                <p className="font-medium">No campaigns found</p>
+                                                                <p className="text-sm mt-1">This lab hasn't created any campaigns yet.</p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </TabsContent>
                                             </Tabs>
                                         </div>
                                     </ScrollArea>
@@ -648,6 +744,16 @@ export function LabDetailsModal({
                     </div>
                 </DialogContent>
             </Dialog >
+
+            {/* Campaign Details Modal */}
+            <LabCampaignDetailsModal
+                isOpen={showCampaignDetails}
+                onClose={() => {
+                    setShowCampaignDetails(false);
+                    setSelectedCampaignId(null);
+                }}
+                campaignId={selectedCampaignId}
+            />
         </>
     );
 }

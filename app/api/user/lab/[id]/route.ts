@@ -14,6 +14,7 @@ export async function GET(
             include: {
                 user: true,
                 addresses: true,
+                campaigns: true,
             },
         });
 
