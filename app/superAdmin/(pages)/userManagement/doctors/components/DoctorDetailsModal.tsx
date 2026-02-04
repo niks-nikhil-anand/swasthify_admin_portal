@@ -43,7 +43,7 @@ import {
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { CampaignDetailsModal } from "../../../operations/campaigns/components/CampaignDetailsModal";
+import { DoctorCampaignDetailsModal } from "../../../operations/campaigns/components/DoctorCampaignDetailsModal";
 
 interface DoctorDetailsModalProps {
     isOpen: boolean;
@@ -721,7 +721,7 @@ export function DoctorDetailsModal({
             </Dialog >
 
             {/* Campaign Details Modal */}
-            < CampaignDetailsModal
+            < DoctorCampaignDetailsModal
                 isOpen={showCampaignDetails}
                 onClose={() => {
                     setShowCampaignDetails(false);
