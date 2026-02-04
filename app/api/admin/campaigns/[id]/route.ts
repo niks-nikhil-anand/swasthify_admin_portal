@@ -42,6 +42,26 @@ export async function GET(
                             }
                         }
                     }
+                },
+                lab: {
+                    select: {
+                        id: true,
+                        licenseNumber: true,
+                        description: true,
+                        website: true,
+                        testTypes: true,
+                        ownerIdProof: true,
+                        addressProof: true,
+                        profilePhoto: true,
+                        isProfileComplete: true,
+                        profileCompletionPercentage: true,
+                        user: {
+                            select: {
+                                name: true,
+                                email: true,
+                            }
+                        }
+                    }
                 }
             }
         });

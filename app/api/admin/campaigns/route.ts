@@ -36,6 +36,7 @@ export async function GET(req: Request) {
                 id: campaign.id,
                 name: campaign.name,
                 doctorName: organizerName, // Keeping key as doctorName for frontend compatibility
+                organizerType: campaign.doctor ? "Doctor" : "Lab",
                 type: campaign.type,
                 price: campaign.price,
                 startDate: campaign.startDate,
