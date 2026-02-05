@@ -29,6 +29,17 @@ export async function GET(
                         },
                         specializations: true,
                     }
+                },
+                lab: {
+                    include: {
+                        user: {
+                            select: {
+                                name: true,
+                                email: true,
+                                phone: true,
+                            }
+                        }
+                    }
                 }
             }
         });
