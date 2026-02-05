@@ -1,53 +1,86 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function Footer() {
     const quickLinks = [
-        { label: "Home", href: "#" },
-        { label: "Doctors", href: "#" },
-        { label: "How It Works", href: "/how-it-works" },
-        { label: "Contact", href: "#" },
-        { label: "Pricing", href: "/pricing" },
+        { label: "Home", href: "/" },
+        { label: "Doctors", href: "/doctors" },
+        { label: "Lab Tests", href: "/labs" },
+        { label: "Contact", href: "/contact" },
     ];
 
     const services = [
         { label: "Pharmacy Partner", href: "/pharmacy_partner" },
         { label: "Lab Partner", href: "/lab-partner" },
         { label: "Doctor Partner", href: "/doctor-profile" },
-        { label: "Emergency Care", href: "#" },
+        { label: "Pricing", href: "/pricing" },
+
     ];
 
     const legalLinks = [
-        { label: "Privacy Policy", href: "#" },
-        { label: "Terms of Service", href: "#" },
+        { label: "Privacy Policy", href: "/privacy-policy" },
+        { label: "Terms of Service", href: "/terms-of-service" },
     ];
 
     return (
-        <footer className="bg-muted/40 border-t border-border/50 py-12">
-            <div className="container mx-auto px-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <footer className="relative bg-background border-t border-border/50 pt-20 pb-12 overflow-hidden">
+            {/* Background Decorative Elements */}
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 -z-10" />
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl translate-y-1/2 -z-10" />
 
-                    <div className="space-y-6">
+            <div className="container mx-auto px-4 relative">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+                    {/* Brand Section */}
+                    <div className="md:col-span-4 space-y-6">
                         <Link href="/" className="flex items-center space-x-3 group">
-                            <div className="relative h-20 w-20 transition-transform group-hover:scale-110 duration-300">
+                            <div className="relative h-16 w-16 transition-transform group-hover:scale-110 duration-500">
                                 <Image src="/logo.png" alt="Swasthify Logo" fill className="object-contain" />
                             </div>
-                            <span className="text-2xl font-bold bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
+                            <span className="text-3xl font-bold bg-linear-to-r from-primary via-primary/80 to-accent bg-clip-text text-transparent tracking-tight">
                                 Swasthify
                             </span>
                         </Link>
-                        <p className="text-muted-foreground leading-relaxed max-w-xs transition-colors hover:text-foreground/80">
-                            Connecting patients with the best healthcare professionals for a healthier tomorrow.
+                        <p className="text-muted-foreground leading-relaxed transition-colors hover:text-foreground/80 text-[15px]">
+                            Empowering individuals with seamless access to world-class healthcare. Swasthify connects you with top medical experts, simplifies appointment booking, and provides secure management of your digital health records and lab reports—all designed for a healthier, more convenient tomorrow.
                         </p>
+                        <div className="pt-4">
+                            <h4 className="text-sm font-semibold text-foreground mb-4 uppercase tracking-wider">Follow Our Journey</h4>
+                            <div className="flex gap-3">
+                                {[
+                                    { icon: Facebook, label: "Facebook", color: "hover:bg-blue-600" },
+                                    { icon: Twitter, label: "Twitter", color: "hover:bg-sky-500" },
+                                    { icon: Instagram, label: "Instagram", color: "hover:bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600" },
+                                    { icon: Linkedin, label: "LinkedIn", color: "hover:bg-blue-700" }
+                                ].map((social) => (
+                                    <a
+                                        key={social.label}
+                                        href="#"
+                                        aria-label={social.label}
+                                        className={cn(
+                                            "h-10 w-10 flex items-center justify-center rounded-xl bg-muted/50 text-muted-foreground hover:text-white transition-all duration-300 border border-border/50",
+                                            social.color
+                                        )}
+                                    >
+                                        <social.icon className="h-4 w-4" />
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <h3 className="font-semibold text-foreground mb-4">Quick Links</h3>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
+                    {/* Quick Links */}
+                    <div className="md:col-span-2">
+                        <h3 className="font-bold text-foreground mb-6 text-lg tracking-tight">Quick Links</h3>
+                        <ul className="space-y-3">
                             {quickLinks.map((link) => (
                                 <li key={link.label}>
-                                    <Link href={link.href} className="hover:text-primary transition-colors">
+                                    <Link
+                                        href={link.href}
+                                        className="text-muted-foreground hover:text-primary transition-all duration-200 flex items-center group text-[15px]"
+                                    >
+                                        <span className="h-1 w-0 bg-primary mr-0 group-hover:w-2 group-hover:mr-2 transition-all duration-200 rounded-full" />
                                         {link.label}
                                     </Link>
                                 </li>
@@ -55,12 +88,17 @@ export function Footer() {
                         </ul>
                     </div>
 
-                    <div>
-                        <h3 className="font-semibold text-foreground mb-4">Services</h3>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
+                    {/* Services */}
+                    <div className="md:col-span-2">
+                        <h3 className="font-bold text-foreground mb-6 text-lg tracking-tight">Services</h3>
+                        <ul className="space-y-3">
                             {services.map((link) => (
                                 <li key={link.label}>
-                                    <Link href={link.href} className="hover:text-primary transition-colors">
+                                    <Link
+                                        href={link.href}
+                                        className="text-muted-foreground hover:text-primary transition-all duration-200 flex items-center group text-[15px]"
+                                    >
+                                        <span className="h-1 w-0 bg-primary mr-0 group-hover:w-2 group-hover:mr-2 transition-all duration-200 rounded-full" />
                                         {link.label}
                                     </Link>
                                 </li>
@@ -68,43 +106,34 @@ export function Footer() {
                         </ul>
                     </div>
 
-                    <div>
-                        <h3 className="font-semibold text-foreground mb-4">Contact</h3>
-                        <ul className="space-y-3 text-sm text-muted-foreground">
-                            <li className="flex items-center gap-2">
-                                <Mail className="h-4 w-4 text-primary" />
-                                <a href="mailto:support@swasthify.com" className="hover:text-primary transition-colors">
-                                    support@swasthify.com
-                                </a>
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <Phone className="h-4 w-4 text-primary" />
-                                <a href="tel:+919759225515" className="hover:text-primary transition-colors">
-                                    +91 97592 25515
-                                </a>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <MapPin className="h-4 w-4 text-primary mt-1" />
-                                <span>123 Health Street, Wellness City, India</span>
-                            </li>
-                        </ul>
-
-                        <div className="mt-6">
-                            <h4 className="text-sm font-semibold text-foreground mb-3">Follow Us</h4>
-                            <div className="flex gap-4">
-                                <a href="#" aria-label="Facebook" className="text-muted-foreground hover:text-primary transition-colors bg-blue-100/50 dark:bg-blue-900/20 p-2 rounded-full hover:bg-blue-200 dark:hover:bg-blue-900/40">
-                                    <Facebook className="h-4 w-4" />
-                                </a>
-                                <a href="#" aria-label="Twitter" className="text-muted-foreground hover:text-primary transition-colors bg-sky-100/50 dark:bg-sky-900/20 p-2 rounded-full hover:bg-sky-200 dark:hover:bg-sky-900/40">
-                                    <Twitter className="h-4 w-4" />
-                                </a>
-                                <a href="#" aria-label="Instagram" className="text-muted-foreground hover:text-primary transition-colors bg-pink-100/50 dark:bg-pink-900/20 p-2 rounded-full hover:bg-pink-200 dark:hover:bg-pink-900/40">
-                                    <Instagram className="h-4 w-4" />
-                                </a>
-                                <a href="#" aria-label="LinkedIn" className="text-muted-foreground hover:text-primary transition-colors bg-indigo-100/50 dark:bg-indigo-900/20 p-2 rounded-full hover:bg-indigo-200 dark:hover:bg-indigo-900/40">
-                                    <Linkedin className="h-4 w-4" />
-                                </a>
-                            </div>
+                    {/* Contact Info */}
+                    <div className="md:col-span-4">
+                        <h3 className="font-bold text-foreground mb-6 text-lg tracking-tight">Get in Touch</h3>
+                        <div className="bg-muted/30 p-6 rounded-2xl border border-border/50 backdrop-blur-sm">
+                            <ul className="space-y-4 text-[15px] text-muted-foreground">
+                                <li className="flex items-center gap-4 group">
+                                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                        <Mail className="h-5 w-5" />
+                                    </div>
+                                    <a href="mailto:support@swasthify.com" className="hover:text-primary transition-colors">
+                                        support@swasthify.com
+                                    </a>
+                                </li>
+                                <li className="flex items-center gap-4 group">
+                                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                        <Phone className="h-5 w-5" />
+                                    </div>
+                                    <a href="tel:+919759225515" className="hover:text-primary transition-colors">
+                                        +91 97592 25515
+                                    </a>
+                                </li>
+                                <li className="flex items-start gap-4 group">
+                                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 shrink-0">
+                                        <MapPin className="h-5 w-5" />
+                                    </div>
+                                    <span className="leading-snug">123 Health Street, Wellness City, India - 302001</span>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
