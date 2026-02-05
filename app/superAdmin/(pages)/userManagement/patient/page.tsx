@@ -20,6 +20,7 @@ import { ArrowUpDown, Copy, Edit, MoreHorizontal, Phone, Trash, User, Eye, Activ
 type Patient = {
     id: string
     name: string
+    email: string
     age: number | string
     gender: string
     contact: string
@@ -43,6 +44,10 @@ const columns: ColumnDef<Patient>[] = [
             )
         },
         cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
+    },
+    {
+        accessorKey: "email",
+        header: "Email",
     },
     {
         accessorKey: "age",

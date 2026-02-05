@@ -31,6 +31,7 @@ export async function GET() {
         const formattedPatients = patients.map((patient) => ({
             id: patient.id,
             name: patient.name || "N/A",
+            email: patient.user.email || "N/A",
             age: patient.dateOfBirth
                 ? new Date().getFullYear() - new Date(patient.dateOfBirth).getFullYear()
                 : "N/A",
