@@ -5,6 +5,7 @@ import { DataTable } from "@/components/superAdmin/DataTable"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -19,66 +20,13 @@ import { ArrowUpDown, Copy, Edit, MoreHorizontal, Phone, Trash, User, Eye, Activ
 type Patient = {
     id: string
     name: string
-    age: number
-    gender: "Male" | "Female" | "Other"
+    age: number | string
+    gender: string
     contact: string
     bloodGroup: string
     lastVisit: string
     status: "Active" | "Inactive"
 }
-
-const data: Patient[] = [
-    {
-        id: "1",
-        name: "Rahul Dravid",
-        age: 45,
-        gender: "Male",
-        contact: "+91 98765 00001",
-        bloodGroup: "O+",
-        lastVisit: "2024-03-01",
-        status: "Active",
-    },
-    {
-        id: "2",
-        name: "Smriti Mandhana",
-        age: 28,
-        gender: "Female",
-        contact: "+91 98765 00002",
-        bloodGroup: "A+",
-        lastVisit: "2024-02-28",
-        status: "Active",
-    },
-    {
-        id: "3",
-        name: "Virat Kohli",
-        age: 35,
-        gender: "Male",
-        contact: "+91 98765 00003",
-        bloodGroup: "B+",
-        lastVisit: "2024-01-15",
-        status: "Inactive",
-    },
-    {
-        id: "4",
-        name: "Mithali Raj",
-        age: 39,
-        gender: "Female",
-        contact: "+91 98765 00004",
-        bloodGroup: "AB+",
-        lastVisit: "2024-03-05",
-        status: "Active",
-    },
-    {
-        id: "5",
-        name: "Sachin Tendulkar",
-        age: 50,
-        gender: "Male",
-        contact: "+91 98765 00005",
-        bloodGroup: "O-",
-        lastVisit: "2023-12-10",
-        status: "Active",
-    },
-]
 
 const columns: ColumnDef<Patient>[] = [
     {
@@ -190,10 +138,26 @@ const columns: ColumnDef<Patient>[] = [
 
 export default function PatientsPage() {
     const [isMounted, setIsMounted] = useState(false)
+    const [data, setData] = useState<Patient[]>([])
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         setIsMounted(true)
+        fetchPatients()
     }, [])
+
+    const fetchPatients = async () => {
+        try {
+            const response = await fetch("/api/user/patient")
+            if (!response.ok) throw new Error("Failed to fetch patients")
+            const patients = await response.json()
+            setData(patients)
+        } catch (error) {
+            console.error("Error fetching patients:", error)
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     if (!isMounted) {
         return null
@@ -213,7 +177,37 @@ export default function PatientsPage() {
                     <CardTitle>All Patients</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <DataTable columns={columns} data={data} searchKey="name" />
+                    {isLoading ? (
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <Skeleton className="h-10 w-[250px]" />
+                                <Skeleton className="h-10 w-[100px]" />
+                            </div>
+                            <div className="rounded-md border">
+                                <div className="h-12 border-b px-4 flex items-center gap-4">
+                                    <Skeleton className="h-4 w-[150px]" />
+                                    <Skeleton className="h-4 w-[150px]" />
+                                    <Skeleton className="h-4 w-[200px]" />
+                                    <Skeleton className="h-4 w-[100px]" />
+                                </div>
+                                {[...Array(5)].map((_, i) => (
+                                    <div key={i} className="h-16 border-b px-4 flex items-center gap-4">
+                                        <Skeleton className="h-10 w-10 rounded-full" />
+                                        <div className="space-y-2">
+                                            <Skeleton className="h-4 w-[200px]" />
+                                            <Skeleton className="h-3 w-[150px]" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
+                        <DataTable
+                            columns={columns}
+                            data={data}
+                            searchKey="name"
+                        />
+                    )}
                 </CardContent>
             </Card>
 
