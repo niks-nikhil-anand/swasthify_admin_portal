@@ -15,7 +15,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, LogOut, Calendar, Settings, ChevronDown } from "lucide-react";
+import { User, LogOut, Calendar, Settings, ChevronDown, FileText, ClipboardList } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
@@ -45,19 +45,25 @@ export function Navbar() {
 
     const handleLogout = async () => {
         try {
-            const response = await fetch("/api/auth/logout", {
+            // Attempt to notify server about logout
+            await fetch("/api/auth/logout", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ role: user?.role })
             });
-            if (response.ok) {
-                setUser(null);
-                toast.success("Logged out successfully");
-                router.push("/login");
-                router.refresh();
-            }
+
+            // Regardless of response, clear local state and redirect
+            setUser(null);
+            toast.success("Logged out successfully");
+            router.push("/");
+            router.refresh();
         } catch (error) {
-            toast.error("Logout failed");
+            console.error("Logout error:", error);
+            // Even on error, we should probably clear local state to avoid being "stuck"
+            setUser(null);
+            router.push("/login");
+            router.refresh();
+            toast.success("Logged out");
         }
     };
 
@@ -114,26 +120,52 @@ export function Navbar() {
                                             <ChevronDown className="h-4 w-4 text-muted-foreground" />
                                         </button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-56">
-                                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                                        <DropdownMenuSeparator />
-                                        <Link href="/me">
-                                            <DropdownMenuItem className="cursor-pointer">
-                                                <User className="mr-2 h-4 w-4" />
-                                                <span>Profile</span>
+                                    <DropdownMenuContent align="end" className="w-56 overflow-hidden p-0">
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                            transition={{ duration: 0.2, ease: "easeOut" }}
+                                            className="p-1"
+                                        >
+                                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                            <DropdownMenuSeparator />
+                                            <Link href="/me">
+                                                <DropdownMenuItem className="cursor-pointer">
+                                                    <User className="mr-2 h-4 w-4" />
+                                                    <span>Profile</span>
+                                                </DropdownMenuItem>
+                                            </Link>
+                                            <Link href="/me/appointments">
+                                                <DropdownMenuItem className="cursor-pointer">
+                                                    <Calendar className="mr-2 h-4 w-4" />
+                                                    <span>Appointments</span>
+                                                </DropdownMenuItem>
+                                            </Link>
+                                            <Link href="/me/reports">
+                                                <DropdownMenuItem className="cursor-pointer">
+                                                    <FileText className="mr-2 h-4 w-4" />
+                                                    <span>Lab Reports</span>
+                                                </DropdownMenuItem>
+                                            </Link>
+                                            <Link href="/me/health-records">
+                                                <DropdownMenuItem className="cursor-pointer">
+                                                    <ClipboardList className="mr-2 h-4 w-4" />
+                                                    <span>Health Records</span>
+                                                </DropdownMenuItem>
+                                            </Link>
+                                            <DropdownMenuSeparator />
+                                            <Link href="/me/settings">
+                                                <DropdownMenuItem className="cursor-pointer">
+                                                    <Settings className="mr-2 h-4 w-4" />
+                                                    <span>Settings</span>
+                                                </DropdownMenuItem>
+                                            </Link>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={handleLogout}>
+                                                <LogOut className="mr-2 h-4 w-4" />
+                                                <span>Log out</span>
                                             </DropdownMenuItem>
-                                        </Link>
-                                        <Link href="/me/appointments">
-                                            <DropdownMenuItem className="cursor-pointer">
-                                                <Calendar className="mr-2 h-4 w-4" />
-                                                <span>Appointments</span>
-                                            </DropdownMenuItem>
-                                        </Link>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={handleLogout}>
-                                            <LogOut className="mr-2 h-4 w-4" />
-                                            <span>Log out</span>
-                                        </DropdownMenuItem>
+                                        </motion.div>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             ) : (
@@ -237,6 +269,21 @@ export function Navbar() {
                                             <Link href="/me/appointments" onClick={() => setIsOpen(false)}>
                                                 <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
                                                     <Calendar className="h-5 w-5 text-muted-foreground" /> Appointments
+                                                </button>
+                                            </Link>
+                                            <Link href="/me/reports" onClick={() => setIsOpen(false)}>
+                                                <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                    <FileText className="h-5 w-5 text-muted-foreground" /> Lab Reports
+                                                </button>
+                                            </Link>
+                                            <Link href="/me/health-records" onClick={() => setIsOpen(false)}>
+                                                <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                    <ClipboardList className="h-5 w-5 text-muted-foreground" /> Health Records
+                                                </button>
+                                            </Link>
+                                            <Link href="/me/settings" onClick={() => setIsOpen(false)}>
+                                                <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                    <Settings className="h-5 w-5 text-muted-foreground" /> Settings
                                                 </button>
                                             </Link>
                                             <button

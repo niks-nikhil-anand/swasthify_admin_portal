@@ -8,36 +8,37 @@ export async function POST(req: Request) {
 
         console.log("Logout request received for role:", role);
 
-        if (!role) {
-            return NextResponse.json(
-                { error: "Role is required for logout" },
-                { status: 400 }
-            );
-        }
-
-        const roleUpper = role.toUpperCase();
-        let cookieName = "token"; // Default for 'USER', 'ADMIN', etc.
-
-        if (roleUpper === "SUPERADMIN" || roleUpper === "SUPER_ADMIN") {
-            cookieName = "SUPER_ADMIN";
-        } else if (roleUpper === "DOCTOR") {
-            cookieName = "DOCTOR";
-        } else if (roleUpper === "PATIENT") {
-            cookieName = "PATIENT";
-        } else if (roleUpper === "LAB") {
-            cookieName = "LAB";
-        } else if (roleUpper === "PHARMACY") {
-            cookieName = "PHARMACY";
-        }
-
-        console.log(`Clearing cookie: ${cookieName}`);
-
         const cookieStore = await cookies();
-        cookieStore.delete(cookieName);
+        const authCookies = ["SUPER_ADMIN", "DOCTOR", "PATIENT", "LAB", "PHARMACY", "token"];
+
+        if (role) {
+            const roleUpper = role.toUpperCase();
+            let primaryCookie = "token";
+
+            if (roleUpper === "SUPERADMIN" || roleUpper === "SUPER_ADMIN") {
+                primaryCookie = "SUPER_ADMIN";
+            } else if (roleUpper === "DOCTOR") {
+                primaryCookie = "DOCTOR";
+            } else if (roleUpper === "PATIENT") {
+                primaryCookie = "PATIENT";
+            } else if (roleUpper === "LAB") {
+                primaryCookie = "LAB";
+            } else if (roleUpper === "PHARMACY") {
+                primaryCookie = "PHARMACY";
+            }
+
+            console.log(`Clearing primary cookie: ${primaryCookie}`);
+            cookieStore.delete(primaryCookie);
+        }
+
+        // Clear all other potential auth cookies just in case
+        console.log("Clearing all other potential auth cookies");
+        authCookies.forEach(cookie => {
+            cookieStore.delete(cookie);
+        });
 
         return NextResponse.json({
-            message: "Logout successful",
-            clearedCookie: cookieName
+            message: "Logout successful"
         });
 
     } catch (error) {
