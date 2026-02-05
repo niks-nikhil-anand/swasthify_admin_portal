@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
         const result = campaignSchema.safeParse(body);
 
         if (!result.success) {
-            return NextResponse.json({ message: "Invalid input", errors: result.error.errors }, { status: 400 });
+            return NextResponse.json({ message: "Invalid input", errors: result.error.issues }, { status: 400 });
         }
 
         const validatedData = result.data;
