@@ -5,12 +5,61 @@ import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ModeToggle } from "@/components/mode-toggle";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { User, LogOut, Calendar, Settings, ChevronDown } from "lucide-react";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
+    const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
     const pathname = usePathname();
+    const router = useRouter();
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const response = await fetch("/api/auth/me");
+                if (response.ok) {
+                    const data = await response.json();
+                    setUser(data.user);
+                }
+            } catch (error) {
+                console.error("Failed to fetch user:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchUser();
+    }, []);
+
+    const handleLogout = async () => {
+        try {
+            const response = await fetch("/api/auth/logout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ role: user?.role })
+            });
+            if (response.ok) {
+                setUser(null);
+                toast.success("Logged out successfully");
+                router.push("/login");
+                router.refresh();
+            }
+        } catch (error) {
+            toast.error("Logout failed");
+        }
+    };
 
     const navItems = [
         { name: "Home", href: "/" },
@@ -53,11 +102,48 @@ export function Navbar() {
 
                     <div className="hidden md:flex gap-4 items-center">
                         <ModeToggle />
-                        <Link href={"/login"}>
-                            <button className="px-5 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-full hover:bg-primary/90 transition-all shadow-md hover:shadow-primary/20">
-                                Log in
-                            </button>
-                        </Link>
+                        {!isLoading && (
+                            user ? (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-border/50 rounded-full hover:bg-muted/50 transition-all">
+                                            <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                                <User className="h-4 w-4" />
+                                            </div>
+                                            <span>Hello, {user.name.split(' ')[0]}</span>
+                                            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                                        </button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-56">
+                                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <Link href="/me">
+                                            <DropdownMenuItem className="cursor-pointer">
+                                                <User className="mr-2 h-4 w-4" />
+                                                <span>Profile</span>
+                                            </DropdownMenuItem>
+                                        </Link>
+                                        <Link href="/me/appointments">
+                                            <DropdownMenuItem className="cursor-pointer">
+                                                <Calendar className="mr-2 h-4 w-4" />
+                                                <span>Appointments</span>
+                                            </DropdownMenuItem>
+                                        </Link>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={handleLogout}>
+                                            <LogOut className="mr-2 h-4 w-4" />
+                                            <span>Log out</span>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            ) : (
+                                <Link href={"/login"}>
+                                    <button className="px-5 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-full hover:bg-primary/90 transition-all shadow-md hover:shadow-primary/20">
+                                        Log in
+                                    </button>
+                                </Link>
+                            )
+                        )}
                     </div>
 
                     {/* Mobile Menu Button */}
@@ -131,14 +217,48 @@ export function Navbar() {
                             </div>
 
                             <div className="mt-auto flex flex-col gap-3">
-                                <Link href="/login" onClick={() => setIsOpen(false)}>
-                                    <button className="w-full px-4 py-3 text-base font-medium text-primary border border-primary/20 rounded-xl hover:bg-primary/5 transition-colors">
-                                        Log in
-                                    </button>
-                                </Link>
-                                <button className="w-full px-4 py-3 text-base font-medium text-primary-foreground bg-primary rounded-xl hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
-                                    Get Started
-                                </button>
+                                {!isLoading && (
+                                    user ? (
+                                        <>
+                                            <div className="px-4 py-3 flex items-center gap-3 bg-muted/30 rounded-xl">
+                                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                                    <User className="h-6 w-6" />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-semibold">{user.name}</span>
+                                                    <span className="text-xs text-muted-foreground">{user.email}</span>
+                                                </div>
+                                            </div>
+                                            <Link href="/me" onClick={() => setIsOpen(false)}>
+                                                <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                    <User className="h-5 w-5 text-muted-foreground" /> Profile
+                                                </button>
+                                            </Link>
+                                            <Link href="/me/appointments" onClick={() => setIsOpen(false)}>
+                                                <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                    <Calendar className="h-5 w-5 text-muted-foreground" /> Appointments
+                                                </button>
+                                            </Link>
+                                            <button
+                                                onClick={() => { handleLogout(); setIsOpen(false); }}
+                                                className="w-full px-4 py-3 text-base font-medium text-red-600 flex items-center gap-3 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-colors"
+                                            >
+                                                <LogOut className="h-5 w-5" /> Log out
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Link href="/login" onClick={() => setIsOpen(false)}>
+                                                <button className="w-full px-4 py-3 text-base font-medium text-primary border border-primary/20 rounded-xl hover:bg-primary/5 transition-colors">
+                                                    Log in
+                                                </button>
+                                            </Link>
+                                            <button className="w-full px-4 py-3 text-base font-medium text-primary-foreground bg-primary rounded-xl hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
+                                                Get Started
+                                            </button>
+                                        </>
+                                    )
+                                )}
                             </div>
                         </motion.div>
                     </>
