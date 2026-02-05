@@ -17,6 +17,7 @@ export async function middleware(req) {
     const doctorAuthToken = cookies.DOCTOR;
     const patientAuthToken = cookies.PATIENT;
     const labAuthToken = cookies.LAB;
+    const anyAuthToken = superAdminAuthToken || doctorAuthToken || patientAuthToken || labAuthToken || cookies.token;
 
     const token = await getToken({ req });
     const { pathname } = req.nextUrl;
@@ -53,13 +54,13 @@ export async function middleware(req) {
         return NextResponse.redirect(new URL("/doctor-panel", req.nextUrl.origin));
     }
 
-    // 3. Patient Protection
-    if (isPatientRoute && !patientAuthToken) {
+    // 3. Patient/General Profile Protection
+    if (isPatientRoute && !anyAuthToken) {
         return NextResponse.redirect(new URL("/login", req.nextUrl.origin));
     }
-    // Redirect if already logged in as Patient
-    if (isPatientAuthRoute && patientAuthToken) {
-        return NextResponse.redirect(new URL("/me", req.nextUrl.origin)); // Assuming /me or home /
+    // Redirect if already logged in (any role)
+    if (isPatientAuthRoute && anyAuthToken) {
+        return NextResponse.redirect(new URL("/me", req.nextUrl.origin));
     }
 
     // 4. Lab Protection
