@@ -46,22 +46,22 @@ export function HowItWorks() {
     return (
         <section className="py-20 bg-muted/30">
             <div className="container mx-auto px-4">
-                <div className="text-center mb-16">
+                <div className="text-center md:text-left mb-16 px-4">
                     <motion.h2
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
-                        className="text-3xl md:text-4xl font-bold mb-4 text-foreground"
+                        className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground mb-6"
                     >
-                        How Swasthify Works
+                        How <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-2 rounded-md">Swasthify Works</span>
                     </motion.h2>
                     <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6, delay: 0.1 }}
-                        className="text-lg text-muted-foreground max-w-2xl mx-auto"
+                        className="text-lg md:text-xl text-muted-foreground max-w-2xl md:mx-0 mx-auto leading-relaxed"
                     >
                         Simple steps to get the best healthcare experience.
                     </motion.p>
