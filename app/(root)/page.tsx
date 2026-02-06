@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 
 const Hero = dynamic(() => import("@/components/root/Hero").then((mod) => mod.Hero));
 const Services = dynamic(() => import("@/components/root/Services").then((mod) => mod.Services));
-const DiagnosticTests = dynamic(() => import("@/components/root/DiagnosticTests").then((mod) => mod.DiagnosticTests));
+const DoctorSection = dynamic(() => import("@/components/root/DoctorSection").then((mod) => mod.DoctorSection));
 const HealthPackages = dynamic(() => import("@/components/root/HealthPackages").then((mod) => mod.HealthPackages));
 const AbhaIntegration = dynamic(() => import("@/components/root/AbhaIntegration").then((mod) => mod.AbhaIntegration));
 const HowItWorks = dynamic(() => import("@/components/root/HowItWorks").then((mod) => mod.HowItWorks));
@@ -17,7 +17,7 @@ export default function Home() {
       <main className="flex-1">
         <Hero />
         <Services />
-        <DiagnosticTests />
+        <DoctorSection />
         <HealthPackages />
         <AbhaIntegration />
         <HowItWorks />
