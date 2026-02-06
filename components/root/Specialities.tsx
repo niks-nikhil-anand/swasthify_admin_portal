@@ -80,7 +80,7 @@ export function Specialities() {
                         </p>
                     </motion.div>
                     <Link href="/specialities" className="hidden md:block">
-                        <Button variant="ghost" className="group gap-2 text-primary font-semibold hover:bg-primary/5">
+                        <Button variant="ghost" className="group gap-2 text-primary font-semibold hover:bg-primary/5 shadow-sm">
                             See All Specialities
                             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </Button>
@@ -120,7 +120,7 @@ export function Specialities() {
                                 starts from <span className="font-bold text-foreground text-xs md:text-sm">{speciality.price}</span>
                             </div>
 
-                            <span className="mt-auto text-[10px] md:text-xs font-bold text-primary opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center bg-primary/10 px-2 py-0.5 md:px-3 md:py-1 rounded-full">
+                            <span className="mt-auto text-[10px] md:text-xs font-bold text-primary opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center bg-primary/10 px-2 py-0.5 md:px-3 md:py-1 rounded-full shadow-md shadow-primary/10">
                                 Consult <ChevronRight className="w-2 h-2 md:w-3 md:h-3 ml-1" />
                             </span>
                         </motion.div>
@@ -129,7 +129,7 @@ export function Specialities() {
 
                 <div className="mt-12 text-center md:hidden">
                     <Link href="/specialities">
-                        <Button variant="outline" className="rounded-full px-8 font-semibold hover:bg-primary hover:text-white transition-all duration-300">
+                        <Button variant="outline" className="rounded-full px-8 font-semibold hover:bg-primary hover:text-white transition-all duration-300 shadow-lg shadow-primary/20">
                             See all specialities <ChevronRight className="w-5 h-5 ml-1" />
                         </Button>
                     </Link>

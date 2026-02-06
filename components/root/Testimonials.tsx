@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star } from "lucide-react";
+import { Star, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function Testimonials() {
@@ -56,7 +56,8 @@ export function Testimonials() {
                         transition={{ duration: 0.5 }}
                         className="inline-block mb-4"
                     >
-                        <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium border border-primary/20">
+                        <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium border border-primary/20 flex items-center gap-1.5">
+                            <Heart className="w-3.5 h-3.5 fill-primary" />
                             Community Love
                         </span>
                     </motion.div>
@@ -77,7 +78,7 @@ export function Testimonials() {
                         transition={{ duration: 0.6, delay: 0.1 }}
                         className="text-lg md:text-xl text-muted-foreground max-w-2xl md:mx-0 mx-auto leading-relaxed"
                     >
-Trusted by thousands of satisfied users who have transformed their healthcare experience with Swasthify.
+                        Trusted by thousands of satisfied users who have transformed their healthcare experience with Swasthify.
 
 
                     </motion.p>

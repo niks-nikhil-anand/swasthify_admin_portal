@@ -47,7 +47,7 @@ export function LabSection() {
                         </p>
                     </motion.div>
                     <Link href="/labs">
-                        <Button variant="ghost" className="group gap-2 text-primary font-semibold hover:bg-primary/5">
+                        <Button variant="ghost" className="group gap-2 text-primary font-semibold hover:bg-primary/5 shadow-sm">
                             See All Lab Tests
                             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </Button>

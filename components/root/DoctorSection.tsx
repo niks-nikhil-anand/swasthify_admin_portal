@@ -47,7 +47,7 @@ export function DoctorSection() {
                         </p>
                     </motion.div>
                     <Link href="/doctors">
-                        <Button variant="ghost" className="group gap-2 text-primary font-semibold hover:bg-primary/5">
+                        <Button variant="ghost" className="group gap-2 text-primary font-semibold hover:bg-primary/5 shadow-sm">
                             See All Doctors
                             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </Button>
