@@ -40,7 +40,7 @@ export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) =>
     return (
         <Card className="overflow-hidden hover:shadow-xl transition-all duration-500 border-l-4 border-l-emerald-500 border-t-0 border-r-0 border-b-0 bg-white dark:bg-zinc-950 flex flex-col h-full group relative">
             {/* Subtle lab background pattern or icon */}
-            <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity pointer-events-none">
+            <div className="absolute top-16 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity pointer-events-none">
                 <Beaker className="w-32 h-32 -rotate-12" />
             </div>
 
@@ -90,7 +90,7 @@ export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) =>
                         </div>
                         {campaign.isVerified && (
                             <div className="absolute -bottom-1 -right-1 bg-white dark:bg-zinc-900 rounded-full p-0.5 shadow-sm">
-                                <CheckCircle className="w-4 h-4 text-emerald-500 fill-emerald-500 text-white" />
+                                <CheckCircle className="w-4 h-4 text-white fill-emerald-500" />
                             </div>
                         )}
                     </div>
