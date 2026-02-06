@@ -47,17 +47,17 @@ export function InClinic() {
         <section className="py-20  bg-muted/40">
             <div className="container mx-auto px-4">
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="mb-8 md:mb-10 text-center md:text-left"
+                    className="space-y-3 mb-12 text-center md:text-left"
                 >
-                    <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-2">
-                        Book an appointment for an in-clinic consultation
+                    <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
+                        Book an Appointment for <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-2 rounded-md">In-Clinic Consultation</span>
                     </h2>
-                    <p className="text-muted-foreground text-sm md:text-lg">
-                        Find experienced doctors across all specialties
+                    <p className="text-muted-foreground text-lg md:text-xl max-w-2xl">
+                        Find experienced doctors across all specialties and book your visit in seconds.
                     </p>
                 </motion.div>
 
