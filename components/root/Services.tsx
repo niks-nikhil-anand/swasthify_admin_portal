@@ -57,17 +57,17 @@ export function Services() {
         <section className="py-20 bg-muted/40">
             <div className="container mx-auto px-4">
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="text-center max-w-2xl mx-auto mb-16 "
+                    className="text-center md:text-left mb-16 px-4"
                 >
-                    <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                        Total Health Solutions
+                    <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground mb-6">
+                        <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-2 rounded-md">Integrated Healthcare</span> Services for Every Need
                     </h2>
-                    <p className="text-muted-foreground text-lg">
-                        Comprehensive healthcare services designed for your convenience and well-being.
+                    <p className="text-lg md:text-xl text-muted-foreground max-w-2xl md:mx-0 mx-auto leading-relaxed">
+                        Access world-class medical expertise, advanced diagnostics, and surgical care – all through one unified platform.
                     </p>
                 </motion.div>
 
@@ -98,7 +98,7 @@ export function Services() {
                             </p>
 
                             <Link href={service.href} className="w-full mt-auto">
-                                <Button variant="outline" size="sm" className="w-full group justify-between h-8 md:h-10 text-xs md:text-sm px-2 md:px-4">
+                                <Button variant="outline" size="sm" className="w-full group justify-between h-8 md:h-10 text-xs md:text-sm px-2 md:px-4 shadow-sm hover:shadow-primary/10">
                                     Book Now
                                     <ArrowRight className="w-3 h-3 md:w-4 md:h-4 ml-1 transition-transform group-hover:translate-x-1" />
                                 </Button>
