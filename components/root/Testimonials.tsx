@@ -48,7 +48,7 @@ export function Testimonials() {
     return (
         <section className="py-10 bg-background overflow-hidden">
             <div className="container mx-auto px-4">
-                <div className="text-center mb-16 px-4">
+                <div className="text-center md:text-left mb-16 px-4">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         whileInView={{ opacity: 1, scale: 1 }}
@@ -62,22 +62,24 @@ export function Testimonials() {
                     </motion.div>
 
                     <motion.h2
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                         className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground mb-6"
                     >
-                        What Our <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-2 rounded-md">Patients Say</span>
+                        Transforming Lives through <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-2 rounded-md">Personalized Care</span>
                     </motion.h2>
                     <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6, delay: 0.1 }}
-                        className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+                        className="text-lg md:text-xl text-muted-foreground max-w-2xl md:mx-0 mx-auto leading-relaxed"
                     >
-                        Trusted by thousands of satisfied users who have transformed their healthcare experience with Swasthify.
+Trusted by thousands of satisfied users who have transformed their healthcare experience with Swasthify.
+
+
                     </motion.p>
                 </div>
 
