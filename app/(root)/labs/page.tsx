@@ -21,8 +21,8 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-import { LabCampaignCard, LabCampaign } from "./components/LabCampaignCard";
-import { CampaignCardSkeleton } from "./components/CampaignCardSkeleton";
+import { LabCampaignCard, LabCampaign } from "@/components/root/LabCampaignCard";
+import { LabCampaignCardSkeleton } from "@/components/root/LabCampaignCardSkeleton";
 import { Search as SearchBar } from "./components/Search";
 
 export default function LabCampaignsPage() {
@@ -116,7 +116,7 @@ export default function LabCampaignsPage() {
             {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <CampaignCardSkeleton key={i} />
+                        <LabCampaignCardSkeleton key={i} />
                     ))}
                 </div>
             ) : campaigns.length > 0 ? (

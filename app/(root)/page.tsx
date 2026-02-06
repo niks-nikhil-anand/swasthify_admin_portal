@@ -4,6 +4,7 @@ const Hero = dynamic(() => import("@/components/root/Hero").then((mod) => mod.He
 const Services = dynamic(() => import("@/components/root/Services").then((mod) => mod.Services));
 const DoctorSection = dynamic(() => import("@/components/root/DoctorSection").then((mod) => mod.DoctorSection));
 const HealthPackages = dynamic(() => import("@/components/root/HealthPackages").then((mod) => mod.HealthPackages));
+const LabSection = dynamic(() => import("@/components/root/LabSection").then((mod) => mod.LabSection));
 const AbhaIntegration = dynamic(() => import("@/components/root/AbhaIntegration").then((mod) => mod.AbhaIntegration));
 const HowItWorks = dynamic(() => import("@/components/root/HowItWorks").then((mod) => mod.HowItWorks));
 const Specialities = dynamic(() => import("@/components/root/Specialities").then((mod) => mod.Specialities));
@@ -19,6 +20,7 @@ export default function Home() {
         <Services />
         <DoctorSection />
         <HealthPackages />
+        <LabSection />
         <AbhaIntegration />
         <HowItWorks />
         <Specialities />
