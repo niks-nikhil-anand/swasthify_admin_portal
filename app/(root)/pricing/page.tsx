@@ -67,8 +67,8 @@ export default function PricingPage() {
     return (
         <div className="flex flex-col min-h-screen bg-background">
             {/* Hero Section */}
-            <section className="relative w-full py-20 md:py-32 overflow-hidden bg-primary/5">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-3xl -z-10" />
+            <section className="relative w-full py-20 md:py-32 overflow-hidden bg-primary/5 dark:bg-primary/2">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 dark:bg-primary/5 rounded-full blur-3xl -z-10" />
 
                 <div className="container mx-auto px-4 text-center relative z-10">
                     <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-medium text-sm md:text-base mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -92,7 +92,7 @@ export default function PricingPage() {
                                 <Card
                                     className={`flex flex-col h-full relative transition-all duration-300 hover:shadow-2xl ${tier.mostPopular
                                         ? "border-primary shadow-xl scale-105 z-10 bg-background"
-                                        : "border-border/50 hover:-translate-y-2 bg-background/50 backdrop-blur-sm"
+                                        : "border-border/50 hover:-translate-y-2 bg-background/50 backdrop-blur-sm dark:bg-muted/10"
                                         }`}
                                 >
                                     {tier.mostPopular && (
