@@ -41,24 +41,23 @@ export function DownloadApp() {
                         className="w-full lg:w-5/12 order-1 lg:order-2 text-center lg:text-left"
                     >
                         <motion.h2
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            transition={{ delay: 0.2, duration: 0.6 }}
-                            className="text-3xl md:text-5xl font-bold tracking-tight text-foreground mb-6 leading-tight"
+                            transition={{ duration: 0.6 }}
+                            className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground mb-6 leading-tight"
                         >
-                            Download the <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-purple-600">Swasthify</span> app
+                            Download the <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-2 rounded-md">Swasthify App</span>
                         </motion.h2>
 
                         <motion.p
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            transition={{ delay: 0.3, duration: 0.6 }}
-                            className="text-muted-foreground text-lg md:text-xl mb-12 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
+                            transition={{ delay: 0.1, duration: 0.6 }}
+                            className="text-lg md:text-xl text-muted-foreground mb-12 max-w-2xl md:mx-0 mx-auto leading-relaxed"
                         >
-                            Access video consultation with India's top doctors.
-                            Connect online 24/7 from the comfort of your home.
+                            Access video consultation with India's top doctors. Connect online 24/7 from the comfort of your home.
                         </motion.p>
 
                         <motion.div
