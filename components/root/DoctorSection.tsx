@@ -1,0 +1,93 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { CampaignCard, Campaign } from "./CampaignCard";
+import { CampaignCardSkeleton } from "./CampaignCardSkeleton";
+import { Button } from "@/components/ui/button";
+import { ChevronRight, Stethoscope } from "lucide-react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+
+export function DoctorSection() {
+    const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchDoctors = async () => {
+            try {
+                const response = await fetch("/api/public/campaigns?source=doctor&limit=3");
+                if (!response.ok) throw new Error("Failed to fetch doctors");
+                const result = await response.json();
+                setCampaigns(Array.isArray(result) ? result : result.data);
+            } catch (error) {
+                console.error("Error fetching doctors:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchDoctors();
+    }, []);
+
+    return (
+        <section className="py-20 bg-background">
+            <div className="container mx-auto px-4">
+                <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="space-y-3 text-center md:text-left"
+                    >
+                        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+                            Book an Appointment for In-Clinic Consultation
+                        </h2>
+                        <p className="text-muted-foreground text-lg">
+                            Find experienced doctors across all specialties
+                        </p>
+                    </motion.div>
+                    <Link href="/doctors">
+                        <Button variant="ghost" className="group gap-2 text-primary font-semibold hover:bg-primary/5">
+                            See All Doctors
+                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </Button>
+                    </Link>
+                </div>
+
+                {loading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {[1, 2, 3].map((i) => (
+                            <CampaignCardSkeleton key={i} />
+                        ))}
+                    </div>
+                ) : campaigns.length > 0 ? (
+                    <div className="space-y-12">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {campaigns.slice(0, 3).map((campaign) => (
+                                <CampaignCard key={campaign.id} campaign={campaign} />
+                            ))}
+                        </div>
+                        <div className="flex justify-center">
+                            <Link href="/doctors">
+                                <Button size="lg" variant="outline" className="rounded-full px-8 font-semibold hover:bg-primary hover:text-white transition-all duration-300">
+                                    Show more doctors
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="text-center py-12 bg-muted/20 rounded-2xl border border-dashed border-muted-foreground/20">
+                        <Stethoscope className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-foreground">No featured doctors available</h3>
+                        <p className="text-muted-foreground mt-2">
+                            Check back later or browse all doctors.
+                        </p>
+                        <Link href="/doctors" className="mt-6 inline-block">
+                            <Button variant="outline">Browse All Doctors</Button>
+                        </Link>
+                    </div>
+                )}
+            </div>
+        </section>
+    );
+}
