@@ -31,7 +31,7 @@ export function PricingFAQ() {
     ];
 
     return (
-       <section className="py-24 bg-muted/30">
+        <section className="py-24 bg-muted/20 dark:bg-muted/10">
             <div className="container mx-auto px-4">
                 <div className="grid lg:grid-cols-12 gap-12">
                     {/* Header Column */}
@@ -48,7 +48,7 @@ export function PricingFAQ() {
                     <div className="lg:col-span-8">
                         <Accordion type="single" collapsible className="w-full space-y-4">
                             {faqs.map((faq, index) => (
-                                <AccordionItem key={index} value={`item-${index}`} className="border border-border/50 rounded-xl px-2 bg-background data-[state=open]:border-primary/20 data-[state=open]:bg-primary/5 transition-all">
+                                <AccordionItem key={index} value={`item-${index}`} className="border border-border/50 rounded-xl px-2 bg-background data-[state=open]:border-primary/20 data-[state=open]:bg-primary/5 dark:data-[state=open]:bg-primary/10 transition-all">
                                     <AccordionTrigger className="text-left text-lg font-medium px-4 hover:no-underline hover:text-primary transition-colors">
                                         {faq.question}
                                     </AccordionTrigger>
