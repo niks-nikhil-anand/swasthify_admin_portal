@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 const specialities = [
     {
@@ -63,23 +64,26 @@ export function Specialities() {
     return (
         <section className="py-20 bg-background">
             <div className="container mx-auto px-4">
-                <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-8 md:mb-12 gap-4">
+                <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
-                        className="max-w-2xl text-center md:text-left"
+                        className="space-y-3 text-center md:text-left"
                     >
-                        <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-2 md:mb-4">
-                            25+ Specialities
+                        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
+                            Wide Range of <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-2 rounded-md">Medical Specialities</span>
                         </h2>
-                        <p className="text-muted-foreground text-sm md:text-lg">
-                            Consult with top doctors across specialities
+                        <p className="text-muted-foreground text-lg md:text-xl max-w-2xl">
+                            Access top-tier healthcare across 25+ specialities. Expert doctors, seamless digital consultations, and personalized care plans.
                         </p>
                     </motion.div>
-                    <Link href="/specialities" className="hidden md:flex items-center text-primary font-semibold hover:gap-2 transition-all group">
-                        See all specialities <ChevronRight className="w-5 h-5 ml-1 transition-transform group-hover:translate-x-1" />
+                    <Link href="/specialities" className="hidden md:block">
+                        <Button variant="ghost" className="group gap-2 text-primary font-semibold hover:bg-primary/5">
+                            See All Specialities
+                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </Button>
                     </Link>
                 </div>
 
@@ -123,9 +127,11 @@ export function Specialities() {
                     ))}
                 </motion.div>
 
-                <div className="mt-8 text-center md:hidden">
-                    <Link href="/specialities" className="inline-flex items-center text-primary font-semibold">
-                        See all specialities <ChevronRight className="w-5 h-5 ml-1" />
+                <div className="mt-12 text-center md:hidden">
+                    <Link href="/specialities">
+                        <Button variant="outline" className="rounded-full px-8 font-semibold hover:bg-primary hover:text-white transition-all duration-300">
+                            See all specialities <ChevronRight className="w-5 h-5 ml-1" />
+                        </Button>
                     </Link>
                 </div>
             </div>
