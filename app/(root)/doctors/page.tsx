@@ -21,8 +21,8 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-import { CampaignCard, Campaign } from "./components/CampaignCard";
-import { CampaignCardSkeleton } from "./components/CampaignCardSkeleton";
+import { CampaignCard, Campaign } from "@/components/root/CampaignCard";
+import { CampaignCardSkeleton } from "@/components/root/CampaignCardSkeleton";
 import { Search as SearchBar } from "./components/Search";
 
 const SPECIALIZATIONS = [
