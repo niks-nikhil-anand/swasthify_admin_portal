@@ -20,7 +20,7 @@ export function Footer() {
     ];
 
     const legalLinks = [
-        { label: "Privacy Policy", href: "/privacy-policy" },
+        { label: "Privacy Policy", href: "/privacyPolicy" },
         { label: "Terms of Service", href: "/termsService" },
     ];
 
