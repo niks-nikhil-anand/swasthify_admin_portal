@@ -8,10 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 export async function GET(req: Request) {
     try {
         const cookieStore = await cookies();
-        const token = cookieStore.get("SUPER_ADMIN")?.value ||
-            cookieStore.get("DOCTOR")?.value ||
-            cookieStore.get("PATIENT")?.value ||
-            cookieStore.get("token")?.value;
+        const token = cookieStore.get("PATIENT")?.value
 
         if (!token) {
             return NextResponse.json(
