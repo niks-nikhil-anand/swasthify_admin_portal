@@ -33,8 +33,15 @@ export async function middleware(req) {
     const isDoctorRoute = pathname.startsWith("/doctor-panel");
     const isPatientRoute = pathname.startsWith("/me");
     const isLabRoute = pathname.startsWith("/lab-panel");
+    const isDoctorsRoute = pathname.startsWith("/doctors");
+    const isLabsRoute = pathname.startsWith("/labs");
 
     // --- Protection Logic ---
+
+    // 0. Public Protected Routes (Doctors/Labs) - Only Patients allowed
+    if ((isDoctorsRoute || isLabsRoute) && !patientAuthToken) {
+        return NextResponse.redirect(new URL("/login", req.nextUrl.origin));
+    }
 
     // 1. Super Admin Protection
     if (isSuperAdminRoute && !superAdminAuthToken) {
