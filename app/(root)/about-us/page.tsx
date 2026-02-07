@@ -4,6 +4,7 @@ import { CTA } from "@/components/shared/CTA";
 import { HeroSection } from "./components/HeroSection";
 import { MissionVisionSection } from "./components/MissionVisionSection";
 import { ValuesSection } from "./components/ValuesSection";
+import { LocationSection } from "./components/LocationSection";
 
 export default function AboutPage() {
     return (
@@ -11,6 +12,7 @@ export default function AboutPage() {
             <HeroSection />
             <MissionVisionSection />
             <ValuesSection />
+            <LocationSection />
 
             <CTA
                 title="Be Part of Our Mission"

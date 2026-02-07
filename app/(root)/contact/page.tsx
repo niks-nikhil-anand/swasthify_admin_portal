@@ -112,7 +112,7 @@ export default function ContactPage() {
                                     {
                                         icon: MapPin,
                                         title: "Office Location",
-                                        lines: ["123 Health Tech Park, Sector 62,", "Noida, Uttar Pradesh, 201301"],
+                                        lines: ["Rajendra nagar Patna Bihar 800016"],
                                         color: "text-purple-500",
                                         bg: "bg-purple-500/10"
                                     },
