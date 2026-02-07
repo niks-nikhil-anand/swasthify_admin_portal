@@ -14,23 +14,30 @@ interface BookingModalProps {
     campaign: Campaign;
 }
 
-const timeSlots = [
-    { id: "morning", label: "Morning", period: "9:00 AM - 12:00 PM", icon: "🌅" },
-    { id: "afternoon", label: "Afternoon", period: "12:00 PM - 4:00 PM", icon: "☀️" },
-    { id: "evening", label: "Evening", period: "4:00 PM - 8:00 PM", icon: "🌆" },
+const timeCategories = [
+    { id: "morning", label: "Morning", range: "10AM - 12PM", icon: "🌅" },
+    { id: "afternoon", label: "Afternoon", range: "12PM - 4PM", icon: "☀️" },
+    { id: "evening", label: "Evening", range: "4PM - 9PM", icon: "🌆" },
 ];
+
+const timeSlotsData: Record<string, string[]> = {
+    morning: ["10:00 AM - 11:00 AM", "11:00 AM - 12:00 PM"],
+    afternoon: ["12:00 PM - 1:00 PM", "1:00 PM - 2:00 PM", "2:00 PM - 3:00 PM", "3:00 PM - 4:00 PM"],
+    evening: ["4:00 PM - 5:00 PM", "5:00 PM - 6:00 PM", "6:00 PM - 7:00 PM", "7:00 PM - 8:00 PM", "8:00 PM - 9:00 PM"],
+};
 
 export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, campaign }) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
     // Generate next 7 days
     const dates = Array.from({ length: 7 }, (_, i) => addDays(new Date(), i));
 
     const handleConfirm = () => {
-        if (!selectedSlot) return;
+        if (!selectedTime) return;
         // Logic will be added here later
-        console.log("Booking confirmed for:", selectedDate, selectedSlot);
+        console.log("Booking confirmed for:", selectedDate, selectedTime);
         onClose();
     };
 
@@ -82,7 +89,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                             </div>
                         </div>
 
-                        <div className="p-6 space-y-8">
+                        <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
                             {/* Date Selection */}
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
@@ -117,50 +124,71 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                                 </div>
                             </div>
 
-                            {/* Time Slot Selection */}
+                            {/* Time Category Selection */}
                             <div className="space-y-4">
                                 <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Arrival Time Frame</h3>
-                                <div className="grid grid-cols-1 gap-3">
-                                    {timeSlots.map((slot) => {
-                                        const isSelected = selectedSlot === slot.id;
+                                <div className="grid grid-cols-3 gap-3">
+                                    {timeCategories.map((cat) => {
+                                        const isSelected = selectedCategory === cat.id;
                                         return (
                                             <button
-                                                key={slot.id}
-                                                onClick={() => setSelectedSlot(slot.id)}
+                                                key={cat.id}
+                                                onClick={() => {
+                                                    setSelectedCategory(cat.id);
+                                                    setSelectedTime(null);
+                                                }}
                                                 className={cn(
-                                                    "flex items-center justify-between p-4 rounded-2xl transition-all duration-300 border-2 group",
+                                                    "flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 border-2",
                                                     isSelected
                                                         ? "bg-primary/5 border-primary shadow-sm"
                                                         : "bg-muted/30 border-transparent hover:bg-muted/50 hover:border-border"
                                                 )}
                                             >
-                                                <div className="flex items-center gap-4">
-                                                    <span className="text-2xl">{slot.icon}</span>
-                                                    <div className="text-left">
-                                                        <p className={cn(
-                                                            "font-bold text-sm",
-                                                            isSelected ? "text-primary" : "text-foreground"
-                                                        )}>
-                                                            {slot.label}
-                                                        </p>
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {slot.period}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div className={cn(
-                                                    "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300",
-                                                    isSelected
-                                                        ? "bg-primary border-primary text-primary-foreground"
-                                                        : "bg-background border-border group-hover:border-primary/50"
-                                                )}>
-                                                    {isSelected && <Check className="w-4 h-4" />}
-                                                </div>
+                                                <span className="text-xl mb-1">{cat.icon}</span>
+                                                <span className={cn(
+                                                    "text-xs font-bold",
+                                                    isSelected ? "text-primary" : "text-foreground"
+                                                )}>{cat.label}</span>
+                                                <span className="text-[10px] text-muted-foreground whitespace-nowrap">{cat.range}</span>
                                             </button>
                                         );
                                     })}
                                 </div>
                             </div>
+
+                            {/* Detailed Time Slots */}
+                            <AnimatePresence mode="wait">
+                                {selectedCategory && (
+                                    <motion.div
+                                        key={selectedCategory}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="space-y-4"
+                                    >
+                                        <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Select Slot</h3>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {timeSlotsData[selectedCategory].map((time) => {
+                                                const isSelected = selectedTime === time;
+                                                return (
+                                                    <button
+                                                        key={time}
+                                                        onClick={() => setSelectedTime(time)}
+                                                        className={cn(
+                                                            "flex items-center justify-center p-3 rounded-xl transition-all duration-200 border-2 text-sm font-semibold",
+                                                            isSelected
+                                                                ? "bg-primary border-primary text-primary-foreground shadow-md"
+                                                                : "bg-muted/20 border-border/50 text-muted-foreground hover:border-primary/30 hover:bg-muted/40"
+                                                        )}
+                                                    >
+                                                        {time}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
 
                         {/* Footer */}
@@ -169,16 +197,15 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                                 <p className="text-xs text-muted-foreground">Booking for</p>
                                 <p className="text-sm font-bold text-foreground">
                                     {format(selectedDate, "EEE, MMM d")}
-                                    {selectedSlot && <span className="text-primary ml-1">• {timeSlots.find(s => s.id === selectedSlot)?.label}</span>}
+                                    {selectedTime && <span className="text-primary ml-1 truncate block sm:inline">• {selectedTime}</span>}
                                 </p>
                             </div>
                             <Button
                                 onClick={handleConfirm}
-                                disabled={!selectedSlot}
+                                disabled={!selectedTime}
                                 className="px-8 h-12 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
                             >
-                                Book Now
-                                <ChevronRight className="w-5 h-5 ml-2" />
+                                Book
                             </Button>
                         </div>
                     </motion.div>
