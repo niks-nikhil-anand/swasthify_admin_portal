@@ -82,9 +82,10 @@ export function Services() {
                         <motion.div
                             key={index}
                             variants={item}
-                            whileHover={{ scale: 1.03 }}
-                            className="bg-card hover:shadow-xl transition-all duration-300 p-3 md:p-8 rounded-2xl border border-border flex flex-col items-start h-full"
+                            whileHover={{ y: -10, scale: 1.02 }}
+                            className="group relative bg-background hover:bg-card/50 backdrop-blur-sm transition-all duration-500 p-6 md:p-10 rounded-[2.5rem] border border-border/50 hover:border-emerald-500/30 flex flex-col items-start h-full hover:shadow-[0_30px_60px_-15px_rgba(16,185,129,0.15)] overflow-hidden"
                         >
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-bl from-emerald-500/5 to-transparent rounded-bl-[5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             <div className={`p-2 md:p-4 rounded-xl mb-3 md:mb-6 ${service.color} transition-colors`}>
                                 <service.icon className="w-5 h-5 md:w-8 md:h-8" />
                             </div>

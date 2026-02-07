@@ -100,7 +100,7 @@ export function Testimonials() {
                             whileHover={{ y: -8, transition: { duration: 0.3 } }}
                             className="min-w-[85vw] md:min-w-0 snap-center flex"
                         >
-                            <Card className="border-border/40 shadow-xl shadow-primary/5 bg-background/50 hover:bg-background/80 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 h-full backdrop-blur-sm rounded-2xl w-full group">
+                            <Card className="border-border/30 shadow-2xl shadow-emerald-500/5 bg-background/40 hover:bg-background/80 hover:shadow-[0_40px_80px_-20px_rgba(16,185,129,0.1)] transition-all duration-500 h-full backdrop-blur-xl rounded-[2rem] w-full group overflow-hidden">
                                 <CardContent className="p-8 flex flex-col gap-6 h-full">
                                     <div className="flex gap-1">
                                         {[...Array(5)].map((_, i) => (

@@ -44,7 +44,8 @@ export function HowItWorks() {
     };
 
     return (
-        <section className="py-20 bg-muted/30">
+        <section className="py-32 bg-transparent relative overflow-hidden">
+
             <div className="container mx-auto px-4">
                 <div className="text-center md:text-left mb-16 px-4">
                     <motion.h2
@@ -76,16 +77,13 @@ export function HowItWorks() {
                 >
                     {steps.map((step, index) => (
                         <motion.div key={index} variants={item} className="relative flex flex-col items-center text-center group">
-                            {/* Connecting Line (Desktop only) */}
-                            {index < steps.length - 1 && (
-                                <div className="hidden lg:block absolute top-8 left-1/2 w-full h-[2px] bg-border -z-10" />
-                            )}
+
 
                             <motion.div
                                 whileHover={{ scale: 1.1, rotate: 5 }}
-                                className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-3 md:mb-6 transition-transform duration-300"
+                                className="w-16 h-16 md:w-20 md:h-20 rounded-3xl bg-background border border-emerald-500/20 shadow-xl shadow-emerald-500/5 flex items-center justify-center mb-4 md:mb-8 transition-all duration-500 group-hover:border-emerald-500/50 group-hover:bg-emerald-500/5"
                             >
-                                <step.icon className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+                                <step.icon className="w-8 h-8 md:w-10 md:h-10 text-emerald-600 dark:text-emerald-400" />
                             </motion.div>
 
                             <h3 className="text-sm md:text-xl font-semibold mb-2 md:mb-3">{step.title}</h3>

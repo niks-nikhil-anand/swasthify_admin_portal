@@ -10,20 +10,26 @@ import { motion } from "framer-motion";
 
 export function Hero() {
     return (
-        <section className="relative overflow-hidden bg-primary/5 pt-16 pb-20 md:pt-24 md:pb-32 lg:pt-32 lg:pb-40">
+        <section className="relative overflow-hidden bg-linear-to-b from-primary/10 via-background to-transparent pt-16 pb-20 md:pt-24 md:pb-32 lg:pt-32 lg:pb-40">
             {/* Background Decor */}
             <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 0.5, scale: 1 }}
-                    transition={{ duration: 1.5, ease: "easeOut" }}
-                    className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-[600px] h-[600px] bg-primary/10 rounded-full blur-3xl"
+                    animate={{
+                        scale: [1, 1.1, 1],
+                        opacity: [0.3, 0.5, 0.3],
+                        x: [0, 20, 0]
+                    }}
+                    transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[100px]"
                 />
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 0.5, scale: 1 }}
-                    transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
-                    className="absolute bottom-0 left-0 translate-y-12 -translate-x-12 w-[500px] h-[500px] bg-accent/10 rounded-full blur-3xl opacity-50"
+                    animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.2, 0.4, 0.2],
+                        x: [0, -30, 0]
+                    }}
+                    transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                    className="absolute bottom-0 left-0 translate-y-12 -translate-x-12 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[100px]"
                 />
             </div>
 
@@ -71,7 +77,7 @@ export function Hero() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.5, duration: 0.7 }}
-                            className="w-full max-w-md p-2 bg-background border border-border/50 rounded-full shadow-xl shadow-primary/5 flex items-center gap-2 focus-within:ring-2 ring-primary/20 transition-all"
+                            className="w-full max-w-md p-1.5 bg-background/80 backdrop-blur-xl border border-primary/20 rounded-full shadow-2xl shadow-primary/10 flex items-center gap-2 focus-within:ring-2 ring-primary/30 transition-all group"
                         >
                             <div className="pl-4 text-muted-foreground">
                                 <Search className="w-5 h-5" />
@@ -120,7 +126,7 @@ export function Hero() {
                                 </div>
                                 <span className="font-medium ml-2">10k+ Patients</span>
                             </div>
-                            <div className="w-[1px] h-4 bg-border" />
+                            <div className="w-px h-4 bg-border" />
                             <div className="flex items-center gap-2">
                                 <span className="font-bold text-foreground text-lg">4.9/5</span>
                                 <span>Ratings</span>
@@ -136,7 +142,7 @@ export function Hero() {
                         transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
                         className="relative mx-auto w-full max-w-xl lg:max-w-none"
                     >
-                        <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl border border-border/50 bg-muted aspect-[4/3] lg:aspect-square group">
+                        <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl border border-border/50 bg-muted aspect-4/3 lg:aspect-square group">
                             <Image
                                 src="/hero-doctor.png"
                                 alt="Doctor consulting patient"
@@ -144,6 +150,7 @@ export function Hero() {
                                 className="object-cover transition-transform duration-1000 group-hover:scale-105"
                                 priority
                             />
+                            <div className="absolute inset-0 bg-linear-to-t from-primary/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
                             {/* Floating Stats Card 1 */}
                             <motion.div
@@ -156,7 +163,7 @@ export function Hero() {
                                     <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
                                         <MapPin className="w-5 h-5" />
                                     </div>
-                                    <span className="text-2xl font-bold bg-gradient-to-tr from-green-600 to-emerald-500 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">500+</span>
+                                    <span className="text-2xl font-bold bg-linear-to-tr from-green-600 to-emerald-500 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">500+</span>
                                 </div>
                                 <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Specialist Doctors</p>
                             </motion.div>
@@ -180,7 +187,7 @@ export function Hero() {
                         <motion.div
                             animate={{ scale: [1, 1.05, 1], opacity: [0.3, 0.4, 0.3] }}
                             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                            className="absolute -inset-4 -z-10 bg-gradient-to-tr from-primary/30 to-accent/30 rounded-[3rem] blur-3xl opacity-30"
+                            className="absolute -inset-4 -z-10 bg-linear-to-tr from-primary/30 to-accent/30 rounded-[3rem] blur-3xl opacity-30"
                         />
                     </motion.div>
 

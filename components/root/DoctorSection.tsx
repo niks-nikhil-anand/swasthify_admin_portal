@@ -29,7 +29,7 @@ export function DoctorSection() {
     }, []);
 
     return (
-        <section className="py-20 bg-background">
+        <section className="py-24 bg-transparent relative overflow-hidden">
             <div className="container mx-auto px-4">
                 <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
                     <motion.div
@@ -76,14 +76,14 @@ export function DoctorSection() {
                         </div>
                     </div>
                 ) : (
-                    <div className="text-center py-12 bg-muted/20 rounded-2xl border border-dashed border-muted-foreground/20">
-                        <Stethoscope className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-foreground">No featured doctors available</h3>
-                        <p className="text-muted-foreground mt-2">
-                            Check back later or browse all doctors.
+                    <div className="text-center py-16 bg-card/40 backdrop-blur-md rounded-[3rem] border border-dashed border-emerald-500/20 max-w-2xl mx-auto">
+                        <Stethoscope className="w-16 h-16 text-emerald-500/20 mx-auto mb-6" />
+                        <h3 className="text-xl font-bold text-foreground">No featured doctors available</h3>
+                        <p className="text-muted-foreground mt-2 px-8">
+                            We're currently updating our doctor listings. Check back later or browse all doctors.
                         </p>
-                        <Link href="/doctors" className="mt-6 inline-block">
-                            <Button variant="outline">Browse All Doctors</Button>
+                        <Link href="/doctors" className="mt-8 inline-block">
+                            <Button variant="outline" className="rounded-full px-8 shadow-lg shadow-emerald-500/5">Browse All Doctors</Button>
                         </Link>
                     </div>
                 )}

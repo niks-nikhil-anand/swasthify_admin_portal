@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 export function AbhaIntegration() {
     return (
-        <section className="py-24 bg-linear-to-br from-primary/5 via-white dark:via-background to-accent/5 overflow-hidden">
+        <section className="relative py-24 bg-linear-to-b from-transparent via-emerald-500/5 to-transparent overflow-hidden">
             <div className="container mx-auto px-4">
                 <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
@@ -75,14 +75,14 @@ export function AbhaIntegration() {
                         transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
                         className="relative mx-auto w-full max-w-md lg:max-w-none order-1 lg:order-2"
                     >
-                        <div className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-white/50 dark:border-border/50 bg-white/50 dark:bg-background/50 backdrop-blur-sm aspect-video lg:aspect-[4/3] transform hover:scale-[1.02] transition-transform duration-700">
+                        <div className="relative rounded-[3rem] overflow-hidden shadow-2xl border border-emerald-500/20 bg-background/40 backdrop-blur-xl aspect-video lg:aspect-4/3 transform hover:scale-[1.05] transition-transform duration-1000 group">
                             <Image
                                 src="/abha-illustration.png"
                                 alt="ABHA Digital Health Card and Medical Records"
                                 fill
                                 className="object-cover"
                             />
-                            <div className="absolute inset-0 bg-linear-to-tr from-primary/10 to-transparent pointer-events-none" />
+                            <div className="absolute inset-0 bg-linear-to-tr from-emerald-500/10 to-transparent pointer-events-none" />
                         </div>
                         {/* Decorative Elements */}
                         <motion.div
