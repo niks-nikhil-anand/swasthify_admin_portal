@@ -14,6 +14,7 @@ import { ScheduleSection } from "./components/ScheduleSection";
 import { LocationSection } from "./components/LocationSection";
 import { DoctorSidebar } from "./components/DoctorSidebar";
 import { useParams as useNextParams, useRouter as useNextRouter } from "next/navigation";
+import { BookingModal } from "./components/BookingModal";
 
 export default function CampaignDetailsPage() {
     const params = useNextParams();
@@ -21,6 +22,7 @@ export default function CampaignDetailsPage() {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<any>(null);
     const [checkingAuth, setCheckingAuth] = useState(true);
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const router = useNextRouter();
 
     useEffect(() => {
@@ -47,9 +49,7 @@ export default function CampaignDetailsPage() {
             return;
         }
 
-        // Logic for booking appointment when authenticated
-        toast.success("Proceeding to booking...");
-        // router.push(`/doctors/book/${campaign?.id}`);
+        setIsBookingModalOpen(true);
     };
 
     useEffect(() => {
@@ -140,6 +140,12 @@ export default function CampaignDetailsPage() {
                     <DoctorSidebar campaign={campaign} onBookAppointment={handleBookAppointment} />
                 </div>
             </div>
+
+            <BookingModal
+                isOpen={isBookingModalOpen}
+                onClose={() => setIsBookingModalOpen(false)}
+                campaign={campaign}
+            />
         </div>
     );
 }
