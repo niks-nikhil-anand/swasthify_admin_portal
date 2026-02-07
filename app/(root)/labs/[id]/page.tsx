@@ -14,6 +14,7 @@ import { ScheduleSection } from "./components/ScheduleSection";
 import { LocationSection } from "./components/LocationSection";
 import { LabSidebar } from "./components/LabSidebar";
 import { useParams as useNextParams, useRouter as useNextRouter } from "next/navigation";
+import { LabBookingModal } from "./components/LabBookingModal";
 
 export default function LabCampaignDetailsPage() {
     const params = useNextParams();
@@ -21,6 +22,7 @@ export default function LabCampaignDetailsPage() {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<any>(null);
     const [checkingAuth, setCheckingAuth] = useState(true);
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const router = useNextRouter();
 
     useEffect(() => {
@@ -42,14 +44,12 @@ export default function LabCampaignDetailsPage() {
 
     const handleBookAppointment = () => {
         if (!user) {
-            toast.error("Please login to book an appointment");
+            toast.error("Please login to book a test");
             router.push("/login");
             return;
         }
 
-        // Logic for booking appointment when authenticated
-        toast.success("Proceeding to booking...");
-        // router.push(`/labs/book/${campaign?.id}`);
+        setIsBookingModalOpen(true);
     };
 
     useEffect(() => {
@@ -117,6 +117,12 @@ export default function LabCampaignDetailsPage() {
                     <LabSidebar campaign={campaign} onBookAppointment={handleBookAppointment} />
                 </div>
             </div>
+
+            <LabBookingModal
+                isOpen={isBookingModalOpen}
+                onClose={() => setIsBookingModalOpen(false)}
+                campaign={campaign}
+            />
         </div>
     );
 }
