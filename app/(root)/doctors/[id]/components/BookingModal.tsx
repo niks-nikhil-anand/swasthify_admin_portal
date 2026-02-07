@@ -8,6 +8,8 @@ import { Campaign } from "../../types";
 import { format, addDays, isSameDay } from "date-fns";
 import { cn } from "@/lib/utils";
 
+import { toast } from "sonner";
+
 interface BookingModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -30,15 +32,41 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
+    const [isBooking, setIsBooking] = useState(false);
 
     // Generate next 7 days
     const dates = Array.from({ length: 7 }, (_, i) => addDays(new Date(), i));
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
         if (!selectedTime) return;
-        // Logic will be added here later
-        console.log("Booking confirmed for:", selectedDate, selectedTime);
-        onClose();
+
+        setIsBooking(true);
+        try {
+            const response = await fetch("/api/appointments", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    type: "DOCTOR",
+                    organizerId: campaign.doctor.id,
+                    date: selectedDate,
+                    timeSlot: selectedTime,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Failed to book appointment");
+            }
+
+            toast.success("Appointment booked successfully!");
+            onClose();
+        } catch (error: any) {
+            console.error("Booking error:", error);
+            toast.error(error.message || "Something went wrong. Please try again.");
+        } finally {
+            setIsBooking(false);
+        }
     };
 
     return (
@@ -202,10 +230,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                             </div>
                             <Button
                                 onClick={handleConfirm}
-                                disabled={!selectedTime}
+                                disabled={!selectedTime || isBooking}
                                 className="px-8 h-12 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
                             >
-                                Book
+                                {isBooking ? "Booking..." : "Book"}
                             </Button>
                         </div>
                     </motion.div>
