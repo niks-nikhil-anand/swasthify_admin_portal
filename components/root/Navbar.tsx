@@ -109,7 +109,7 @@ export function Navbar() {
                     <div className="hidden md:flex gap-4 items-center">
                         <ModeToggle />
                         {!isLoading && (
-                            user ? (
+                            user && user.role === "PATIENT" ? (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-border/50 rounded-full hover:bg-muted/50 transition-all">
@@ -250,7 +250,7 @@ export function Navbar() {
 
                             <div className="mt-auto flex flex-col gap-3">
                                 {!isLoading && (
-                                    user ? (
+                                    user && user.role === "PATIENT" ? (
                                         <>
                                             <div className="px-4 py-3 flex items-center gap-3 bg-muted/30 rounded-xl">
                                                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">

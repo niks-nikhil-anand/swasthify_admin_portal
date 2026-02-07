@@ -55,11 +55,11 @@ export async function middleware(req) {
     }
 
     // 3. Patient/General Profile Protection
-    if (isPatientRoute && !anyAuthToken) {
+    if (isPatientRoute && !patientAuthToken) {
         return NextResponse.redirect(new URL("/login", req.nextUrl.origin));
     }
-    // Redirect if already logged in (any role)
-    if (isPatientAuthRoute && anyAuthToken) {
+    // Redirect if already logged in as Patient
+    if (isPatientAuthRoute && patientAuthToken) {
         return NextResponse.redirect(new URL("/me", req.nextUrl.origin));
     }
 
