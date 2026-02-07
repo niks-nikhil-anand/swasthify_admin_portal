@@ -1,29 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Search, FlaskConical } from "lucide-react";
 import { toast } from "sonner";
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/components/ui/pagination";
-import { LabCampaignCard, LabCampaign } from "@/components/root/LabCampaignCard";
+import { LabCampaignCard } from "@/components/root/LabCampaignCard";
 import { LabCampaignCardSkeleton } from "@/components/root/LabCampaignCardSkeleton";
-import { Search as SearchBar } from "./components/Search";
+import { LabFilters } from "./components/LabFilters";
+import { LabPagination } from "./components/LabPagination";
+import { EmptyState } from "./components/EmptyState";
+import { LabCampaign } from "./types";
 
 export default function LabCampaignsPage() {
     const [campaigns, setCampaigns] = useState<LabCampaign[]>([]);
@@ -94,23 +78,12 @@ export default function LabCampaignsPage() {
             </div>
 
             {/* Filters */}
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                <SearchBar onSearch={setSearchQuery} placeholder="Search by campaign or lab..." />
-                <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
-                    <Select value={selectedType} onValueChange={setSelectedType}>
-                        <SelectTrigger className="w-full sm:w-[200px] rounded-full shadow-md border-border/50">
-                            <SelectValue placeholder="Campaign Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="ALL">All Types</SelectItem>
-                            <SelectItem value="HEALTH_CAMP">Health Camp</SelectItem>
-                            <SelectItem value="HOME_COLLECTION_DRIVE">Home Collection Drive</SelectItem>
-                            <SelectItem value="DISCOUNTED_TESTS">Discounted Tests</SelectItem>
-                            <SelectItem value="COMMUNITY_SCREENING">Community Screening</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-            </div>
+            <LabFilters
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                selectedType={selectedType}
+                onTypeChange={setSelectedType}
+            />
 
             {/* Grid */}
             {loading ? (
@@ -128,69 +101,14 @@ export default function LabCampaignsPage() {
                     </div>
 
                     {/* Pagination */}
-                    {totalPages > 1 && (
-                        <div className="mt-8">
-                            <Pagination>
-                                <PaginationContent>
-                                    <PaginationItem>
-                                        <PaginationPrevious
-                                            href="#"
-                                            onClick={(e) => { e.preventDefault(); handlePageChange(page - 1); }}
-                                            className={page <= 1 ? "pointer-events-none opacity-50" : ""}
-                                        />
-                                    </PaginationItem>
-
-                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => {
-                                        if (
-                                            totalPages <= 7 ||
-                                            p === 1 ||
-                                            p === totalPages ||
-                                            (p >= page - 1 && p <= page + 1)
-                                        ) {
-                                            return (
-                                                <PaginationItem key={p}>
-                                                    <PaginationLink
-                                                        href="#"
-                                                        isActive={page === p}
-                                                        onClick={(e) => { e.preventDefault(); handlePageChange(p); }}
-                                                    >
-                                                        {p}
-                                                    </PaginationLink>
-                                                </PaginationItem>
-                                            );
-                                        } else if (
-                                            (p === page - 2 && page > 3) ||
-                                            (p === page + 2 && page < totalPages - 2)
-                                        ) {
-                                            return (
-                                                <PaginationItem key={p}>
-                                                    <PaginationEllipsis />
-                                                </PaginationItem>
-                                            );
-                                        }
-                                        return null;
-                                    })}
-
-                                    <PaginationItem>
-                                        <PaginationNext
-                                            href="#"
-                                            onClick={(e) => { e.preventDefault(); handlePageChange(page + 1); }}
-                                            className={page >= totalPages ? "pointer-events-none opacity-50" : ""}
-                                        />
-                                    </PaginationItem>
-                                </PaginationContent>
-                            </Pagination>
-                        </div>
-                    )}
+                    <LabPagination
+                        page={page}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                    />
                 </>
             ) : (
-                <div className="text-center py-20 bg-muted/10 rounded-xl border border-dashed">
-                    <FlaskConical className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-foreground">No active lab campaigns found</h3>
-                    <p className="text-muted-foreground mt-1">
-                        Try adjusting your search or filters to find what you're looking for.
-                    </p>
-                </div>
+                <EmptyState />
             )}
         </div>
     );
