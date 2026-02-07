@@ -15,7 +15,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, LogOut, Calendar, Settings, ChevronDown, FileText, ClipboardList } from "lucide-react";
+import { User, LogOut, Calendar, Settings, ChevronDown, FileText, ClipboardList, LayoutDashboard, Users } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
@@ -109,7 +109,7 @@ export function Navbar() {
                     <div className="hidden md:flex gap-4 items-center">
                         <ModeToggle />
                         {!isLoading && (
-                            user && user.role === "PATIENT" ? (
+                            user ? (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-border/50 rounded-full hover:bg-muted/50 transition-all">
@@ -129,32 +129,93 @@ export function Navbar() {
                                         >
                                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                             <DropdownMenuSeparator />
-                                            <Link href="/me">
-                                                <DropdownMenuItem className="cursor-pointer">
-                                                    <User className="mr-2 h-4 w-4" />
-                                                    <span>Profile</span>
-                                                </DropdownMenuItem>
-                                            </Link>
-                                            <Link href="/me/appointments">
-                                                <DropdownMenuItem className="cursor-pointer">
-                                                    <Calendar className="mr-2 h-4 w-4" />
-                                                    <span>Appointments</span>
-                                                </DropdownMenuItem>
-                                            </Link>
-                                            <Link href="/me/reports">
-                                                <DropdownMenuItem className="cursor-pointer">
-                                                    <FileText className="mr-2 h-4 w-4" />
-                                                    <span>Lab Reports</span>
-                                                </DropdownMenuItem>
-                                            </Link>
-                                            <Link href="/me/health-records">
-                                                <DropdownMenuItem className="cursor-pointer">
-                                                    <ClipboardList className="mr-2 h-4 w-4" />
-                                                    <span>Health Records</span>
-                                                </DropdownMenuItem>
-                                            </Link>
+
+                                            {/* Role-specific links */}
+                                            {user.role === "PATIENT" && (
+                                                <>
+                                                    <Link href="/me">
+                                                        <DropdownMenuItem className="cursor-pointer">
+                                                            <User className="mr-2 h-4 w-4" />
+                                                            <span>Profile</span>
+                                                        </DropdownMenuItem>
+                                                    </Link>
+                                                    <Link href="/me/appointments">
+                                                        <DropdownMenuItem className="cursor-pointer">
+                                                            <Calendar className="mr-2 h-4 w-4" />
+                                                            <span>Appointments</span>
+                                                        </DropdownMenuItem>
+                                                    </Link>
+                                                    <Link href="/me/reports">
+                                                        <DropdownMenuItem className="cursor-pointer">
+                                                            <FileText className="mr-2 h-4 w-4" />
+                                                            <span>Lab Reports</span>
+                                                        </DropdownMenuItem>
+                                                    </Link>
+                                                    <Link href="/me/health-records">
+                                                        <DropdownMenuItem className="cursor-pointer">
+                                                            <ClipboardList className="mr-2 h-4 w-4" />
+                                                            <span>Health Records</span>
+                                                        </DropdownMenuItem>
+                                                    </Link>
+                                                </>
+                                            )}
+
+                                            {user.role === "DOCTOR" && (
+                                                <>
+                                                    <Link href="/doctor-panel/dashboard">
+                                                        <DropdownMenuItem className="cursor-pointer">
+                                                            <LayoutDashboard className="mr-2 h-4 w-4" />
+                                                            <span>Doctor Dashboard</span>
+                                                        </DropdownMenuItem>
+                                                    </Link>
+                                                    <Link href="/doctor-panel/profile">
+                                                        <DropdownMenuItem className="cursor-pointer">
+                                                            <User className="mr-2 h-4 w-4" />
+                                                            <span>My Profile</span>
+                                                        </DropdownMenuItem>
+                                                    </Link>
+                                                    <Link href="/doctor-panel/appointment">
+                                                        <DropdownMenuItem className="cursor-pointer">
+                                                            <Calendar className="mr-2 h-4 w-4" />
+                                                            <span>Appointments</span>
+                                                        </DropdownMenuItem>
+                                                    </Link>
+                                                </>
+                                            )}
+
+                                            {user.role === "SUPER_ADMIN" && (
+                                                <>
+                                                    <Link href="/superAdmin/dashboard">
+                                                        <DropdownMenuItem className="cursor-pointer">
+                                                            <LayoutDashboard className="mr-2 h-4 w-4" />
+                                                            <span>Admin Dashboard</span>
+                                                        </DropdownMenuItem>
+                                                    </Link>
+                                                    <Link href="/superAdmin/userManagement/patient">
+                                                        <DropdownMenuItem className="cursor-pointer">
+                                                            <Users className="mr-2 h-4 w-4" />
+                                                            <span>Manage Patients</span>
+                                                        </DropdownMenuItem>
+                                                    </Link>
+                                                </>
+                                            )}
+
+                                            {user.role === "LAB" && (
+                                                <Link href="/lab-panel/dashboard">
+                                                    <DropdownMenuItem className="cursor-pointer">
+                                                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                                                        <span>Lab Dashboard</span>
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                            )}
+
                                             <DropdownMenuSeparator />
-                                            <Link href="/me/settings">
+                                            <Link href={
+                                                user.role === "PATIENT" ? "/me/settings" :
+                                                    user.role === "DOCTOR" ? "/doctor-panel/setting" :
+                                                        user.role === "SUPER_ADMIN" ? "/superAdmin/system/settings" :
+                                                            user.role === "LAB" ? "/lab-panel/settings" : "/settings"
+                                            }>
                                                 <DropdownMenuItem className="cursor-pointer">
                                                     <Settings className="mr-2 h-4 w-4" />
                                                     <span>Settings</span>
@@ -250,7 +311,7 @@ export function Navbar() {
 
                             <div className="mt-auto flex flex-col gap-3">
                                 {!isLoading && (
-                                    user && user.role === "PATIENT" ? (
+                                    user ? (
                                         <>
                                             <div className="px-4 py-3 flex items-center gap-3 bg-muted/30 rounded-xl">
                                                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
@@ -259,29 +320,84 @@ export function Navbar() {
                                                 <div className="flex flex-col">
                                                     <span className="text-sm font-semibold">{user.name}</span>
                                                     <span className="text-xs text-muted-foreground">{user.email}</span>
+                                                    <span className="text-[10px] uppercase tracking-wider text-primary font-bold">{user.role.replace('_', ' ')}</span>
                                                 </div>
                                             </div>
-                                            <Link href="/me" onClick={() => setIsOpen(false)}>
-                                                <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
-                                                    <User className="h-5 w-5 text-muted-foreground" /> Profile
-                                                </button>
-                                            </Link>
-                                            <Link href="/me/appointments" onClick={() => setIsOpen(false)}>
-                                                <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
-                                                    <Calendar className="h-5 w-5 text-muted-foreground" /> Appointments
-                                                </button>
-                                            </Link>
-                                            <Link href="/me/reports" onClick={() => setIsOpen(false)}>
-                                                <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
-                                                    <FileText className="h-5 w-5 text-muted-foreground" /> Lab Reports
-                                                </button>
-                                            </Link>
-                                            <Link href="/me/health-records" onClick={() => setIsOpen(false)}>
-                                                <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
-                                                    <ClipboardList className="h-5 w-5 text-muted-foreground" /> Health Records
-                                                </button>
-                                            </Link>
-                                            <Link href="/me/settings" onClick={() => setIsOpen(false)}>
+
+                                            {user.role === "PATIENT" && (
+                                                <>
+                                                    <Link href="/me" onClick={() => setIsOpen(false)}>
+                                                        <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                            <User className="h-5 w-5 text-muted-foreground" /> Profile
+                                                        </button>
+                                                    </Link>
+                                                    <Link href="/me/appointments" onClick={() => setIsOpen(false)}>
+                                                        <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                            <Calendar className="h-5 w-5 text-muted-foreground" /> Appointments
+                                                        </button>
+                                                    </Link>
+                                                    <Link href="/me/reports" onClick={() => setIsOpen(false)}>
+                                                        <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                            <FileText className="h-5 w-5 text-muted-foreground" /> Lab Reports
+                                                        </button>
+                                                    </Link>
+                                                    <Link href="/me/health-records" onClick={() => setIsOpen(false)}>
+                                                        <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                            <ClipboardList className="h-5 w-5 text-muted-foreground" /> Health Records
+                                                        </button>
+                                                    </Link>
+                                                </>
+                                            )}
+
+                                            {user.role === "DOCTOR" && (
+                                                <>
+                                                    <Link href="/doctor-panel/dashboard" onClick={() => setIsOpen(false)}>
+                                                        <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                            <LayoutDashboard className="h-5 w-5 text-muted-foreground" /> Dashboard
+                                                        </button>
+                                                    </Link>
+                                                    <Link href="/doctor-panel/profile" onClick={() => setIsOpen(false)}>
+                                                        <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                            <User className="h-5 w-5 text-muted-foreground" /> My Profile
+                                                        </button>
+                                                    </Link>
+                                                    <Link href="/doctor-panel/appointment" onClick={() => setIsOpen(false)}>
+                                                        <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                            <Calendar className="h-5 w-5 text-muted-foreground" /> Appointments
+                                                        </button>
+                                                    </Link>
+                                                </>
+                                            )}
+
+                                            {user.role === "SUPER_ADMIN" && (
+                                                <>
+                                                    <Link href="/superAdmin/dashboard" onClick={() => setIsOpen(false)}>
+                                                        <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                            <LayoutDashboard className="h-5 w-5 text-muted-foreground" /> Dashboard
+                                                        </button>
+                                                    </Link>
+                                                    <Link href="/superAdmin/userManagement/patient" onClick={() => setIsOpen(false)}>
+                                                        <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                            <Users className="h-5 w-5 text-muted-foreground" /> Manage Patients
+                                                        </button>
+                                                    </Link>
+                                                </>
+                                            )}
+
+                                            {user.role === "LAB" && (
+                                                <Link href="/lab-panel/dashboard" onClick={() => setIsOpen(false)}>
+                                                    <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                        <LayoutDashboard className="h-5 w-5 text-muted-foreground" /> Lab Dashboard
+                                                    </button>
+                                                </Link>
+                                            )}
+
+                                            <Link href={
+                                                user.role === "PATIENT" ? "/me/settings" :
+                                                    user.role === "DOCTOR" ? "/doctor-panel/setting" :
+                                                        user.role === "SUPER_ADMIN" ? "/superAdmin/system/settings" :
+                                                            user.role === "LAB" ? "/lab-panel/settings" : "/settings"
+                                            } onClick={() => setIsOpen(false)}>
                                                 <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
                                                     <Settings className="h-5 w-5 text-muted-foreground" /> Settings
                                                 </button>
@@ -300,9 +416,11 @@ export function Navbar() {
                                                     Log in
                                                 </button>
                                             </Link>
-                                            <button className="w-full px-4 py-3 text-base font-medium text-primary-foreground bg-primary rounded-xl hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
-                                                Get Started
-                                            </button>
+                                            <Link href="/register" onClick={() => setIsOpen(false)}>
+                                                <button className="w-full px-4 py-3 text-base font-medium text-primary-foreground bg-primary rounded-xl hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
+                                                    Get Started
+                                                </button>
+                                            </Link>
                                         </>
                                     )
                                 )}
