@@ -20,10 +20,7 @@ export async function POST(req: Request) {
 
         // 1. Authenticate user
         const cookieStore = await cookies();
-        const token = cookieStore.get("SUPER_ADMIN")?.value ||
-            cookieStore.get("DOCTOR")?.value ||
-            cookieStore.get("PATIENT")?.value ||
-            cookieStore.get("token")?.value;
+        const token = cookieStore.get("PATIENT")?.value;
 
         if (!token) {
             return NextResponse.json(
