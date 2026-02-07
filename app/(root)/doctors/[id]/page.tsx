@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -79,6 +79,38 @@ export default function CampaignDetailsPage() {
     const params = useParams();
     const [campaign, setCampaign] = useState<Campaign | null>(null);
     const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState<any>(null);
+    const [checkingAuth, setCheckingAuth] = useState(true);
+    const router = useRouter();
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const response = await fetch("/api/auth/me");
+                if (response.ok) {
+                    const data = await response.json();
+                    setUser(data.user);
+                }
+            } catch (error) {
+                console.error("Failed to fetch user:", error);
+            } finally {
+                setCheckingAuth(false);
+            }
+        };
+        fetchUser();
+    }, []);
+
+    const handleBookAppointment = () => {
+        if (!user) {
+            toast.error("Please login to book an appointment");
+            router.push("/login");
+            return;
+        }
+
+        // Logic for booking appointment when authenticated
+        toast.success("Proceeding to booking...");
+        // router.push(`/doctors/book/${campaign?.id}`);
+    };
 
     useEffect(() => {
         const fetchCampaign = async () => {
@@ -368,7 +400,10 @@ export default function CampaignDetailsPage() {
                                 </p>
                             </div>
 
-                            <Button className="w-full h-12 text-base font-semibold shadow-xl shadow-primary/20 rounded-xl">
+                            <Button
+                                onClick={handleBookAppointment}
+                                className="w-full h-12 text-base font-semibold shadow-xl shadow-primary/20 rounded-xl"
+                            >
                                 Book Appointment
                             </Button>
 
@@ -497,7 +532,7 @@ export default function CampaignDetailsPage() {
                     <div className="space-y-6 h-fit hidden lg:block">
                         <div className="sticky top-28 space-y-6 max-h-[calc(100vh-8rem)] overflow-y-auto hide-scrollbar">
                             <Card className="border-0 shadow-lg ring-1 ring-black/5 overflow-hidden">
-                                <div className="h-24 bg-gradient-to-r from-primary/10 to-primary/5"></div>
+                                <div className="h-24 bg-linear-to-r from-primary/10 to-primary/5"></div>
                                 <CardContent className="relative pt-0 px-6 pb-6 text-center -mt-12">
                                     <Avatar className="w-24 h-24 mx-auto border-4 border-background shadow-md mb-4 bg-background">
                                         <AvatarImage src={campaign.doctor.profilePhoto || ""} className="object-cover" />
@@ -537,7 +572,10 @@ export default function CampaignDetailsPage() {
                                         </p>
                                     </div>
 
-                                    <Button className="w-full h-12 text-base font-semibold shadow-xl shadow-primary/20 rounded-xl">
+                                    <Button
+                                        onClick={handleBookAppointment}
+                                        className="w-full h-12 text-base font-semibold shadow-xl shadow-primary/20 rounded-xl"
+                                    >
                                         Book Appointment
                                     </Button>
 
