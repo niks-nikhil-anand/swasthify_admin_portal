@@ -1,45 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Search } from "lucide-react";
 import { toast } from "sonner";
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/components/ui/pagination";
 import { CampaignCard, Campaign } from "@/components/root/CampaignCard";
 import { CampaignCardSkeleton } from "@/components/root/CampaignCardSkeleton";
-import { Search as SearchBar } from "./components/Search";
-
-const SPECIALIZATIONS = [
-    { id: "ALL", label: "All Specializations" },
-    { id: "general_physician", label: "General Physician" },
-    { id: "cardiologist", label: "Cardiologist" },
-    { id: "dermatologist", label: "Dermatologist" },
-    { id: "pediatrician", label: "Pediatrician" },
-    { id: "neurologist", label: "Neurologist" },
-    { id: "orthopedist", label: "Orthopedist" },
-    { id: "gynecologist", label: "Gynecologist" },
-    { id: "dentist", label: "Dentist" },
-    { id: "ent", label: "ENT Specialist" },
-    { id: "psychiatrist", label: "Psychiatrist" },
-    { id: "ophthalmologist", label: "Ophthalmologist" },
-    { id: "urologist", label: "Urologist" },
-];
+import { DoctorFilters } from "./components/DoctorFilters";
+import { DoctorPagination } from "./components/DoctorPagination";
+import { EmptyState } from "./components/EmptyState";
 
 export default function DoctorCampaignsPage() {
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -112,35 +79,14 @@ export default function DoctorCampaignsPage() {
             </div>
 
             {/* Filters */}
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                <SearchBar onSearch={setSearchQuery} placeholder="Search by campaign or doctor..." />
-                <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
-                    <Select value={selectedSpecialization} onValueChange={setSelectedSpecialization}>
-                        <SelectTrigger className="w-full sm:w-[200px] rounded-full shadow-md border-border/50">
-                            <SelectValue placeholder="Specialization" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {SPECIALIZATIONS.map((spec) => (
-                                <SelectItem key={spec.id} value={spec.id}>
-                                    {spec.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-
-                    <Select value={selectedType} onValueChange={setSelectedType}>
-                        <SelectTrigger className="w-full sm:w-[180px] rounded-full shadow-md border-border/50">
-                            <SelectValue placeholder="Campaign Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="ALL">All Types</SelectItem>
-                            <SelectItem value="OPD">OPD</SelectItem>
-                            <SelectItem value="HEALTH_CAMP">Health Camp</SelectItem>
-                            <SelectItem value="FREE_CHECKUP">Free Checkup</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-            </div>
+            <DoctorFilters
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                selectedSpecialization={selectedSpecialization}
+                onSpecializationChange={setSelectedSpecialization}
+                selectedType={selectedType}
+                onTypeChange={setSelectedType}
+            />
 
             {/* Grid */}
             {loading ? (
@@ -158,71 +104,14 @@ export default function DoctorCampaignsPage() {
                     </div>
 
                     {/* Pagination */}
-                    {totalPages > 1 && (
-                        <div className="mt-8">
-                            <Pagination>
-                                <PaginationContent>
-                                    <PaginationItem>
-                                        <PaginationPrevious
-                                            href="#"
-                                            onClick={(e) => { e.preventDefault(); handlePageChange(page - 1); }}
-                                            className={page <= 1 ? "pointer-events-none opacity-50" : ""}
-                                        />
-                                    </PaginationItem>
-
-                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => {
-                                        // Simple pagination logic: show all pages if total <= 7
-                                        // Otherwise we'd need more complex logic with ellipsis
-                                        if (
-                                            totalPages <= 7 ||
-                                            p === 1 ||
-                                            p === totalPages ||
-                                            (p >= page - 1 && p <= page + 1)
-                                        ) {
-                                            return (
-                                                <PaginationItem key={p}>
-                                                    <PaginationLink
-                                                        href="#"
-                                                        isActive={page === p}
-                                                        onClick={(e) => { e.preventDefault(); handlePageChange(p); }}
-                                                    >
-                                                        {p}
-                                                    </PaginationLink>
-                                                </PaginationItem>
-                                            );
-                                        } else if (
-                                            (p === page - 2 && page > 3) ||
-                                            (p === page + 2 && page < totalPages - 2)
-                                        ) {
-                                            return (
-                                                <PaginationItem key={p}>
-                                                    <PaginationEllipsis />
-                                                </PaginationItem>
-                                            );
-                                        }
-                                        return null;
-                                    })}
-
-                                    <PaginationItem>
-                                        <PaginationNext
-                                            href="#"
-                                            onClick={(e) => { e.preventDefault(); handlePageChange(page + 1); }}
-                                            className={page >= totalPages ? "pointer-events-none opacity-50" : ""}
-                                        />
-                                    </PaginationItem>
-                                </PaginationContent>
-                            </Pagination>
-                        </div>
-                    )}
+                    <DoctorPagination
+                        page={page}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                    />
                 </>
             ) : (
-                <div className="text-center py-20 bg-muted/10 rounded-xl border border-dashed">
-                    <Search className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-foreground">No active campaigns found</h3>
-                    <p className="text-muted-foreground mt-1">
-                        Try adjusting your search or filters to find what you're looking for.
-                    </p>
-                </div>
+                <EmptyState />
             )}
         </div>
     );
