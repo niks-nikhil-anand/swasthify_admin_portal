@@ -22,6 +22,78 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { Skeleton } from "@/components/ui/skeleton"
+
+function AnalyticsSkeleton() {
+    return (
+        <div className="p-6 space-y-6">
+            <div className="flex justify-between items-center">
+                <Skeleton className="h-10 w-[250px]" />
+                <Skeleton className="h-4 w-[100px]" />
+            </div>
+
+            {/* Summary Cards Skeleton */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                {[...Array(4)].map((_, i) => (
+                    <Card key={i}>
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                            <Skeleton className="h-4 w-[100px]" />
+                            <Skeleton className="h-4 w-4 rounded-full" />
+                        </CardHeader>
+                        <CardContent>
+                            <Skeleton className="h-8 w-[120px] mb-2" />
+                            <Skeleton className="h-3 w-[150px]" />
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {/* Traffic Trend Skeleton */}
+                <Card className="col-span-1 lg:col-span-2">
+                    <CardHeader>
+                        <Skeleton className="h-6 w-[150px] mb-2" />
+                        <Skeleton className="h-4 w-[200px]" />
+                    </CardHeader>
+                    <CardContent className="h-[300px]">
+                        <Skeleton className="h-full w-full" />
+                    </CardContent>
+                </Card>
+
+                {/* Device Distribution Skeleton */}
+                <Card className="col-span-1">
+                    <CardHeader>
+                        <Skeleton className="h-6 w-[100px] mb-2" />
+                        <Skeleton className="h-4 w-[150px]" />
+                    </CardHeader>
+                    <CardContent className="h-[300px] flex items-center justify-center">
+                        <Skeleton className="h-40 w-40 rounded-full" />
+                    </CardContent>
+                </Card>
+
+                {/* Page-wise Stats Table Skeleton */}
+                <Card className="col-span-1 lg:col-span-3">
+                    <CardHeader>
+                        <div className="flex items-center gap-2">
+                            <Skeleton className="h-5 w-5 rounded-full" />
+                            <Skeleton className="h-6 w-[120px]" />
+                        </div>
+                        <Skeleton className="h-4 w-[250px] mt-2" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-full" />
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    )
+}
 
 export default function AnalyticsPage() {
     const [summary, setSummary] = useState<any>(null)
@@ -53,7 +125,7 @@ export default function AnalyticsPage() {
     }, [])
 
     if (loading) {
-        return <div className="p-6 flex items-center justify-center min-h-[400px]">Loading Analytics...</div>
+        return <AnalyticsSkeleton />
     }
 
     return (
