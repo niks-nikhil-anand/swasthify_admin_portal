@@ -154,8 +154,7 @@ export async function getRecentLabOrders() {
         orderBy: { createdAt: 'desc' },
         include: {
             patient: { select: { name: true } },
-            labTest: { select: { name: true } },
-            labReport: { select: { status: true } }
+            labTest: { select: { name: true } }
         }
     });
 
@@ -164,7 +163,7 @@ export async function getRecentLabOrders() {
         patient: apt.patient.name || "Unknown",
         test: apt.labTest?.name || "Standard Test",
         date: format(apt.dateTime, "MMM dd, hh:mm a"),
-        status: apt.labReport?.[0]?.status || apt.status,
-        amount: `₹${apt.totalAmount || 0}`
+        status: apt.status,
+        amount: `₹${apt.consultationFee || 0}`
     }));
 }
