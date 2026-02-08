@@ -6,54 +6,65 @@ import { Users, TrendingUp, Activity, ArrowUpRight, Clock, Plus, TestTube, FileT
 import Link from "next/link";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Badge } from "@/components/ui/badge";
+import { useEffect, useState, useCallback } from "react";
+import { getLabDashboardStats, getLabRevenueOverview, getRecentLabOrders } from "./actions";
+import { Skeleton } from "@/components/ui/skeleton";
 
-// Mock Data
-const revenueData = [
-    { name: "Jan", revenue: 45000, tests: 120 },
-    { name: "Feb", revenue: 52000, tests: 145 },
-    { name: "Mar", revenue: 48000, tests: 135 },
-    { name: "Apr", revenue: 61000, tests: 180 },
-    { name: "May", revenue: 55000, tests: 160 },
-    { name: "Jun", revenue: 67000, tests: 210 },
-    { name: "Jul", revenue: 72000, tests: 240 },
-];
-
-const mockAppointments = [
-    {
-        id: "APT-2024-001",
-        patient: "Rahul Sharma",
-        test: "Full Body Checkup",
-        date: "Today, 10:30 AM",
-        status: "PENDING",
-        amount: "₹1,499"
-    },
-    {
-        id: "APT-2024-002",
-        patient: "Priya Patel",
-        test: "Thyroid Profile",
-        date: "Today, 11:15 AM",
-        status: "COMPLETED",
-        amount: "₹899"
-    },
-    {
-        id: "APT-2024-003",
-        patient: "Amit Kumar",
-        test: "Lipid Profile",
-        date: "Today, 12:00 PM",
-        status: "IN_PROGRESS",
-        amount: "₹699"
-    },
-    {
-        id: "APT-2024-004",
-        patient: "Sneha Gupta",
-        test: "Vitamin D Test",
-        date: "Yesterday, 02:30 PM",
-        status: "REPORT_READY",
-        amount: "₹1,200"
-    }
-];
+function LabDashboardSkeleton() {
+    return (
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <div className="space-y-2">
+                    <Skeleton className="h-10 w-48" />
+                    <Skeleton className="h-4 w-64" />
+                </div>
+                <div className="flex gap-2">
+                    <Skeleton className="h-10 w-32" />
+                    <Skeleton className="h-10 w-32" />
+                </div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {[1, 2, 3, 4].map((i) => (
+                    <Card key={i}><CardContent className="p-6"><Skeleton className="h-20 w-full" /></CardContent></Card>
+                ))}
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                <Skeleton className="col-span-4 h-[400px] rounded-xl" />
+                <Skeleton className="col-span-3 h-[400px] rounded-xl" />
+            </div>
+        </div>
+    );
+}
 
 export default function LabDashboardPage() {
+    const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState<any>(null);
+    const [revenueData, setRevenueData] = useState<any[]>([]);
+    const [recentOrders, setRecentOrders] = useState<any[]>([]);
+
+    const fetchData = useCallback(async () => {
+        try {
+            const [dashboardStats, revData, orders] = await Promise.all([
+                getLabDashboardStats(),
+                getLabRevenueOverview(),
+                getRecentLabOrders()
+            ]);
+            setStats(dashboardStats);
+            setRevenueData(revData);
+            setRecentOrders(orders);
+        } catch (error) {
+            console.error("Failed to fetch lab dashboard data", error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    if (loading) return <LabDashboardSkeleton />;
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -79,27 +90,31 @@ export default function LabDashboardPage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card className="hover:shadow-md transition-shadow">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                        <CardTitle className="text-sm font-medium">Total Revenue (Month)</CardTitle>
                         <TrendingUp className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">₹72,400</div>
+                        <div className="text-2xl font-bold">₹{stats?.revenue.total.toLocaleString() || 0}</div>
                         <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                            <ArrowUpRight className="h-3 w-3 text-emerald-500" />
-                            <span className="text-emerald-500 font-medium">+15%</span> from last month
+                            <ArrowUpRight className={`h-3 w-3 ${stats?.revenue.trend >= 0 ? "text-emerald-500" : "text-destructive"}`} />
+                            <span className={`${stats?.revenue.trend >= 0 ? "text-emerald-500" : "text-destructive"} font-medium`}>
+                                {stats?.revenue.trend >= 0 ? "+" : ""}{stats?.revenue.trend}%
+                            </span> from last month
                         </p>
                     </CardContent>
                 </Card>
                 <Card className="hover:shadow-md transition-shadow">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Test Requests</CardTitle>
+                        <CardTitle className="text-sm font-medium">Test Requests (Month)</CardTitle>
                         <TestTube className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">240</div>
+                        <div className="text-2xl font-bold">{stats?.testRequests.total || 0}</div>
                         <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                            <ArrowUpRight className="h-3 w-3 text-emerald-500" />
-                            <span className="text-emerald-500 font-medium">+8%</span> from last month
+                            <ArrowUpRight className={`h-3 w-3 ${stats?.testRequests.trend >= 0 ? "text-emerald-500" : "text-destructive"}`} />
+                            <span className={`${stats?.testRequests.trend >= 0 ? "text-emerald-500" : "text-destructive"} font-medium`}>
+                                {stats?.testRequests.trend >= 0 ? "+" : ""}{stats?.testRequests.trend}%
+                            </span> from last month
                         </p>
                     </CardContent>
                 </Card>
@@ -109,7 +124,7 @@ export default function LabDashboardPage() {
                         <Clock className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">12</div>
+                        <div className="text-2xl font-bold">{stats?.pendingReports || 0}</div>
                         <p className="text-xs text-muted-foreground mt-1">
                             Requires immediate attention
                         </p>
@@ -121,10 +136,10 @@ export default function LabDashboardPage() {
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">1,203</div>
+                        <div className="text-2xl font-bold">{stats?.patients.total || 0}</div>
                         <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
                             <ArrowUpRight className="h-3 w-3 text-emerald-500" />
-                            <span className="text-emerald-500 font-medium">+12%</span> from last month
+                            <span className="text-emerald-500 font-medium">+{stats?.patients.trend}%</span> from last month
                         </p>
                     </CardContent>
                 </Card>
@@ -185,7 +200,7 @@ export default function LabDashboardPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {mockAppointments.map((apt) => (
+                            {recentOrders.map((apt) => (
                                 <div key={apt.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border hover:bg-muted/50 transition-colors">
                                     <div className="space-y-1">
                                         <p className="text-sm font-medium leading-none">{apt.patient}</p>
@@ -206,9 +221,16 @@ export default function LabDashboardPage() {
                                     </div>
                                 </div>
                             ))}
+                            {recentOrders.length === 0 && (
+                                <div className="text-center py-10 text-muted-foreground">
+                                    No recent orders found.
+                                </div>
+                            )}
                         </div>
-                        <Button variant="outline" className="w-full mt-4" size="sm">
-                            View All Orders
+                        <Button asChild variant="outline" className="w-full mt-4" size="sm">
+                            <Link href="/lab-panel/orders">
+                                View All Orders
+                            </Link>
                         </Button>
                     </CardContent>
                 </Card>
@@ -216,3 +238,4 @@ export default function LabDashboardPage() {
         </div>
     );
 }
+
