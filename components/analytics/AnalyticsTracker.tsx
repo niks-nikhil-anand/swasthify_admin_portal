@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
+const ALLOWED_PATHS = ["/", "/contact", "/about-us", "/pricing"];
+
 export default function AnalyticsTracker() {
     const pathname = usePathname();
     const sessionIdRef = useRef<string | null>(null);
@@ -10,6 +12,10 @@ export default function AnalyticsTracker() {
     const startTimeRef = useRef<number>(Date.now());
 
     useEffect(() => {
+        // Only track if pathname is in alphabetical allowed paths
+        const isAllowed = ALLOWED_PATHS.includes(pathname);
+        if (!isAllowed) return;
+
         // Initialize Session ID
         if (!sessionIdRef.current) {
             sessionIdRef.current = Math.random().toString(36).substring(2, 15);

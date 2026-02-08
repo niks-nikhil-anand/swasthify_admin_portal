@@ -3,10 +3,19 @@ import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
 import { parseUserAgent } from "@/lib/analytics-utils";
 
+const ALLOWED_PATHS = ["/", "/contact", "/about-us", "/pricing"];
+
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
         const { type, data } = body;
+
+        // Path filtering safeguard
+        const path = data.path || "/";
+        if (!ALLOWED_PATHS.includes(path)) {
+            return NextResponse.json({ success: true, message: "Path skipped" });
+        }
+
         const headersList = await headers();
         const userAgent = headersList.get("user-agent") || "";
         const uaInfo = parseUserAgent(userAgent);
@@ -16,11 +25,11 @@ export async function POST(req: NextRequest) {
         const city = headersList.get("x-vercel-ip-city") || data.city || "Unknown";
 
         if (type === "pageview") {
-            await (prisma as any).pageView.create({
+            await prisma.pageView.create({
                 data: {
                     sessionId: data.sessionId,
                     userId: data.userId,
-                    path: data.path || "/",
+                    path: path,
                     referrer: data.referrer,
                     deviceType: uaInfo.deviceType,
                     os: uaInfo.os,
@@ -32,13 +41,13 @@ export async function POST(req: NextRequest) {
                 },
             });
         } else if (type === "event") {
-            await (prisma as any).analyticsEvent.create({
+            await prisma.analyticsEvent.create({
                 data: {
                     sessionId: data.sessionId,
                     userId: data.userId,
                     eventType: data.eventType,
                     eventValue: data.eventValue?.toString(),
-                    path: data.path || "/",
+                    path: path,
                     campaignId: data.campaignId,
                     metadata: data.metadata || {},
                 },
