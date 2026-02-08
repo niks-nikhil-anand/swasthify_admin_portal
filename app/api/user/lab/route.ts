@@ -4,6 +4,7 @@ import { LabValidation } from "@/lib/validators"
 import { Role, UserStatus } from "@prisma/client"
 import { Resend } from "resend";
 import LabApplicationEmail from "@/emails/LabApplicationEmail";
+import { logAuthEvent } from "@/lib/auth-tracking";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -77,6 +78,9 @@ export async function POST(req: Request) {
 
             return user
         })
+
+        // Log sign-up event
+        await logAuthEvent(newUser.id, "SIGN_UP");
 
         // Send email notification
         try {

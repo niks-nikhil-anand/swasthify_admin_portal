@@ -66,8 +66,8 @@ export async function POST(req: Request) {
 
     const newUser = result;
 
-    // Log sign-up event (don't await to avoid delaying response)
-    logAuthEvent(newUser.id, "SIGN_UP");
+    // Log sign-up event
+    await logAuthEvent(newUser.id, "SIGN_UP");
 
     // Return success (exclude sensitive data)
     return NextResponse.json(

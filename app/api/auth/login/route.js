@@ -156,8 +156,8 @@ export async function POST(req) {
 
     console.log(`Setting cookie: ${cookieName}`);
 
-    // Log sign-in event (don't await to avoid delaying response)
-    logAuthEvent(user.id, "SIGN_IN");
+    // Log sign-in event
+    await logAuthEvent(user.id, "SIGN_IN");
 
     const cookieStore = await cookies();
     cookieStore.set(cookieName, token, {
