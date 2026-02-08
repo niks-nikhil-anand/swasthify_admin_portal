@@ -200,12 +200,12 @@ model Campaign {
   status      CampaignStatus @default(IN_REVIEW)
 
   // Lab Campaign Specifics
-  healthConcern            String[] @default([]) @map("health_concern")
-  gender                   String? // "Male", "Female", "Both", "Children"
+  healthConcern              String[] @default([]) @map("health_concern")
+  gender                     String? // "Male", "Female", "Both", "Children"
   isFreeHomeSampleCollection Boolean  @default(false) @map("is_free_home_sample_collection")
-  reportTime               String?  @map("report_time")
-  testCategory             String[] @default([]) @map("test_category")
-  testsIncluded            String[] @default([]) @map("tests_included")
+  reportTime                 String?  @map("report_time")
+  testCategory               String[] @default([]) @map("test_category")
+  testsIncluded              String[] @default([]) @map("tests_included")
 
   // Pricing
   price              Float
@@ -832,23 +832,23 @@ model LabAvailability {
 }
 
 model AuthLog {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type      AuthLogType
-  
+  id     String      @id @default(uuid())
+  userId String
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type   AuthLogType
+
   deviceType     String?
   os             String?
   osVersion      String?
   browser        String?
   browserVersion String?
-  
-  country        String?
-  region         String?
-  city           String?
-  timezone       String?
-  ipCountry      String?
-  ipAddress      String?
+
+  country   String?
+  region    String?
+  city      String?
+  timezone  String?
+  ipCountry String?
+  ipAddress String?
 
   createdAt DateTime @default(now())
 
@@ -927,17 +927,19 @@ model Ticket {
 }
 
 model PageView {
-  id          String   @id @default(uuid())
-  sessionId   String?
-  userId      String?
-  path        String
-  referrer    String?
-  deviceType  String?
-  os          String?
-  browser     String?
-  country     String?
-  city        String?
-  createdAt   DateTime @default(now())
+  id         String   @id @default(uuid())
+  sessionId  String?
+  userId     String?
+  path       String
+  referrer   String?
+  deviceType String?
+  os         String?
+  browser    String?
+  country    String?
+  city       String?
+  campaignId String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
 
   @@index([path])
   @@index([createdAt])
@@ -945,13 +947,15 @@ model PageView {
 }
 
 model AnalyticsEvent {
-  id          String   @id @default(uuid())
-  sessionId   String?
-  userId      String?
-  eventType   String   // "scroll_depth", "time_on_page", "exit"
-  eventValue  String?  // "25%", "60s", etc.
-  path        String
-  createdAt   DateTime @default(now())
+  id         String   @id @default(uuid())
+  sessionId  String?
+  userId     String?
+  eventType  String // "scroll_depth", "time_on_page", "exit"
+  eventValue String? // "25%", "60s", etc.
+  path       String
+  campaignId String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
 
   @@index([eventType])
   @@index([path])
