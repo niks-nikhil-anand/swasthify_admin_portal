@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
                 testCategory: validatedData.testCategory || [],
                 testsIncluded: validatedData.testsIncluded || [],
 
-                status: "DRAFT", // Default to Draft
+                status: "IN_REVIEW", // Default to In Review
             }
         });
 
