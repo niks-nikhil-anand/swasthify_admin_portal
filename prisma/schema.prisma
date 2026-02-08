@@ -103,7 +103,35 @@ model Patient {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  profilePic String?
+  docs       Docs[]
+
   @@map("patients")
+}
+
+model Docs {
+  id          String   @id @default(uuid())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  category    String?
+  fileUrl     String
+  sizeMb      Float?
+  uploadedBy  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  appointmentId String?
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+
+  labId String?
+  lab   Lab?    @relation(fields: [labId], references: [id], onDelete: SetNull)
+
+  doctorId String?
+  doctor   Doctor? @relation(fields: [doctorId], references: [id], onDelete: SetNull)
+
+  @@map("patient_docs")
 }
 
 model Doctor {
@@ -149,6 +177,7 @@ model Doctor {
   updatedAt DateTime @updatedAt
 
   campaigns Campaign[]
+  docs      Docs[]
 
   @@map("doctors")
 }
@@ -274,6 +303,8 @@ model Lab {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  docs Docs[]
+
   @@map("labs")
 }
 
@@ -337,6 +368,7 @@ model Appointment {
 
   prescription Prescription?
   payment      Payment?
+  docs         Docs[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
