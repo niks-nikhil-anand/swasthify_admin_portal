@@ -129,10 +129,7 @@ const SuperAdminDashboard = () => {
           <h2 className="text-2xl font-bold text-foreground">Platform Capabilities</h2>
           <p className="text-muted-foreground">Select a module to manage platform operations</p>
         </div>
-        <Button variant="outline" size="sm" className="gap-1 rounded-lg">
-          <Plus className="h-4 w-4" />
-          <span>New Action</span>
-        </Button>
+        
       </div>
 
       {/* Feature Grid */}
