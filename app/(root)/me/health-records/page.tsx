@@ -30,6 +30,7 @@ interface HealthRecord {
     category?: string | null;
     fileUrl: string;
     sizeMb?: number | null;
+    uploadedBy?: string | null;
     createdAt: string;
 }
 
@@ -297,7 +298,9 @@ export default function HealthRecordsPage() {
                     </div>
                     <div>
                         <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Linked Providers</p>
-                        <h3 className="text-xl font-bold text-foreground">5 Hospitals</h3>
+                        <h3 className="text-xl font-bold text-foreground">
+                            {[...new Set(records.map(r => r.uploadedBy).filter(Boolean))].length} Providers
+                        </h3>
                     </div>
                 </div>
             </div>
