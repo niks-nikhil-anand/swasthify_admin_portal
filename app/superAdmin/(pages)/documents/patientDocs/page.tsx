@@ -94,23 +94,18 @@ export default function PatientDocsPage() {
     }
   }
 
-  const handleDownload = async (doc: PatientDoc) => {
-    try {
-      const response = await fetch(doc.fileUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${doc.title || 'document'}.${doc.fileUrl.split('.').pop()}`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (error) {
-      console.error("Download failed:", error);
-      // Fallback: open in new tab
-      window.open(doc.fileUrl, '_blank');
-    }
+  const handleDownload = (doc: PatientDoc) => {
+    // Avoid CORS issues with fetch by using a direct anchor tag approach
+    const a = document.createElement('a');
+    a.href = doc.fileUrl;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    // The download attribute only works for same-origin or when Content-Disposition is set on server
+    // but it's the safest cross-browser fallback
+    a.download = doc.title || 'document';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }
 
   if (!isMounted) return null
