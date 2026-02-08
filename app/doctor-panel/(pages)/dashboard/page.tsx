@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, TrendingUp, Activity, ArrowUpRight, Clock, Plus, Megaphone, AlertCircle, FileText, CheckCircle, ShieldAlert, Edit, RefreshCw } from "lucide-react";
+import { Calendar, Users, TrendingUp, Activity, ArrowUpRight, Clock, Plus, Megaphone, AlertCircle, RefreshCw, Edit, ShieldAlert, FileText } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,6 +14,11 @@ import {
 } from "@/components/ui/dialog";
 import DoctorProfileForm from "@/components/doctor/DoctorProfileForm";
 import { toast } from "sonner";
+import {
+    getDoctorDashboardStats,
+    getUpcomingAppointments,
+    getDoctorRecentActivity
+} from "./actions";
 
 interface DoctorData {
     user: {
@@ -33,17 +38,29 @@ interface DoctorData {
 export default function DoctorPanelPage() {
     const [loading, setLoading] = useState(true);
     const [doctorData, setDoctorData] = useState<DoctorData | null>(null);
+    const [stats, setStats] = useState<any>(null);
+    const [upcomingAppointments, setUpcomingAppointments] = useState<any[]>([]);
+    const [recentActivity, setRecentActivity] = useState<any[]>([]);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
     const [verifying, setVerifying] = useState(false);
 
     const fetchDoctorData = useCallback(async () => {
         try {
-            const res = await fetch("/api/doctor/me");
+            const [res, dashboardStats, appointments, activity] = await Promise.all([
+                fetch("/api/doctor/me"),
+                getDoctorDashboardStats(),
+                getUpcomingAppointments(),
+                getDoctorRecentActivity()
+            ]);
+
             if (res.ok) {
                 const data = await res.json();
                 setDoctorData(data);
             }
+            setStats(dashboardStats);
+            setUpcomingAppointments(appointments);
+            setRecentActivity(activity);
         } catch (error) {
             console.error("Failed to fetch doctor data", error);
         } finally {
@@ -68,7 +85,7 @@ export default function DoctorPanelPage() {
 
     if (loading) {
         return (
-            <div className="space-y-8">
+            <div className="space-y-8 p-6">
                 <div className="flex flex-col gap-4">
                     <Skeleton className="h-10 w-48" />
                     <Skeleton className="h-4 w-96" />
@@ -77,6 +94,10 @@ export default function DoctorPanelPage() {
                     {[1, 2, 3, 4].map((i) => (
                         <Skeleton key={i} className="h-32 rounded-xl" />
                     ))}
+                </div>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                    <Skeleton className="lg:col-span-4 h-80 rounded-xl" />
+                    <Skeleton className="lg:col-span-3 h-80 rounded-xl" />
                 </div>
             </div>
         );
@@ -133,11 +154,10 @@ export default function DoctorPanelPage() {
         );
     }
 
-    // 2. PENDING STATUS (Account created but not yet active/approved by admin initially)
+    // 2. PENDING STATUS
     if (doctorData?.user?.status === "PENDING") {
         return (
             <div className="space-y-8">
-                {/* Welcome Component for Pending Users */}
                 <div className="bg-linear-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10 p-8 rounded-3xl border border-blue-100 dark:border-blue-900/30">
                     <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                         <div>
@@ -276,10 +296,10 @@ export default function DoctorPanelPage() {
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">1,234</div>
+                        <div className="text-2xl font-bold">{stats?.patients.total.toLocaleString() || 0}</div>
                         <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
                             <ArrowUpRight className="h-3 w-3 text-emerald-500" />
-                            <span className="text-emerald-500 font-medium">+12%</span> from last month
+                            <span className="text-emerald-500 font-medium">+{stats?.patients.trend}%</span> from last month
                         </p>
                     </CardContent>
                 </Card>
@@ -289,9 +309,9 @@ export default function DoctorPanelPage() {
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">12</div>
+                        <div className="text-2xl font-bold">{stats?.appointmentsToday.total || 0}</div>
                         <p className="text-xs text-muted-foreground mt-1">
-                            4 remaining
+                            {stats?.appointmentsToday.remaining || 0} remaining
                         </p>
                     </CardContent>
                 </Card>
@@ -301,10 +321,12 @@ export default function DoctorPanelPage() {
                         <TrendingUp className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">₹1.2L</div>
+                        <div className="text-2xl font-bold">₹{(stats?.revenue.total / 1000).toFixed(1)}K</div>
                         <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                            <ArrowUpRight className="h-3 w-3 text-emerald-500" />
-                            <span className="text-emerald-500 font-medium">+8%</span> from last month
+                            <ArrowUpRight className={`h-3 w-3 ${stats?.revenue.trend >= 0 ? "text-emerald-500" : "text-destructive"}`} />
+                            <span className={`${stats?.revenue.trend >= 0 ? "text-emerald-500" : "text-destructive"} font-medium`}>
+                                {stats?.revenue.trend >= 0 ? "+" : ""}{stats?.revenue.trend}%
+                            </span> from last month
                         </p>
                     </CardContent>
                 </Card>
@@ -314,7 +336,7 @@ export default function DoctorPanelPage() {
                         <Activity className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">7</div>
+                        <div className="text-2xl font-bold">{stats?.pendingReports || 0}</div>
                         <p className="text-xs text-muted-foreground mt-1">
                             Requires attention
                         </p>
@@ -329,17 +351,12 @@ export default function DoctorPanelPage() {
                     <CardHeader>
                         <CardTitle>Upcoming Appointments</CardTitle>
                         <CardDescription>
-                            You have 4 appointments remaining today.
+                            You have {stats?.appointmentsToday.remaining || 0} appointments remaining today.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {[
-                                { name: "Rahul Sharma", time: "10:30 AM", type: "General Checkup", status: "In Progress" },
-                                { name: "Priya Patel", time: "11:15 AM", type: "Follow up", status: "Waiting" },
-                                { name: "Amit Kumar", time: "12:00 PM", type: "Consultation", status: "Confirmed" },
-                                { name: "Sneha Gupta", time: "02:30 PM", type: "Report Review", status: "Confirmed" },
-                            ].map((apt, i) => (
+                            {upcomingAppointments.map((apt, i) => (
                                 <div key={i} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border hover:bg-muted/50 transition-colors">
                                     <div className="flex items-center gap-4">
                                         <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
@@ -366,6 +383,11 @@ export default function DoctorPanelPage() {
                                     </div>
                                 </div>
                             ))}
+                            {upcomingAppointments.length === 0 && (
+                                <div className="text-center py-10 text-muted-foreground">
+                                    No more appointments scheduled for today.
+                                </div>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
@@ -380,12 +402,7 @@ export default function DoctorPanelPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {[
-                                { title: "New Patient Registered", desc: "Rajesh Kumar registered via app", time: "2h ago" },
-                                { title: "Campaign Sent", desc: "Monsoon Health Tips sent to 500 patients", time: "4h ago" },
-                                { title: "Appointment Cancelled", desc: "Vikram Singh cancelled appointment", time: "5h ago" },
-                                { title: "Lab Report Uploaded", desc: "Report for Anita Desai is ready", time: "1d ago" },
-                            ].map((activity, i) => (
+                            {recentActivity.map((activity, i) => (
                                 <div key={i} className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0">
                                     <div className="h-2 w-2 mt-2 rounded-full bg-primary/30 ring-4 ring-primary/10" />
                                     <div className="flex-1">
@@ -397,6 +414,11 @@ export default function DoctorPanelPage() {
                                     </span>
                                 </div>
                             ))}
+                            {recentActivity.length === 0 && (
+                                <div className="text-center py-10 text-muted-foreground">
+                                    No recent activity found.
+                                </div>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
