@@ -185,7 +185,21 @@ export default function ProfilePage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="bloodGroup">Blood Group</Label>
-                      <Input id="bloodGroup" name="bloodGroup" value={formData.bloodGroup} onChange={handleInputChange} placeholder="e.g., O+" />
+                      <Select value={formData.bloodGroup} onValueChange={(val) => handleSelectChange("bloodGroup", val)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select blood group" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="A+">A+</SelectItem>
+                          <SelectItem value="A-">A-</SelectItem>
+                          <SelectItem value="B+">B+</SelectItem>
+                          <SelectItem value="B-">B-</SelectItem>
+                          <SelectItem value="O+">O+</SelectItem>
+                          <SelectItem value="O-">O-</SelectItem>
+                          <SelectItem value="AB+">AB+</SelectItem>
+                          <SelectItem value="AB-">AB-</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="height">Height (cm)</Label>
@@ -209,7 +223,17 @@ export default function ProfilePage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="emergencyContactPhone">Emergency Contact Phone</Label>
-                      <Input id="emergencyContactPhone" name="emergencyContactPhone" value={formData.emergencyContactPhone} onChange={handleInputChange} placeholder="Contact phone" />
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium border-r pr-2">+91</span>
+                        <Input
+                          id="emergencyContactPhone"
+                          name="emergencyContactPhone"
+                          className="pl-14"
+                          value={formData.emergencyContactPhone}
+                          onChange={handleInputChange}
+                          placeholder="98765 43210"
+                        />
+                      </div>
                     </div>
                   </div>
                   <DialogFooter className="pt-4">
