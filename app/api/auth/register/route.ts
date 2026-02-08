@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { UserValidation } from "@/lib/validators";
 import { db as prisma } from "@/lib/db";
+import { logAuthEvent } from "@/lib/auth-tracking";
 
 export async function POST(req: Request) {
   try {
@@ -12,9 +13,9 @@ export async function POST(req: Request) {
 
     if (!validationResult.success) {
       return NextResponse.json(
-        { 
-          error: "Validation failed", 
-          details: validationResult.error.format() 
+        {
+          error: "Validation failed",
+          details: validationResult.error.format()
         },
         { status: 400 }
       );
@@ -64,6 +65,9 @@ export async function POST(req: Request) {
     });
 
     const newUser = result;
+
+    // Log sign-up event (don't await to avoid delaying response)
+    logAuthEvent(newUser.id, "SIGN_UP");
 
     // Return success (exclude sensitive data)
     return NextResponse.json(

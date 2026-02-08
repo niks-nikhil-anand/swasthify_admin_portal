@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import bcrypt from "bcrypt";
 import { SignJWT } from "jose";
 import { cookies } from "next/headers";
+import { logAuthEvent } from "@/lib/auth-tracking";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key"; // Replace with process.env in production
 
@@ -154,6 +155,9 @@ export async function POST(req) {
     }
 
     console.log(`Setting cookie: ${cookieName}`);
+
+    // Log sign-in event (don't await to avoid delaying response)
+    logAuthEvent(user.id, "SIGN_IN");
 
     const cookieStore = await cookies();
     cookieStore.set(cookieName, token, {
