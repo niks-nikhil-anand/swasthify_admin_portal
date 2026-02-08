@@ -928,6 +928,7 @@ model Ticket {
 
 model PageView {
   id         String   @id @default(uuid())
+  visitorId  String?
   sessionId  String?
   userId     String?
   path       String
@@ -943,11 +944,13 @@ model PageView {
 
   @@index([path])
   @@index([createdAt])
+  @@index([visitorId])
   @@map("page_views")
 }
 
 model AnalyticsEvent {
   id         String   @id @default(uuid())
+  visitorId  String?
   sessionId  String?
   userId     String?
   eventType  String // "scroll_depth", "time_on_page", "exit"
@@ -959,5 +962,6 @@ model AnalyticsEvent {
 
   @@index([eventType])
   @@index([path])
+  @@index([visitorId])
   @@map("analytics_events")
 }
