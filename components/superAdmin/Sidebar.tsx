@@ -21,7 +21,10 @@ import {
     MessageSquareWarning,
     BarChart,
     Bell,
-    Megaphone
+    Megaphone,
+    Files,
+    ShieldCheck,
+    Activity
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -91,7 +94,27 @@ const sidebarGroups = [
                 href: "/superAdmin/operations/complaints",
                 icon: MessageSquareWarning,
             },
-            
+
+        ]
+    },
+    {
+        label: "Documents",
+        items: [
+            {
+                title: "Patient Docs",
+                href: "/superAdmin/documents/patientDocs",
+                icon: Files,
+            },
+            {
+                title: "Test Result",
+                href: "/superAdmin/documents/testResult",
+                icon: Activity,
+            },
+            {
+                title: "Verification Docs",
+                href: "/superAdmin/documents/verificationDocs",
+                icon: ShieldCheck,
+            },
         ]
     },
     {
