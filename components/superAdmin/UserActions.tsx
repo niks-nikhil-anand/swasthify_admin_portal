@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { MoreHorizontal, Copy, Eye, Edit, Trash, Loader2 } from "lucide-react"
+import { MoreHorizontal, Copy, Eye, Edit, Trash, Loader2, ShieldCheck } from "lucide-react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
@@ -25,6 +25,7 @@ import {
 
 import { ViewUserModal } from "./ViewUserModal"
 import { EditUserModal } from "./EditUserModal"
+import { AuthLogSheet } from "./AuthLogSheet"
 
 type AppUser = {
     id: string
@@ -43,6 +44,7 @@ interface UserActionsProps {
 export function UserActions({ user }: UserActionsProps) {
     const [showViewModal, setShowViewModal] = useState(false)
     const [showEditModal, setShowEditModal] = useState(false)
+    const [showAuthLogs, setShowAuthLogs] = useState(false)
     const [showDeleteAlert, setShowDeleteAlert] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
     const router = useRouter()
@@ -100,6 +102,10 @@ export function UserActions({ user }: UserActionsProps) {
                         <Edit className="mr-2 h-4 w-4" />
                         Edit User
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setShowAuthLogs(true)}>
+                        <ShieldCheck className="mr-2 h-4 w-4" />
+                        Auth Logs
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                         onClick={() => setShowDeleteAlert(true)}
@@ -121,6 +127,13 @@ export function UserActions({ user }: UserActionsProps) {
                 user={user}
                 open={showEditModal}
                 onOpenChange={setShowEditModal}
+            />
+
+            <AuthLogSheet
+                userId={user.id}
+                userName={user.name}
+                open={showAuthLogs}
+                onOpenChange={setShowAuthLogs}
             />
 
             <Dialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
