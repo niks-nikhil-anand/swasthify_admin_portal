@@ -125,7 +125,25 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                     <Button
                         size="lg"
                         className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200 dark:shadow-none rounded-xl gap-2 transition-all hover:scale-105 active:scale-95"
-                        onClick={() => window.location.href = `/doctors/${campaign.id}`}
+                        onClick={() => {
+                            // Track Click event for CTR
+                            fetch("/api/analytics/collect", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    type: "event",
+                                    data: {
+                                        eventType: "campaign_click",
+                                        eventValue: "doctor",
+                                        path: "/",
+                                        campaignId: campaign.id,
+                                        metadata: { name: campaign.name, doctorId: campaign.doctor.id }
+                                    }
+                                })
+                            }).catch(console.error);
+
+                            window.location.href = `/doctors/${campaign.id}`;
+                        }}
                     >
                         Book Appt
                         <Stethoscope className="w-4 h-4" />
