@@ -163,10 +163,14 @@ export async function getEngagementStats(days: number = 7) {
 
 export async function getPageAnalytics(days: number = 7) {
     const startDate = startOfDay(subDays(new Date(), days));
+    const ALLOWED_PATHS = ["/", "/contact", "/about-us", "/pricing"];
 
     const stats = await prisma.pageView.groupBy({
         by: ['path'],
-        where: { createdAt: { gte: startDate } },
+        where: {
+            createdAt: { gte: startDate },
+            path: { in: ALLOWED_PATHS }
+        },
         _count: {
             path: true,
             sessionId: true,
