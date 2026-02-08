@@ -11,11 +11,9 @@ import {
     getAnalyticsSummary,
     getTrafficData,
     getDeviceStats,
-    getCampaignStats,
-    getEngagementStats,
     getPageAnalytics
 } from "./actions"
-import { Users, Eye, Clock, ArrowUpRight, MousePointer2, Smartphone, FileText } from "lucide-react"
+import { Users, Eye, Clock, ArrowUpRight, Smartphone, FileText } from "lucide-react"
 import {
     Table,
     TableBody,
@@ -29,27 +27,21 @@ export default function AnalyticsPage() {
     const [summary, setSummary] = useState<any>(null)
     const [traffic, setTraffic] = useState<any[]>([])
     const [devices, setDevices] = useState<any[]>([])
-    const [campaigns, setCampaigns] = useState<any[]>([])
-    const [engagement, setEngagement] = useState<any[]>([])
     const [pageStats, setPageStats] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [s, t, d, c, e, p] = await Promise.all([
+                const [s, t, d, p] = await Promise.all([
                     getAnalyticsSummary(),
                     getTrafficData(),
                     getDeviceStats(),
-                    getCampaignStats(),
-                    getEngagementStats(),
                     getPageAnalytics()
                 ])
                 setSummary(s)
                 setTraffic(t)
                 setDevices(d)
-                setCampaigns(c)
-                setEngagement(e)
                 setPageStats(p)
             } catch (error) {
                 console.error("Failed to fetch analytics:", error)
@@ -210,45 +202,6 @@ export default function AnalyticsPage() {
                     </CardContent>
                 </Card>
 
-                {/* Campaign Performance */}
-                <Card className="col-span-1 lg:col-span-2">
-                    <CardHeader>
-                        <CardTitle>Top Campaigns</CardTitle>
-                        <CardDescription>Reach vs Creative Click-through Rate</CardDescription>
-                    </CardHeader>
-                    <CardContent className="h-[350px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={campaigns} layout="vertical" margin={{ left: 40 }}>
-                                <CartesianGrid strokeDasharray="3 3" horizontal={false} opacity={0.1} />
-                                <XAxis type="number" fontSize={12} stroke="#888888" tickLine={false} axisLine={false} />
-                                <YAxis dataKey="id" type="category" fontSize={10} width={80} stroke="#888888" tickLine={false} axisLine={false} />
-                                <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '8px' }} />
-                                <Legend />
-                                <Bar dataKey="views" name="Reach (Views)" fill="#10b981" radius={[0, 4, 4, 0]} barSize={20} />
-                                <Bar dataKey="clicks" name="Interest (Clicks)" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </CardContent>
-                </Card>
-
-                {/* Engagement / Scroll Depth */}
-                <Card className="col-span-1">
-                    <CardHeader>
-                        <CardTitle>Scroll Depth</CardTitle>
-                        <CardDescription>User retention milestones</CardDescription>
-                    </CardHeader>
-                    <CardContent className="h-[350px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={engagement}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
-                                <XAxis dataKey="depth" fontSize={12} stroke="#888888" tickLine={false} axisLine={false} />
-                                <YAxis fontSize={12} stroke="#888888" tickLine={false} axisLine={false} />
-                                <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '8px' }} />
-                                <Bar dataKey="count" name="Users" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </CardContent>
-                </Card>
             </div>
         </div>
     )

@@ -93,98 +93,41 @@ export async function getDeviceStats(days: number = 7) {
     }));
 }
 
-export async function getCampaignStats(days: number = 7) {
-    const startDate = startOfDay(subDays(new Date(), days));
-
-    const [views, clicks] = await Promise.all([
-        prisma.pageView.groupBy({
-            by: ['campaignId'],
-            where: {
-                createdAt: { gte: startDate },
-                campaignId: { not: null },
-            },
-            _count: { campaignId: true },
-        }),
-        prisma.analyticsEvent.groupBy({
-            by: ['campaignId'],
-            where: {
-                createdAt: { gte: startDate },
-                eventType: 'campaign_click',
-                campaignId: { not: null },
-            },
-            _count: { campaignId: true },
-        }),
-    ]);
-
-    // Combine data
-    const statsMap: Record<string, { views: number; clicks: number }> = {};
-
-    views.forEach(v => {
-        if (v.campaignId) {
-            statsMap[v.campaignId] = { views: v._count.campaignId, clicks: 0 };
-        }
-    });
-
-    clicks.forEach(c => {
-        if (c.campaignId && statsMap[c.campaignId]) {
-            statsMap[c.campaignId].clicks = c._count.campaignId;
-        }
-    });
-
-    return Object.entries(statsMap).map(([id, data]) => ({
-        id,
-        views: data.views,
-        clicks: data.clicks,
-        ctr: data.views > 0 ? ((data.clicks / data.views) * 100).toFixed(1) : "0",
-    })).sort((a, b) => b.views - a.views).slice(0, 10);
-}
-
-export async function getEngagementStats(days: number = 7) {
-    const startDate = startOfDay(subDays(new Date(), days));
-
-    const scrollEvents = await prisma.analyticsEvent.groupBy({
-        by: ['eventValue'],
-        where: {
-            createdAt: { gte: startDate },
-            eventType: 'scroll_depth',
-        },
-        _count: { eventValue: true },
-    });
-
-    return scrollEvents.map(s => ({
-        depth: s.eventValue,
-        count: s._count.eventValue,
-    })).sort((a, b) => {
-        const valA = parseInt(a.depth?.replace('%', '') || '0');
-        const valB = parseInt(b.depth?.replace('%', '') || '0');
-        return valA - valB;
-    });
-}
 
 export async function getPageAnalytics(days: number = 7) {
     const startDate = startOfDay(subDays(new Date(), days));
     const ALLOWED_PATHS = ["/", "/contact", "/about-us", "/pricing"];
 
-    const stats = await prisma.pageView.groupBy({
-        by: ['path'],
+    // Fetch all page views for the period to calculate unique visitors accurately
+    const pageViews = await prisma.pageView.findMany({
         where: {
             createdAt: { gte: startDate },
             path: { in: ALLOWED_PATHS }
         },
-        _count: {
+        select: {
             path: true,
             visitorId: true,
-        },
-        orderBy: {
-            _count: {
-                path: 'desc',
-            },
-        },
+        }
     });
 
-    return stats.map(s => ({
-        path: s.path,
-        views: s._count?.path || 0,
-        uniqueVisitors: s._count?.visitorId || 0,
-    }));
+    // Group by path and count unique visitors using a Set
+    const pathStats: Record<string, { views: number; visitors: Set<string> }> = {};
+
+    pageViews.forEach((pv: { path: string; visitorId: string | null }) => {
+        if (!pathStats[pv.path]) {
+            pathStats[pv.path] = { views: 0, visitors: new Set() };
+        }
+        pathStats[pv.path].views++;
+        if (pv.visitorId) {
+            pathStats[pv.path].visitors.add(pv.visitorId);
+        }
+    });
+
+    return Object.entries(pathStats)
+        .map(([path, stats]) => ({
+            path,
+            views: stats.views,
+            uniqueVisitors: stats.visitors.size,
+        }))
+        .sort((a, b) => b.views - a.views);
 }
