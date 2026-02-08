@@ -925,3 +925,35 @@ model Ticket {
 
   @@map("tickets")
 }
+
+model PageView {
+  id          String   @id @default(uuid())
+  sessionId   String?
+  userId      String?
+  path        String
+  referrer    String?
+  deviceType  String?
+  os          String?
+  browser     String?
+  country     String?
+  city        String?
+  createdAt   DateTime @default(now())
+
+  @@index([path])
+  @@index([createdAt])
+  @@map("page_views")
+}
+
+model AnalyticsEvent {
+  id          String   @id @default(uuid())
+  sessionId   String?
+  userId      String?
+  eventType   String   // "scroll_depth", "time_on_page", "exit"
+  eventValue  String?  // "25%", "60s", etc.
+  path        String
+  createdAt   DateTime @default(now())
+
+  @@index([eventType])
+  @@index([path])
+  @@map("analytics_events")
+}
