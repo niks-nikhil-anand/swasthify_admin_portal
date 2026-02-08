@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
         if (type === "pageview") {
             await prisma.pageView.create({
                 data: {
+                    visitorId: data.visitorId,
                     sessionId: data.sessionId,
                     userId: data.userId,
                     path: path,
@@ -43,6 +44,7 @@ export async function POST(req: NextRequest) {
         } else if (type === "event") {
             await prisma.analyticsEvent.create({
                 data: {
+                    visitorId: data.visitorId,
                     sessionId: data.sessionId,
                     userId: data.userId,
                     eventType: data.eventType,
