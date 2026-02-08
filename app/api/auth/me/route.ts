@@ -27,6 +27,9 @@ export async function GET(req: Request) {
                 email: true,
                 role: true,
                 name: true,
+                patients: {
+                    take: 1, // Get the primary patient profile
+                }
             }
         });
 
@@ -42,7 +45,8 @@ export async function GET(req: Request) {
                 id: user.id,
                 email: user.email,
                 role: user.role,
-                name: user.name
+                name: user.name,
+                patient: user.patients[0] || null
             }
         });
 
