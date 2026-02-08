@@ -160,61 +160,9 @@ export function Navbar() {
                                                 </>
                                             )}
 
-                                            {user.role === "DOCTOR" && (
-                                                <>
-                                                    <Link href="/doctor-panel/dashboard">
-                                                        <DropdownMenuItem className="cursor-pointer">
-                                                            <LayoutDashboard className="mr-2 h-4 w-4" />
-                                                            <span>Doctor Dashboard</span>
-                                                        </DropdownMenuItem>
-                                                    </Link>
-                                                    <Link href="/doctor-panel/profile">
-                                                        <DropdownMenuItem className="cursor-pointer">
-                                                            <User className="mr-2 h-4 w-4" />
-                                                            <span>My Profile</span>
-                                                        </DropdownMenuItem>
-                                                    </Link>
-                                                    <Link href="/doctor-panel/appointment">
-                                                        <DropdownMenuItem className="cursor-pointer">
-                                                            <Calendar className="mr-2 h-4 w-4" />
-                                                            <span>Appointments</span>
-                                                        </DropdownMenuItem>
-                                                    </Link>
-                                                </>
-                                            )}
-
-                                            {user.role === "SUPER_ADMIN" && (
-                                                <>
-                                                    <Link href="/superAdmin/dashboard">
-                                                        <DropdownMenuItem className="cursor-pointer">
-                                                            <LayoutDashboard className="mr-2 h-4 w-4" />
-                                                            <span>Admin Dashboard</span>
-                                                        </DropdownMenuItem>
-                                                    </Link>
-                                                    <Link href="/superAdmin/userManagement/patient">
-                                                        <DropdownMenuItem className="cursor-pointer">
-                                                            <Users className="mr-2 h-4 w-4" />
-                                                            <span>Manage Patients</span>
-                                                        </DropdownMenuItem>
-                                                    </Link>
-                                                </>
-                                            )}
-
-                                            {user.role === "LAB" && (
-                                                <Link href="/lab-panel/dashboard">
-                                                    <DropdownMenuItem className="cursor-pointer">
-                                                        <LayoutDashboard className="mr-2 h-4 w-4" />
-                                                        <span>Lab Dashboard</span>
-                                                    </DropdownMenuItem>
-                                                </Link>
-                                            )}
-
                                             <DropdownMenuSeparator />
                                             <Link href={
-                                                user.role === "PATIENT" ? "/me/settings" :
-                                                    user.role === "DOCTOR" ? "/doctor-panel/setting" :
-                                                        user.role === "SUPER_ADMIN" ? "/superAdmin/system/settings" :
-                                                            user.role === "LAB" ? "/lab-panel/settings" : "/settings"
+                                                user.role === "PATIENT" ? "/me/settings" : "/"  //TODO: add settings route for other roles
                                             }>
                                                 <DropdownMenuItem className="cursor-pointer">
                                                     <Settings className="mr-2 h-4 w-4" />
