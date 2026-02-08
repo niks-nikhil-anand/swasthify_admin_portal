@@ -65,6 +65,7 @@ model User {
 
   auditLogs AuditLog[]
   userRoles UserRole[]
+  authLogs  AuthLog[]
 
   @@index([email])
   @@index([phone])
@@ -796,6 +797,36 @@ model LabAvailability {
   updatedAt DateTime @updatedAt
 
   @@map("lab_availabilities")
+}
+
+model AuthLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      AuthLogType
+  
+  deviceType     String?
+  os             String?
+  osVersion      String?
+  browser        String?
+  browserVersion String?
+  
+  country        String?
+  region         String?
+  city           String?
+  timezone       String?
+  ipCountry      String?
+  ipAddress      String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("auth_logs")
+}
+
+enum AuthLogType {
+  SIGN_IN
+  SIGN_UP
 }
 
 enum NotificationChannel {
