@@ -45,14 +45,17 @@ export async function PATCH(req: Request) {
         }
 
         // Update patient record
+        const updateData: any = { ...validatedData };
+
+        if (validatedData.dateOfBirth !== undefined) {
+            updateData.dateOfBirth = (validatedData.dateOfBirth && validatedData.dateOfBirth.trim() !== "")
+                ? new Date(validatedData.dateOfBirth)
+                : null;
+        }
+
         const updatedPatient = await db.patient.update({
             where: { id: patient.id },
-            data: {
-                ...validatedData,
-                dateOfBirth: (validatedData.dateOfBirth && validatedData.dateOfBirth.trim() !== "")
-                    ? new Date(validatedData.dateOfBirth)
-                    : null,
-            },
+            data: updateData,
         });
 
         // Update user name if provided (since Name is also in User model)
