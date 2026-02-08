@@ -1,127 +1,159 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
     Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart,
     Pie, PieChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart,
     RadialBar, RadialBarChart, ResponsiveContainer, Tooltip, XAxis, YAxis
 } from "recharts"
+import {
+    getAnalyticsSummary,
+    getTrafficData,
+    getDeviceStats,
+    getCampaignStats,
+    getEngagementStats,
+    getPageAnalytics
+} from "./actions"
+import { Users, Eye, Clock, ArrowUpRight, MousePointer2, Smartphone, FileText } from "lucide-react"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
 
 export default function AnalyticsPage() {
-    // 1. Line Chart: User Growth
-    const userGrowthData = [
-        { month: 'Jan', doctors: 400, patients: 2400 },
-        { month: 'Feb', doctors: 450, patients: 2800 },
-        { month: 'Mar', doctors: 500, patients: 3500 },
-        { month: 'Apr', doctors: 520, patients: 3900 },
-        { month: 'May', doctors: 600, patients: 4500 },
-        { month: 'Jun', doctors: 650, patients: 5100 },
-    ];
+    const [summary, setSummary] = useState<any>(null)
+    const [traffic, setTraffic] = useState<any[]>([])
+    const [devices, setDevices] = useState<any[]>([])
+    const [campaigns, setCampaigns] = useState<any[]>([])
+    const [engagement, setEngagement] = useState<any[]>([])
+    const [pageStats, setPageStats] = useState<any[]>([])
+    const [loading, setLoading] = useState(true)
 
-    // 2. Pie Chart: Appointment Distribution
-    const appointmentData = [
-        { name: 'Completed', value: 400, color: '#10b981' },
-        { name: 'Scheduled', value: 300, color: '#3b82f6' },
-        { name: 'Cancelled', value: 100, color: '#ef4444' },
-        { name: 'No Show', value: 50, color: '#f59e0b' },
-    ];
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [s, t, d, c, e, p] = await Promise.all([
+                    getAnalyticsSummary(),
+                    getTrafficData(),
+                    getDeviceStats(),
+                    getCampaignStats(),
+                    getEngagementStats(),
+                    getPageAnalytics()
+                ])
+                setSummary(s)
+                setTraffic(t)
+                setDevices(d)
+                setCampaigns(c)
+                setEngagement(e)
+                setPageStats(p)
+            } catch (error) {
+                console.error("Failed to fetch analytics:", error)
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchData()
+    }, [])
 
-    // 3. Bar Chart: Lab Performance
-    const labPerformanceData = [
-        { name: 'City Path', tests: 1200 },
-        { name: 'Global Diag', tests: 950 },
-        { name: 'TrustCare', tests: 1400 },
-        { name: 'HealthFirst', tests: 800 },
-        { name: 'MediCore', tests: 1100 },
-    ];
-
-    // 4. Radar Chart: Department Metrics (Cardiology vs Pediatrics)
-    const departmentData = [
-        { subject: 'Satisfaction', A: 120, B: 110, fullMark: 150 },
-        { subject: 'Efficiency', A: 98, B: 130, fullMark: 150 },
-        { subject: 'Volume', A: 86, B: 130, fullMark: 150 },
-        { subject: 'Revenue', A: 99, B: 100, fullMark: 150 },
-        { subject: 'Wait Time', A: 85, B: 90, fullMark: 150 },
-        { subject: 'Staffing', A: 65, B: 85, fullMark: 150 },
-    ];
-
-    // 5. Radial Bar Chart: Monthly Targets
-    const targetData = [
-        { name: 'Revenue', uv: 90, fill: '#8884d8' },
-        { name: 'Patients', uv: 75, fill: '#83a6ed' },
-        { name: 'Visits', uv: 50, fill: '#8dd1e1' },
-        { name: 'Surgery', uv: 40, fill: '#82ca9d' },
-        { name: 'Labs', uv: 85, fill: '#a4de6c' },
-    ];
-
-    // 6. Stacked Area Chart: Revenue Streams
-    const revenueStreamData = [
-        { month: 'Jan', consult: 4000, lab: 2400, surgery: 2400 },
-        { month: 'Feb', consult: 3000, lab: 1398, surgery: 2210 },
-        { month: 'Mar', consult: 2000, lab: 9800, surgery: 2290 },
-        { month: 'Apr', consult: 2780, lab: 3908, surgery: 2000 },
-        { month: 'May', consult: 1890, lab: 4800, surgery: 2181 },
-        { month: 'Jun', consult: 2390, lab: 3800, surgery: 2500 },
-    ];
+    if (loading) {
+        return <div className="p-6 flex items-center justify-center min-h-[400px]">Loading Analytics...</div>
+    }
 
     return (
         <div className="p-6 space-y-6">
-            <h1 className="text-3xl font-bold tracking-tight">Analytics Overview</h1>
+            <div className="flex justify-between items-center">
+                <h1 className="text-3xl font-bold tracking-tight">Analytics Overview</h1>
+                <p className="text-sm text-muted-foreground">Last 7 days</p>
+            </div>
+
+            {/* Summary Cards */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-sm font-medium">Total Page Views</CardTitle>
+                        <Eye className="w-4 h-4 text-emerald-600" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{summary?.totalViews.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground">Total views across site</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-sm font-medium">Unique Visitors</CardTitle>
+                        <Users className="w-4 h-4 text-blue-600" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{summary?.uniqueVisitors.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground">Total unique sessions</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-sm font-medium">Avg. Duration</CardTitle>
+                        <Clock className="w-4 h-4 text-purple-600" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{summary?.avgDuration}</div>
+                        <p className="text-xs text-muted-foreground">Avg. time per session</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-sm font-medium">Bounce Rate</CardTitle>
+                        <ArrowUpRight className="w-4 h-4 text-orange-600" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{summary?.bounceRate}</div>
+                        <p className="text-xs text-muted-foreground">Single page sessions</p>
+                    </CardContent>
+                </Card>
+            </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {/* 1. User Growth */}
+                {/* Traffic Trend */}
                 <Card className="col-span-1 lg:col-span-2">
                     <CardHeader>
-                        <CardTitle>User Growth</CardTitle>
-                        <CardDescription>Doctor vs Patient registration trends</CardDescription>
+                        <div className="flex items-center gap-2">
+                            <CardTitle>Website Traffic</CardTitle>
+                        </div>
+                        <CardDescription>Daily page views trend</CardDescription>
                     </CardHeader>
                     <CardContent className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={userGrowthData}>
-                                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                                <XAxis dataKey="month" fontSize={12} stroke="#888888" tickLine={false} axisLine={false} />
+                            <AreaChart data={traffic}>
+                                <defs>
+                                    <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.1} />
+                                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
+                                <XAxis dataKey="date" fontSize={12} stroke="#888888" tickLine={false} axisLine={false} />
                                 <YAxis fontSize={12} stroke="#888888" tickLine={false} axisLine={false} />
                                 <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                                <Legend />
-                                <Line type="monotone" dataKey="patients" stroke="#8b5cf6" strokeWidth={2} dot={false} />
-                                <Line type="monotone" dataKey="doctors" stroke="#06b6d4" strokeWidth={2} dot={false} />
-                            </LineChart>
+                                <Area type="monotone" dataKey="views" stroke="#10b981" fillOpacity={1} fill="url(#colorViews)" strokeWidth={2} />
+                            </AreaChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
 
-                {/* 2. Monthly Targets (Radial Bar) */}
+                {/* Device Distribution */}
                 <Card className="col-span-1">
                     <CardHeader>
-                        <CardTitle>Monthly Targets</CardTitle>
-                        <CardDescription>Progress towards goals (%)</CardDescription>
-                    </CardHeader>
-                    <CardContent className="h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <RadialBarChart cx="50%" cy="50%" innerRadius="10%" outerRadius="80%" barSize={10} data={targetData}>
-                                <RadialBar
-                                    label={{ position: 'insideStart', fill: '#fff' }}
-                                    background
-                                    dataKey="uv"
-                                />
-                                <Legend iconSize={10} layout="vertical" verticalAlign="middle" wrapperStyle={{ top: '50%', right: 0, transform: 'translate(0, -50%)', lineHeight: '24px' }} />
-                                <Tooltip />
-                            </RadialBarChart>
-                        </ResponsiveContainer>
-                    </CardContent>
-                </Card>
-
-                {/* 3. Appointment Status */}
-                <Card className="col-span-1">
-                    <CardHeader>
-                        <CardTitle>Appointment Distribution</CardTitle>
-                        <CardDescription>By status</CardDescription>
+                        <CardTitle>Devices</CardTitle>
+                        <CardDescription>Mobile vs Desktop usage</CardDescription>
                     </CardHeader>
                     <CardContent className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
-                                    data={appointmentData}
+                                    data={devices}
                                     cx="50%"
                                     cy="50%"
                                     innerRadius={60}
@@ -129,79 +161,94 @@ export default function AnalyticsPage() {
                                     paddingAngle={5}
                                     dataKey="value"
                                 >
-                                    {appointmentData.map((entry, index) => (
+                                    {devices.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={entry.color} />
                                     ))}
                                 </Pie>
                                 <Tooltip />
-                                <Legend verticalAlign="bottom" height={36} />
+                                <Legend />
                             </PieChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
 
-                {/* 4. Department Metrics (Radar) */}
-                <Card className="col-span-1">
+                {/* Page-wise Stats Table */}
+                <Card className="col-span-1 lg:col-span-3">
                     <CardHeader>
-                        <CardTitle>Dept. Comparison</CardTitle>
-                        <CardDescription>Cardiology (A) vs Pediatrics (B)</CardDescription>
+                        <div className="flex items-center gap-2">
+                            <FileText className="w-5 h-5 text-emerald-600" />
+                            <CardTitle>Top Pages</CardTitle>
+                        </div>
+                        <CardDescription>Performance breakdown by page path</CardDescription>
                     </CardHeader>
-                    <CardContent className="h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={departmentData}>
-                                <PolarGrid />
-                                <PolarAngleAxis dataKey="subject" fontSize={10} />
-                                <PolarRadiusAxis angle={30} domain={[0, 150]} />
-                                <Radar name="Cardiology" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-                                <Radar name="Pediatrics" dataKey="B" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} />
-                                <Legend />
-                                <Tooltip />
-                            </RadarChart>
-                        </ResponsiveContainer>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Page Path</TableHead>
+                                    <TableHead className="text-right">Views</TableHead>
+                                    <TableHead className="text-right">Unique Visitors</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {pageStats.map((stat) => (
+                                    <TableRow key={stat.path}>
+                                        <TableCell className="font-medium font-mono text-xs">{stat.path}</TableCell>
+                                        <TableCell className="text-right">{stat.views.toLocaleString()}</TableCell>
+                                        <TableCell className="text-right">{stat.uniqueVisitors.toLocaleString()}</TableCell>
+                                    </TableRow>
+                                ))}
+                                {pageStats.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={3} className="text-center py-6 text-muted-foreground">
+                                            No page data available for this period
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
                     </CardContent>
                 </Card>
 
-                {/* 5. Top Labs (Bar) */}
-                <Card className="col-span-1">
+                {/* Campaign Performance */}
+                <Card className="col-span-1 lg:col-span-2">
                     <CardHeader>
-                        <CardTitle>Top Diagnostics Labs</CardTitle>
-                        <CardDescription>Test volume</CardDescription>
+                        <CardTitle>Top Campaigns</CardTitle>
+                        <CardDescription>Reach vs Creative Click-through Rate</CardDescription>
                     </CardHeader>
-                    <CardContent className="h-[300px]">
+                    <CardContent className="h-[350px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={labPerformanceData} layout="vertical">
-                                <CartesianGrid strokeDasharray="3 3" horizontal={false} opacity={0.3} />
+                            <BarChart data={campaigns} layout="vertical" margin={{ left: 40 }}>
+                                <CartesianGrid strokeDasharray="3 3" horizontal={false} opacity={0.1} />
                                 <XAxis type="number" fontSize={12} stroke="#888888" tickLine={false} axisLine={false} />
-                                <YAxis dataKey="name" type="category" fontSize={10} width={80} stroke="#888888" tickLine={false} axisLine={false} />
+                                <YAxis dataKey="id" type="category" fontSize={10} width={80} stroke="#888888" tickLine={false} axisLine={false} />
                                 <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '8px' }} />
-                                <Bar dataKey="tests" fill="#ec4899" radius={[0, 4, 4, 0]} barSize={20} />
+                                <Legend />
+                                <Bar dataKey="views" name="Reach (Views)" fill="#10b981" radius={[0, 4, 4, 0]} barSize={20} />
+                                <Bar dataKey="clicks" name="Interest (Clicks)" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
 
-                {/* 6. Revenue Streams (Stacked Area) */}
-                <Card className="col-span-1 lg:col-span-3">
+                {/* Engagement / Scroll Depth */}
+                <Card className="col-span-1">
                     <CardHeader>
-                        <CardTitle>Revenue Streams</CardTitle>
-                        <CardDescription>Income breakdown over time</CardDescription>
+                        <CardTitle>Scroll Depth</CardTitle>
+                        <CardDescription>User retention milestones</CardDescription>
                     </CardHeader>
-                    <CardContent className="h-[300px]">
+                    <CardContent className="h-[350px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={revenueStreamData}>
-                                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                                <XAxis dataKey="month" fontSize={12} stroke="#888888" tickLine={false} axisLine={false} />
+                            <BarChart data={engagement}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
+                                <XAxis dataKey="depth" fontSize={12} stroke="#888888" tickLine={false} axisLine={false} />
                                 <YAxis fontSize={12} stroke="#888888" tickLine={false} axisLine={false} />
-                                <Tooltip />
-                                <Legend />
-                                <Area type="monotone" dataKey="consult" stackId="1" stroke="#8884d8" fill="#8884d8" />
-                                <Area type="monotone" dataKey="lab" stackId="1" stroke="#82ca9d" fill="#82ca9d" />
-                                <Area type="monotone" dataKey="surgery" stackId="1" stroke="#ffc658" fill="#ffc658" />
-                            </AreaChart>
+                                <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '8px' }} />
+                                <Bar dataKey="count" name="Users" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                            </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
-
             </div>
         </div>
     )
