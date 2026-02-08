@@ -8,7 +8,33 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 export async function GET(req: Request) {
     try {
         const cookieStore = await cookies();
-        const token = cookieStore.get("PATIENT")?.value
+        const referer = req.headers.get("referer") || "";
+
+        // Determine which cookie to check first based on the route
+        let token: string | undefined;
+        let roleType: string | undefined;
+
+        if (referer.includes("/superAdmin")) {
+            token = cookieStore.get("SUPER_ADMIN")?.value;
+            roleType = "SUPER_ADMIN";
+        } else if (referer.includes("/doctor-panel")) {
+            token = cookieStore.get("DOCTOR")?.value;
+            roleType = "DOCTOR";
+        } else if (referer.includes("/lab-panel")) {
+            token = cookieStore.get("LAB")?.value;
+            roleType = "LAB";
+        } else if (referer.includes("/me") || referer.includes("/")) {
+            token = cookieStore.get("PATIENT")?.value;
+            roleType = "PATIENT";
+        }
+
+        // Fallback to any available token if the specific one isn't found
+        if (!token) {
+            token = cookieStore.get("SUPER_ADMIN")?.value ||
+                cookieStore.get("DOCTOR")?.value ||
+                cookieStore.get("LAB")?.value ||
+                cookieStore.get("PATIENT")?.value;
+        }
 
         if (!token) {
             return NextResponse.json(
@@ -27,9 +53,9 @@ export async function GET(req: Request) {
                 email: true,
                 role: true,
                 name: true,
-                patients: {
-                    take: 1, // Get the primary patient profile
-                }
+                patients: { take: 1 },
+                doctor: true,
+                lab: true,
             }
         });
 
@@ -46,7 +72,9 @@ export async function GET(req: Request) {
                 email: user.email,
                 role: user.role,
                 name: user.name,
-                patient: user.patients[0] || null
+                patient: user.patients[0] || null,
+                doctor: user.doctor || null,
+                lab: user.lab || null,
             }
         });
 
