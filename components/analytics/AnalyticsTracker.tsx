@@ -8,6 +8,7 @@ const ALLOWED_PATHS = ["/", "/contact", "/about-us", "/pricing"];
 export default function AnalyticsTracker() {
     const pathname = usePathname();
     const sessionIdRef = useRef<string | null>(null);
+    const visitorIdRef = useRef<string | null>(null);
     const scrollDepthRef = useRef<Set<number>>(new Set());
     const startTimeRef = useRef<number>(Date.now());
 
@@ -16,9 +17,19 @@ export default function AnalyticsTracker() {
         const isAllowed = ALLOWED_PATHS.includes(pathname);
         if (!isAllowed) return;
 
-        // Initialize Session ID
+        // Initialize Session ID (per session)
         if (!sessionIdRef.current) {
             sessionIdRef.current = Math.random().toString(36).substring(2, 15);
+        }
+
+        // Initialize Visitor ID (persistent)
+        if (!visitorIdRef.current) {
+            let vid = localStorage.getItem("swasthify_visitor_id");
+            if (!vid) {
+                vid = Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+                localStorage.setItem("swasthify_visitor_id", vid);
+            }
+            visitorIdRef.current = vid;
         }
 
         // Track Page View
@@ -74,6 +85,7 @@ export default function AnalyticsTracker() {
                     type: "pageview",
                     data: {
                         sessionId: sessionIdRef.current,
+                        visitorId: visitorIdRef.current,
                         path,
                         referrer: typeof document !== "undefined" ? document.referrer : "",
                         campaignId,
@@ -95,6 +107,7 @@ export default function AnalyticsTracker() {
                     type: "event",
                     data: {
                         sessionId: sessionIdRef.current,
+                        visitorId: visitorIdRef.current,
                         eventType,
                         eventValue,
                         path: pathname,

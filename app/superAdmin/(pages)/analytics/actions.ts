@@ -11,7 +11,7 @@ export async function getAnalyticsSummary(days: number = 7) {
             where: { createdAt: { gte: startDate } },
         }),
         prisma.pageView.groupBy({
-            by: ['sessionId'],
+            by: ['visitorId'],
             where: { createdAt: { gte: startDate } },
         }),
         prisma.analyticsEvent.findMany({
@@ -173,7 +173,7 @@ export async function getPageAnalytics(days: number = 7) {
         },
         _count: {
             path: true,
-            sessionId: true,
+            visitorId: true,
         },
         orderBy: {
             _count: {
@@ -185,6 +185,6 @@ export async function getPageAnalytics(days: number = 7) {
     return stats.map(s => ({
         path: s.path,
         views: s._count?.path || 0,
-        uniqueVisitors: s._count?.sessionId || 0,
+        uniqueVisitors: s._count?.visitorId || 0,
     }));
 }
