@@ -36,11 +36,14 @@ export async function GET() {
 
         const formattedDocs = documents.map((doc: any) => ({
             id: doc.id,
+            patientId: doc.patientId,
             patientName: doc.patient.name || "N/A",
             docType: doc.category || "General",
             uploadDate: doc.createdAt.toISOString().split("T")[0],
-            status: "Approved", // Currently, all records are implicitly approved or don't have a status field in schema
+            createdAt: doc.createdAt,
+            status: "Approved",
             size: `${doc.sizeMb || 0} MB`,
+            sizeMb: doc.sizeMb || 0,
             fileUrl: doc.fileUrl,
             uploadedBy: doc.uploadedBy,
             title: doc.title,
