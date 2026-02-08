@@ -21,12 +21,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sidebar } from "./Sidebar";
-import { Input } from "@/components/ui/input";
 
 export function Navbar() {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const [adminEmail, setAdminEmail] = useState<string>("");
+    const [adminName, setAdminName] = useState<string>("Super Admin");
 
     // Effect to handle mounting state
     useEffect(() => {
@@ -40,6 +40,9 @@ export function Navbar() {
                     const data = await res.json();
                     if (data.user?.email) {
                         setAdminEmail(data.user.email);
+                    }
+                    if (data.user?.name) {
+                        setAdminName(data.user.name);
                     }
                 }
             } catch (error) {
@@ -105,11 +108,13 @@ export function Navbar() {
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="relative h-9 rounded-full pl-2 pr-4 gap-2 hover:bg-primary/5 border border-transparent hover:border-primary/10 transition-all">
                             <Avatar className="h-7 w-7 border border-primary/20">
-                                <AvatarImage src="/avatars/01.png" alt="@admin" />
-                                <AvatarFallback className="bg-primary/10 text-primary text-xs">SA</AvatarFallback>
+                                <AvatarImage src="/avatars/01.png" alt={adminName} />
+                                <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                                    {adminName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)}
+                                </AvatarFallback>
                             </Avatar>
                             <div className="hidden md:flex flex-col items-start gap-0.5">
-                                <span className="text-xs font-semibold leading-none">Super Admin</span>
+                                <span className="text-xs font-semibold leading-none">{adminName}</span>
                                 <span className="text-[10px] text-muted-foreground leading-none">{adminEmail || "Loading..."}</span>
                             </div>
                             <ChevronDown className="h-3 w-3 text-muted-foreground hidden md:block" />
@@ -118,7 +123,7 @@ export function Navbar() {
                     <DropdownMenuContent className="w-56" align="end" forceMount>
                         <DropdownMenuLabel className="font-normal">
                             <div className="flex flex-col space-y-1">
-                                <p className="text-sm font-medium leading-none">Super Admin</p>
+                                <p className="text-sm font-medium leading-none">{adminName}</p>
                                 <p className="text-xs leading-none text-muted-foreground">
                                     {adminEmail || "Loading..."}
                                 </p>
