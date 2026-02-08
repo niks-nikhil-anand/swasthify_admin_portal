@@ -38,7 +38,7 @@ if (!API_KEY) {
 }
 
 const genAI = new GoogleGenerativeAI(API_KEY);
-const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
+const model = genAI.getGenerativeModel({ model: "embedding-001" });
 
 async function generate() {
     console.log('Generating embeddings...');

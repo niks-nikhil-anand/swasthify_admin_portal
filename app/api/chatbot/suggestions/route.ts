@@ -35,13 +35,13 @@ export async function GET(request: NextRequest) {
         let categoryKeys: string[] = [];
 
         if (panel === 'doctor') {
-            categoryKeys = ['doctor_panel', 'general'];
+            categoryKeys = ['doctor_panel', 'common_questions', 'general'];
         } else if (panel === 'lab') {
-            categoryKeys = ['lab_panel', 'general'];
+            categoryKeys = ['lab_panel', 'common_questions', 'general'];
         } else if (panel === 'admin') {
-            categoryKeys = ['super_admin', 'general'];
+            categoryKeys = ['super_admin', 'common_questions', 'general'];
         } else {
-            categoryKeys = ['general'];
+            categoryKeys = ['common_questions', 'general'];
         }
 
         // Collect relevant questions
@@ -50,22 +50,35 @@ export async function GET(request: NextRequest) {
         categoryKeys.forEach(categoryKey => {
             const category = knowledgeBase.categories[categoryKey];
             if (category && category.faqs) {
-                // Take first 3-4 questions from each relevant category
-                const limit = categoryKey === 'general' ? 2 : 4;
-                category.faqs.slice(0, limit).forEach(faq => {
-                    suggestions.push({
-                        id: faq.id,
-                        question: faq.question
+                // If it's common_questions, pick a few random ones
+                if (categoryKey === 'common_questions') {
+                    const shuffled = [...category.faqs].sort(() => 0.5 - Math.random());
+                    shuffled.slice(0, 3).forEach(faq => {
+                        suggestions.push({
+                            id: faq.id,
+                            question: faq.question
+                        });
                     });
-                });
+                } else {
+                    // Take first 1-2 questions from other categories
+                    const limit = categoryKey === 'general' ? 1 : 2;
+                    category.faqs.slice(0, limit).forEach(faq => {
+                        suggestions.push({
+                            id: faq.id,
+                            question: faq.question
+                        });
+                    });
+                }
             }
         });
 
-        // Limit to 4 suggestions total
-        const limitedSuggestions = suggestions.slice(0, 4);
+        // Shuffle all collected suggestions and limit to 5 total
+        const finalSuggestions = suggestions
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 5);
 
         return NextResponse.json({
-            suggestions: limitedSuggestions,
+            suggestions: finalSuggestions,
             panel
         });
 

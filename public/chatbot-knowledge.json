@@ -458,6 +458,579 @@
                     ]
                 }
             ]
+        },
+        "common_questions": {
+            "name": "Common Questions",
+            "faqs": [
+                {
+                    "id": "cq_001",
+                    "question": "How do I book an appointment?",
+                    "answer": "To book an appointment, browse for a doctor or clinic, select your preferred time slot, and confirm the booking. You'll receive a confirmation notification once it's done.",
+                    "keywords": [
+                        "book",
+                        "appointment",
+                        "schedule"
+                    ],
+                    "relatedTopics": [
+                        "gen_002"
+                    ]
+                },
+                {
+                    "id": "cq_002",
+                    "question": "Can I reschedule my appointment?",
+                    "answer": "Yes, you can reschedule your appointment from the 'My Appointments' section by selecting the reschedule option and picking a new time slot.",
+                    "keywords": [
+                        "reschedule",
+                        "change time"
+                    ],
+                    "relatedTopics": [
+                        "cq_001",
+                        "cq_003"
+                    ]
+                },
+                {
+                    "id": "cq_003",
+                    "question": "Can I cancel my appointment?",
+                    "answer": "Yes, you can cancel your appointment through the 'My Appointments' tab. Please check our cancellation policy for any applicable time limits.",
+                    "keywords": [
+                        "cancel",
+                        "cancellation"
+                    ],
+                    "relatedTopics": [
+                        "cq_001",
+                        "cq_002"
+                    ]
+                },
+                {
+                    "id": "cq_004",
+                    "question": "Will I get a reminder before my appointment?",
+                    "answer": "Yes, Swasthify sends automated reminders via app notifications and an AI reminder call to ensure you don't miss your appointment.",
+                    "keywords": [
+                        "reminder",
+                        "notification"
+                    ],
+                    "relatedTopics": [
+                        "cq_007"
+                    ]
+                },
+                {
+                    "id": "cq_005",
+                    "question": "What time should I leave for my appointment?",
+                    "answer": "The Swasthify AI calculates your travel time based on live traffic and will call you at the optimal time to leave.",
+                    "keywords": [
+                        "leave time",
+                        "travel time"
+                    ],
+                    "relatedTopics": [
+                        "cq_008",
+                        "cq_009"
+                    ]
+                },
+                {
+                    "id": "cq_006",
+                    "question": "What happens if my appointment is delayed?",
+                    "answer": "If there's a delay, we'll notify you via the app so you can adjust your travel plans accordingly.",
+                    "keywords": [
+                        "delayed",
+                        "delay"
+                    ],
+                    "relatedTopics": [
+                        "cq_004"
+                    ]
+                },
+                {
+                    "id": "cq_007",
+                    "question": "What is the Swasthify AI reminder call?",
+                    "answer": "It's an intelligent voice call that reminds you of your appointment and suggests when to leave based on current traffic conditions.",
+                    "keywords": [
+                        "AI call",
+                        "reminder call"
+                    ],
+                    "relatedTopics": [
+                        "cq_004",
+                        "cq_012"
+                    ]
+                },
+                {
+                    "id": "cq_008",
+                    "question": "How does the AI decide when I should leave?",
+                    "answer": "Our AI analyzes real-time traffic data, your distance from the clinic, and common travel speeds to determine the best departure time.",
+                    "keywords": [
+                        "AI decision",
+                        "departure time"
+                    ],
+                    "relatedTopics": [
+                        "cq_005",
+                        "cq_009"
+                    ]
+                },
+                {
+                    "id": "cq_009",
+                    "question": "Will the AI really check live traffic?",
+                    "answer": "Yes, Swasthify integrates with live traffic services to provide accurate travel time estimates and departure alerts.",
+                    "keywords": [
+                        "live traffic",
+                        "traffic check"
+                    ],
+                    "relatedTopics": [
+                        "cq_008",
+                        "cq_018"
+                    ]
+                },
+                {
+                    "id": "cq_010",
+                    "question": "What if I miss the AI call?",
+                    "answer": "Don't worry! You'll still receive app notifications, and you can view the appointment details and departure suggestions anytime in the app.",
+                    "keywords": [
+                        "miss call",
+                        "reminder"
+                    ],
+                    "relatedTopics": [
+                        "cq_004"
+                    ]
+                },
+                {
+                    "id": "cq_011",
+                    "question": "Will I receive a map or navigation link?",
+                    "answer": "Yes, every appointment confirmation includes a navigation link to guide you to the clinic using your preferred map service.",
+                    "keywords": [
+                        "map",
+                        "navigation",
+                        "link"
+                    ],
+                    "relatedTopics": [
+                        "cq_017"
+                    ]
+                },
+                {
+                    "id": "cq_012",
+                    "question": "Can I turn off AI reminder calls?",
+                    "answer": "Yes, you can manage your communication preferences in the 'Settings' section of the app to disable or enable reminder calls.",
+                    "keywords": [
+                        "turn off",
+                        "disable calls"
+                    ],
+                    "relatedTopics": [
+                        "cq_007",
+                        "cq_013"
+                    ]
+                },
+                {
+                    "id": "cq_013",
+                    "question": "How many reminder calls will I get?",
+                    "answer": "Typically, you'll receive one AI call when it's time to leave for your appointment.",
+                    "keywords": [
+                        "how many",
+                        "call limit"
+                    ],
+                    "relatedTopics": [
+                        "cq_007",
+                        "cq_012"
+                    ]
+                },
+                {
+                    "id": "cq_014",
+                    "question": "Will the AI speak in my language?",
+                    "answer": "Swasthify AI is being updated to support multiple regional languages. Check 'Settings' for current language options.",
+                    "keywords": [
+                        "language",
+                        "speak"
+                    ],
+                    "relatedTopics": [
+                        "cq_007"
+                    ]
+                },
+                {
+                    "id": "cq_015",
+                    "question": "Does Swasthify track my live location?",
+                    "answer": "We only use your location to calculate travel time for your booked appointments. Your privacy is protected and location data is not shared.",
+                    "keywords": [
+                        "track",
+                        "location",
+                        "privacy"
+                    ],
+                    "relatedTopics": [
+                        "cq_040",
+                        "cq_041"
+                    ]
+                },
+                {
+                    "id": "cq_016",
+                    "question": "Can I change my location manually?",
+                    "answer": "Yes, if you're starting from a different location than usual, you can update your starting point for travel calculations in the appointment details.",
+                    "keywords": [
+                        "change location",
+                        "manual"
+                    ],
+                    "relatedTopics": [
+                        "cq_015"
+                    ]
+                },
+                {
+                    "id": "cq_017",
+                    "question": "Which map service does Swasthify use?",
+                    "answer": "Swasthify integrates with popular map services like Google Maps to provide navigation and traffic data.",
+                    "keywords": [
+                        "map service",
+                        "navigation"
+                    ],
+                    "relatedTopics": [
+                        "cq_011"
+                    ]
+                },
+                {
+                    "id": "cq_018",
+                    "question": "What happens if traffic suddenly changes?",
+                    "answer": "The AI monitors traffic continuously leading up to your departure time and will adjust your 'time to leave' alert accordingly.",
+                    "keywords": [
+                        "traffic change",
+                        "update"
+                    ],
+                    "relatedTopics": [
+                        "cq_005",
+                        "cq_009"
+                    ]
+                },
+                {
+                    "id": "cq_019",
+                    "question": "What if I am already near the clinic?",
+                    "answer": "The AI will recognize your proximity and may skip the departure call, but you'll still receive the standard appointment reminder.",
+                    "keywords": [
+                        "near clinic",
+                        "proximity"
+                    ],
+                    "relatedTopics": [
+                        "cq_007"
+                    ]
+                },
+                {
+                    "id": "cq_020",
+                    "question": "What if my phone is switched off?",
+                    "answer": "If your phone is off, you'll miss the call and notifications. We recommend keeping your device on to receive real-time alerts.",
+                    "keywords": [
+                        "off",
+                        "switched off"
+                    ],
+                    "relatedTopics": [
+                        "cq_010"
+                    ]
+                },
+                {
+                    "id": "cq_021",
+                    "question": "Are doctors on Swasthify verified?",
+                    "answer": "Yes, every doctor on Swasthify undergoes a strict verification process where we check their medical registrations and credentials.",
+                    "keywords": [
+                        "verified",
+                        "doctors",
+                        "credentials"
+                    ],
+                    "relatedTopics": [
+                        "doc_009",
+                        "admin_002"
+                    ]
+                },
+                {
+                    "id": "cq_022",
+                    "question": "Can I see doctor ratings and reviews?",
+                    "answer": "Yes, we encourage patients to leave feedback. You can see ratings and reviews on each doctor's profile page.",
+                    "keywords": [
+                        "ratings",
+                        "reviews",
+                        "feedback"
+                    ],
+                    "relatedTopics": [
+                        "cq_044"
+                    ]
+                },
+                {
+                    "id": "cq_023",
+                    "question": "Can I search doctors by specialization?",
+                    "answer": "Absolutely! You can use our search filters to find doctors by their specialization, city, or symptoms.",
+                    "keywords": [
+                        "search",
+                        "specialization",
+                        "find doctor"
+                    ],
+                    "relatedTopics": [
+                        "gen_002"
+                    ]
+                },
+                {
+                    "id": "cq_024",
+                    "question": "Is doctor availability shown in real time?",
+                    "answer": "Yes, the time slots you see reflect the doctor's current real-time availability.",
+                    "keywords": [
+                        "availability",
+                        "real time"
+                    ],
+                    "relatedTopics": [
+                        "cq_001"
+                    ]
+                },
+                {
+                    "id": "cq_025",
+                    "question": "Is Swasthify free to use?",
+                    "answer": "Downloading and browsing Swasthify is free. You only pay for the consultations and diagnostic services you book.",
+                    "keywords": [
+                        "free",
+                        "cost"
+                    ],
+                    "relatedTopics": [
+                        "cq_029"
+                    ]
+                },
+                {
+                    "id": "cq_026",
+                    "question": "Do I need to create an account?",
+                    "answer": "While you can browse some services, you'll need an account to book appointments and securely store your medical records.",
+                    "keywords": [
+                        "account",
+                        "sign up"
+                    ],
+                    "relatedTopics": [
+                        "gen_002"
+                    ]
+                },
+                {
+                    "id": "cq_027",
+                    "question": "Can I use Swasthify without downloading the app?",
+                    "answer": "Yes, you can access Swasthify services through our web portal on any desktop or mobile browser.",
+                    "keywords": [
+                        "no app",
+                        "web portal"
+                    ],
+                    "relatedTopics": [
+                        "gen_001"
+                    ]
+                },
+                {
+                    "id": "cq_028",
+                    "question": "Who can use Swasthify?",
+                    "answer": "Swasthify is designed for anyone seeking healthcare services, as well as doctors and laboratories looking to manage their practice.",
+                    "keywords": [
+                        "who can use",
+                        "users"
+                    ],
+                    "relatedTopics": [
+                        "gen_002"
+                    ]
+                },
+                {
+                    "id": "cq_029",
+                    "question": "What payment methods are accepted?",
+                    "answer": "We accept various payment methods including UPI, Credit/Debit cards, and Net Banking for online bookings.",
+                    "keywords": [
+                        "payment",
+                        "upi",
+                        "card"
+                    ],
+                    "relatedTopics": [
+                        "cq_030",
+                        "cq_032"
+                    ]
+                },
+                {
+                    "id": "cq_030",
+                    "question": "Is online payment safe?",
+                    "answer": "Yes, Swasthify uses secure, industry-standard payment gateways to ensure your transactions and financial data are safe.",
+                    "keywords": [
+                        "safe",
+                        "online payment",
+                        "security"
+                    ],
+                    "relatedTopics": [
+                        "cq_029"
+                    ]
+                },
+                {
+                    "id": "cq_031",
+                    "question": "Will I receive a payment receipt?",
+                    "answer": "Yes, a digital receipt will be generated and available in your 'Transactions' history immediately after a successful payment.",
+                    "keywords": [
+                        "receipt",
+                        "invoice"
+                    ],
+                    "relatedTopics": [
+                        "cq_029"
+                    ]
+                },
+                {
+                    "id": "cq_032",
+                    "question": "Can I pay at the clinic directly?",
+                    "answer": "Payment options depend on the doctor or clinic. Some services allow 'Pay at Clinic', which you can select during booking.",
+                    "keywords": [
+                        "pay at clinic",
+                        "offline payment"
+                    ],
+                    "relatedTopics": [
+                        "cq_029"
+                    ]
+                },
+                {
+                    "id": "cq_033",
+                    "question": "Can I upload my medical reports?",
+                    "answer": "Yes, you can upload and securely store your lab reports, prescriptions, and images in the 'Records' section of the app.",
+                    "keywords": [
+                        "upload",
+                        "medical reports",
+                        "prescriptions"
+                    ],
+                    "relatedTopics": [
+                        "cq_034",
+                        "cq_035"
+                    ]
+                },
+                {
+                    "id": "cq_034",
+                    "question": "Can I access my previous prescriptions?",
+                    "answer": "Yes, all your digital prescriptions issues through Swasthify and those you upload are saved in your electronic health record (EHR).",
+                    "keywords": [
+                        "history",
+                        "prescriptions",
+                        "access"
+                    ],
+                    "relatedTopics": [
+                        "cq_033"
+                    ]
+                },
+                {
+                    "id": "cq_035",
+                    "question": "Can doctors see my uploaded reports?",
+                    "answer": "Doctors can only see the reports you choose to share with them during your consultation to maintain your privacy.",
+                    "keywords": [
+                        "doctor view",
+                        "share reports"
+                    ],
+                    "relatedTopics": [
+                        "cq_033",
+                        "cq_040"
+                    ]
+                },
+                {
+                    "id": "cq_036",
+                    "question": "Does Swasthify reduce waiting time at clinics?",
+                    "answer": "By booking specific time slots and using arrival alerts, Swasthify helps clinics manage flow, potentially reducing your overall waiting time.",
+                    "keywords": [
+                        "wait time",
+                        "less waiting"
+                    ],
+                    "relatedTopics": [
+                        "cq_037"
+                    ]
+                },
+                {
+                    "id": "cq_037",
+                    "question": "Will clinic staff know when I am arriving?",
+                    "answer": "Yes, clinics receive alerts about your progress and estimated arrival time based on the platform's tracking.",
+                    "keywords": [
+                        "staff",
+                        "arriving"
+                    ],
+                    "relatedTopics": [
+                        "cq_036"
+                    ]
+                },
+                {
+                    "id": "cq_038",
+                    "question": "How can I contact customer support?",
+                    "answer": "You can contact support via the 'Help Center' in the app, through email, or by using our support chatbot.",
+                    "keywords": [
+                        "contact",
+                        "support",
+                        "help"
+                    ],
+                    "relatedTopics": [
+                        "cq_039"
+                    ]
+                },
+                {
+                    "id": "cq_039",
+                    "question": "Can I talk to a human support agent?",
+                    "answer": "Yes, if the AI cannot resolve your issue, you can request to be connected to a human support representative.",
+                    "keywords": [
+                        "human support",
+                        "agent"
+                    ],
+                    "relatedTopics": [
+                        "cq_038"
+                    ]
+                },
+                {
+                    "id": "cq_040",
+                    "question": "Is my personal data safe?",
+                    "answer": "We take data security very seriously. Your personal and medical data is encrypted and stored in compliance with healthcare data regulations.",
+                    "keywords": [
+                        "data safe",
+                        "security"
+                    ],
+                    "relatedTopics": [
+                        "cq_015",
+                        "cq_041"
+                    ]
+                },
+                {
+                    "id": "cq_041",
+                    "question": "Will my data be shared with anyone?",
+                    "answer": "Your medical data is shared only with the healthcare providers you consult with. We do not sell your personal data to third parties.",
+                    "keywords": [
+                        "share data",
+                        "third party"
+                    ],
+                    "relatedTopics": [
+                        "cq_040"
+                    ]
+                },
+                {
+                    "id": "cq_042",
+                    "question": "Will I receive spam calls from Swasthify?",
+                    "answer": "No, you will only receive calls related to your appointments or important account security alerts.",
+                    "keywords": [
+                        "spam",
+                        "calls"
+                    ],
+                    "relatedTopics": [
+                        "cq_007",
+                        "cq_012"
+                    ]
+                },
+                {
+                    "id": "cq_043",
+                    "question": "Is Swasthify meant for emergencies?",
+                    "answer": "Swasthify is for scheduled consultations and diagnostic services. For medical emergencies, please immediately contact your local emergency services (like 102 or 108).",
+                    "keywords": [
+                        "emergency",
+                        "hospital"
+                    ],
+                    "relatedTopics": [
+                        "gen_001"
+                    ]
+                },
+                {
+                    "id": "cq_044",
+                    "question": "Can I give feedback about my experience?",
+                    "answer": "Yes, we value your feedback! You can rate and review your experience with doctors and the app after each consultation.",
+                    "keywords": [
+                        "feedback",
+                        "experience"
+                    ],
+                    "relatedTopics": [
+                        "cq_022"
+                    ]
+                },
+                {
+                    "id": "cq_045",
+                    "question": "Where is Swasthify currently available?",
+                    "answer": "Swasthify is currently expanding and available in several cities across Bihar. Check the app for specific clinic locations near you.",
+                    "keywords": [
+                        "available",
+                        "locations",
+                        "cities"
+                    ],
+                    "relatedTopics": [
+                        "gen_001"
+                    ]
+                }
+            ]
         }
     },
     "quickActions": [
@@ -498,8 +1071,8 @@
         }
     ],
     "metadata": {
-        "lastUpdated": "2026-02-03",
-        "totalFAQs": 35,
-        "version": "1.0.0"
+        "lastUpdated": "2026-02-09",
+        "totalFAQs": 80,
+        "version": "1.1.0"
     }
 }
