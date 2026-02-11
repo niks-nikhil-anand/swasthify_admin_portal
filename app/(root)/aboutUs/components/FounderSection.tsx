@@ -16,48 +16,48 @@ export function FounderSection() {
                 <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-center">
 
                     {/* Image / Content Left */}
-                    <motion.div
-                        initial={{ opacity: 0, x: -50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8 }}
-                        className="w-full lg:w-5/12 relative"
-                    >
-                        <div className="relative aspect-3/4 w-full max-w-md mx-auto rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-zinc-800">
-                            {/* Placeholder for Founder Image - Using a gradient/icon fallback for now */}
-                            <div className="absolute inset-0 bg-linear-to-br from-slate-200 to-slate-300 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-center">
-                                <User className="w-32 h-32 text-slate-400 dark:text-zinc-600" />
-                            </div>
-
-                            {/* Overlay Gradient */}
-                            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
-
-                            <div className="absolute bottom-8 left-8 right-8 text-white">
-                                <h3 className="text-2xl font-bold mb-1">Abhinav Kumar</h3>
-                                <p className="text-emerald-300 font-medium tracking-wide text-sm uppercase">Founder & Visionary</p>
-                            </div>
-                        </div>
-
-                        {/* Floating Badge */}
+                    <div className="w-full lg:w-5/12 flex flex-col gap-6 justify-center">
+                        {/* Award Card */}
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, x: -50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            transition={{ delay: 0.5, duration: 0.5 }}
-                            className="absolute -bottom-6 -right-6 lg:right-0 bg-white dark:bg-zinc-900 p-4 rounded-xl shadow-xl border border-emerald-100 dark:border-emerald-900/30 max-w-[200px]"
+                            transition={{ duration: 0.6 }}
+                            className="bg-white dark:bg-zinc-900 p-8 rounded-3xl shadow-xl border border-emerald-100 dark:border-emerald-900/30 relative overflow-hidden group hover:shadow-2xl transition-all"
                         >
-                            <div className="flex items-start gap-3">
-                                <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg text-emerald-600 dark:text-emerald-400">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-bl-[100px] transition-transform group-hover:scale-110" />
+
+                            <div className="relative z-10 flex flex-col">
+                                <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-6 group-hover:scale-110 transition-transform">
                                     <Trophy className="w-6 h-6" />
                                 </div>
-                                <div>
-                                    <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-1">Awarded</p>
-                                    <p className="font-bold text-sm leading-tight text-foreground">Startup Winner 2025</p>
-                                    <p className="text-[10px] text-muted-foreground mt-1">Bihar Entrepreneurship Association</p>
-                                </div>
+                                <h3 className="text-xl font-bold mb-1">Awarded</h3>
+                                <p className="text-lg font-semibold text-emerald-600 dark:text-emerald-400 mb-2">Startup Winner 2025</p>
+                                <p className="text-sm text-muted-foreground font-medium uppercase tracking-wide">Bihar Entrepreneurship Association</p>
                             </div>
                         </motion.div>
-                    </motion.div>
+
+                        {/* Tea Mount Card */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
+                            className="bg-white dark:bg-zinc-900 p-8 rounded-3xl shadow-xl border border-emerald-100 dark:border-emerald-900/30 relative overflow-hidden group hover:shadow-2xl transition-all"
+                        >
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-bl-[100px] transition-transform group-hover:scale-110" />
+
+                            <div className="relative z-10 flex flex-col">
+                                <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-6 font-bold text-xl group-hover:scale-110 transition-transform">
+                                    TM
+                                </div>
+                                <h3 className="text-xl font-bold mb-3">Tea Mount</h3>
+                                <p className="text-muted-foreground leading-relaxed">
+                                    Tea Mount is a consumer brand that has become a symbol of disciplined and sustainable growth.
+                                </p>
+                            </div>
+                        </motion.div>
+                    </div>
 
                     {/* Content Right */}
                     <motion.div
