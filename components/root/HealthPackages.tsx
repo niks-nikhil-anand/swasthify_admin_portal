@@ -178,7 +178,7 @@ export function HealthPackages() {
                                             </CardContent>
                                             <CardFooter className="p-3 pt-0 md:p-6 md:pt-0">
                                                 <Link href="/login" className="w-full">
-                                                    <Button variant="outline" size="sm" className="w-full border-gray-300 font-semibold hover:bg-gray-50 text-gray-700 h-8 md:h-10 text-xs md:text-sm shadow-sm hover:shadow-primary/10">
+                                                    <Button variant="outline" size="sm" className="w-full cursor-pointer group justify-center h-8 md:h-10 text-xs md:text-sm px-2 md:px-4 shadow-sm hover:shadow-primary/10">
                                                         Book Now
                                                     </Button>
                                                 </Link>
