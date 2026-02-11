@@ -11,6 +11,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import DoctorRegistrationForm from "@/components/root/DoctorRegistrationForm"
 import { FAQ } from "@/components/root/FAQ"
