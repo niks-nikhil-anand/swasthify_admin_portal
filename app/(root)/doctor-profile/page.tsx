@@ -140,47 +140,57 @@ export default function DoctorProfilePage() {
             </section>
 
             {/* Testimonials */}
-            <section className="py-16 md:py-24 w-full">
+            {/* Testimonials */}
+            <section className="py-16 md:py-24 w-full bg-background overflow-hidden">
                 <div className="container max-w-7xl mx-auto px-4 md:px-6">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12 md:mb-16">Hear from our Partners</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                    <div className="text-center mb-12 md:mb-16">
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Hear from our Partners</h2>
+                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                            Join thousands of doctors who trust Swasthify to grow their practice and deliver better care.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                         {[
                             {
                                 name: "Dr. Ananya Mehra",
                                 role: "General Physician",
+                                image: "/images/testimonials/indian_woman_1.png",
                                 text: "Swasthify has completely transformed how I manage my practice. The platform is intuitive, and I can focus more on patient care instead of administrative work."
                             },
                             {
                                 name: "Dr. Rohan Iyer",
                                 role: "Orthopedic Specialist",
+                                image: "/images/testimonials/indian_man_1.png",
                                 text: "The quality of patients and platform professionalism is unmatched. Verification builds trust, and flexibility allows me to manage both clinic and online seamlessly."
                             },
                             {
                                 name: "Dr. Neha Kapoor",
                                 role: "Dermatologist",
+                                image: "/images/testimonials/indian_woman_2.png",
                                 text: "Helped me grow my online presence without technical hassle. Support is responsive and the system is extremely easy to use. Great for modern practice."
-                            },
-                            {
-                                name: "Dr. Amit Verma",
-                                role: "Pediatrician",
-                                text: "From appointment scheduling to digital prescriptions, everything is smooth and reliable. Swasthify truly understands the needs of doctors."
                             }
-                        ].map((t, idx) => (
-                            <Card key={idx} className="bg-background border-none shadow-md hover:shadow-xl transition-all duration-300 p-2 md:p-4">
-                                <CardContent className="pt-6">
-                                    <div className="flex gap-1 text-yellow-400 mb-4">
-                                        {[1, 2, 3, 4, 5].map((_, i) => (
-                                            <Star key={i} className="w-5 h-5 fill-current" />
+                        ].map((testimonial, idx) => (
+                            <Card key={idx} className="border-border/30 shadow-xl shadow-emerald-500/5 bg-background/40 hover:bg-background/80 hover:shadow-[0_20px_40px_-12px_rgba(16,185,129,0.1)] transition-all duration-500 h-full backdrop-blur-xl rounded-2xl group overflow-hidden">
+                                <CardContent className="p-8 flex flex-col gap-6 h-full">
+                                    <div className="flex gap-1">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />
                                         ))}
                                     </div>
-                                    <p className="text-lg md:text-xl text-muted-foreground italic mb-8 leading-relaxed">"{t.text}"</p>
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
-                                            {t.name.charAt(4)}
-                                        </div>
+
+                                    <p className="text-lg text-foreground/80 leading-relaxed grow relative z-10 font-medium italic">
+                                        "{testimonial.text}"
+                                    </p>
+
+                                    <div className="flex items-center gap-4 mt-auto pt-4 border-t border-border/40">
+                                        <Avatar className="h-14 w-14 border-2 border-primary/10 group-hover:border-primary/30 transition-colors">
+                                            <AvatarImage src={testimonial.image} alt={testimonial.name} className="object-cover" />
+                                            <AvatarFallback className="bg-primary/5 text-primary font-bold">{testimonial.name[0]}</AvatarFallback>
+                                        </Avatar>
                                         <div>
-                                            <h4 className="font-bold text-lg">{t.name}</h4>
-                                            <span className="text-sm text-primary font-medium">{t.role}</span>
+                                            <p className="font-bold text-lg text-foreground">{testimonial.name}</p>
+                                            <p className="text-sm text-primary font-medium">{testimonial.role}</p>
                                         </div>
                                     </div>
                                 </CardContent>
