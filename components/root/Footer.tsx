@@ -9,6 +9,7 @@ export function Footer() {
         { label: "Doctors", href: "/doctors" },
         { label: "Lab Tests", href: "/labs" },
         { label: "Contact", href: "/contact" },
+        {label: "About Us", href: "/aboutUs"}
     ];
 
     const services = [

@@ -73,7 +73,7 @@ export function Navbar() {
         { name: "Labs", href: "/labs" },
         { name: "Lab Tests", href: "/lab-test" },
         { name: "Pricing", href: "/pricing" },
-        { name: "About", href: "/about-us" },
+        { name: "About", href: "/aboutUs" },
         { name: "Contact", href: "/contact" },
     ];
 
