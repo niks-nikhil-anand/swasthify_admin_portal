@@ -140,7 +140,7 @@ export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) =>
                                 })
                             }).catch(console.error);
 
-                            window.location.href = `/labs/${campaign.id}`;
+                            window.location.href = "/login";
                         }}
                     >
                         Book Now
