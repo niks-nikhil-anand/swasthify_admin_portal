@@ -12,6 +12,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import LabRegistrationForm from "@/components/root/LabRegistrationForm"
 import { FAQ } from "@/components/root/FAQ"
@@ -146,47 +147,57 @@ export default function LabPartnerPage() {
             </section>
 
             {/* Testimonials */}
-            <section className="py-16 md:py-24 w-full">
+            {/* Testimonials */}
+            <section className="py-16 md:py-24 w-full bg-background overflow-hidden">
                 <div className="container max-w-7xl mx-auto px-4 md:px-6">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12 md:mb-16">Partner Success Stories</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                    <div className="text-center mb-12 md:mb-16">
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Partner Success Stories</h2>
+                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                            See how diagnostic centers across India are scaling their business with Swasthify.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                         {[
                             {
-                                name: "City Diagnostics",
-                                location: "Mumbai",
+                                name: "Priya Sharma",
+                                role: "Owner, City Diagnostics",
+                                image: "/images/testimonials/indian_woman_1.png",
                                 text: "Since partnering with Swasthify, our home collection efficiency has improved by 40%. The app makes it so easy to track phlebotomists."
                             },
                             {
-                                name: "Apex Pathology",
-                                location: "Delhi",
+                                name: "Rahul Mehta",
+                                role: "Director, Apex Pathology",
+                                image: "/images/testimonials/indian_man_1.png",
                                 text: "The digital reporting system is a game changer. Patients love getting reports on their phone, and we save huge costs on printing."
                             },
                             {
-                                name: "Care Labs",
-                                location: "Bangalore",
+                                name: "Anjali Gupta",
+                                role: "Manager, Care Labs",
+                                image: "/images/testimonials/indian_woman_2.png",
                                 text: "Revenue from online bookings has doubled in just 3 months. The dashboard insights helped us price our health packages better."
-                            },
-                            {
-                                name: "MediQuest",
-                                location: "Hyderabad",
-                                text: "Seamless onboarding and excellent support. Swasthify is truly a partner in our growth, not just an aggregator."
                             }
-                        ].map((t, idx) => (
-                            <Card key={idx} className="bg-background border-none shadow-md hover:shadow-xl transition-all duration-300 p-2 md:p-4">
-                                <CardContent className="pt-6">
-                                    <div className="flex gap-1 text-yellow-400 mb-4">
-                                        {[1, 2, 3, 4, 5].map((_, i) => (
-                                            <Star key={i} className="w-5 h-5 fill-current" />
+                        ].map((testimonial, idx) => (
+                            <Card key={idx} className="border-border/30 shadow-xl shadow-emerald-500/5 bg-background/40 hover:bg-background/80 hover:shadow-[0_20px_40px_-12px_rgba(16,185,129,0.1)] transition-all duration-500 h-full backdrop-blur-xl rounded-2xl group overflow-hidden">
+                                <CardContent className="p-8 flex flex-col gap-6 h-full">
+                                    <div className="flex gap-1">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />
                                         ))}
                                     </div>
-                                    <p className="text-lg md:text-xl text-muted-foreground italic mb-8 leading-relaxed">"{t.text}"</p>
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
-                                            {t.name.charAt(0)}
-                                        </div>
+
+                                    <p className="text-lg text-foreground/80 leading-relaxed grow relative z-10 font-medium italic">
+                                        "{testimonial.text}"
+                                    </p>
+
+                                    <div className="flex items-center gap-4 mt-auto pt-4 border-t border-border/40">
+                                        <Avatar className="h-14 w-14 border-2 border-primary/10 group-hover:border-primary/30 transition-colors">
+                                            <AvatarImage src={testimonial.image} alt={testimonial.name} className="object-cover" />
+                                            <AvatarFallback className="bg-primary/5 text-primary font-bold">{testimonial.name[0]}</AvatarFallback>
+                                        </Avatar>
                                         <div>
-                                            <h4 className="font-bold text-lg">{t.name}</h4>
-                                            <span className="text-sm text-primary font-medium">{t.location}</span>
+                                            <p className="font-bold text-lg text-foreground">{testimonial.name}</p>
+                                            <p className="text-sm text-primary font-medium">{testimonial.role}</p>
                                         </div>
                                     </div>
                                 </CardContent>
