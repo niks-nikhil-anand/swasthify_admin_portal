@@ -8,23 +8,23 @@ import { motion } from "framer-motion";
 export function Testimonials() {
     const testimonials = [
         {
-            name: "Sarah Johnson",
+            name: "Priya Sharma",
             role: "Patient",
-            image: "",
+            image: "/images/testimonials/indian_woman_1.png",
             content: "Swasthify made it so easy to find a specialist. The video consultation was seamless and I got my prescription immediately.",
             rating: 5
         },
         {
             name: "Rahul Mehta",
             role: "Patient",
-            image: "",
+            image: "/images/testimonials/indian_man_1.png",
             content: "I love having all my family's health records in one place. Booking appointments is a breeze now.",
             rating: 5
         },
         {
             name: "Anjali Gupta",
             role: "Patient",
-            image: "",
+            image: "/images/testimonials/indian_woman_2.png",
             content: "The best healthcare app I've used. Very user-friendly and the support team is super helpful.",
             rating: 4
         }
