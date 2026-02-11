@@ -1,0 +1,25 @@
+"use client";
+
+import { CTA } from "@/components/shared/CTA";
+import { HeroSection } from "./components/HeroSection";
+import { MissionVisionSection } from "./components/MissionVisionSection";
+import { FounderSection } from "./components/FounderSection";
+import { ValuesSection } from "./components/ValuesSection";
+import { LocationSection } from "./components/LocationSection";
+
+export default function AboutPage() {
+    return (
+        <div className="flex flex-col min-h-screen bg-background">
+            <HeroSection />
+            <MissionVisionSection />
+            <FounderSection />
+            <ValuesSection />
+            <LocationSection />
+            <CTA
+                title="Be Part of Our Mission"
+                description="Join us in our journey to make healthcare accessible to everyone. Experience the difference with Swasthify."
+                primaryAction={{ text: "Join Now", href: "/register/patient" }}
+            />
+        </div>
+    );
+}
