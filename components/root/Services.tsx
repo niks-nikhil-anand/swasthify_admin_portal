@@ -99,13 +99,13 @@ export function Services() {
                             </p>
 
                             <Link href="/login" className="w-full mt-auto">
-                                <Button variant="outline" size="sm" className="w-full group justify-between h-8 md:h-10 text-xs md:text-sm px-2 md:px-4 shadow-sm hover:shadow-primary/10">
+                                <Button variant="outline" size="sm" className="w-full cursor-pointer group justify-between h-8 md:h-10 text-xs md:text-sm px-2 md:px-4 shadow-sm hover:shadow-primary/10">
                                     Book Now
                                     <ArrowRight className="w-3 h-3 md:w-4 md:h-4 ml-1 transition-transform group-hover:translate-x-1" />
                                 </Button>
                             </Link>
                         </motion.div>
-                    ))}
+                    ))} 
                 </motion.div>
             </div>
         </section>
