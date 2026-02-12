@@ -10,37 +10,37 @@ const specialities = [
     {
         title: "Gynaecology",
         price: "₹599",
-        image: "/icon-gynaecology.png",
+        image: "/images/specialities/gynaecology_real.png",
         color: "bg-pink-50/50 dark:bg-pink-900/20",
     },
     {
         title: "Sexology",
         price: "₹599",
-        image: "/icon-sexology.png",
+        image: "/images/specialities/sexology_real.png",
         color: "bg-indigo-50/50 dark:bg-indigo-900/20",
     },
     {
         title: "General physician",
         price: "₹499",
-        image: "/icon-general-physician.png",
+        image: "/images/specialities/general_physician_real.png",
         color: "bg-blue-50/50 dark:bg-blue-900/20",
     },
     {
         title: "Dermatology",
         price: "₹549",
-        image: "/icon-dermatology.png",
+        image: "/images/specialities/dermatology_real_v2.png",
         color: "bg-teal-50/50 dark:bg-teal-900/20",
     },
     {
         title: "Psychiatry",
         price: "₹599",
-        image: "/icon-psychiatry.png",
+        image: "/images/specialities/psychiatry_real.png",
         color: "bg-green-50/50 dark:bg-green-900/20",
     },
     {
         title: "Stomach and digestion",
         price: "₹499",
-        image: "/icon-stomach.png",
+        image: "/images/specialities/stomach_digestion_real.png",
         color: "bg-orange-50/50 dark:bg-orange-900/20",
     },
 ];
@@ -99,17 +99,16 @@ export function Specialities() {
                             key={index}
                             variants={item}
                             whileHover={{ y: -8, scale: 1.02 }}
-                            className="group bg-card/60 backdrop-blur-md hover:bg-card hover:shadow-[0_20px_50px_rgba(16,185,129,0.1)] transition-all duration-500 p-4 md:p-8 rounded-[2rem] border border-border/50 hover:border-emerald-500/30 flex flex-col items-start h-full"
+                            className="group bg-card/60 backdrop-blur-md hover:bg-card hover:shadow-[0_20px_50px_rgba(16,185,129,0.1)] transition-all duration-500 p-4 md:p-8 rounded-[2rem] border border-border/50 hover:border-emerald-500/30 flex flex-col items-center text-center h-full"
                         >
-                            <div className={`w-16 h-16 md:w-32 md:h-32 relative mb-2 md:mb-4 ${speciality.color} rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-2xl group-hover:shadow-emerald-500/20`}>
-                                <div className="absolute inset-0 rounded-full bg-linear-to-tr from-white/60 dark:from-background/40 to-transparent pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity" />
+                            <div className={`w-16 h-16 md:w-32 md:h-32 relative mb-2 md:mb-4 ${speciality.color} rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-2xl group-hover:shadow-emerald-500/20 overflow-hidden`}>
+                                <div className="absolute inset-0 rounded-full bg-linear-to-tr from-white/60 dark:from-background/40 to-transparent pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity z-10" />
                                 <div className="absolute inset-0 rounded-full scale-0 group-hover:scale-150 bg-emerald-500/5 blur-2xl transition-transform duration-700 -z-10" />
                                 <Image
                                     src={speciality.image}
                                     alt={speciality.title}
-                                    width={100}
-                                    height={100}
-                                    className="object-contain drop-shadow-xl p-3 md:p-0"
+                                    fill
+                                    className="object-cover rounded-full"
                                 />
                             </div>
 

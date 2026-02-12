@@ -8,22 +8,22 @@ const specialties = [
     {
         title: "Dentist",
         description: "Teething troubles? Schedule a dental checkup",
-        image: "/images/specialties/dentist.png",
+        image: "/images/specialities/dentist_v2.png",
     },
     {
         title: "Gynecologist/Obstetrician",
         description: "Explore for women's health, pregnancy and infertility treatments",
-        image: "/images/specialties/gynecologist.png",
+        image: "/images/specialities/gynecologist_v2.png",
     },
     {
         title: "Dietitian/Nutrition",
         description: "Get guidance on eating right, weight management and sports nutrition",
-        image: "/images/specialties/dietitian.png",
+        image: "/images/specialities/dietitian_v2.png",
     },
     {
         title: "Physiotherapist",
         description: "Pulled a muscle? Get it treated by a trained physiotherapist",
-        image: "/images/specialties/physiotherapist.png",
+        image: "/images/specialities/physiotherapist_v2.png",
     },
 ];
 
@@ -83,7 +83,7 @@ export function InClinic() {
                                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                                 />
                             </div>
-                            <div className="p-3 md:p-5">
+                            <div className="p-3 md:p-5 text-center">
                                 <h3 className="font-bold text-xs md:text-lg text-foreground mb-1 md:mb-2 group-hover:text-primary transition-colors line-clamp-1 md:line-clamp-none">
                                     {specialty.title}
                                 </h3>
