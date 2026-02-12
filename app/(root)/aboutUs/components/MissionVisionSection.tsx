@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Heart, CheckCircle2, Award } from "lucide-react";
@@ -46,7 +45,7 @@ export function MissionVisionSection() {
                         <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-accent/20 rounded-3xl blur-2xl opacity-50 -z-10 group-hover:opacity-70 transition-opacity duration-500" />
                         <div className="relative rounded-3xl overflow-hidden border border-border bg-card shadow-2xl transition-all duration-700">
                             <Image
-                                src="/images/specialties/our_services.png"
+                                src="/images/specialities/our_services.png"
                                 alt="Our Services"
                                 width={600}
                                 height={400}
