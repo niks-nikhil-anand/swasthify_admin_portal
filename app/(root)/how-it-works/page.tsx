@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CTA } from "@/components/shared/CTA";
+import { HowItWorks } from "@/components/root/HowItWorks";
 
 export default function HowItWorksPage() {
     const steps = [
@@ -99,6 +100,11 @@ export default function HowItWorksPage() {
                     </div>
                 </div>
             </section>
+
+            {/* Consultation Flow Section */}
+            <div className="bg-muted/10 border-y border-border/50">
+                <HowItWorks />
+            </div>
 
             {/* ABHA Integration Section */}
             <section className="py-12 md:py-24 bg-muted/30">
