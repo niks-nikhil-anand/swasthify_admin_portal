@@ -53,7 +53,7 @@ export function WhyBookWithUs() {
     };
 
     return (
-        <section className="relative w-full py-16 md:py-24 px-4 md:px-6 bg-background overflow-hidden">
+        <section className="hidden md:block relative w-full py-16 md:py-24 px-4 md:px-6 bg-background overflow-hidden">
             {/* Background Decorations */}
             <div className="absolute inset-0 z-0 pointer-events-none">
                 <div className="absolute top-1/4 -left-20 w-64 h-64 bg-emerald-500/5 rounded-full blur-[100px]" />
@@ -95,29 +95,29 @@ export function WhyBookWithUs() {
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
-                    className="grid grid-cols-3 gap-2 md:gap-8 lg:gap-10"
+                    className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 lg:gap-10"
                 >
                     {features.map((feature, index) => (
                         <motion.div
                             key={index}
                             variants={itemVariants}
                             whileHover={{ y: -10 }}
-                            className={`group relative flex flex-col items-center p-3 md:p-10 rounded-2xl md:rounded-[3rem] bg-card/40 backdrop-blur-xl border border-border/50 hover:bg-card/60 transition-all duration-500 overflow-hidden ${feature.borderColor} hover:shadow-2xl ${feature.shadowColor}`}
+                            className={`group relative flex flex-col items-center p-6 md:p-10 rounded-3xl md:rounded-[3rem] bg-card/40 backdrop-blur-xl border border-border/50 hover:bg-card/60 transition-all duration-500 overflow-hidden ${feature.borderColor} hover:shadow-2xl ${feature.shadowColor} ${index === 2 ? "col-span-2 md:col-span-1" : "col-span-1"}`}
                         >
                             {/* Card Background Glow */}
                             <div className="absolute -inset-1 bg-linear-to-b from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-                            <div className={`relative z-10 p-3 md:p-8 rounded-2xl ${feature.bg} mb-3 md:mb-8 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-sm`}>
+                            <div className={`relative z-10 p-5 md:p-8 rounded-2xl ${feature.bg} mb-4 md:mb-8 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-sm`}>
                                 <div className="relative">
                                     <div className="absolute -inset-4 bg-inherit rounded-full blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-500" />
                                     {feature.icon}
                                 </div>
                             </div>
 
-                            <h3 className="relative z-10 font-bold text-[10px] md:text-2xl text-foreground mb-1 md:mb-3 text-center transition-colors duration-300 line-clamp-2">
+                            <h3 className="relative z-10 font-bold text-base md:text-2xl text-foreground mb-2 md:mb-3 text-center transition-colors duration-300">
                                 {feature.title}
                             </h3>
-                            <p className="relative z-10 text-center text-muted-foreground text-[8px] md:text-lg leading-relaxed px-1 line-clamp-3">
+                            <p className={`relative z-10 text-center text-muted-foreground text-xs md:text-lg leading-relaxed px-1 ${index === 2 ? "max-w-md" : ""}`}>
                                 {feature.description}
                             </p>
 
