@@ -72,6 +72,7 @@ export function Navbar() {
         { name: "Doctors", href: "/doctors" },
         { name: "Labs", href: "/labs" },
         { name: "Lab Tests", href: "/lab-test" },
+        {name: "How It Works", href: "/how-it-works"},
         { name: "Pricing", href: "/pricing" },
         { name: "About", href: "/aboutUs" },
         { name: "Contact", href: "/contact" },
