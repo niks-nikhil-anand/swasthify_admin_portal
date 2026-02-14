@@ -1,10 +1,11 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
-import Link from "next/link";
+import { useState } from "react";
+import { PlusCircle, Activity } from "lucide-react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 
 const specialities = [
     {
@@ -93,24 +94,22 @@ const specialities = [
     },
 ];
 
-const container = {
-    hidden: { opacity: 0 },
-    show: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1
-        }
-    }
+// Individual item animation variant
+const itemFadeIn = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } }
 };
 
-const item = {
-    hidden: { opacity: 0, y: 30 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "circOut" as const } }
-};
 
 export function DoctorSpecialities() {
+    const [visibleCount, setVisibleCount] = useState(6);
+
+    const showMore = () => {
+        setVisibleCount((prev: number) => Math.min(prev + 6, specialities.length));
+    };
+
     return (
-        <section className="py-20 bg-background">
+        <section className="py-24 bg-background overflow-hidden">
             <div className="container mx-auto px-4">
                 <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
                     <motion.div
@@ -129,46 +128,69 @@ export function DoctorSpecialities() {
                     </motion.div>
                 </div>
 
-                <motion.div
-                    variants={container}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true }}
-                    className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6"
-                >
-                    {specialities.map((speciality, index) => (
-                        <motion.div
-                            key={index}
-                            variants={item}
-                            whileHover={{ y: -10 }}
-                            className="group relative bg-card/40 backdrop-blur-md rounded-[2.5rem] border border-border/50 hover:border-emerald-500/30 hover:shadow-[0_40px_80px_-20px_rgba(16,185,129,0.15)] transition-all duration-500 p-6 flex flex-col items-center text-center overflow-hidden h-full"
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+                    <AnimatePresence mode="popLayout">
+                        {specialities.slice(0, visibleCount).map((speciality, index) => (
+                            <motion.div
+                                key={speciality.title || index}
+                                layout
+                                variants={itemFadeIn}
+                                initial="hidden"
+                                animate="show"
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: (index % 6) * 0.05 }}
+                                whileHover={{ y: -8 }}
+                            >
+                                <Card className="relative overflow-hidden border-2 hover:border-emerald-500 transition-all duration-300 group h-full flex flex-col rounded-[1.5rem] md:rounded-[2rem] shadow-lg hover:shadow-2xl bg-card">
+                                    <div className="relative h-28 md:h-40 w-full flex items-center justify-center pt-6">
+                                        <div className={`w-24 h-24 md:w-32 md:h-32 relative ${speciality.color} rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110 overflow-hidden shadow-inner border-4 border-background`}>
+                                            <Image
+                                                src={speciality.image}
+                                                alt={speciality.title}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-tr from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        </div>
+                                    </div>
+
+                                    <CardHeader className="pt-4 pb-2 px-3 md:px-6 text-center">
+                                        <CardTitle className="text-sm md:text-lg font-bold leading-tight line-clamp-2 min-h-[40px] md:min-h-[48px] group-hover:text-emerald-600 transition-colors">
+                                            {speciality.title}
+                                        </CardTitle>
+                                    </CardHeader>
+
+                                    <CardContent className="px-3 md:px-6 py-2 flex-1 text-center">
+                                        <div className="flex flex-col items-center">
+                                            <p className="text-muted-foreground text-[10px] md:text-xs">Consultation starts from</p>
+                                            <span className="text-lg md:text-2xl font-black text-foreground">{speciality.price}</span>
+                                        </div>
+                                    </CardContent>
+
+                                    <CardFooter className="px-3 md:px-6 pb-4 md:pb-6 pt-2 mt-auto">
+                                        <Button className="w-full h-8 md:h-10 rounded-xl md:rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs md:text-sm font-bold shadow-md hover:scale-[1.02] transition-all">
+                                            Consult Now
+                                        </Button>
+                                    </CardFooter>
+                                </Card>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </div>
+
+                {visibleCount < specialities.length && (
+                    <div className="mt-16 text-center">
+                        <Button
+                            onClick={showMore}
+                            variant="outline"
+                            className="rounded-full px-10 h-14 text-lg font-bold border-emerald-500/30 hover:bg-emerald-500/10 hover:text-emerald-600 transition-all group gap-2"
                         >
-                            <div className={`w-28 h-28 md:w-36 md:h-36 relative mb-6 ${speciality.color} rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110 overflow-hidden shadow-inner`}>
-                                <Image
-                                    src={speciality.image}
-                                    alt={speciality.title}
-                                    fill
-                                    className="object-cover"
-                                />
-                                <div className="absolute inset-0 bg-linear-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </div>
-
-                            <h3 className="font-bold text-foreground text-lg mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                                {speciality.title}
-                            </h3>
-
-                            <div className="text-sm text-muted-foreground mb-4">
-                                starts from <span className="font-extrabold text-foreground text-base">{speciality.price}</span>
-                            </div>
-
-                            <div className="mt-auto opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                                <Button size="sm" className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6">
-                                    Consult Now
-                                </Button>
-                            </div>
-                        </motion.div>
-                    ))}
-                </motion.div>
+                            <PlusCircle className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+                            Show More Specialities
+                        </Button>
+                    </div>
+                )}
             </div>
         </section>
     );

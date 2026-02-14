@@ -1,14 +1,42 @@
+import dynamic from "next/dynamic";
+import {
+    HeroSkeleton,
+    GridSkeleton,
+    WhyBookSkeleton,
+    FAQSectionSkeleton
+} from "@/components/specialities/SpecialitiesSkeletons";
 
-import { SpecialitiesHero } from "@/components/specialities/SpecialitiesHero";
-import { DoctorSpecialities } from "@/components/specialities/DoctorSpecialities";
-import { TestSpecialities } from "@/components/specialities/TestSpecialities";
-import { VitalCheckups } from "@/components/specialities/VitalCheckups";
-import { PopularCheckups } from "@/components/specialities/PopularCheckups";
-import { WhyBookWithUs } from "@/components/specialities/WhyBookWithUs";
-import { SpecialitiesCTA } from "@/components/specialities/SpecialitiesCTA";
-import { LabFAQ } from "@/components/specialities/LabFAQ";
+const SpecialitiesHero = dynamic(() => import("@/components/specialities/SpecialitiesHero").then(m => m.SpecialitiesHero), {
+    loading: () => <HeroSkeleton />
+});
 
-import { DoctorSection } from "@/components/root/DoctorSection";
+const DoctorSpecialities = dynamic(() => import("@/components/specialities/DoctorSpecialities").then(m => m.DoctorSpecialities), {
+    loading: () => <GridSkeleton title="Doctor Specialities" />
+});
+
+const TestSpecialities = dynamic(() => import("@/components/specialities/TestSpecialities").then(m => m.TestSpecialities), {
+    loading: () => <GridSkeleton title="Diagnostic Categories" />
+});
+
+const HealthPackages = dynamic(() => import("@/components/root/HealthPackages").then(m => m.HealthPackages), {
+    loading: () => <GridSkeleton title="Health Packages" />
+});
+
+const DoctorSection = dynamic(() => import("@/components/root/DoctorSection").then(m => m.DoctorSection), {
+    loading: () => <GridSkeleton title="Doctors" />
+});
+
+const WhyBookWithUs = dynamic(() => import("@/components/specialities/WhyBookWithUs").then(m => m.WhyBookWithUs), {
+    loading: () => <WhyBookSkeleton />
+});
+
+const CTA = dynamic(() => import("@/components/shared/CTA").then(m => m.CTA), {
+    loading: () => <div className="h-[300px] w-full bg-muted animate-pulse" />
+});
+
+const LabFAQ = dynamic(() => import("@/components/specialities/LabFAQ").then(m => m.LabFAQ), {
+    loading: () => <FAQSectionSkeleton />
+});
 
 export default function SpecialitiesPage() {
     return (
@@ -17,12 +45,15 @@ export default function SpecialitiesPage() {
                 <SpecialitiesHero />
                 <DoctorSpecialities />
                 <TestSpecialities />
-                <VitalCheckups />
-                <PopularCheckups />
-
+                <HealthPackages />
                 <DoctorSection />
                 <WhyBookWithUs />
-                <SpecialitiesCTA />
+                <CTA
+                    title="Find the Right Care Today"
+                    description="Whether it's a specialist consultation or a diagnostic test, Swasthify provides trusted healthcare at your fingertips. Book your appointment now."
+                    primaryAction={{ text: "Find a Doctor", href: "/doctors" }}
+                    secondaryAction={{ text: "Book a Test", href: "/labs" }}
+                />
                 <LabFAQ />
             </main>
         </div>
