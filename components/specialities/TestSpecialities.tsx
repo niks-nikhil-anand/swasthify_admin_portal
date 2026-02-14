@@ -62,24 +62,21 @@ export function TestSpecialities() {
     return (
         <section className="py-24 bg-muted/20">
             <div className="container mx-auto px-4">
-                <div className="text-center mb-16 space-y-4">
-                    <motion.h2
-                        className="text-3xl font-bold tracking-tight sm:text-5xl"
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="space-y-3 text-center md:text-left"
                     >
-                        Diagnostic <span className="text-primary italic">Categories</span>
-                    </motion.h2>
-                    <motion.p
-                        className="text-muted-foreground text-lg max-w-2xl mx-auto"
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.1 }}
-                    >
-                        Find the right tests by health concern. NABL certified labs, accurate results, and home sample collection.
-                    </motion.p>
+                        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
+                            Diagnostic <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-2 rounded-md">Categories</span>
+                        </h2>
+                        <p className="text-muted-foreground text-lg md:text-xl max-w-2xl">
+                            Find the right tests by health concern. NABL certified labs, accurate results, and home sample collection.
+                        </p>
+                    </motion.div>
                 </div>
 
                 <motion.div
