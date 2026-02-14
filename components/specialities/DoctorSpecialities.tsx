@@ -43,6 +43,54 @@ const specialities = [
         image: "/images/specialities/stomach_digestion_real.png",
         color: "bg-orange-50/50 dark:bg-orange-900/20",
     },
+    {
+        title: "Cardiology",
+        price: "₹799",
+        image: "/images/specialities/cardiology_real.png",
+        color: "bg-red-50/50 dark:bg-red-900/20",
+    },
+    {
+        title: "Pediatrics",
+        price: "₹499",
+        image: "/images/specialities/pediatrics_real.png",
+        color: "bg-yellow-50/50 dark:bg-yellow-900/20",
+    },
+    {
+        title: "Orthopedics",
+        price: "₹599",
+        image: "/images/specialities/orthopedics_real.png",
+        color: "bg-orange-50/50 dark:bg-orange-900/20",
+    },
+    {
+        title: "Neurology",
+        price: "₹899",
+        image: "/images/specialities/neurology_real.png",
+        color: "bg-purple-50/50 dark:bg-purple-900/20",
+    },
+    {
+        title: "Ophthalmology",
+        price: "₹499",
+        image: "/images/specialities/ophthalmology_real.png",
+        color: "bg-sky-50/50 dark:bg-sky-900/20",
+    },
+    {
+        title: "Dentist",
+        price: "₹249",
+        image: "/images/specialities/dentist_v2.png",
+        color: "bg-slate-50/50 dark:bg-slate-900/20",
+    },
+    {
+        title: "Dietitian",
+        price: "₹349",
+        image: "/images/specialities/dietitian_v2.png",
+        color: "bg-lime-50/50 dark:bg-lime-900/20",
+    },
+    {
+        title: "Physiotherapist",
+        price: "₹449",
+        image: "/images/specialities/physiotherapist_v2.png",
+        color: "bg-cyan-50/50 dark:bg-cyan-900/20",
+    },
 ];
 
 const container = {
@@ -57,7 +105,7 @@ const container = {
 
 const item = {
     hidden: { opacity: 0, y: 30 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "circOut" as const } }
 };
 
 export function DoctorSpecialities() {
