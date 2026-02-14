@@ -42,8 +42,8 @@ export function DoctorSection() {
                         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
                             Book an Appointment for <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-2 rounded-md">In-Clinic Consultation</span>
                         </h2>
-                        <p className="text-muted-foreground text-lg md:text-xl">
-                            Find experienced doctors across all specialties
+                        <p className="text-muted-foreground text-lg md:text-xl max-w-2xl">
+                            Find experienced doctors across all specialties for personalized in-person care.
                         </p>
                     </motion.div>
                     <Link href="/doctors">
