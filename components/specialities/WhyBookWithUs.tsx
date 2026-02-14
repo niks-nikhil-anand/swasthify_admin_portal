@@ -1,5 +1,7 @@
+"use client";
 
 import { Home, ShieldCheck, Percent, UserCheck } from "lucide-react";
+import { motion } from "framer-motion";
 
 export function WhyBookWithUs() {
     const features = [
@@ -26,11 +28,21 @@ export function WhyBookWithUs() {
     return (
         <section className="w-full py-24 px-4 md:px-6 bg-background overflow-hidden">
             <div className="container mx-auto">
-                <div className="text-center mb-20 space-y-4">
-                    <h2 className="text-4xl md:text-6xl font-black tracking-tight text-center">Why Book With Us?</h2>
-                    <p className="text-muted-foreground text-xl max-w-2xl mx-auto font-medium">
-                        We prioritize your health with seamless, high-quality, and affordable healthcare services.
-                    </p>
+                <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="space-y-3 text-center md:text-left"
+                    >
+                        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
+                            Why <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-2 rounded-md">Book With Us?</span>
+                        </h2>
+                        <p className="text-muted-foreground text-lg md:text-xl max-w-2xl">
+                            We prioritize your health with seamless, high-quality, and affordable healthcare services across India.
+                        </p>
+                    </motion.div>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                     {features.map((feature, index) => (
