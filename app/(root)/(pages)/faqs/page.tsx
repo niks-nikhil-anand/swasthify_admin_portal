@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageHero } from "@/components/shared/PageHero";
-import { LabFAQ } from "@/components/lab-test/LabFAQ";
+import { LabFAQ } from "@/components/specialities/LabFAQ";
 import { CTA } from "@/components/shared/CTA";
 
 export const metadata = {
