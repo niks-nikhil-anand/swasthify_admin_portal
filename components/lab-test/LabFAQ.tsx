@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import {
     Accordion,
     AccordionContent,
@@ -34,21 +37,33 @@ export function LabFAQ() {
     ];
 
     return (
-        <section className="py-24 bg-muted/30">
+        <section className="py-24 bg-muted/30 overflow-hidden">
             <div className="container mx-auto px-4">
                 <div className="grid lg:grid-cols-12 gap-12">
                     {/* Header Column */}
-                    <div className="lg:col-span-4">
+                    <motion.div
+                        initial={{ opacity: 0, x: -30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8 }}
+                        className="lg:col-span-4"
+                    >
                         <h2 className="text-3xl md:text-5xl font-bold mb-6 text-foreground leading-tight">
                             Frequently Asked <br className="hidden lg:block" /> Questions
                         </h2>
                         <p className="text-lg text-muted-foreground mb-8">
                             Got questions? We have answers. Find everything you need to know about Swasthify.
                         </p>
-                    </div>
+                    </motion.div>
 
                     {/* Accordion Column */}
-                    <div className="lg:col-span-8">
+                    <motion.div
+                        initial={{ opacity: 0, x: 30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8 }}
+                        className="lg:col-span-8"
+                    >
                         <Accordion type="single" collapsible className="w-full space-y-4">
                             {faqs.map((faq, index) => (
                                 <AccordionItem key={index} value={`item-${index}`} className="border border-border/50 rounded-xl px-2 bg-background data-[state=open]:border-primary/20 data-[state=open]:bg-primary/5 transition-all">
@@ -61,7 +76,7 @@ export function LabFAQ() {
                                 </AccordionItem>
                             ))}
                         </Accordion>
-                    </div>
+                    </motion.div>
                 </div>
             </div>
         </section>
