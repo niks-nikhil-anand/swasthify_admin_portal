@@ -18,7 +18,7 @@ interface CTAProps {
 export function CTA({
     title = "Ready to experience better healthcare?",
     description = "Join thousands of users who trust Swasthify for their medical needs. Start your journey today.",
-    primaryAction = { text: "Get Started Now", href: "/register/patient" },
+    primaryAction = { text: "Get Started Now", href: "/register" },
     secondaryAction = { text: "View Services", href: "/services" }
 }: CTAProps) {
     return (
