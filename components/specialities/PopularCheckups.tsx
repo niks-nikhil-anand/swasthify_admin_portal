@@ -36,27 +36,22 @@ export function PopularCheckups() {
     return (
         <section className="py-24 bg-background overflow-hidden">
             <div className="container mx-auto px-4">
-                <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-8 text-center md:text-left">
-                    <div className="space-y-4">
-                        <motion.h2
-                            className="text-3xl font-bold tracking-tight sm:text-5xl"
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                        >
-                            Popular <span className="text-emerald-600 dark:text-emerald-400 underline decoration-wavy decoration-emerald-200 underline-offset-8">Health Packages</span>
-                        </motion.h2>
-                        <motion.p
-                            className="text-muted-foreground text-lg max-w-xl"
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.1 }}
-                        >
+                <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="space-y-3 text-center md:text-left"
+                    >
+                        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
+                            Popular <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-2 rounded-md">Health Packages</span>
+                        </h2>
+                        <p className="text-muted-foreground text-lg md:text-xl max-w-2xl">
                             Save big with our curated health screening bundles designed for every age group and lifestyle.
-                        </motion.p>
-                    </div>
-                    <Button variant="outline" className="rounded-full px-8 h-12 font-bold group">
+                        </p>
+                    </motion.div>
+                    <Button variant="outline" className="hidden md:flex rounded-full px-8 h-12 font-bold group">
                         View All Packages <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </Button>
                 </div>
