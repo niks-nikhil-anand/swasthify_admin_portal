@@ -1,3 +1,4 @@
+import { LabSection } from "@/components/root/LabSection";
 import dynamic from "next/dynamic";
 
 const Hero = dynamic(() => import("@/components/root/Hero").then((mod) => mod.Hero));
@@ -35,10 +36,10 @@ export default function Home() {
       <main className="flex-1 relative z-10">
         <Hero />
         <Services />
-        <DoctorSection />
-        <HealthPackages />
-        <AbhaIntegration />
         <Specialities />
+        <DoctorSection />
+        <AbhaIntegration />
+        <LabSection />
         <InClinic />
         <Testimonials />
         <DownloadApp />
