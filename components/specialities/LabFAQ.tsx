@@ -48,11 +48,11 @@ export function LabFAQ() {
                         transition={{ duration: 0.8 }}
                         className="lg:col-span-4"
                     >
-                        <h2 className="text-3xl md:text-5xl font-bold mb-6 text-foreground leading-tight">
-                            Frequently Asked <br className="hidden lg:block" /> Questions
+                        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground mb-6 leading-tight">
+                            Frequently Asked <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-2 rounded-md">Questions</span>
                         </h2>
-                        <p className="text-lg text-muted-foreground mb-8">
-                            Got questions? We have answers. Find everything you need to know about Swasthify.
+                        <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mb-8">
+                            Got questions? We have answers. Find everything you need to know about our health services and portal.
                         </p>
                     </motion.div>
 
