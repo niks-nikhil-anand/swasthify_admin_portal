@@ -7,7 +7,7 @@ import { PopularCheckups } from "@/components/specialities/PopularCheckups";
 import { WhyBookWithUs } from "@/components/specialities/WhyBookWithUs";
 import { SpecialitiesCTA } from "@/components/specialities/SpecialitiesCTA";
 import { LabFAQ } from "@/components/specialities/LabFAQ";
-import { DiagnosticTests } from "@/components/root/DiagnosticTests";
+
 import { DoctorSection } from "@/components/root/DoctorSection";
 
 export default function SpecialitiesPage() {
@@ -19,7 +19,7 @@ export default function SpecialitiesPage() {
                 <TestSpecialities />
                 <VitalCheckups />
                 <PopularCheckups />
-                <DiagnosticTests />
+
                 <DoctorSection />
                 <WhyBookWithUs />
                 <SpecialitiesCTA />
