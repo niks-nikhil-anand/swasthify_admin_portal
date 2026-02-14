@@ -13,9 +13,9 @@ export function Footer() {
     ];
 
     const services = [
-        { label: "Pharmacy Partner", href: "/pharmacy_partner" },
+        { label: "Pharmacy Partner", href: "/pharmacy-partner" },
         { label: "Lab Partner", href: "/lab-partner" },
-        { label: "Doctor Partner", href: "/doctor-profile" },
+        { label: "Doctor Partner", href: "/doctor-partner" },
         { label: "Pricing", href: "/pricing" },
 
     ];
