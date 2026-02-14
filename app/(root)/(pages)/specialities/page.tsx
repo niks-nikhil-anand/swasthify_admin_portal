@@ -5,6 +5,7 @@ import {
     WhyBookSkeleton,
     FAQSectionSkeleton
 } from "@/components/specialities/SpecialitiesSkeletons";
+import { LabSection } from "@/components/root/LabSection";
 
 const SpecialitiesHero = dynamic(() => import("@/components/specialities/SpecialitiesHero").then(m => m.SpecialitiesHero), {
     loading: () => <HeroSkeleton />
@@ -45,8 +46,9 @@ export default function SpecialitiesPage() {
                 <SpecialitiesHero />
                 <DoctorSpecialities />
                 <TestSpecialities />
-                <HealthPackages />
                 <DoctorSection />
+                <HealthPackages />
+                 <LabSection />
                 <WhyBookWithUs />
                 <CTA
                     title="Find the Right Care Today"
