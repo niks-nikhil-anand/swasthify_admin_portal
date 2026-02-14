@@ -1,8 +1,10 @@
+"use client";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Droplet, Activity, Pipette } from "lucide-react";
+import { motion } from "framer-motion";
 
 export function VitalCheckups() {
     const checkups = [
@@ -46,7 +48,22 @@ export function VitalCheckups() {
     return (
         <section className="w-full py-16 px-4 md:px-6 bg-muted/30">
             <div className="container mx-auto">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-10">Recommended Vital Checkups</h2>
+                <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="space-y-3 text-center md:text-left"
+                    >
+                        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
+                            Recommended <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-2 rounded-md">Vital Checkups</span>
+                        </h2>
+                        <p className="text-muted-foreground text-lg md:text-xl max-w-2xl">
+                            Stay proactive about your health with our expert-recommended essential diagnostic checkups.
+                        </p>
+                    </motion.div>
+                </div>
                 <ScrollArea className="w-full whitespace-nowrap">
                     <div className="flex space-x-4 pb-4">
                         {checkups.map((checkup, index) => (
