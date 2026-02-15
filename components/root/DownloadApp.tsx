@@ -6,7 +6,7 @@ import { Phone, ArrowRight, Download } from "lucide-react";
 
 export function DownloadApp() {
     return (
-        <section className=" relative py-24 md:py-32 bg-background overflow-hidden">
+        <section className=" relative py-21 md:py-32 bg-background overflow-hidden">
             {/* Background Decorations */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
                 <div className="absolute top-1/2 left-1/4 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[150px] -translate-y-1/2" />
@@ -107,7 +107,7 @@ export function DownloadApp() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl"
+                            className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl font-medium"
                         >
                             Download the Swasthify app to manage appointments, access digital health records, and consult with specialists anytime, anywhere.
                         </motion.p>
@@ -142,20 +142,20 @@ export function DownloadApp() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.4 }}
-                            className="flex flex-wrap gap-4 justify-center lg:justify-start pt-4"
+                            className="flex flex-nowrap gap-2 md:gap-4 justify-center lg:justify-start pt-4"
                         >
-                            <button className="flex items-center gap-4 bg-foreground text-background px-6 py-3.5 rounded-2xl hover:bg-foreground/90 transition-all hover:shadow-2xl hover:-translate-y-1 active:scale-95 group">
-                                <Image src="/icons/playstore.png" alt="Play Store" width={28} height={28} className="w-7 h-7 object-contain" />
+                            <button className="flex items-center gap-2 md:gap-4 bg-foreground text-background px-4 py-2.5 sm:px-6 sm:py-3.5 rounded-2xl hover:bg-foreground/90 transition-all hover:shadow-2xl hover:-translate-y-1 active:scale-95 group shrink-0">
+                                <Image src="/icons/playstore.png" alt="Play Store" width={28} height={28} className="w-6 h-6 md:w-7 md:h-7 object-contain" />
                                 <div className="text-left">
-                                    <p className="text-[10px] font-bold uppercase tracking-wider opacity-60">Get it on</p>
-                                    <p className="text-base font-black">Google Play</p>
+                                    <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-wider opacity-60 whitespace-nowrap">Get it on</p>
+                                    <p className="text-sm md:text-base font-black whitespace-nowrap">Google Play</p>
                                 </div>
                             </button>
-                            <button className="flex items-center gap-4 bg-foreground text-background px-6 py-3.5 rounded-2xl hover:bg-foreground/90 transition-all hover:shadow-2xl hover:-translate-y-1 active:scale-95 group">
-                                <Image src="/icons/app-store.png" alt="App Store" width={28} height={28} className="w-7 h-7 object-contain" />
+                            <button className="flex items-center gap-2 md:gap-4 bg-foreground text-background px-4 py-2.5 sm:px-6 sm:py-3.5 rounded-2xl hover:bg-foreground/90 transition-all hover:shadow-2xl hover:-translate-y-1 active:scale-95 group shrink-0">
+                                <Image src="/icons/app-store.png" alt="App Store" width={28} height={28} className="w-6 h-6 md:w-7 md:h-7 object-contain" />
                                 <div className="text-left">
-                                    <p className="text-[10px] font-bold uppercase tracking-wider opacity-60">Download on the</p>
-                                    <p className="text-base font-black">App Store</p>
+                                    <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-wider opacity-60 whitespace-nowrap">Download on the</p>
+                                    <p className="text-sm md:text-base font-black whitespace-nowrap">App Store</p>
                                 </div>
                             </button>
                         </motion.div>
