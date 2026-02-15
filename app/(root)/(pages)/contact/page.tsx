@@ -131,9 +131,37 @@ export default function ContactPage() {
                                             </div>
                                             <div>
                                                 <h3 className="font-bold text-base md:text-lg mb-1">{item.title}</h3>
-                                                {item.lines.map((line, i) => (
-                                                    <p key={i} className="text-sm md:text-base text-muted-foreground">{line}</p>
-                                                ))}
+                                                {item.lines.map((line, i) => {
+                                                    let href = "";
+                                                    let target = undefined;
+                                                    let rel = undefined;
+
+                                                    if (item.icon === Phone) {
+                                                        href = `tel:${line.replace(/\s+/g, "")}`;
+                                                    } else if (item.icon === Mail) {
+                                                        href = `mailto:${line}`;
+                                                    } else if (item.icon === MapPin) {
+                                                        href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(line)}`;
+                                                        target = "_blank";
+                                                        rel = "noopener noreferrer";
+                                                    }
+
+                                                    if (href) {
+                                                        return (
+                                                            <a
+                                                                key={i}
+                                                                href={href}
+                                                                target={target}
+                                                                rel={rel}
+                                                                className="block text-sm md:text-base text-muted-foreground hover:text-primary transition-colors"
+                                                            >
+                                                                {line}
+                                                            </a>
+                                                        );
+                                                    }
+
+                                                    return <p key={i} className="text-sm md:text-base text-muted-foreground">{line}</p>;
+                                                })}
                                             </div>
                                         </CardContent>
                                     </Card>
