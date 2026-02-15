@@ -116,8 +116,8 @@ export function Footer() {
                                     <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
                                         <Mail className="h-5 w-5" />
                                     </div>
-                                    <a href="mailto:support@swasthify.com" className="hover:text-primary transition-colors">
-                                        support@swasthify.com
+                                    <a href="mailto:support@swasthify.in" className="hover:text-primary transition-colors">
+                                        support@swasthify.in
                                     </a>
                                 </li>
                                 <li className="flex items-center gap-4 group">
