@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Loader2, Bot, User } from 'lucide-react';
+import { MessageCircle, X, Send, Loader2, Bot, User, ArrowUp } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 interface Message {
@@ -18,6 +18,7 @@ export default function Chatbot() {
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showChatbot, setShowChatbot] = useState(false);
+    const [showScrollTop, setShowScrollTop] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
 
@@ -32,6 +33,9 @@ export default function Chatbot() {
 
             // Show chatbot only after 10% scroll and hide when in bottom 20%
             setShowChatbot(scrollPercentage > 10 && scrollPercentage < 80);
+
+            // Show scroll to top button when in bottom 20%
+            setShowScrollTop(scrollPercentage >= 80);
         };
 
         window.addEventListener('scroll', handleScroll);
@@ -39,6 +43,14 @@ export default function Chatbot() {
 
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    // Scroll to top function
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    };
 
     // Scroll to bottom when messages or suggestions change
     useEffect(() => {
@@ -407,6 +419,23 @@ export default function Chatbot() {
                             </div>
                         </div>
                     </motion.div>
+                )}
+            </AnimatePresence>
+            {/* Scroll to Top Button */}
+            <AnimatePresence>
+                {showScrollTop && (
+                    <motion.button
+                        onClick={scrollToTop}
+                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="fixed bottom-4 right-4 md:bottom-5 md:right-5 lg:bottom-6 lg:right-6 z-50 flex h-12 w-12 md:h-13 md:w-13 lg:h-14 lg:w-14 items-center justify-center rounded-full bg-emerald-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                        aria-label="Scroll to top"
+                    >
+                        <ArrowUp className="h-6 w-6" />
+                    </motion.button>
                 )}
             </AnimatePresence>
         </>
