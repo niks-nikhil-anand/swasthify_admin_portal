@@ -105,14 +105,14 @@ export default function ContactPage() {
                                     {
                                         icon: Mail,
                                         title: "Email Address",
-                                        lines: ["support@swasthify.com", "info@swasthify.com"],
+                                        lines: ["support@swasthify.in", "info@swasthify.in"],
                                         color: "text-green-500",
                                         bg: "bg-green-500/10"
                                     },
                                     {
                                         icon: MapPin,
                                         title: "Office Location",
-                                        lines: ["Rajendra nagar Patna Bihar 800016"],
+                                        lines: ["Rajendra Nagar, Patna, Bihar, 800016"],
                                         color: "text-purple-500",
                                         bg: "bg-purple-500/10"
                                     },
