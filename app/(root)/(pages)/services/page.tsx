@@ -153,7 +153,7 @@ export default function ServicesPage() {
             <CTA
                 title="Ready to Book a Service?"
                 description="Experience world-class healthcare services at your fingertips. Book an appointment or diagnostic test today."
-                primaryAction={{ text: "Book Now", href: "/find-doctor" }}
+                primaryAction={{ text: "Book Now", href: "/login" }}
                 secondaryAction={{ text: "Contact Support", href: "/contact" }}
             />
         </div>
