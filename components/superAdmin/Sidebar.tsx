@@ -29,6 +29,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
+import { useState } from "react";
+import { ContactTechModal } from "./ContactTechModal";
 
 const sidebarGroups = [
     {
@@ -143,6 +145,7 @@ type SidebarProps = React.HTMLAttributes<HTMLDivElement>;
 
 export function Sidebar({ className }: SidebarProps) {
     const pathname = usePathname();
+    const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
     return (
         <div className={cn("flex flex-col h-full overflow-hidden border-r bg-card/50 backdrop-blur-xl", className)}>
@@ -226,10 +229,20 @@ export function Sidebar({ className }: SidebarProps) {
                     <p className="text-[11px] text-muted-foreground mb-3 leading-relaxed">
                         Need help with the dashboard?
                     </p>
-                    <Button size="sm" variant="outline" className="w-full text-xs h-8 bg-background/50 hover:bg-background border-primary/20 text-primary hover:text-primary transition-all">
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full text-xs h-8 bg-background/50 hover:bg-background border-primary/20 text-primary hover:text-primary transition-all"
+                        onClick={() => setIsContactModalOpen(true)}
+                    >
                         Contact Tech Team
                     </Button>
                 </div>
+
+                <ContactTechModal
+                    isOpen={isContactModalOpen}
+                    onClose={() => setIsContactModalOpen(false)}
+                />
 
                 <Button
                     variant="ghost"
