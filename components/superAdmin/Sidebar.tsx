@@ -170,7 +170,7 @@ export function Sidebar({ className }: SidebarProps) {
             </div>
 
             {/* Navigation Links */}
-            <ScrollArea className="flex-1 min-h-0 px-4">
+            <div className="flex-1 min-h-0 overflow-y-auto px-4">
                 <div className="space-y-6">
                     {sidebarGroups.map((group, index) => (
                         <div key={index} className="px-2">
@@ -209,7 +209,7 @@ export function Sidebar({ className }: SidebarProps) {
                         </div>
                     ))}
                 </div>
-            </ScrollArea>
+            </div>
 
             {/* Bottom Section */}
             <div className="p-4 mt-auto border-t bg-gradient-to-b from-transparent to-muted/20 shrink-0">
