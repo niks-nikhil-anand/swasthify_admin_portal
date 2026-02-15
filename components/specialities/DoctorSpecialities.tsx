@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PlusCircle, Activity } from "lucide-react";
+import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -131,50 +132,52 @@ export function DoctorSpecialities() {
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
                     <AnimatePresence mode="popLayout">
                         {specialities.slice(0, visibleCount).map((speciality, index) => (
-                            <motion.div
-                                key={speciality.title || index}
-                                layout
-                                variants={itemFadeIn}
-                                initial="hidden"
-                                animate="show"
-                                exit={{ opacity: 0, scale: 0.95 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: (index % 6) * 0.05 }}
-                                whileHover={{ y: -8 }}
-                            >
-                                <Card className="relative overflow-hidden border-2 hover:border-emerald-500 transition-all duration-300 group h-full flex flex-col rounded-[1.5rem] md:rounded-[2rem] shadow-lg hover:shadow-2xl bg-card">
-                                    <div className="relative h-28 md:h-40 w-full flex items-center justify-center pt-6">
-                                        <div className={`w-24 h-24 md:w-32 md:h-32 relative ${speciality.color} rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110 overflow-hidden shadow-inner border-4 border-background`}>
-                                            <Image
-                                                src={speciality.image}
-                                                alt={speciality.title}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                            <div className="absolute inset-0 bg-gradient-to-tr from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <Link href="/login" key={speciality.title || index}>
+                                <motion.div
+                                    layout
+                                    variants={itemFadeIn}
+                                    initial="hidden"
+                                    animate="show"
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: (index % 6) * 0.05 }}
+                                    whileHover={{ y: -8 }}
+                                    className="h-full"
+                                >
+                                    <Card className="relative overflow-hidden border-2 hover:border-emerald-500 transition-all duration-300 group h-full flex flex-col rounded-[1.5rem] md:rounded-[2rem] shadow-lg hover:shadow-2xl bg-card cursor-pointer">
+                                        <div className="relative h-28 md:h-40 w-full flex items-center justify-center pt-6">
+                                            <div className={`w-24 h-24 md:w-32 md:h-32 relative ${speciality.color} rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110 overflow-hidden shadow-inner border-4 border-background`}>
+                                                <Image
+                                                    src={speciality.image}
+                                                    alt={speciality.title}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-tr from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <CardHeader className="pt-4 pb-2 px-3 md:px-6 text-center">
-                                        <CardTitle className="text-sm md:text-lg font-bold leading-tight line-clamp-2 min-h-[40px] md:min-h-[48px] group-hover:text-emerald-600 transition-colors">
-                                            {speciality.title}
-                                        </CardTitle>
-                                    </CardHeader>
+                                        <CardHeader className="pt-4 pb-2 px-3 md:px-6 text-center">
+                                            <CardTitle className="text-sm md:text-lg font-bold leading-tight line-clamp-2 min-h-[40px] md:min-h-[48px] group-hover:text-emerald-600 transition-colors">
+                                                {speciality.title}
+                                            </CardTitle>
+                                        </CardHeader>
 
-                                    <CardContent className="px-3 md:px-6 py-2 flex-1 text-center">
-                                        <div className="flex flex-col items-center">
-                                            <p className="text-muted-foreground text-[10px] md:text-xs">Consultation starts from</p>
-                                            <span className="text-lg md:text-2xl font-black text-foreground">{speciality.price}</span>
-                                        </div>
-                                    </CardContent>
+                                        <CardContent className="px-3 md:px-6 py-2 flex-1 text-center">
+                                            <div className="flex flex-col items-center">
+                                                <p className="text-muted-foreground text-[10px] md:text-xs">Consultation starts from</p>
+                                                <span className="text-lg md:text-2xl font-black text-foreground">{speciality.price}</span>
+                                            </div>
+                                        </CardContent>
 
-                                    <CardFooter className="px-3 md:px-6 pb-4 md:pb-6 pt-2 mt-auto">
-                                        <Button className="w-full h-8 md:h-10 rounded-xl md:rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs md:text-sm font-bold shadow-md hover:scale-[1.02] transition-all">
-                                            Consult Now
-                                        </Button>
-                                    </CardFooter>
-                                </Card>
-                            </motion.div>
+                                        <CardFooter className="px-3 md:px-6 pb-4 md:pb-6 pt-2 mt-auto">
+                                            <Button className="w-full h-8 md:h-10 rounded-xl md:rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs md:text-sm font-bold shadow-md hover:scale-[1.02] transition-all">
+                                                Consult Now
+                                            </Button>
+                                        </CardFooter>
+                                    </Card>
+                                </motion.div>
+                            </Link>
                         ))}
                     </AnimatePresence>
                 </div>
