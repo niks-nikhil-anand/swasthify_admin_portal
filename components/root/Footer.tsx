@@ -138,7 +138,7 @@ export function Footer() {
                                         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 shrink-0">
                                             <MapPin className="h-5 w-5" />
                                         </div>
-                                        <span className="leading-snug">Rajendra nagar Patna Bihar 800016</span>
+                                        <span className="leading-snug">Rajendra Nagar, Patna, Bihar, 800016</span>
                                     </a>
                                 </li>
                             </ul>
