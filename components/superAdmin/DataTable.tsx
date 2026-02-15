@@ -72,6 +72,11 @@ export function DataTable<TData, TValue>({
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [grouping, setGrouping] = React.useState<GroupingState>([])
     const [expanded, setExpanded] = React.useState({})
+    const [isMounted, setIsMounted] = React.useState(false)
+
+    React.useEffect(() => {
+        setIsMounted(true)
+    }, [])
 
     const table = useReactTable({
         data,
@@ -95,6 +100,10 @@ export function DataTable<TData, TValue>({
             expanded,
         },
     })
+
+    if (!isMounted) {
+        return null
+    }
 
     return (
         <div className="space-y-4">
