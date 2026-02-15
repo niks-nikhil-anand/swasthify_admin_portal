@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export function AbhaIntegration() {
     return (
-        <section className="relative py-24 md:py-36 bg-background overflow-hidden">
+        <section className="relative py-12 md:py-36 bg-background overflow-hidden">
             {/* Background Decorations - Enhanced Depth */}
             <div className="absolute inset-0 z-0 pointer-events-none">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-emerald-500/3 rounded-full blur-[160px]" />
@@ -43,7 +43,7 @@ export function AbhaIntegration() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: 0.1, duration: 0.7 }}
-                                className="text-4xl md:text-5xl lg:text-7xl font-black tracking-tight text-foreground leading-[1.05]"
+                                className="text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter text-foreground leading-[1.05]"
                             >
                                 Your <span className="relative inline-block">
                                     <span className="relative z-10 text-transparent bg-clip-text bg-linear-to-br from-emerald-500 via-emerald-600 to-blue-600 dark:from-emerald-400 dark:via-emerald-300 dark:to-blue-400 drop-shadow-sm">ABHA ID</span>
@@ -141,7 +141,7 @@ export function AbhaIntegration() {
                             }}
                             className="relative z-10 w-full max-w-[580px] group"
                         >
-                            <div className="relative rounded-[3rem] md:rounded-[4rem] overflow-hidden shadow-[0_80px_100px_-30px_rgba(0,0,0,0.3)] ring-1 ring-white/10 p-2 md:p-3 bg-white/5 backdrop-blur-sm">
+                            <div className="hidden md:block relative rounded-[3rem] md:rounded-[4rem] overflow-hidden shadow-[0_80px_100px_-30px_rgba(0,0,0,0.3)] ring-1 ring-white/10 p-2 md:p-3 bg-white/5 backdrop-blur-sm">
                                 <div className="rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden border border-emerald-500/20">
                                     <Image
                                         src="/abha-illustration.png"
