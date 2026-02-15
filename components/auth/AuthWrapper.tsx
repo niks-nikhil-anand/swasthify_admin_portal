@@ -1,5 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
+import { Smartphone } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface AuthWrapperProps {
@@ -63,13 +64,17 @@ export function AuthWrapper({
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 gap-3" >
+                                <div className="grid grid-cols-2 gap-3" >
                                     {/* Placeholder social buttons */}
                                     <button className="flex w-full items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted/50 transition-colors">
                                         <svg className="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24">
                                             <path d="M12.0003 20.45c-4.6667 0-8.4503-3.7836-8.4503-8.4503 0-4.6667 3.7836-8.45 8.4503-8.45 4.6667 0 8.45 3.7833 8.45 8.45 0 4.6667-3.7833 8.4503-8.45 8.4503zm0-1.69c3.7336 0 6.7603-3.0267 6.7603-6.7603 0-3.7336-3.0267-6.76-6.7603-6.76-3.7336 0-6.7603 3.0264-6.7603 6.76 0 3.7336 3.0267 6.7603 6.7603 6.7603zm0-3.38c-1.8665 0-3.3802-1.5136-3.3802-3.3802 0-1.8666 1.5137-3.38 3.3802-3.38 1.8666 0 3.3802 1.5134 3.3802 3.38 0 1.8666-1.5136 3.3803-3.3802 3.3803z" fill="currentColor" />
                                         </svg>
                                         Google
+                                    </button>
+                                    <button className="flex w-full items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted/50 transition-colors">
+                                        <Smartphone className="h-4 w-4" />
+                                        Login via OTP
                                     </button>
                                 </div>
                             </>
