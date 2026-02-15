@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -69,29 +70,30 @@ export function InClinic() {
                     className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6"
                 >
                     {specialties.map((specialty, index) => (
-                        <motion.div
-                            key={index}
-                            variants={item}
-                            whileHover={{ scale: 1.02 }}
-                            className="group cursor-pointer bg-card rounded-2xl overflow-hidden border border-border hover:shadow-lg transition-all duration-300"
-                        >
-                            <div className="relative h-28 md:h-48 w-full overflow-hidden">
-                                <Image
-                                    src={specialty.image}
-                                    alt={specialty.title}
-                                    fill
-                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                />
-                            </div>
-                            <div className="p-3 md:p-5 text-center">
-                                <h3 className="font-bold text-xs md:text-lg text-foreground mb-1 md:mb-2 group-hover:text-primary transition-colors line-clamp-1 md:line-clamp-none">
-                                    {specialty.title}
-                                </h3>
-                                <p className="text-muted-foreground text-[10px] md:text-sm leading-relaxed line-clamp-2 md:line-clamp-none">
-                                    {specialty.description}
-                                </p>
-                            </div>
-                        </motion.div>
+                        <Link href="/login" key={index}>
+                            <motion.div
+                                variants={item}
+                                whileHover={{ scale: 1.02 }}
+                                className="group cursor-pointer bg-card rounded-2xl overflow-hidden border border-border hover:shadow-lg transition-all duration-300 h-full"
+                            >
+                                <div className="relative h-28 md:h-48 w-full overflow-hidden">
+                                    <Image
+                                        src={specialty.image}
+                                        alt={specialty.title}
+                                        fill
+                                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                    />
+                                </div>
+                                <div className="p-3 md:p-5 text-center">
+                                    <h3 className="font-bold text-xs md:text-lg text-foreground mb-1 md:mb-2 group-hover:text-primary transition-colors line-clamp-1 md:line-clamp-none">
+                                        {specialty.title}
+                                    </h3>
+                                    <p className="text-muted-foreground text-[10px] md:text-sm leading-relaxed line-clamp-2 md:line-clamp-none">
+                                        {specialty.description}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        </Link>
                     ))}
                 </motion.div>
             </div>
