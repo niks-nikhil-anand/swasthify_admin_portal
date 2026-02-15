@@ -96,35 +96,36 @@ export function Specialities() {
                     className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-6"
                 >
                     {specialities.map((speciality, index) => (
-                        <motion.div
-                            key={index}
-                            variants={item}
-                            whileHover={{ y: -8, scale: 1.02 }}
-                            className="group bg-card/60 backdrop-blur-md hover:bg-card hover:shadow-[0_20px_50px_rgba(16,185,129,0.1)] transition-all duration-500 p-4 md:p-8 rounded-[2rem] border border-border/50 hover:border-emerald-500/30 flex flex-col items-center text-center h-full"
-                        >
-                            <div className={`w-16 h-16 md:w-32 md:h-32 relative mb-2 md:mb-4 ${speciality.color} rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-2xl group-hover:shadow-emerald-500/20 overflow-hidden`}>
-                                <div className="absolute inset-0 rounded-full bg-linear-to-tr from-white/60 dark:from-background/40 to-transparent pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity z-10" />
-                                <div className="absolute inset-0 rounded-full scale-0 group-hover:scale-150 bg-emerald-500/5 blur-2xl transition-transform duration-700 -z-10" />
-                                <Image
-                                    src={speciality.image}
-                                    alt={speciality.title}
-                                    fill
-                                    className="object-cover rounded-full"
-                                />
-                            </div>
+                        <Link href="/login" key={index}>
+                            <motion.div
+                                variants={item}
+                                whileHover={{ y: -8, scale: 1.02 }}
+                                className="group bg-card/60 backdrop-blur-md hover:bg-card hover:shadow-[0_20px_50px_rgba(16,185,129,0.1)] transition-all duration-500 p-4 md:p-8 rounded-[2rem] border border-border/50 hover:border-emerald-500/30 flex flex-col items-center text-center h-full cursor-pointer"
+                            >
+                                <div className={`w-16 h-16 md:w-32 md:h-32 relative mb-2 md:mb-4 ${speciality.color} rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-2xl group-hover:shadow-emerald-500/20 overflow-hidden`}>
+                                    <div className="absolute inset-0 rounded-full bg-linear-to-tr from-white/60 dark:from-background/40 to-transparent pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity z-10" />
+                                    <div className="absolute inset-0 rounded-full scale-0 group-hover:scale-150 bg-emerald-500/5 blur-2xl transition-transform duration-700 -z-10" />
+                                    <Image
+                                        src={speciality.image}
+                                        alt={speciality.title}
+                                        fill
+                                        className="object-cover rounded-full"
+                                    />
+                                </div>
 
-                            <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-2 px-1 text-xs md:text-base">
-                                {speciality.title}
-                            </h3>
+                                <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-2 px-1 text-xs md:text-base">
+                                    {speciality.title}
+                                </h3>
 
-                            <div className="text-[10px] md:text-sm text-muted-foreground mb-2 md:mb-4">
-                                starts from <span className="font-bold text-foreground text-xs md:text-base">{speciality.price}</span>
-                            </div>
+                                <div className="text-[10px] md:text-sm text-muted-foreground mb-2 md:mb-4">
+                                    starts from <span className="font-bold text-foreground text-xs md:text-base">{speciality.price}</span>
+                                </div>
 
-                            <span className="mt-auto text-[10px] md:text-xs font-bold text-primary opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center bg-primary/10 px-2 py-0.5 md:px-3 md:py-1 rounded-full shadow-md shadow-primary/10">
-                                Consult <ChevronRight className="w-2 h-2 md:w-3 md:h-3 ml-1" />
-                            </span>
-                        </motion.div>
+                                <span className="mt-auto text-[10px] md:text-xs font-bold text-primary opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center bg-primary/10 px-2 py-0.5 md:px-3 md:py-1 rounded-full shadow-md shadow-primary/10">
+                                    Consult <ChevronRight className="w-2 h-2 md:w-3 md:h-3 ml-1" />
+                                </span>
+                            </motion.div>
+                        </Link>
                     ))}
                 </motion.div>
 
