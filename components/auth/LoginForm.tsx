@@ -30,7 +30,7 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
     const [isOtpSent, setIsOtpSent] = React.useState(false)
 
     // Email OTP states
-    const [emailMode, setEmailMode] = React.useState<"password" | "otp">("otp")
+    const [emailMode, setEmailMode] = React.useState<"password" | "otp">("password")
     const [emailOtp, setEmailOtp] = React.useState("")
     const [isEmailOtpSent, setIsEmailOtpSent] = React.useState(false)
 
