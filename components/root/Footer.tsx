@@ -9,7 +9,7 @@ export function Footer() {
         { label: "Doctors", href: "/doctors" },
         { label: "Lab Tests", href: "/labs" },
         { label: "Contact", href: "/contact" },
-        {label: "About Us", href: "/aboutUs"}
+        { label: "About Us", href: "/aboutUs" }
     ];
 
     const services = [
@@ -112,27 +112,34 @@ export function Footer() {
                         <h3 className="font-bold text-foreground mb-6 text-lg tracking-tight">Get in Touch</h3>
                         <div className="bg-muted/30 p-6 rounded-2xl border border-border/50 backdrop-blur-sm">
                             <ul className="space-y-4 text-[15px] text-muted-foreground">
-                                <li className="flex items-center gap-4 group">
-                                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                                        <Mail className="h-5 w-5" />
-                                    </div>
-                                    <a href="mailto:support@swasthify.in" className="hover:text-primary transition-colors">
-                                        support@swasthify.in
+                                <li className="group">
+                                    <a href="mailto:support@swasthify.in" className="flex items-center gap-4 hover:text-primary transition-colors">
+                                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                            <Mail className="h-5 w-5" />
+                                        </div>
+                                        <span>support@swasthify.in</span>
                                     </a>
                                 </li>
-                                <li className="flex items-center gap-4 group">
-                                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                                        <Phone className="h-5 w-5" />
-                                    </div>
-                                    <a href="tel:+919759225515" className="hover:text-primary transition-colors">
-                                        +91 97592 25515
+                                <li className="group">
+                                    <a href="tel:+919759225515" className="flex items-center gap-4 hover:text-primary transition-colors">
+                                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                            <Phone className="h-5 w-5" />
+                                        </div>
+                                        <span>+91 97592 25515</span>
                                     </a>
                                 </li>
-                                <li className="flex items-start gap-4 group">
-                                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 shrink-0">
-                                        <MapPin className="h-5 w-5" />
-                                    </div>
-                                    <span className="leading-snug">Rajendra nagar Patna Bihar 800016</span>
+                                <li className="group">
+                                    <a
+                                        href="https://www.google.com/maps/search/?api=1&query=Rajendra+nagar+Patna+Bihar+800016"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-start gap-4 hover:text-primary transition-colors"
+                                    >
+                                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 shrink-0">
+                                            <MapPin className="h-5 w-5" />
+                                        </div>
+                                        <span className="leading-snug">Rajendra nagar Patna Bihar 800016</span>
+                                    </a>
                                 </li>
                             </ul>
                         </div>
