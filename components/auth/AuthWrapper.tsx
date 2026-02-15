@@ -63,19 +63,13 @@ export function AuthWrapper({
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 gap-3" >
                                     {/* Placeholder social buttons */}
                                     <button className="flex w-full items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted/50 transition-colors">
                                         <svg className="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24">
                                             <path d="M12.0003 20.45c-4.6667 0-8.4503-3.7836-8.4503-8.4503 0-4.6667 3.7836-8.45 8.4503-8.45 4.6667 0 8.45 3.7833 8.45 8.45 0 4.6667-3.7833 8.4503-8.45 8.4503zm0-1.69c3.7336 0 6.7603-3.0267 6.7603-6.7603 0-3.7336-3.0267-6.76-6.7603-6.76-3.7336 0-6.7603 3.0264-6.7603 6.76 0 3.7336 3.0267 6.7603 6.7603 6.7603zm0-3.38c-1.8665 0-3.3802-1.5136-3.3802-3.3802 0-1.8666 1.5137-3.38 3.3802-3.38 1.8666 0 3.3802 1.5134 3.3802 3.38 0 1.8666-1.5136 3.3803-3.3802 3.3803z" fill="currentColor" />
                                         </svg>
                                         Google
-                                    </button>
-                                    <button className="flex w-full items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted/50 transition-colors">
-                                        <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                            <path d="M13.444 12h5.778c.272 0 .528.083.736.223l.112.086a.916.916 0 01.372.748c0 .285-.118.543-.306.732l-.08.07-5.834 4.376 2.228 7.025c.092.291.025.61-.177.832l-.086.083a.902.902 0 01-.734.22h-.056c-.282 0-.542-.119-.73-.31l-.076-.088-5.872-7.554-5.874 7.554c-.179.231-.448.375-.742.396l-.088.002a.903.903 0 01-.736-.22l-.086-.083a.907.907 0 01-.177-.832l2.228-7.025-5.834-4.376a1.025 1.025 0 01-.306-.732c0-.285.118-.543.306-.732l.08-.07h.062c.208-.14.464-.223.736-.223h5.778L8.134 4.22a.915.915 0 01.294-.748.915.915 0 01.782-.13l.096.035L12 4.41l2.694-1.033a.915.915 0 01.878.095.915.915 0 01.294.748L13.444 12z" />
-                                        </svg>
-                                        Facebook
                                     </button>
                                 </div>
                             </>
