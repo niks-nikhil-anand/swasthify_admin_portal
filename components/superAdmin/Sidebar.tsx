@@ -145,9 +145,9 @@ export function Sidebar({ className }: SidebarProps) {
     const pathname = usePathname();
 
     return (
-        <div className={cn("flex flex-col h-screen border-r bg-card/50 backdrop-blur-xl", className)}>
+        <div className={cn("flex flex-col h-full overflow-hidden border-r bg-card/50 backdrop-blur-xl", className)}>
             {/* Logo Section */}
-            <div className="p-6 pb-2">
+            <div className="p-6 pb-2 shrink-0">
                 <div className="flex items-center gap-3 px-2 mb-6 ">
                     <div className="bg-white rounded-xl shadow-sm border border-border group-hover:scale-105 transition-transform duration-300">
                         <Image
@@ -170,7 +170,7 @@ export function Sidebar({ className }: SidebarProps) {
             </div>
 
             {/* Navigation Links */}
-            <ScrollArea className="flex-1 px-4">
+            <ScrollArea className="flex-1 min-h-0 px-4">
                 <div className="space-y-6">
                     {sidebarGroups.map((group, index) => (
                         <div key={index} className="px-2">
@@ -212,7 +212,7 @@ export function Sidebar({ className }: SidebarProps) {
             </ScrollArea>
 
             {/* Bottom Section */}
-            <div className="p-4 mt-auto border-t bg-gradient-to-b from-transparent to-muted/20">
+            <div className="p-4 mt-auto border-t bg-gradient-to-b from-transparent to-muted/20 shrink-0">
                 <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-4 rounded-xl border border-primary/10 mb-2 relative overflow-hidden group">
                     {/* Decorative circle */}
                     <div className="absolute -right-4 -top-4 h-16 w-16 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-colors duration-500" />
