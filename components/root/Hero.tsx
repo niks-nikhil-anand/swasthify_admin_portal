@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Search, MapPin, ArrowRight } from "lucide-react";
+import { Search, MapPin, ArrowRight, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 
 export function Hero() {
     return (
-        <section className="relative overflow-hidden bg-linear-to-b from-primary/10 via-background to-transparent pt-16 pb-20 md:pt-24 md:pb-32 lg:pt-32 lg:pb-40">
+        <section className="relative overflow-hidden bg-linear-to-b from-primary/10 via-background to-transparent pt-10 pb-14 md:pt-24 md:pb-32 lg:pt-32 lg:pb-40">
             {/* Background Decor */}
             <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
                 <motion.div
@@ -47,8 +47,9 @@ export function Hero() {
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.2, duration: 0.5 }}
+                            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/7 text-primary text-xs md:text-sm font-black uppercase tracking-[0.2em] border border-primary/20 backdrop-blur-md shadow-2xl shadow-primary/5"
                         >
-                            <Badge variant="outline" className="px-4 py-1.5 text-sm font-medium border-primary/20 bg-primary/5 text-primary backdrop-blur-sm">
+                            <Badge variant="outline" className="border-none bg-transparent p-0 text-inherit font-inherit shadow-none">
                                 Transforming Healthcare
                             </Badge>
                         </motion.div>
@@ -157,15 +158,15 @@ export function Hero() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.8, duration: 0.5 }}
-                                className="absolute top-12 right-8 bg-background/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-border/50 max-w-[170px] hover:scale-110 transition-transform cursor-pointer"
+                                className="absolute top-12 mx-10 -right-4 bg-white/80 dark:bg-card/90 backdrop-blur-3xl p-5 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-primary/20 ring-1 ring-primary/20 max-w-[200px] hover:scale-110 transition-transform cursor-pointer hidden md:flex items-center gap-4"
                             >
-                                <div className="flex items-center gap-3 mb-2">
-                                    <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
-                                        <MapPin className="w-5 h-5" />
-                                    </div>
-                                    <span className="text-2xl font-bold bg-linear-to-tr from-green-600 to-emerald-500 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">500+</span>
+                                <div className="p-3 bg-primary/10 rounded-2xl shadow-inner text-primary">
+                                    <MapPin className="w-6 h-6" />
                                 </div>
-                                <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Specialist Doctors</p>
+                                <div className="flex flex-col">
+                                    <span className="text-2xl font-black bg-linear-to-tr from-primary to-emerald-500 bg-clip-text text-transparent leading-none">500+</span>
+                                    <span className="text-[10px] text-muted-foreground font-bold mt-1 uppercase tracking-widest leading-tight">Specialists</span>
+                                </div>
                             </motion.div>
 
                             {/* Floating Stats Card 2 */}
@@ -173,13 +174,18 @@ export function Hero() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 1, duration: 0.5 }}
-                                className="absolute bottom-12 left-8 bg-background/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-border/50 max-w-[190px] hover:scale-110 transition-transform cursor-pointer"
+                                className="absolute bottom-12 mx-10  -left-4 bg-white/80 dark:bg-card/90 backdrop-blur-3xl p-5 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-primary/20 ring-1 ring-primary/20 max-w-[210px] hover:scale-110 transition-transform cursor-pointer hidden md:flex items-center gap-4"
                             >
-                                <div className="flex items-center gap-2 mb-1">
-                                    <div className="w-3 h-3 rounded-full bg-green-500 dark:bg-green-400 animate-pulse" />
-                                    <span className="text-sm font-bold">24/7 Support</span>
+                                <div className="p-3 bg-primary/10 rounded-2xl shadow-inner relative">
+                                    <div className="w-3 h-3 rounded-full bg-primary animate-pulse absolute -top-1 -right-1" />
+                                    <div className="w-6 h-6 flex items-center justify-center text-primary">
+                                        <Activity className="w-6 h-6" />
+                                    </div>
                                 </div>
-                                <p className="text-xs text-muted-foreground">Always here for you.</p>
+                                <div className="flex flex-col">
+                                    <span className="text-xs font-black text-foreground uppercase tracking-widest leading-none">24/7 Support</span>
+                                    <span className="text-[10px] text-muted-foreground font-bold mt-1">Managed Healthcare</span>
+                                </div>
                             </motion.div>
                         </div>
 
