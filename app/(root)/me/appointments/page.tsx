@@ -1,8 +1,8 @@
 "use client";
 
-import { Calendar, Clock, MapPin, ChevronRight, Video, User, CheckCircle2, XCircle, Timer, Loader2, AlertCircle } from "lucide-react";
+import { Calendar, Clock, MapPin, ChevronRight, Video, User, CheckCircle2, XCircle, Timer, Loader2, AlertCircle, Search, Filter, ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { formatAppointmentDate } from "@/lib/date-utils";
 import Link from "next/link";
 import {
@@ -16,6 +16,16 @@ import {
     AlertDialogTitle
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface Appointment {
     id: string;
@@ -34,6 +44,9 @@ export default function AppointmentsPage() {
     const [cancellingId, setCancellingId] = useState<string | null>(null);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [isCancelling, setIsCancelling] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [statusFilter, setStatusFilter] = useState("all");
+    const [sortBy, setSortBy] = useState("newest");
 
     const fetchAppointments = async () => {
         try {
@@ -87,18 +100,82 @@ export default function AppointmentsPage() {
         }
     };
 
+    const filteredAppointments = useMemo(() => {
+        let result = appointments.filter((apt) => {
+            const matchesSearch = apt.doctor.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                apt.speciality.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesStatus = statusFilter === "all" || apt.status.toLowerCase() === statusFilter.toLowerCase();
+            return matchesSearch && matchesStatus;
+        });
+
+        result.sort((a, b) => {
+            const dateA = new Date(a.date).getTime();
+            const dateB = new Date(b.date).getTime();
+            return sortBy === "newest" ? dateB - dateA : dateA - dateB;
+        });
+
+        return result;
+    }, [appointments, searchQuery, statusFilter, sortBy]);
+
     return (
-        <div className="space-y-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-foreground">My Appointments</h1>
-                    <p className="text-muted-foreground mt-1">Manage all your upcoming and past medical consultations.</p>
+        <div className="max-w-6xl mx-auto space-y-10 pb-20">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div className="space-y-1">
+                    <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                        My <span className="text-primary italic">Appointments</span>
+                    </h1>
+                    <p className="text-muted-foreground text-lg max-w-lg">
+                        Manage your upcoming health consultations and viewing history in one place.
+                    </p>
                 </div>
                 <Link href={"/doctors"}>
-                    <button className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity">
+                    <Button size="lg" className="rounded-2xl font-bold h-12 px-8 shadow-xl shadow-primary/20 hover:scale-[1.02] transition-transform">
                         Book New Appointment
-                    </button>
+                    </Button>
                 </Link>
+            </div>
+
+            {/* Filters Section */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 bg-muted/30 p-4 rounded-3xl border border-border/50">
+                <div className="md:col-span-6 relative">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        placeholder="Search doctor or speciality..."
+                        className="pl-10 h-11 bg-background border-none ring-1 ring-border shadow-none rounded-2xl focus-visible:ring-primary/20"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
+                <div className="md:col-span-3">
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <SelectTrigger className="h-11 bg-background border-none ring-1 ring-border shadow-none rounded-2xl focus:ring-primary/20">
+                            <div className="flex items-center gap-2">
+                                <Filter className="h-4 w-4 text-primary" />
+                                <SelectValue placeholder="Status" />
+                            </div>
+                        </SelectTrigger>
+                        <SelectContent className="rounded-2xl">
+                            <SelectItem value="all">All Status</SelectItem>
+                            <SelectItem value="upcoming">Upcoming</SelectItem>
+                            <SelectItem value="completed">Completed</SelectItem>
+                            <SelectItem value="cancelled">Cancelled</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="md:col-span-3">
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                        <SelectTrigger className="h-11 bg-background border-none ring-1 ring-border shadow-none rounded-2xl focus:ring-primary/20">
+                            <div className="flex items-center gap-2">
+                                <ArrowUpDown className="h-4 w-4 text-primary" />
+                                <SelectValue placeholder="Sort by" />
+                            </div>
+                        </SelectTrigger>
+                        <SelectContent className="rounded-2xl">
+                            <SelectItem value="newest">Newest First</SelectItem>
+                            <SelectItem value="oldest">Oldest First</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
 
             {loading ? (
@@ -106,9 +183,9 @@ export default function AppointmentsPage() {
                     <Loader2 className="h-10 w-10 text-primary animate-spin" />
                     <p className="text-muted-foreground font-medium">Fetching your appointments...</p>
                 </div>
-            ) : appointments.length > 0 ? (
+            ) : filteredAppointments.length > 0 ? (
                 <div className="space-y-6">
-                    {appointments.map((apt) => (
+                    {filteredAppointments.map((apt) => (
                         <div key={apt.id} className="bg-background border border-border/50 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
                             <div className="flex flex-col md:flex-row items-center gap-6">
                                 <div className="h-20 w-20 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-xl font-bold border border-primary/20">
@@ -165,9 +242,13 @@ export default function AppointmentsPage() {
                     <div className="h-16 w-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                         <Calendar className="h-8 w-8 text-muted-foreground" />
                     </div>
-                    <h3 className="text-lg font-bold text-foreground">Need a checkup?</h3>
+                    <h3 className="text-lg font-bold text-foreground">
+                        {searchQuery || statusFilter !== "all" ? "No results found" : "Need a checkup?"}
+                    </h3>
                     <p className="text-sm text-muted-foreground max-w-xs mx-auto mt-2">
-                        Schedule an appointment with our specialist and get the care you deserve.
+                        {searchQuery || statusFilter !== "all"
+                            ? "Try adjusting your filters to find what you're looking for."
+                            : "Schedule an appointment with our specialist and get the care you deserve."}
                     </p>
                 </div>
             )}
