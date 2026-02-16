@@ -220,9 +220,12 @@ export default function AppointmentsPage() {
                             <div className="flex flex-col md:flex-row items-start md:items-center gap-5 sm:gap-6">
                                 {/* Header section with Image and Status - flexible for mobile */}
                                 <div className="flex items-center justify-between w-full md:w-auto gap-4">
-                                    <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-xl font-bold border border-primary/20 shrink-0">
-                                        {apt.img}
-                                    </div>
+                                    <Avatar className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl border border-primary/20 shrink-0">
+                                        <AvatarImage src={apt.img.length > 2 ? apt.img : undefined} className="object-cover" />
+                                        <AvatarFallback className="bg-primary/10 text-primary text-xl font-bold rounded-2xl">
+                                            {apt.img.length <= 2 ? apt.img : apt.doctor.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)}
+                                        </AvatarFallback>
+                                    </Avatar>
 
                                     {/* Status Badge - visible on mobile at the top right */}
                                     <div className="md:hidden">
@@ -270,17 +273,38 @@ export default function AppointmentsPage() {
                                             </div>
                                             <span className="font-semibold">{formatAppointmentDate(apt.date)}</span>
                                         </div>
-                                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                                            <div className="p-2 bg-primary/10 rounded-xl">
-                                                {apt.type === "Video Consultation" ? <Video className="h-3.5 w-3.5 text-primary" /> : <MapPin className="h-3.5 w-3.5 text-primary" />}
+                                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 text-xs text-muted-foreground">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 bg-primary/10 rounded-xl">
+                                                    {apt.type === "Video Consultation" ? <Video className="h-3.5 w-3.5 text-primary" /> : <MapPin className="h-3.5 w-3.5 text-primary" />}
+                                                </div>
+                                                <span className="font-semibold">{apt.type}</span>
                                             </div>
-                                            <span className="font-semibold">{apt.type}</span>
+                                            {apt.type === "In-Person Visit" && apt.doctorDetails?.address && (
+                                                <a
+                                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                                        `${apt.doctorDetails.address.street}, ${apt.doctorDetails.address.city}, ${apt.doctorDetails.address.state}`
+                                                    )}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-1 text-primary hover:underline font-bold ml-0 sm:ml-2"
+                                                >
+                                                    <ExternalLink className="h-3 w-3" />
+                                                    Get Directions
+                                                </a>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="flex flex-col sm:flex-row md:flex-col gap-3 w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-border/50">
-                                    <button className="flex-1 px-5 py-3 md:py-2 text-xs font-bold text-foreground border border-border/50 rounded-2xl hover:bg-muted/50 transition-colors">
+                                    <button
+                                        onClick={() => {
+                                            setSelectedAppointment(apt);
+                                            setIsDetailsModalOpen(true);
+                                        }}
+                                        className="flex-1 px-5 py-3 md:py-2 text-xs font-bold text-foreground border border-border/50 rounded-2xl hover:bg-muted/50 transition-colors"
+                                    >
                                         View Details
                                     </button>
                                     {apt.status === "Upcoming" && (
