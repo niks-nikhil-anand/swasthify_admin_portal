@@ -186,17 +186,18 @@ export default function AppointmentsPage() {
             ) : filteredAppointments.length > 0 ? (
                 <div className="space-y-6">
                     {filteredAppointments.map((apt) => (
-                        <div key={apt.id} className="bg-background border border-border/50 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
-                            <div className="flex flex-col md:flex-row items-center gap-6">
-                                <div className="h-20 w-20 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-xl font-bold border border-primary/20">
-                                    {apt.img}
-                                </div>
+                        <div key={apt.id} className="bg-background border border-border/50 rounded-3xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
+                            <div className="flex flex-col md:flex-row items-start md:items-center gap-5 sm:gap-6">
+                                {/* Header section with Image and Status - flexible for mobile */}
+                                <div className="flex items-center justify-between w-full md:w-auto gap-4">
+                                    <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-xl font-bold border border-primary/20 shrink-0">
+                                        {apt.img}
+                                    </div>
 
-                                <div className="flex-1 space-y-2 text-center md:text-left">
-                                    <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-                                        <h3 className="text-xl font-bold text-foreground">{apt.doctor}</h3>
+                                    {/* Status Badge - visible on mobile at the top right */}
+                                    <div className="md:hidden">
                                         <span className={cn(
-                                            "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                                            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
                                             apt.status === "Upcoming" ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30" :
                                                 apt.status === "CANCELLED" ? "bg-red-100 text-red-600 dark:bg-red-900/30" :
                                                     "bg-green-100 text-green-600 dark:bg-green-900/30"
@@ -207,27 +208,55 @@ export default function AppointmentsPage() {
                                             {apt.status}
                                         </span>
                                     </div>
-                                    <p className="text-sm font-medium text-muted-foreground">{apt.speciality}</p>
+                                </div>
 
-                                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-2 pt-2">
-                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                            <Calendar className="h-3.5 w-3.5 text-primary" /> {formatAppointmentDate(apt.date)}
+                                <div className="flex-1 space-y-4 w-full text-left">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                        <div className="space-y-1">
+                                            <h3 className="text-lg sm:text-xl font-bold text-foreground leading-tight">{apt.doctor}</h3>
+                                            <p className="text-xs sm:text-sm font-medium text-muted-foreground">{apt.speciality}</p>
                                         </div>
-                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                            {apt.type === "Video Consultation" ? <Video className="h-3.5 w-3.5 text-primary" /> : <MapPin className="h-3.5 w-3.5 text-primary" />}
-                                            {apt.type}
+
+                                        {/* Status Badge - hidden on mobile, visible on desktop */}
+                                        <div className="hidden md:block">
+                                            <span className={cn(
+                                                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                                                apt.status === "Upcoming" ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30" :
+                                                    apt.status === "CANCELLED" ? "bg-red-100 text-red-600 dark:bg-red-900/30" :
+                                                        "bg-green-100 text-green-600 dark:bg-green-900/30"
+                                            )}>
+                                                {apt.status === "Upcoming" ? <Timer className="h-3 w-3" /> :
+                                                    apt.status === "CANCELLED" ? <XCircle className="h-3 w-3" /> :
+                                                        <CheckCircle2 className="h-3 w-3" />}
+                                                {apt.status}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 pt-1">
+                                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                            <div className="p-2 bg-primary/10 rounded-xl">
+                                                <Calendar className="h-3.5 w-3.5 text-primary" />
+                                            </div>
+                                            <span className="font-semibold">{formatAppointmentDate(apt.date)}</span>
+                                        </div>
+                                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                            <div className="p-2 bg-primary/10 rounded-xl">
+                                                {apt.type === "Video Consultation" ? <Video className="h-3.5 w-3.5 text-primary" /> : <MapPin className="h-3.5 w-3.5 text-primary" />}
+                                            </div>
+                                            <span className="font-semibold">{apt.type}</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col gap-3">
-                                    <button className="px-5 py-2 text-xs font-bold text-foreground border border-border/50 rounded-lg hover:bg-muted/50 transition-colors">
+                                <div className="flex flex-col sm:flex-row md:flex-col gap-3 w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-border/50">
+                                    <button className="flex-1 px-5 py-3 md:py-2 text-xs font-bold text-foreground border border-border/50 rounded-2xl hover:bg-muted/50 transition-colors">
                                         View Details
                                     </button>
                                     {apt.status === "Upcoming" && (
                                         <button
                                             onClick={() => handleCancelClick(apt.id)}
-                                            className="px-5 py-2 text-xs font-bold text-red-600 border border-red-200 dark:border-red-900/30 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
+                                            className="flex-1 px-5 py-3 md:py-2 text-xs font-bold text-red-600 border border-red-200 dark:border-red-900/30 rounded-2xl hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
                                         >
                                             Cancel
                                         </button>
