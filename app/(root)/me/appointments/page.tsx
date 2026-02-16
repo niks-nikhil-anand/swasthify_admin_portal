@@ -336,6 +336,129 @@ export default function AppointmentsPage() {
                 </div>
             )}
 
+            <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
+                <DialogContent className="max-w-2xl rounded-3xl overflow-hidden p-0 gap-0 border-none shadow-2xl">
+                    <DialogHeader className="p-6 bg-primary/5 border-b border-primary/10">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                                <Calendar className="h-6 w-6" />
+                            </div>
+                            <div className="text-left">
+                                <DialogTitle className="text-2xl font-bold text-foreground">Appointment Details</DialogTitle>
+                                <DialogDescription className="font-medium text-muted-foreground">Comprehensive overview of your consultation</DialogDescription>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    <div className="p-6 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                        {selectedAppointment && (
+                            <>
+                                {/* Appointment Info Section */}
+                                <div className="space-y-4">
+                                    <h4 className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                                        Consultation Information
+                                    </h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {[
+                                            { icon: Calendar, label: "Date", value: formatAppointmentDate(selectedAppointment.date) },
+                                            { icon: Clock, label: "Time", value: selectedAppointment.date.split("T")[1]?.substring(0, 5) || "Check details" },
+                                            { icon: Video, label: "Type", value: selectedAppointment.type },
+                                            { icon: CheckCircle2, label: "Status", value: selectedAppointment.status },
+                                            { icon: ArrowUpDown, label: "Fee", value: `₹${selectedAppointment.consultationFee || 0}` },
+                                            { icon: AlertCircle, label: "Reason", value: selectedAppointment.reason || "General Consultation" },
+                                        ].map((item, idx) => (
+                                            <div key={idx} className="flex items-center gap-3 p-3 bg-muted/30 rounded-2xl border border-border/50">
+                                                <item.icon className="h-4 w-4 text-primary shrink-0" />
+                                                <div>
+                                                    <p className="text-[10px] font-bold text-muted-foreground uppercase">{item.label}</p>
+                                                    <p className="text-sm font-bold">{item.value}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Doctor Info Section */}
+                                <div className="space-y-6 pt-4 border-t border-border/50">
+                                    <h4 className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                                        Doctor Information
+                                    </h4>
+
+                                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                                        <Avatar className="h-24 w-24 sm:h-32 sm:w-32 rounded-3xl border-4 border-background shadow-xl">
+                                            <AvatarImage src={selectedAppointment.img.length > 2 ? selectedAppointment.img : undefined} className="object-cover" />
+                                            <AvatarFallback className="bg-primary/10 text-primary text-3xl font-bold">
+                                                {selectedAppointment.img.length <= 2 ? selectedAppointment.img : selectedAppointment.doctor.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)}
+                                            </AvatarFallback>
+                                        </Avatar>
+
+                                        <div className="flex-1 space-y-3 text-center sm:text-left">
+                                            <div>
+                                                <h3 className="text-2xl font-bold text-foreground">{selectedAppointment.doctor}</h3>
+                                                <p className="text-primary font-bold">{selectedAppointment.speciality}</p>
+                                            </div>
+
+                                            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
+                                                <Badge variant="secondary" className="rounded-xl font-bold py-1 px-3">
+                                                    {selectedAppointment.doctorDetails?.qualification || "Specialist"}
+                                                </Badge>
+                                                <Badge variant="outline" className="rounded-xl font-bold py-1 px-3 border-primary/20 bg-primary/5 text-primary">
+                                                    {selectedAppointment.doctorDetails?.experienceYears}+ Years Exp.
+                                                </Badge>
+                                            </div>
+
+                                            {(selectedAppointment.doctorDetails?.clinicName || selectedAppointment.doctorDetails?.hospitalName) && (
+                                                <div className="flex items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground font-medium">
+                                                    <MapPin className="h-4 w-4 text-primary" />
+                                                    {selectedAppointment.doctorDetails.clinicName || selectedAppointment.doctorDetails.hospitalName}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {selectedAppointment.doctorDetails?.bio && (
+                                        <div className="p-4 bg-muted/30 rounded-2xl border border-border/50">
+                                            <p className="text-sm text-foreground/80 leading-relaxed italic">
+                                                "{selectedAppointment.doctorDetails.bio}"
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {selectedAppointment.doctorDetails?.address && (
+                                        <div className="space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="text-xs font-bold text-muted-foreground uppercase">Clinic Location</h5>
+                                                <a
+                                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                                        `${selectedAppointment.doctorDetails.address.street}, ${selectedAppointment.doctorDetails.address.city}, ${selectedAppointment.doctorDetails.address.state}`
+                                                    )}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-xs font-bold text-primary flex items-center gap-1 hover:underline"
+                                                >
+                                                    <ExternalLink className="h-3 w-3" />
+                                                    View on Maps
+                                                </a>
+                                            </div>
+                                            <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex gap-4">
+                                                <div className="h-10 w-10 bg-white rounded-xl flex items-center justify-center border border-border shrink-0">
+                                                    <MapPin className="h-5 w-5 text-primary" />
+                                                </div>
+                                                <p className="text-sm font-medium text-foreground">
+                                                    {selectedAppointment.doctorDetails.address.street}, {selectedAppointment.doctorDetails.address.city}, {selectedAppointment.doctorDetails.address.state}, {selectedAppointment.doctorDetails.address.zipCode}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+
             <AlertDialog open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
                 <AlertDialogContent className="rounded-2xl">
                     <AlertDialogHeader>
