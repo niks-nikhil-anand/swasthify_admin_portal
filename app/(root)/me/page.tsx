@@ -217,24 +217,6 @@ export default function ProfilePage() {
                       <Label htmlFor="chronicDiseases">Chronic Diseases</Label>
                       <Input id="chronicDiseases" name="chronicDiseases" value={formData.chronicDiseases} onChange={handleInputChange} placeholder="None" />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="emergencyContactName">Emergency Contact Name</Label>
-                      <Input id="emergencyContactName" name="emergencyContactName" value={formData.emergencyContactName} onChange={handleInputChange} placeholder="Contact name" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="emergencyContactPhone">Emergency Contact Phone</Label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium border-r pr-2">+91</span>
-                        <Input
-                          id="emergencyContactPhone"
-                          name="emergencyContactPhone"
-                          className="pl-14"
-                          value={formData.emergencyContactPhone}
-                          onChange={handleInputChange}
-                          placeholder="98765 43210"
-                        />
-                      </div>
-                    </div>
                   </div>
                   <DialogFooter className="pt-4">
                     <Button type="submit" disabled={isSaving} className="w-full md:w-auto">
@@ -350,41 +332,6 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Emergency Contact */}
-        <div className="bg-background border border-border/50 rounded-3xl p-8 shadow-sm">
-          <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-foreground">
-            <Contact className="h-5 w-5 text-primary" /> Emergency Contact
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
-            <div className="space-y-1 pb-3 border-b border-border/40">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Contact Person</span>
-              <p className="text-sm font-bold text-foreground">{patient?.emergencyContactName || "Not set"}</p>
-            </div>
-            <div className="space-y-1 pb-3 border-b border-border/40">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Contact Number</span>
-              <p className="text-sm font-bold text-foreground">{patient?.emergencyContactPhone || "Not set"}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Primary Address */}
-        <div className="bg-background border border-border/50 rounded-3xl p-8 shadow-sm">
-          <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-foreground">
-            <MapPin className="h-5 w-5 text-primary" /> Primary Address
-          </h3>
-          <div className="space-y-6">
-            <p className="text-muted-foreground leading-relaxed italic">
-              Plot No. 45, Sunshine Residency,<br />
-              Near Green Park, HSR Layout Sector 2,<br />
-              Bengaluru, Karnataka - 560102
-            </p>
-            <div className="pt-4">
-              <button className="text-sm font-bold text-primary hover:underline underline-offset-4 flex items-center gap-1.5 transition-all">
-                <UserPlus className="h-4 w-4" /> Manage Addresses
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
