@@ -216,13 +216,29 @@ export default function AppointmentsPage() {
             ) : filteredAppointments.length > 0 ? (
                 <div className="space-y-6">
                     {filteredAppointments.map((apt) => (
-                        <div key={apt.id} className="bg-background border border-border/50 rounded-3xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
-                            <div className="flex flex-col md:flex-row items-start md:items-center gap-5 sm:gap-6">
+                        <div
+                            key={apt.id}
+                            className={cn(
+                                "group relative overflow-hidden bg-background border border-border/50 rounded-3xl transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 p-5 sm:p-6",
+                                apt.status === "Upcoming" ? "hover:border-blue-500/30" :
+                                    apt.status === "CANCELLED" ? "hover:border-red-500/30" :
+                                        "hover:border-emerald-500/30"
+                            )}
+                        >
+                            {/* Status Accent Line */}
+                            <div className={cn(
+                                "absolute left-0 top-0 bottom-0 w-1.5 transition-all duration-500",
+                                apt.status === "Upcoming" ? "bg-blue-500 shadow-[2px_0_15px_-3px_rgba(59,130,246,0.3)]" :
+                                    apt.status === "CANCELLED" ? "bg-red-500 shadow-[2px_0_15px_-3px_rgba(239,68,68,0.3)]" :
+                                        "bg-emerald-500 shadow-[2px_0_15px_-3px_rgba(16,185,129,0.3)]"
+                            )} />
+
+                            <div className="flex flex-col md:flex-row items-start md:items-center gap-5 sm:gap-6 relative z-10">
                                 {/* Header section with Image and Status - flexible for mobile */}
                                 <div className="flex items-center justify-between w-full md:w-auto gap-4">
-                                    <Avatar className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl border border-primary/20 shrink-0">
+                                    <Avatar className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl border-2 border-primary/10 shrink-0 shadow-lg group-hover:scale-105 transition-transform duration-500">
                                         <AvatarImage src={apt.img.length > 2 ? apt.img : undefined} className="object-cover" />
-                                        <AvatarFallback className="bg-primary/10 text-primary text-xl font-bold rounded-2xl">
+                                        <AvatarFallback className="bg-primary/5 text-primary text-xl font-black rounded-2xl">
                                             {apt.img.length <= 2 ? apt.img : apt.doctor.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)}
                                         </AvatarFallback>
                                     </Avatar>
@@ -230,12 +246,12 @@ export default function AppointmentsPage() {
                                     {/* Status Badge - visible on mobile at the top right */}
                                     <div className="md:hidden">
                                         <span className={cn(
-                                            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
-                                            apt.status === "Upcoming" ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30" :
-                                                apt.status === "CANCELLED" ? "bg-red-100 text-red-600 dark:bg-red-900/30" :
-                                                    "bg-green-100 text-green-600 dark:bg-green-900/30"
+                                            "inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm",
+                                            apt.status === "Upcoming" ? "bg-blue-50 text-blue-600 border border-blue-100 dark:bg-blue-950/30 dark:border-blue-800/20" :
+                                                apt.status === "CANCELLED" ? "bg-red-50 text-red-600 border border-red-100 dark:bg-red-950/30 dark:border-red-800/20" :
+                                                    "bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-emerald-950/30 dark:border-emerald-800/20"
                                         )}>
-                                            {apt.status === "Upcoming" ? <Timer className="h-3 w-3" /> :
+                                            {apt.status === "Upcoming" ? <Timer className="h-3 w-3 animate-pulse" /> :
                                                 apt.status === "CANCELLED" ? <XCircle className="h-3 w-3" /> :
                                                     <CheckCircle2 className="h-3 w-3" />}
                                             {apt.status}
@@ -246,53 +262,83 @@ export default function AppointmentsPage() {
                                 <div className="flex-1 space-y-4 w-full text-left">
                                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
                                         <div className="space-y-1">
-                                            <h3 className="text-lg sm:text-xl font-bold text-foreground leading-tight">{apt.doctor}</h3>
-                                            <p className="text-xs sm:text-sm font-medium text-muted-foreground">{apt.speciality}</p>
+                                            <h3 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white leading-tight tracking-tight group-hover:text-primary transition-colors duration-300">
+                                                {apt.doctor}
+                                            </h3>
+                                            <div className="flex items-center gap-2">
+                                                <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest py-0.5 px-2.5 rounded-lg border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400">
+                                                    {apt.speciality}
+                                                </Badge>
+                                            </div>
                                         </div>
 
-                                        {/* Status Badge - hidden on mobile, visible on desktop */}
+                                        {/* Status Badge Desktop */}
                                         <div className="hidden md:block">
                                             <span className={cn(
-                                                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider",
-                                                apt.status === "Upcoming" ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30" :
-                                                    apt.status === "CANCELLED" ? "bg-red-100 text-red-600 dark:bg-red-900/30" :
-                                                        "bg-green-100 text-green-600 dark:bg-green-900/30"
+                                                "inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-sm transition-all duration-300 group-hover:shadow-md",
+                                                apt.status === "Upcoming" ? "bg-blue-50 text-blue-600 border border-blue-100 dark:bg-blue-950/30 dark:border-blue-800/20 shadow-blue-500/5" :
+                                                    apt.status === "CANCELLED" ? "bg-red-50 text-red-600 border border-red-100 dark:bg-red-950/30 dark:border-red-800/20 shadow-red-500/5" :
+                                                        "bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-emerald-950/30 dark:border-emerald-800/20 shadow-emerald-500/5"
                                             )}>
-                                                {apt.status === "Upcoming" ? <Timer className="h-3 w-3" /> :
-                                                    apt.status === "CANCELLED" ? <XCircle className="h-3 w-3" /> :
-                                                        <CheckCircle2 className="h-3 w-3" />}
+                                                {apt.status === "Upcoming" ? <Timer className="h-3.5 w-3.5 animate-pulse" /> :
+                                                    apt.status === "CANCELLED" ? <XCircle className="h-3.5 w-3.5" /> :
+                                                        <CheckCircle2 className="h-3.5 w-3.5" />}
                                                 {apt.status}
                                             </span>
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 pt-1">
-                                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                                            <div className="p-2 bg-primary/10 rounded-xl">
-                                                <Calendar className="h-3.5 w-3.5 text-primary" />
+                                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 py-2 border-t border-b border-zinc-100 dark:border-zinc-800/50">
+                                        <div className="space-y-1.5">
+                                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Consultation</p>
+                                            <div className="flex items-center gap-2 group/date">
+                                                <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 group-hover/date:border-primary/30 transition-colors">
+                                                    <Calendar className="h-3.5 w-3.5 text-primary" />
+                                                </div>
+                                                <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">{formatAppointmentDate(apt.date)}</span>
                                             </div>
-                                            <span className="font-semibold">{formatAppointmentDate(apt.date)}</span>
                                         </div>
-                                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 text-xs text-muted-foreground">
-                                            <div className="flex items-center gap-3">
-                                                <div className="p-2 bg-primary/10 rounded-xl">
+                                        <div className="space-y-1.5">
+                                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Scheduled At</p>
+                                            <div className="flex items-center gap-2 group/time">
+                                                <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 group-hover/time:border-primary/30 transition-colors">
+                                                    <Clock className="h-3.5 w-3.5 text-primary" />
+                                                </div>
+                                                <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">{apt.date.split("T")[1]?.substring(0, 5) || "Check details"}</span>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Method</p>
+                                            <div className="flex items-center gap-2 group/method">
+                                                <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 group-hover/method:border-primary/30 transition-colors">
                                                     {apt.type === "Video Consultation" ? <Video className="h-3.5 w-3.5 text-primary" /> : <MapPin className="h-3.5 w-3.5 text-primary" />}
                                                 </div>
-                                                <span className="font-semibold">{apt.type}</span>
+                                                <div className="flex flex-col sm:flex-row sm:items-center gap-1">
+                                                    <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">{apt.type}</span>
+                                                    {apt.type === "In-Person Visit" && apt.doctorDetails?.address && (
+                                                        <a
+                                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                                                `${apt.doctorDetails.address.street}, ${apt.doctorDetails.address.city}, ${apt.doctorDetails.address.state}`
+                                                            )}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center gap-1 text-[10px] text-primary hover:underline font-black uppercase tracking-wider"
+                                                        >
+                                                            <ExternalLink className="h-2.5 w-2.5" />
+                                                            Navigate
+                                                        </a>
+                                                    )}
+                                                </div>
                                             </div>
-                                            {apt.type === "In-Person Visit" && apt.doctorDetails?.address && (
-                                                <a
-                                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                                        `${apt.doctorDetails.address.street}, ${apt.doctorDetails.address.city}, ${apt.doctorDetails.address.state}`
-                                                    )}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center gap-1 text-primary hover:underline font-bold ml-0 sm:ml-2"
-                                                >
-                                                    <ExternalLink className="h-3 w-3" />
-                                                    Get Directions
-                                                </a>
-                                            )}
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Charges</p>
+                                            <div className="flex items-center gap-2">
+                                                <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800">
+                                                    <ArrowUpDown className="h-3.5 w-3.5 text-primary" />
+                                                </div>
+                                                <span className="text-sm font-bold text-zinc-900 dark:text-white">₹{apt.consultationFee || 0}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -303,14 +349,14 @@ export default function AppointmentsPage() {
                                             setSelectedAppointment(apt);
                                             setIsDetailsModalOpen(true);
                                         }}
-                                        className="flex-1 px-5 py-3 md:py-2 text-xs font-bold text-foreground border border-border/50 rounded-2xl hover:bg-muted/50 transition-colors"
+                                        className="flex-1 px-6 py-3 md:py-2.5 text-[11px] font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 shadow-sm"
                                     >
                                         View Details
                                     </button>
-                                    {apt.status === "Upcoming" && (
+                                    {(apt.status === "Upcoming") && (
                                         <button
                                             onClick={() => handleCancelClick(apt.id)}
-                                            className="flex-1 px-5 py-3 md:py-2 text-xs font-bold text-red-600 border border-red-200 dark:border-red-900/30 rounded-2xl hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
+                                            className="px-6 py-3 md:py-2.5 text-[11px] font-black uppercase tracking-wider text-red-600 bg-red-50/50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-2xl hover:bg-red-100 transition-all duration-300 shadow-sm"
                                         >
                                             Cancel
                                         </button>
