@@ -20,9 +20,11 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { usePathname } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 
 export function Navbar() {
+    const pathname = usePathname();
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const [adminEmail, setAdminEmail] = useState<string>("");
@@ -51,7 +53,7 @@ export function Navbar() {
         };
 
         fetchAdminProfile();
-    }, []);
+    }, [pathname]);
 
     const toggleTheme = () => {
         setTheme(theme === "dark" ? "light" : "dark");

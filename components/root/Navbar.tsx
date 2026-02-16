@@ -41,7 +41,7 @@ export function Navbar() {
             }
         };
         fetchUser();
-    }, []);
+    }, [pathname]);
 
     const handleLogout = async () => {
         try {
@@ -72,7 +72,7 @@ export function Navbar() {
         { name: "Doctors", href: "/doctors" },
         { name: "Labs", href: "/labs" },
         { name: "Specialities", href: "/specialities" },
-        {name: "How It Works", href: "/how-it-works"},
+        { name: "How It Works", href: "/how-it-works" },
         { name: "Pricing", href: "/pricing" },
         { name: "About", href: "/aboutUs" },
         { name: "Contact", href: "/contact" },
