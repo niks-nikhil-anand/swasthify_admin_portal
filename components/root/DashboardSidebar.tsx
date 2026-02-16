@@ -3,18 +3,43 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { User, Calendar, FileText, ClipboardList, Settings, CreditCard, Bell, Shield, LogOut } from "lucide-react";
+import { toast } from "sonner";
+import { User, Calendar, FileText, ClipboardList, Settings, CreditCard, Bell, Shield, LogOut, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 const sidebarLinks = [
     { label: "Profile", href: "/me", icon: User },
     { label: "Appointments", href: "/me/appointments", icon: Calendar },
-    { label: "Lab Reports", href: "/me/reports", icon: FileText },
     { label: "Health Records", href: "/me/health-records", icon: ClipboardList },
     { label: "Settings", href: "/me/settings", icon: Settings },
 ];
 
 export function DashboardSidebar() {
     const pathname = usePathname();
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+    const handleLogout = async () => {
+        setIsLoggingOut(true);
+        try {
+            const res = await fetch("/api/auth/logout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ role: "USER" }),
+            });
+
+            if (res.ok) {
+                toast.success("Logout successful");
+                window.location.href = "/";
+            } else {
+                toast.error("Logout failed. Please try again.");
+            }
+        } catch (error) {
+            console.error("Logout error", error);
+            toast.error("An error occurred during logout.");
+        } finally {
+            setIsLoggingOut(false);
+        }
+    };
 
     return (
         <aside className="w-full lg:w-64 flex flex-col gap-2">
@@ -39,6 +64,19 @@ export function DashboardSidebar() {
                             </Link>
                         );
                     })}
+
+                    <button
+                        onClick={handleLogout}
+                        disabled={isLoggingOut}
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group text-muted-foreground hover:bg-destructive/10 hover:text-destructive mt-4 border-t border-border/40 pt-4"
+                    >
+                        {isLoggingOut ? (
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                            <LogOut className="h-5 w-5 group-hover:text-destructive transition-colors" />
+                        )}
+                        Logout
+                    </button>
                 </nav>
             </div>
 
