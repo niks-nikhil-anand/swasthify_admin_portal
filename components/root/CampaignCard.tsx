@@ -7,8 +7,8 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { MapPin, Stethoscope, User, CheckCircle, Clock, Sparkles, ChevronRight, Share2, Heart, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { BookingModal } from "@/app/(root)/doctors/[id]/components/BookingModal";
 import { toast } from "sonner";
+import Link from "next/link";
 
 import { Campaign } from "@/app/(root)/doctors/types";
 export type { Campaign };
@@ -18,7 +18,6 @@ interface CampaignCardProps {
 }
 
 export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
-    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const discountedPrice = campaign.discountPercentage > 0
         ? Math.round(campaign.price - (campaign.price * campaign.discountPercentage) / 100)
         : campaign.price;
@@ -132,49 +131,17 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                                 )}
                             </div>
                         </div>
-                        <Button
-                            size="lg"
-                            className="bg-zinc-900 dark:bg-emerald-600 hover:bg-emerald-600 dark:hover:bg-emerald-500 text-white shadow-lg shadow-zinc-200/50 dark:shadow-emerald-500/20 rounded-xl md:rounded-2xl md:gap-3 gap-2 px-4 md:px-6 md:h-12 h-10 font-black text-[10px] md:text-xs uppercase tracking-widest transition-all hover:gap-5"
-                            onClick={() => {
-                                // 1. Analytics
-                                fetch("/api/analytics/collect", {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({
-                                        type: "event",
-                                        data: {
-                                            eventType: "campaign_click",
-                                            eventValue: "doctor",
-                                            path: "/",
-                                            campaignId: campaign.id,
-                                            metadata: { name: campaign.name, doctorId: campaign.doctor.id }
-                                        }
-                                    })
-                                }).catch(console.error);
-
-                                // 2. Auth Check & Modal
-                                const checkAuth = async () => {
-                                    const res = await fetch("/api/auth/me");
-                                    if (res.ok) {
-                                        setIsBookingModalOpen(true);
-                                    } else {
-                                        toast.error("Please login to book an appointment");
-                                        window.location.href = "/login";
-                                    }
-                                };
-                                checkAuth();
-                            }}
-                        >
-                            Pay Now
-                            <Zap className="w-4 h-4" />
-                        </Button>
+                        <Link href={`/doctors/${campaign.id}`}>
+                            <Button
+                                size="lg"
+                                className="bg-zinc-900 dark:bg-emerald-600 hover:bg-emerald-600 dark:hover:bg-emerald-500 text-white shadow-lg shadow-zinc-200/50 dark:shadow-emerald-500/20 rounded-xl md:rounded-2xl md:gap-3 gap-2 px-4 md:px-6 md:h-12 h-10 font-black text-[10px] md:text-xs uppercase tracking-widest transition-all hover:gap-5"
+                            >
+                                Book Appointment
+                                <Zap className="w-4 h-4" />
+                            </Button>
+                        </Link>
                     </div>
                 </CardFooter>
-                <BookingModal
-                    isOpen={isBookingModalOpen}
-                    onClose={() => setIsBookingModalOpen(false)}
-                    campaign={campaign}
-                />
             </Card>
         </motion.div>
     );
