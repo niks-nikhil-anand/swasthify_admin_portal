@@ -1,42 +1,23 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { MapPin, Stethoscope, User, CheckCircle, Clock, Sparkles, ChevronRight, Share2, Heart } from "lucide-react";
+import { MapPin, Stethoscope, User, CheckCircle, Clock, Sparkles, ChevronRight, Share2, Heart, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { BookingModal } from "@/app/(root)/doctors/[id]/components/BookingModal";
+import { toast } from "sonner";
 
-export interface Campaign {
-    id: string;
-    name: string;
-    type: string;
-    status: string;
-    price: number;
-    discountPercentage: number;
-    startDate: string;
-    endDate: string;
-    location: any;
-    doctor: {
-        id: string;
-        profilePhoto: string | null;
-        user: {
-            name: string;
-        };
-        specializations: { name: string }[];
-        hospitalName: string | null;
-        clinicName: string | null;
-    };
-    isVerified: boolean;
-    description?: string | null;
-}
+import { Campaign } from "@/app/(root)/doctors/types";
 
 interface CampaignCardProps {
     campaign: Campaign;
 }
 
 export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const discountedPrice = campaign.discountPercentage > 0
         ? Math.round(campaign.price - (campaign.price * campaign.discountPercentage) / 100)
         : campaign.price;
@@ -154,7 +135,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                             size="lg"
                             className="bg-zinc-900 dark:bg-emerald-600 hover:bg-emerald-600 dark:hover:bg-emerald-500 text-white shadow-lg shadow-zinc-200/50 dark:shadow-emerald-500/20 rounded-xl md:rounded-2xl md:gap-3 gap-2 px-4 md:px-6 md:h-12 h-10 font-black text-[10px] md:text-xs uppercase tracking-widest transition-all hover:gap-5"
                             onClick={() => {
-                                // Track Click event for CTR
+                                // 1. Analytics
                                 fetch("/api/analytics/collect", {
                                     method: "POST",
                                     headers: { "Content-Type": "application/json" },
@@ -170,14 +151,29 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                                     })
                                 }).catch(console.error);
 
-                                window.location.href = `/doctors/${campaign.id}`;
+                                // 2. Auth Check & Modal
+                                const checkAuth = async () => {
+                                    const res = await fetch("/api/auth/me");
+                                    if (res.ok) {
+                                        setIsBookingModalOpen(true);
+                                    } else {
+                                        toast.error("Please login to book an appointment");
+                                        window.location.href = "/login";
+                                    }
+                                };
+                                checkAuth();
                             }}
                         >
-                            Book now
-                            <ChevronRight className="w-4 h-4" />
+                            Pay Now
+                            <Zap className="w-4 h-4" />
                         </Button>
                     </div>
                 </CardFooter>
+                <BookingModal
+                    isOpen={isBookingModalOpen}
+                    onClose={() => setIsBookingModalOpen(false)}
+                    campaign={campaign}
+                />
             </Card>
         </motion.div>
     );
