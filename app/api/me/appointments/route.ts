@@ -45,7 +45,8 @@ export async function GET() {
                     include: {
                         user: {
                             select: {
-                                name: true
+                                name: true,
+                                addresses: true
                             }
                         },
                         specializations: true
@@ -72,15 +73,39 @@ export async function GET() {
             const organizerName = organizer?.user?.name || "Unknown";
             const speciality = apt.doctor ? apt.doctor.specializations.map(s => s.name).join(", ") : "Lab Test";
 
+            // If it's a doctor, we want to include more details
+            const doctorDetails = apt.doctor ? {
+                profilePhoto: apt.doctor.profilePhoto,
+                qualification: apt.doctor.qualification,
+                experienceYears: apt.doctor.experienceYears,
+                clinicName: apt.doctor.clinicName,
+                hospitalName: apt.doctor.hospitalName,
+                bio: apt.doctor.bio,
+                // We'll fetch the address from the user's addresses if available
+                address: apt.doctor.user.addresses?.[0] ? {
+                    street: apt.doctor.user.addresses[0].street,
+                    city: apt.doctor.user.addresses[0].city,
+                    state: apt.doctor.user.addresses[0].state,
+                    zipCode: apt.doctor.user.addresses[0].zipCode,
+                    latitude: apt.doctor.user.addresses[0].latitude,
+                    longitude: apt.doctor.user.addresses[0].longitude,
+                } : null
+            } : null;
+
             return {
                 id: apt.id,
-                doctor: organizerName, // UI expects 'doctor' field
+                doctor: organizerName,
                 speciality: speciality,
                 date: apt.dateTime.toISOString(),
                 type: apt.type === "VIDEO" ? "Video Consultation" : "In-Person Visit",
                 status: apt.status === "PENDING" || apt.status === "CONFIRMED" ? "Upcoming" : apt.status,
-                img: organizerName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2),
-                rawStatus: apt.status
+                img: apt.doctor?.profilePhoto || organizerName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2),
+                rawStatus: apt.status,
+                // New fields for details view
+                doctorDetails: doctorDetails,
+                consultationFee: apt.consultationFee,
+                appointmentType: apt.type,
+                reason: apt.cancellationReason || "Routine Checkup" // Example, adjust if reason field exists
             };
         });
         console.log("Debug: Formatted appointments count:", formattedAppointments.length);
