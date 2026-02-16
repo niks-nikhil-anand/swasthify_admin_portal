@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { CampaignCard, Campaign } from "./CampaignCard";
+import { CampaignCard } from "./CampaignCard";
+import { Campaign } from "@/app/(root)/doctors/types";
 import { CampaignCardSkeleton } from "./CampaignCardSkeleton";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Stethoscope } from "lucide-react";
