@@ -45,7 +45,7 @@ export default function AppointmentsPage() {
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [isCancelling, setIsCancelling] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    const [statusFilter, setStatusFilter] = useState("all");
+    const [statusFilter, setStatusFilter] = useState("upcoming");
     const [sortBy, setSortBy] = useState("newest");
 
     const fetchAppointments = async () => {
