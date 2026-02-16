@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Check, Settings, CreditCard, User, ArrowRight, ShieldCheck, Zap, TrendingUp, HandCoins } from "lucide-react";
+import { Check, Settings, CreditCard, User, ArrowRight, ShieldCheck, TrendingUp, HandCoins } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -194,24 +194,7 @@ export default function DoctorPricingPage() {
                 </div>
             </section>
 
-            {/* CTA */}
-            <section className="py-16 text-center">
-                <div className="max-w-2xl mx-auto px-4">
-                    <h2 className="text-3xl font-bold mb-6">Need help optimizing your fees?</h2>
-                    <p className="text-muted-foreground mb-10">
-                        Our practice management experts are available to help you set the right pricing
-                        strategy based on your specialty and region.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button size="lg" className="rounded-full px-8 h-14 text-base font-semibold">
-                            Speak with an Advisor
-                        </Button>
-                        <Button size="lg" variant="outline" className="rounded-full px-8 h-14 text-base font-semibold">
-                            View Pricing Guide
-                        </Button>
-                    </div>
-                </div>
-            </section>
+
         </div>
     );
 }
