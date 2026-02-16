@@ -16,7 +16,7 @@ export default function DoctorCampaignsPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedType, setSelectedType] = useState<string>("ALL");
     const [selectedSpecialization, setSelectedSpecialization] = useState<string>("ALL");
-    const [viewMode, setViewMode] = useState<"grid-1" | "grid-2" | "grid-3">("grid-3");
+    const [viewMode, setViewMode] = useState<"grid-2" | "grid-3">("grid-3");
 
     // Pagination state
     const [page, setPage] = useState(1);
@@ -32,7 +32,7 @@ export default function DoctorCampaignsPage() {
 
             params.append("page", page.toString());
             // Adjust limit based on view mode for better visual balance
-            const limit = viewMode === "grid-1" ? "6" : viewMode === "grid-2" ? "8" : "9";
+            const limit = viewMode === "grid-2" ? "8" : "9";
             params.append("limit", limit);
             params.append("source", "doctor"); // Only fetch doctor campaigns
 
@@ -73,7 +73,6 @@ export default function DoctorCampaignsPage() {
     };
 
     const gridClasses = {
-        "grid-1": "grid-cols-1 max-w-2xl mx-auto",
         "grid-2": "grid-cols-1 md:grid-cols-2",
         "grid-3": "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
     }[viewMode];
@@ -93,7 +92,6 @@ export default function DoctorCampaignsPage() {
                 {/* Layout Toggle */}
                 <div className="hidden sm:flex items-center gap-2 p-1 bg-muted/30 rounded-2xl border border-border/50 self-start lg:self-end">
                     {[
-                        { mode: "grid-1", icon: Menu, label: "Single" },
                         { mode: "grid-2", icon: Grid2X2, label: "Double" },
                         { mode: "grid-3", icon: LayoutGrid, label: "Triple" },
                     ].map((item) => (
