@@ -17,7 +17,9 @@ import {
     ChevronRight,
     Stethoscope,
     BarChart3,
-    Megaphone
+    Megaphone,
+    HandCoins,
+    ShieldCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -75,6 +77,21 @@ const sidebarGroups = [
                 title: "Settings",
                 href: "/doctor-panel/setting",
                 icon: Settings,
+            },
+        ]
+    },
+    {
+        label: "Resources",
+        items: [
+            {
+                title: "Pricing",
+                href: "/doctor-panel/pricing",
+                icon: HandCoins,
+            },
+            {
+                title: "Do's & Don'ts",
+                href: "/doctor-panel/dos-and-donts",
+                icon: ShieldCheck,
             },
         ]
     }
