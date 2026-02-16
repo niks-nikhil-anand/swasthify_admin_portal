@@ -43,7 +43,8 @@ export async function getDoctorDashboardStats() {
         completedToday,
         monthlyRevenue,
         lastMonthRevenue,
-        pendingReports
+        pendingReports,
+        lastMonthPatients
     ] = await Promise.all([
         // Total unique patients for this doctor
         prisma.appointment.groupBy({
@@ -94,7 +95,16 @@ export async function getDoctorDashboardStats() {
                 doctorId,
                 status: "PENDING"
             }
-        }) as any
+        }) as any,
+
+        // Patients last month (for trend)
+        prisma.appointment.groupBy({
+            by: ['patientId'],
+            where: {
+                doctorId,
+                createdAt: { gte: lastMonthStart, lt: monthStart }
+            }
+        }).then((res: any[]) => res.length as any)
     ]);
 
     const currentRevenue = monthlyRevenue._sum.amount || 0;
@@ -103,10 +113,16 @@ export async function getDoctorDashboardStats() {
         ? Math.round(((currentRevenue - previousRevenue) / previousRevenue) * 100)
         : 0;
 
+    const currentPatients = totalPatients;
+    const previousPatients = lastMonthPatients;
+    const patientTrend = previousPatients > 0
+        ? Math.round(((currentPatients - previousPatients) / previousPatients) * 100)
+        : 0;
+
     return {
         patients: {
             total: totalPatients,
-            trend: 12 // Mock trend for now as we don't have historical patient growth easily accessible without more complex queries
+            trend: patientTrend
         },
         appointmentsToday: {
             total: appointmentsToday,

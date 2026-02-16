@@ -298,8 +298,10 @@ export default function DoctorPanelPage() {
                     <CardContent>
                         <div className="text-2xl font-bold">{stats?.patients.total.toLocaleString() || 0}</div>
                         <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                            <ArrowUpRight className="h-3 w-3 text-emerald-500" />
-                            <span className="text-emerald-500 font-medium">+{stats?.patients.trend}%</span> from last month
+                            <ArrowUpRight className={`h-3 w-3 ${stats?.patients.trend >= 0 ? "text-emerald-500" : "text-destructive"} ${stats?.patients.trend < 0 ? "rotate-90" : ""}`} />
+                            <span className={`${stats?.patients.trend >= 0 ? "text-emerald-500" : "text-destructive"} font-medium`}>
+                                {stats?.patients.trend >= 0 ? "+" : ""}{stats?.patients.trend}%
+                            </span> from last month
                         </p>
                     </CardContent>
                 </Card>
@@ -323,7 +325,7 @@ export default function DoctorPanelPage() {
                     <CardContent>
                         <div className="text-2xl font-bold">₹{(stats?.revenue.total / 1000).toFixed(1)}K</div>
                         <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                            <ArrowUpRight className={`h-3 w-3 ${stats?.revenue.trend >= 0 ? "text-emerald-500" : "text-destructive"}`} />
+                            <ArrowUpRight className={`h-3 w-3 ${stats?.revenue.trend >= 0 ? "text-emerald-500" : "text-destructive"} ${stats?.revenue.trend < 0 ? "rotate-90" : ""}`} />
                             <span className={`${stats?.revenue.trend >= 0 ? "text-emerald-500" : "text-destructive"} font-medium`}>
                                 {stats?.revenue.trend >= 0 ? "+" : ""}{stats?.revenue.trend}%
                             </span> from last month
