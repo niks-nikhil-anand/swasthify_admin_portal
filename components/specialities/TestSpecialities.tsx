@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, FlaskConical, Activity, Heart, Droplets, Zap, ShieldCheck, Clock, ArrowRight, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -170,6 +170,12 @@ const item = {
 
 export function TestSpecialities() {
     const [visibleCount, setVisibleCount] = useState(6);
+    const [isPatient, setIsPatient] = useState(false);
+
+    useEffect(() => {
+        setIsPatient(document.cookie.includes("PATIENT="));
+    }, []);
+
     const visibleTests = diagnosticTests.slice(0, visibleCount);
 
     const showMore = () => {
@@ -204,64 +210,68 @@ export function TestSpecialities() {
                     className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6"
                 >
                     <AnimatePresence mode="popLayout">
-                        {visibleTests.map((test) => (
-                            <motion.div
-                                key={test.id}
-                                layout
-                                variants={item}
-                                initial="hidden"
-                                animate="show"
-                                exit={{ opacity: 0, scale: 0.95 }}
-                                whileHover={{ y: -8 }}
-                            >
-                                <Link href="/login">
-                                    <Card className="relative overflow-hidden border-2 hover:border-emerald-500 transition-all duration-300 group h-full flex flex-col rounded-[1.5rem] md:rounded-[2rem] shadow-lg hover:shadow-2xl bg-card cursor-pointer">
-                                        {test.tag && (
-                                            <div className="absolute top-2 right-2 md:top-4 md:right-4 bg-emerald-600 text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 md:px-3 md:py-1 rounded-full z-10">
-                                                {test.tag}
-                                            </div>
-                                        )}
+                        {visibleTests.map((test) => {
+                            const targetUrl = `/labs?query=${encodeURIComponent(test.title)}`;
+                            const href = isPatient ? targetUrl : `/login?redirect=${encodeURIComponent(targetUrl)}`;
+                            return (
+                                <motion.div
+                                    key={test.id}
+                                    layout
+                                    variants={item}
+                                    initial="hidden"
+                                    animate="show"
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    whileHover={{ y: -8 }}
+                                >
+                                    <Link href={href}>
+                                        <Card className="relative overflow-hidden border-2 hover:border-emerald-500 transition-all duration-300 group h-full flex flex-col rounded-[1.5rem] md:rounded-[2rem] shadow-lg hover:shadow-2xl bg-card cursor-pointer">
+                                            {test.tag && (
+                                                <div className="absolute top-2 right-2 md:top-4 md:right-4 bg-emerald-600 text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 md:px-3 md:py-1 rounded-full z-10">
+                                                    {test.tag}
+                                                </div>
+                                            )}
 
-                                        <div className="relative h-28 md:h-40 w-full flex items-center justify-center pt-6">
-                                            <div className="w-24 h-24 md:w-32 md:h-32 relative bg-muted rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110 overflow-hidden shadow-inner border-4 border-background">
-                                                <Image
-                                                    src={test.image}
-                                                    alt={test.title}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                                <div className="absolute inset-0 bg-linear-to-tr from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                            </div>
-                                        </div>
-
-                                        <CardHeader className="pt-4 md:pt-6 pb-2 md:pb-4 px-3 md:px-6 text-center">
-                                            <CardTitle className="text-sm md:text-lg font-bold leading-tight line-clamp-2 min-h-[40px] md:min-h-[48px] group-hover:text-emerald-600 transition-colors">
-                                                {test.title}
-                                            </CardTitle>
-                                        </CardHeader>
-
-                                        <CardContent className="px-3 md:px-6 py-2 md:py-4 flex-1">
-                                            <div className="flex flex-col items-center">
-                                                <p className="text-muted-foreground text-[10px] md:text-xs">Test starts from</p>
-                                                <span className="text-muted-foreground line-through text-[10px] md:text-sm">{test.originalPrice}</span>
-                                                <div className="flex items-center gap-1.5 md:gap-2">
-                                                    <span className="text-lg md:text-2xl font-black text-foreground">{test.price}</span>
-                                                    <Badge className="text-[8px] md:text-[10px] font-bold px-1.5 py-0 h-4 md:h-5 bg-red-50 text-red-600 border-red-100 hover:bg-red-100 shadow-none">
-                                                        {test.discount}
-                                                    </Badge>
+                                            <div className="relative h-28 md:h-40 w-full flex items-center justify-center pt-6">
+                                                <div className="w-24 h-24 md:w-32 md:h-32 relative bg-muted rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110 overflow-hidden shadow-inner border-4 border-background">
+                                                    <Image
+                                                        src={test.image}
+                                                        alt={test.title}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                    <div className="absolute inset-0 bg-linear-to-tr from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                                 </div>
                                             </div>
-                                        </CardContent>
 
-                                        <CardFooter className="px-3 md:px-6 pb-4 md:pb-6 pt-0 mt-auto">
-                                            <Button className="w-full h-8 md:h-10 rounded-xl md:rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs md:text-sm font-bold shadow-md hover:scale-[1.02] transition-all">
-                                                Book Now
-                                            </Button>
-                                        </CardFooter>
-                                    </Card>
-                                </Link>
-                            </motion.div>
-                        ))}
+                                            <CardHeader className="pt-4 md:pt-6 pb-2 md:pb-4 px-3 md:px-6 text-center">
+                                                <CardTitle className="text-sm md:text-lg font-bold leading-tight line-clamp-2 min-h-[40px] md:min-h-[48px] group-hover:text-emerald-600 transition-colors">
+                                                    {test.title}
+                                                </CardTitle>
+                                            </CardHeader>
+
+                                            <CardContent className="px-3 md:px-6 py-2 md:py-4 flex-1">
+                                                <div className="flex flex-col items-center">
+                                                    <p className="text-muted-foreground text-[10px] md:text-xs">Test starts from</p>
+                                                    <span className="text-muted-foreground line-through text-[10px] md:text-sm">{test.originalPrice}</span>
+                                                    <div className="flex items-center gap-1.5 md:gap-2">
+                                                        <span className="text-lg md:text-2xl font-black text-foreground">{test.price}</span>
+                                                        <Badge className="text-[8px] md:text-[10px] font-bold px-1.5 py-0 h-4 md:h-5 bg-red-50 text-red-600 border-red-100 hover:bg-red-100 shadow-none">
+                                                            {test.discount}
+                                                        </Badge>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+
+                                            <CardFooter className="px-3 md:px-6 pb-4 md:pb-6 pt-0 mt-auto">
+                                                <Button className="w-full h-8 md:h-10 rounded-xl md:rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs md:text-sm font-bold shadow-md hover:scale-[1.02] transition-all">
+                                                    Book Now
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    </Link>
+                                </motion.div>
+                            );
+                        })}
                     </AnimatePresence>
                 </motion.div>
 

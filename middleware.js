@@ -67,6 +67,10 @@ export async function middleware(req) {
     }
     // Redirect if already logged in as Patient
     if (isPatientAuthRoute && patientAuthToken) {
+        const redirectUrl = req.nextUrl.searchParams.get("redirect");
+        if (redirectUrl) {
+            return NextResponse.redirect(new URL(redirectUrl, req.nextUrl.origin));
+        }
         return NextResponse.redirect(new URL("/me", req.nextUrl.origin));
     }
 

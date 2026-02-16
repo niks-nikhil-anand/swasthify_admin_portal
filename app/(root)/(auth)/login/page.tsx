@@ -8,7 +8,9 @@ export const metadata: Metadata = {
     description: "Login to your account",
 }
 
-export default function LoginPage() {
+export default function LoginPage({ searchParams }: { searchParams: { redirect?: string } }) {
+    const redirectTo = searchParams.redirect || "/me";
+
     return (
         <AuthWrapper
             title="Welcome back"
@@ -17,7 +19,7 @@ export default function LoginPage() {
             backButtonHref="/register"
             showSocial
         >
-            <LoginForm role="patient" redirectTo="/me" />
+            <LoginForm role="patient" redirectTo={redirectTo} />
         </AuthWrapper>
     )
 }
