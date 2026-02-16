@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 import { toast } from "sonner";
 import { loadRazorpay, openRazorpayCheckout } from "@/utils/razorpay-client";
-import { PaymentSuccessUI } from "./PaymentSuccessUI";
+import { PaymentSuccessUI } from "@/components/root/PaymentSuccessUI";
 
 interface BookingModalProps {
     isOpen: boolean;
@@ -322,10 +322,11 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
 
                         {bookingStep === "SUCCESS" && bookedAppointment && (
                             <PaymentSuccessUI
-                                doctorName={campaign.doctor.user.name}
+                                providerName={campaign.doctor.user.name}
                                 appointmentDate={selectedDate}
                                 appointmentTime={selectedTime!}
                                 onClose={handleClose}
+                                type="DOCTOR"
                             />
                         )}
                     </motion.div>
