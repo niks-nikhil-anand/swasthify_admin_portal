@@ -27,6 +27,16 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ExternalLink } from "lucide-react";
+
 interface Appointment {
     id: string;
     doctor: string;
@@ -36,6 +46,24 @@ interface Appointment {
     status: string;
     img: string;
     rawStatus: string;
+    consultationFee?: number;
+    reason?: string;
+    doctorDetails?: {
+        profilePhoto?: string;
+        qualification?: string;
+        experienceYears?: number;
+        clinicName?: string;
+        hospitalName?: string;
+        bio?: string;
+        address?: {
+            street: string;
+            city: string;
+            state: string;
+            zipCode: string;
+            latitude?: number;
+            longitude?: number;
+        } | null;
+    } | null;
 }
 
 export default function AppointmentsPage() {
@@ -47,6 +75,8 @@ export default function AppointmentsPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("upcoming");
     const [sortBy, setSortBy] = useState("newest");
+    const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
     const fetchAppointments = async () => {
         try {
