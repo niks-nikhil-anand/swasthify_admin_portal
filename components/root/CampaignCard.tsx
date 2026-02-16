@@ -11,6 +11,7 @@ import { BookingModal } from "@/app/(root)/doctors/[id]/components/BookingModal"
 import { toast } from "sonner";
 
 import { Campaign } from "@/app/(root)/doctors/types";
+export type { Campaign };
 
 interface CampaignCardProps {
     campaign: Campaign;
