@@ -1,38 +1,21 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { MapPin, CheckCircle, FlaskConical, Clock, Beaker } from "lucide-react";
+import { MapPin, CheckCircle, FlaskConical, Clock, Beaker, Zap } from "lucide-react";
+import { LabBookingModal } from "@/app/(root)/labs/[id]/components/LabBookingModal";
+import { toast } from "sonner";
 
-export interface LabCampaign {
-    id: string;
-    name: string;
-    type: string;
-    status: string;
-    price: number;
-    discountPercentage: number;
-    startDate: string;
-    endDate: string;
-    location: any;
-    lab: {
-        id: string;
-        profilePhoto: string | null;
-        user: {
-            name: string;
-        };
-        testTypes: string[];
-    };
-    isVerified: boolean;
-    description?: string | null;
-}
+import { LabCampaign } from "@/app/(root)/labs/types";
 
 interface LabCampaignCardProps {
     campaign: LabCampaign;
 }
 
 export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) => {
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const discountedPrice = campaign.discountPercentage > 0
         ? Math.round(campaign.price - (campaign.price * campaign.discountPercentage) / 100)
         : campaign.price;
@@ -122,9 +105,9 @@ export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) =>
                     </div>
                     <Button
                         size="lg"
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200 dark:shadow-none rounded-xl gap-2 transition-all hover:scale-105 active:scale-95"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200 dark:shadow-none rounded-xl gap-2 transition-all hover:scale-105 active:scale-95 px-6 font-black text-xs uppercase tracking-widest"
                         onClick={() => {
-                            // Track Click event for CTR
+                            // 1. Analytics
                             fetch("/api/analytics/collect", {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
@@ -140,14 +123,29 @@ export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) =>
                                 })
                             }).catch(console.error);
 
-                            window.location.href = "/login";
+                            // 2. Auth Check & Modal
+                            const checkAuth = async () => {
+                                const res = await fetch("/api/auth/me");
+                                if (res.ok) {
+                                    setIsBookingModalOpen(true);
+                                } else {
+                                    toast.error("Please login to book a test");
+                                    window.location.href = "/login";
+                                }
+                            };
+                            checkAuth();
                         }}
                     >
-                        Book Now
-                        <FlaskConical className="w-4 h-4" />
+                        Pay Now
+                        <Zap className="w-4 h-4" />
                     </Button>
                 </div>
             </CardFooter>
+            <LabBookingModal
+                isOpen={isBookingModalOpen}
+                onClose={() => setIsBookingModalOpen(false)}
+                campaign={campaign}
+            />
         </Card>
     );
 };
