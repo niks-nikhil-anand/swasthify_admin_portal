@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
     LayoutDashboard,
-    Users,
     Settings,
     LogOut,
     Calendar,
@@ -28,7 +27,6 @@ const PERMISSION_MAPPING: Record<string, string> = {
     "/doctor-panel": "dashboard",
     "/doctor-panel/analytics": "analytics",
     "/doctor-panel/appointment": "appointment",
-    "/doctor-panel/patient": "patient",
     "/doctor-panel/campaign": "campaign",
     "/doctor-panel/profile": "profile",
     "/doctor-panel/setting": "setting",
@@ -52,11 +50,6 @@ const sidebarGroups = [
                 title: "Appointments",
                 href: "/doctor-panel/appointment",
                 icon: Calendar,
-            },
-            {
-                title: "My Patients",
-                href: "/doctor-panel/patient",
-                icon: Users,
             },
             {
                 title: "Campaigns",
