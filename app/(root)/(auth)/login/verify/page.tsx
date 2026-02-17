@@ -17,8 +17,6 @@ export default function VerifyEmailLinkPage() {
         const verify = async () => {
             if (isSignInWithEmailLink(auth, window.location.href)) {
                 let email = window.localStorage.getItem('emailForSignIn')
-                const url = new URL(window.location.href)
-                const redirectTo = url.searchParams.get('redirectTo') || "/me"
 
                 if (!email) {
                     // Fallback if email is missing from storage (e.g. user opened link on different device)
@@ -27,7 +25,7 @@ export default function VerifyEmailLinkPage() {
 
                 if (email) {
                     try {
-                        const result = await signInWithEmailLink(auth, email, window.location.href)
+                        await signInWithEmailLink(auth, email, window.location.href)
                         window.localStorage.removeItem('emailForSignIn')
 
                         // Sync with our backend session to set cookies
@@ -52,10 +50,11 @@ export default function VerifyEmailLinkPage() {
                         setTimeout(() => {
                             router.push(redirectTo)
                         }, 1500)
-                    } catch (error: any) {
+                    } catch (error: unknown) {
+                        const errorMessage = error instanceof Error ? error.message : "Failed to sign in"
                         console.error("Error signing in with email link:", error)
                         setStatus("error")
-                        toast.error(error.message || "Failed to sign in")
+                        toast.error(errorMessage)
                     }
                 } else {
                     setStatus("error")

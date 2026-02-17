@@ -56,7 +56,7 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
 
         try {
             if (loginMethod === "email") {
-                const body: any = { email, password, role }
+                const body: Record<string, string | undefined> = { email, password, role }
 
                 if (emailMode === "otp") {
                     body.otp = emailOtp
@@ -89,9 +89,10 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
                     setIsLoading(false)
                 }, 2000)
             }
-        } catch (error) {
-            console.error("Login error:", error)
-            toast.error(error instanceof Error ? error.message : "Invalid credentials")
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : "Authentication failed"
+            console.error("Login Error:", error);
+            toast.error(errorMessage);
             setIsLoading(false)
         }
     }

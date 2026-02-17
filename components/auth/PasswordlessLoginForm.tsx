@@ -52,7 +52,7 @@ export function PasswordlessLoginForm({ className, onBackToLogin, redirectTo = "
                 </div>
                 <h3 className="text-lg font-semibold">Check your email</h3>
                 <p className="text-sm text-muted-foreground">
-                    We've sent a sign-in link to <span className="font-medium text-foreground">{email}</span>.
+                    We&apos;ve sent a sign-in link to <span className="font-medium text-foreground">{email}</span>.
                     Click the link in the email to sign in instantly.
                 </p>
                 <Button variant="ghost" onClick={onBackToLogin} className="mt-4">
