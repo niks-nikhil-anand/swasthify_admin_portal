@@ -72,7 +72,7 @@ async function searchKnowledgeBase(query: string, userContext?: string): Promise
     );
 
     try {
-        const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
+        const model = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
         const result = await model.embedContent(query);
         const queryEmbedding = result.embedding.values;
 
@@ -95,12 +95,12 @@ async function searchKnowledgeBase(query: string, userContext?: string): Promise
         let topDocs = [];
 
         // Lower threshold for "General" content queries
-        if (topCategory === 'General Information' && topScore > 0.75) {
+        if (topCategory === 'General Information' && topScore > 0.70) {
             topDocs = validDocs.slice(0, 1);
-        } else if (topScore > 0.85) {
+        } else if (topScore > 0.80) {
             topDocs = validDocs.slice(0, 1);
         } else {
-            topDocs = validDocs.slice(0, 3);
+            topDocs = validDocs.slice(0, 2);
         }
 
         // 2c. Semantic De-duplication

@@ -24,6 +24,36 @@
                     ]
                 },
                 {
+                    "id": "gen_pricing_001",
+                    "question": "What are the consultation charges on Swasthify?",
+                    "answer": "Consultation charges start as low as ₹199 for General Physicians. Specialist consultations start from ₹499, while specific specialties like Gynaecology and Psychiatry start from ₹599. Lab tests start from just ₹99.",
+                    "keywords": [
+                        "pricing",
+                        "fees",
+                        "cost",
+                        "consultation charges",
+                        "lab test price"
+                    ],
+                    "relatedTopics": [
+                        "gen_plans_001"
+                    ]
+                },
+                {
+                    "id": "gen_plans_001",
+                    "question": "What subscription plans are available for patients?",
+                    "answer": "Swasthify offers three plans: 1. Basic Plan (FREE): Connect with local doctors. 2. Plus Plan (₹499/mo): 2 tele-consultations/month and priority appointments. 3. Family Plan (₹999/mo): Covers 4 members, unlimited tele-consultations, and 10% discount on lab tests.",
+                    "keywords": [
+                        "subscription",
+                        "plans",
+                        "plus plan",
+                        "family plan",
+                        "benefits"
+                    ],
+                    "relatedTopics": [
+                        "gen_pricing_001"
+                    ]
+                },
+                {
                     "id": "gen_002",
                     "question": "Who can use the Swasthify platform?",
                     "answer": "Swasthify supports three primary user roles: Doctors, who provide medical consultations and services; Diagnostic Lab Partners, who offer testing and diagnostic services; and Super Admins, who manage and oversee platform operations.",
@@ -462,6 +492,34 @@
         "common_questions": {
             "name": "Common Questions",
             "faqs": [
+                {
+                    "id": "cq_abha_001",
+                    "question": "How do I link my ABHA account?",
+                    "answer": "You can link your Ayushman Bharat Health Account (ABHA) during registration or from your profile settings. This allows you to securely sync and share your digital health records across the platform.",
+                    "keywords": [
+                        "abha",
+                        "link account",
+                        "digital records",
+                        "health id"
+                    ],
+                    "relatedTopics": [
+                        "gen_001"
+                    ]
+                },
+                {
+                    "id": "cq_surgery_001",
+                    "question": "What is Swasthify Surgery Assistance?",
+                    "answer": "Swasthify provides end-to-end assistance for surgeries, including finding the right specialist, hospital coordination, and support for cashless insurance processing.",
+                    "keywords": [
+                        "surgery",
+                        "assistance",
+                        "hospital",
+                        "cashless"
+                    ],
+                    "relatedTopics": [
+                        "gen_001"
+                    ]
+                },
                 {
                     "id": "cq_001",
                     "question": "How do I book an appointment?",
