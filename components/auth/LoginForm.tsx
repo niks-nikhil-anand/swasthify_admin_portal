@@ -14,9 +14,10 @@ import { Label } from "@/components/ui/label"
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
     redirectTo?: string
     role?: string
+    onPasswordlessToggle?: () => void
 }
 
-export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doctor", ...props }: UserAuthFormProps) {
+export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doctor", onPasswordlessToggle, ...props }: UserAuthFormProps) {
     const router = useRouter()
     const [isLoading, setIsLoading] = React.useState<boolean>(false)
     const [loginMethod, setLoginMethod] = React.useState<"email" | "mobile">("email")
@@ -254,6 +255,15 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
                                             onClick={() => setShowPassword(!showPassword)}
                                         >
                                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                        </button>
+                                    </div>
+                                    <div className="flex justify-end mt-1">
+                                        <button
+                                            type="button"
+                                            onClick={onPasswordlessToggle}
+                                            className="text-xs text-primary hover:text-primary/80 transition-colors underline-offset-4 hover:underline font-medium"
+                                        >
+                                            Sign in without password
                                         </button>
                                     </div>
                                 </div>
