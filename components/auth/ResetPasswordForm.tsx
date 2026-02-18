@@ -27,6 +27,21 @@ export function ResetPasswordForm({ className, ...props }: React.HTMLAttributes<
     const [isVerifying, setIsVerifying] = React.useState(true)
     const [isValidCode, setIsValidCode] = React.useState(false)
 
+    // Password strength logic
+    const getStrength = (pass: string) => {
+        if (!pass) return 0
+        let strength = 0
+        if (pass.length >= 6) strength += 25
+        if (pass.length >= 10) strength += 25
+        if (/[A-Z]/.test(pass)) strength += 25
+        if (/[0-9]/.test(pass) || /[^A-Za-z0-9]/.test(pass)) strength += 25
+        return strength
+    }
+
+    const strength = getStrength(password)
+    const strengthColor = strength <= 25 ? "bg-red-500" : strength <= 50 ? "bg-orange-500" : strength <= 75 ? "bg-yellow-500" : "bg-green-500"
+    const strengthText = strength <= 25 ? "Weak" : strength <= 50 ? "Fair" : strength <= 75 ? "Good" : "Strong"
+
     React.useEffect(() => {
         if (!oobCode) {
             setIsVerifying(false)
@@ -81,25 +96,30 @@ export function ResetPasswordForm({ className, ...props }: React.HTMLAttributes<
 
     if (isVerifying) {
         return (
-            <div className="flex flex-col items-center justify-center py-10 space-y-4 text-center">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                <p className="text-muted-foreground">Verifying secure link...</p>
+            <div className="flex flex-col items-center justify-center py-12 space-y-4 text-center">
+                <div className="relative">
+                    <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping opacity-50" />
+                    <Loader2 className="h-10 w-10 animate-spin text-primary relative z-10" />
+                </div>
+                <p className="text-muted-foreground animate-pulse font-medium">Verifying secure link...</p>
             </div>
         )
     }
 
     if (!isValidCode) {
         return (
-            <div className="text-center space-y-4 py-4 animate-in fade-in slide-in-from-bottom-2">
-                <div className="mx-auto w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center text-destructive">
-                    <ShieldCheck className="w-6 h-6" />
+            <div className="text-center space-y-6 py-6 animate-in fade-in slide-in-from-bottom-4">
+                <div className="mx-auto w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center text-destructive">
+                    <ShieldCheck className="w-8 h-8" />
                 </div>
-                <h3 className="text-lg font-semibold">Invalid Link</h3>
-                <p className="text-sm text-muted-foreground">
-                    This password reset link is invalid or has expired. Please request a new one.
-                </p>
+                <div className="space-y-2">
+                    <h3 className="text-xl font-bold">Invalid Reset Link</h3>
+                    <p className="text-sm text-muted-foreground px-6">
+                        This password reset link is invalid or has expired for security reasons.
+                    </p>
+                </div>
                 <Link href="/forgot-password" title="Forgot Password">
-                    <Button variant="outline" className="mt-4">
+                    <Button variant="outline" className="mt-2 px-8">
                         Request New Link
                     </Button>
                 </Link>
@@ -109,17 +129,19 @@ export function ResetPasswordForm({ className, ...props }: React.HTMLAttributes<
 
     if (isSuccess) {
         return (
-            <div className="text-center space-y-4 py-4 animate-in fade-in slide-in-from-bottom-2">
-                <div className="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                    <CheckCircle2 className="w-6 h-6" />
+            <div className="text-center space-y-6 py-8 animate-in zoom-in-95 duration-500">
+                <div className="mx-auto w-20 h-20 rounded-full bg-green-100 flex items-center justify-center text-green-600 shadow-inner">
+                    <CheckCircle2 className="w-10 h-10" />
                 </div>
-                <h3 className="text-lg font-semibold">Password Reset!</h3>
-                <p className="text-sm text-muted-foreground">
-                    Your password has been successfully updated. You can now log in with your new password.
-                </p>
+                <div className="space-y-2">
+                    <h3 className="text-2xl font-bold text-foreground">Securely Updated!</h3>
+                    <p className="text-sm text-muted-foreground px-4">
+                        Your password has been successfully updated. You can now use your new credentials to sign in.
+                    </p>
+                </div>
                 <Link href="/login">
-                    <Button className="w-full mt-4">
-                        Login Now
+                    <Button className="w-full mt-4 h-11 text-base font-medium transition-all hover:translate-y-[-2px] hover:shadow-lg">
+                        Proceed to Login
                     </Button>
                 </Link>
             </div>
@@ -127,17 +149,22 @@ export function ResetPasswordForm({ className, ...props }: React.HTMLAttributes<
     }
 
     return (
-        <div className={cn("grid gap-6", className)} {...props}>
-            <div className="text-center mb-2">
-                <p className="text-sm text-muted-foreground">
-                    Resetting password for <span className="font-medium text-foreground">{email}</span>
-                </p>
+        <div className={cn("grid gap-8", className)} {...props}>
+            <div className="relative">
+                <div className="absolute inset-x-0 -top-px h-px bg-linear-to-r from-transparent via-primary/30 to-transparent" />
+                <div className="pt-2 text-center">
+                    <span className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">Account Security</span>
+                    <p className="mt-1 text-sm text-foreground/80">
+                        Resetting for <span className="font-bold text-primary">{email}</span>
+                    </p>
+                </div>
             </div>
-            <form onSubmit={onSubmit}>
-                <div className="grid gap-4">
+
+            <form onSubmit={onSubmit} className="space-y-6">
+                <div className="grid gap-5">
                     <div className="grid gap-2">
                         <Label htmlFor="password">New Password</Label>
-                        <div className="relative">
+                        <div className="relative group">
                             <Input
                                 id="password"
                                 placeholder="••••••••"
@@ -145,21 +172,38 @@ export function ResetPasswordForm({ className, ...props }: React.HTMLAttributes<
                                 autoCapitalize="none"
                                 autoComplete="new-password"
                                 disabled={isLoading}
+                                className="h-11 border-muted-foreground/20 focus:border-primary transition-all pr-10"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
                             <button
                                 type="button"
-                                className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
+                                className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
                                 onClick={() => setShowPassword(!showPassword)}
+                                tabIndex={-1}
                             >
-                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                             </button>
                         </div>
+                        {password && (
+                            <div className="mt-2 space-y-1.5 animate-in slide-in-from-top-1">
+                                <div className="flex justify-between items-center px-1">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Strength: {strengthText}</span>
+                                    <span className="text-[10px] font-bold text-muted-foreground">{strength}%</span>
+                                </div>
+                                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                                    <div
+                                        className={cn("h-full transition-all duration-500", strengthColor)}
+                                        style={{ width: `${strength}%` }}
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </div>
+
                     <div className="grid gap-2">
-                        <Label htmlFor="confirmPassword">Confirm Password</Label>
+                        <Label htmlFor="confirmPassword">Confirm New Password</Label>
                         <Input
                             id="confirmPassword"
                             placeholder="••••••••"
@@ -167,19 +211,33 @@ export function ResetPasswordForm({ className, ...props }: React.HTMLAttributes<
                             autoCapitalize="none"
                             autoComplete="new-password"
                             disabled={isLoading}
+                            className="h-11 border-muted-foreground/20 focus:border-primary transition-all"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required
                         />
                     </div>
-                    <Button disabled={isLoading || !password || !confirmPassword} className="w-full">
-                        {isLoading && (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        )}
-                        Update Password
-                    </Button>
                 </div>
+
+                <Button
+                    disabled={isLoading || !password || !confirmPassword || strength < 25}
+                    className="w-full h-11 text-base font-medium shadow-sm transition-all hover:shadow-md active:scale-[0.98]"
+                >
+                    {isLoading ? (
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    ) : (
+                        <ShieldCheck className="mr-2 h-5 w-5" />
+                    )}
+                    Update Password Securely
+                </Button>
             </form>
+
+            <div className="text-center pt-2">
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    By updating your password, you ensure your account remains protected.
+                    Choose a strong password with letters, numbers, and symbols.
+                </p>
+            </div>
         </div>
     )
 }
