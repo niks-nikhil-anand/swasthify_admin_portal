@@ -20,15 +20,21 @@ export default function VerifyEmailLinkPage() {
 
                 if (!email) {
                     // Fallback if email is missing from storage (e.g. user opened link on different device)
+                    console.log("Email not found in localStorage, prompting user...");
                     email = window.prompt('Please provide your email for confirmation')
                 }
 
                 if (email) {
                     try {
-                        console.log("Attempting to sign in with email link...");
+                        console.log("Attempting Firebase sign-in with email link...", {
+                            email,
+                            href: window.location.href,
+                            isSignInLink: isSignInWithEmailLink(auth, window.location.href)
+                        });
+
                         await signInWithEmailLink(auth, email, window.location.href)
                         window.localStorage.removeItem('emailForSignIn')
-                        console.log("Firebase sign-in successful");
+                        console.log("Firebase sign-in successful for:", email);
 
                         // Sync with our backend session to set cookies
                         const url = new URL(window.location.href)
