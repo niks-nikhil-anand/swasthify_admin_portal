@@ -9,19 +9,29 @@ function LanderHandler() {
     const searchParams = useSearchParams()
 
     useEffect(() => {
-        const params = new URLSearchParams(searchParams.toString())
+        const queryString = window.location.search
+        const params = new URLSearchParams(queryString)
         const mode = params.get('mode')
+        const currentHost = window.location.hostname
 
-        let targetUrl = `/login/verify?${params.toString()}`
-
-        if (mode === 'resetPassword') {
-            targetUrl = `/reset-password?${params.toString()}`
-        } else if (mode === 'signIn') {
-            targetUrl = `/auth/magic-link?${params.toString()}`
+        // 1. Normalize Domain: If we're on the root domain, move to www to preserve localStorage
+        if (currentHost === "swasthify.in") {
+            const targetUrl = `https://www.swasthify.in${window.location.pathname}${queryString}`
+            console.log("Normalization: Moving to www domain", targetUrl)
+            window.location.href = targetUrl
+            return
         }
 
-        console.log(`LanderHandler (mode: ${mode}): Redirecting to`, targetUrl)
-        router.push(targetUrl)
+        // 2. Determine target path based on mode
+        let targetPath = "/login/verify"
+
+        if (mode === 'resetPassword') {
+            targetPath = "/reset-password"
+        }
+
+        const finalUrl = `${targetPath}${queryString}`
+        console.log(`LanderHandler (mode: ${mode}): Redirecting to`, finalUrl)
+        router.push(finalUrl)
     }, [router, searchParams])
 
     return (
