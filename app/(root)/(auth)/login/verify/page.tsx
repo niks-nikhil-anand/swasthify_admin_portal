@@ -25,30 +25,52 @@ export default function VerifyEmailLinkPage() {
 
                 if (email) {
                     try {
+                        console.log("Attempting to sign in with email link...");
                         await signInWithEmailLink(auth, email, window.location.href)
                         window.localStorage.removeItem('emailForSignIn')
+                        console.log("Firebase sign-in successful");
 
                         // Sync with our backend session to set cookies
                         const url = new URL(window.location.href)
-                        const role = url.searchParams.get('role') || "patient"
+                        const roleFromUrl = url.searchParams.get('role') || "patient"
                         const redirectTo = url.searchParams.get('redirectTo') || "/me"
 
+                        console.log("Syncing session with backend...", { email, roleFromUrl });
                         const syncResponse = await fetch("/api/auth/sync-session", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ email, role }),
+                            body: JSON.stringify({ email, role: roleFromUrl }),
                         })
 
+                        const syncData = await syncResponse.json();
+
                         if (!syncResponse.ok) {
-                            throw new Error("Failed to sync session cookies")
+                            console.error("Session sync failed:", syncData);
+                            throw new Error(syncData.error || "Failed to sync session cookies")
                         }
 
+                        console.log("Session sync successful", syncData);
                         setStatus("success")
                         toast.success("Signed in successfully!")
 
+                        // Determine final redirect based on user role from backend
+                        const userRole = syncData.user?.role?.toUpperCase();
+                        let finalRedirect = redirectTo;
+
+                        // If user is admin/doctor/lab but on patient profile, redirect to their dashboard
+                        if (userRole === "SUPER_ADMIN" && !redirectTo.startsWith("/superAdmin")) {
+                            finalRedirect = "/superAdmin/dashboard";
+                        } else if (userRole === "DOCTOR" && !redirectTo.startsWith("/doctor-panel")) {
+                            finalRedirect = "/doctor-panel/dashboard";
+                        } else if (userRole === "LAB" && !redirectTo.startsWith("/lab-panel")) {
+                            finalRedirect = "/lab-panel/dashboard";
+                        }
+
+                        console.log("Redirecting to:", finalRedirect);
+
                         // Wait a bit before redirecting
                         setTimeout(() => {
-                            router.push(redirectTo)
+                            router.push(finalRedirect)
                         }, 1500)
                     } catch (error: unknown) {
                         const errorMessage = error instanceof Error ? error.message : "Failed to sign in"

@@ -9,11 +9,13 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 export async function POST(req) {
     try {
         const body = await req.json();
-        const { email, role } = body;
+        const { email, role: inputRole } = body;
 
-        if (!email || !role) {
+        console.log("Session sync request:", { email, inputRole });
+
+        if (!email) {
             return NextResponse.json(
-                { error: "Email and role are required" },
+                { error: "Email is required" },
                 { status: 400 }
             );
         }
@@ -24,31 +26,27 @@ export async function POST(req) {
         });
 
         if (!user) {
+            console.error(`Session sync failed: User not found for email ${email}`);
             return NextResponse.json(
                 { error: "User not found" },
                 { status: 404 }
             );
         }
 
-        // 2. Verify Role
-        const inputRoleUpper = role.toUpperCase();
-        const dbRoleUpper = user.role.toUpperCase();
+        console.log(`User found: ${user.email}, DB Role: ${user.role}`);
 
-        let normalizedInputRole = inputRoleUpper;
-        if (inputRoleUpper === "SUPERADMIN") normalizedInputRole = "SUPER_ADMIN";
+        // 2. Validate/Normalize Role
+        // Instead of strictly failing if inputRole doesn't match, 
+        // we use the DB role as the source of truth for the session.
+        // This makes the magic link more robust if someone clicks a link with a stale role.
 
-        if (dbRoleUpper !== normalizedInputRole) {
-            return NextResponse.json(
-                { error: "Unauthorized for this role" },
-                { status: 403 }
-            );
-        }
+        const dbRole = user.role; // This is the Prisma enum value
 
-        // 3. Generate JWT (exact same as login route)
+        // 3. Generate JWT
         const secret = new TextEncoder().encode(JWT_SECRET);
         const token = await new SignJWT({
             userId: user.id,
-            role: user.role,
+            role: dbRole,
             email: user.email
         })
             .setProtectedHeader({ alg: "HS256" })
@@ -56,17 +54,19 @@ export async function POST(req) {
             .setExpirationTime("24h")
             .sign(secret);
 
-        // 4. Set Cookie (exact same as login route)
+        // 4. Set Cookie based on actual DB role
         let cookieName = "token";
-        if (normalizedInputRole === "SUPER_ADMIN") {
+        if (dbRole === "SUPER_ADMIN") {
             cookieName = "SUPER_ADMIN";
-        } else if (normalizedInputRole === "PATIENT") {
+        } else if (dbRole === "PATIENT") {
             cookieName = "PATIENT";
-        } else if (normalizedInputRole === "DOCTOR") {
+        } else if (dbRole === "DOCTOR") {
             cookieName = "DOCTOR";
-        } else if (normalizedInputRole === "LAB") {
+        } else if (dbRole === "LAB") {
             cookieName = "LAB";
         }
+
+        console.log(`Setting session cookie: ${cookieName} for user: ${user.email}`);
 
         const cookieStore = await cookies();
         cookieStore.set(cookieName, token, {
@@ -84,7 +84,7 @@ export async function POST(req) {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                role: user.role,
+                role: dbRole,
             }
         });
 

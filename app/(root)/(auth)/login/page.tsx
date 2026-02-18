@@ -29,7 +29,10 @@ export default function LoginPage({ searchParams }: { searchParams: Promise<{ re
                     onPasswordlessToggle={() => setAuthMode("passwordless")}
                 />
             ) : (
-                <PasswordlessLoginForm onBackToLogin={() => setAuthMode("standard")} />
+                <PasswordlessLoginForm
+                    onBackToLogin={() => setAuthMode("standard")}
+                    role="patient"
+                />
             )}
         </AuthWrapper>
     )
