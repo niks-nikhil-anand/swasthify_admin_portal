@@ -9,11 +9,16 @@ function MagicLinkHandler() {
     const searchParams = useSearchParams()
 
     useEffect(() => {
-        // Construct the verification URL with all existing search parameters from Firebase
-        // This includes oobCode, apiKey, mode, etc.
         const params = new URLSearchParams(searchParams.toString())
-        const targetUrl = `/login/verify?${params.toString()}`
-        console.log("MagicLinkHandler: Redirecting to", targetUrl)
+        const mode = params.get('mode')
+
+        let targetUrl = `/login/verify?${params.toString()}`
+
+        if (mode === 'resetPassword') {
+            targetUrl = `/reset-password?${params.toString()}`
+        }
+
+        console.log(`MagicLinkHandler (mode: ${mode}): Redirecting to`, targetUrl)
         router.push(targetUrl)
     }, [router, searchParams])
 

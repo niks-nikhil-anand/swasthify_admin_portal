@@ -33,7 +33,7 @@ export function ForgotPasswordForm({ className, onBackToLogin, ...props }: Forgo
         }
 
         try {
-            await sendPasswordResetEmail(auth, email)
+            await sendPasswordResetEmail(auth, email, actionCodeSettings)
             setIsSent(true)
             toast.success("Password reset email sent!")
         } catch (error: any) {

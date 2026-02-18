@@ -9,11 +9,19 @@ function LanderHandler() {
     const searchParams = useSearchParams()
 
     useEffect(() => {
-        // This page handles redirects from the /lander path (often a legacy or default Firebase handler)
-        // by forwarding all parameters to our main magic-link handler.
         const params = new URLSearchParams(searchParams.toString())
-        const targetUrl = `/auth/magic-link?${params.toString()}`
-        console.log("LanderHandler: Redirecting to", targetUrl)
+        const mode = params.get('mode')
+
+        let targetUrl = `/login/verify?${params.toString()}`
+
+        if (mode === 'resetPassword') {
+            targetUrl = `/reset-password?${params.toString()}`
+        } else if (mode === 'signIn') {
+            // Forward to magic-link handler to be safe, or go direct
+            targetUrl = `/auth/magic-link?${params.toString()}`
+        }
+
+        console.log(`LanderHandler (mode: ${mode}): Redirecting to`, targetUrl)
         router.push(targetUrl)
     }, [router, searchParams])
 
