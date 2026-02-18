@@ -30,24 +30,25 @@ export async function POST(req) {
             );
         }
 
-        // 2. Verify and Normalize Role
+        // 2. Verify Role
         const inputRoleUpper = role.toUpperCase();
+        const dbRoleUpper = user.role.toUpperCase();
 
-        // Log mismatch but proceed with DB role (as long as user exists)
-        // This handles cases where client sends "superAdmin" but DB has "SUPER_ADMIN"
-        let finalRole = user.role;
+        let normalizedInputRole = inputRoleUpper;
+        if (inputRoleUpper === "SUPERADMIN") normalizedInputRole = "SUPER_ADMIN";
 
-        // Optional: If you want to log when a mismatch happens for debugging
-        if (user.role !== inputRoleUpper &&
-            !(user.role === "SUPER_ADMIN" && inputRoleUpper === "SUPERADMIN")) {
-            console.log(`Role mismatch for ${email}: client sent ${role}, DB has ${user.role}. Using DB role.`);
+        if (dbRoleUpper !== normalizedInputRole) {
+            return NextResponse.json(
+                { error: "Unauthorized for this role" },
+                { status: 403 }
+            );
         }
 
         // 3. Generate JWT (exact same as login route)
         const secret = new TextEncoder().encode(JWT_SECRET);
         const token = await new SignJWT({
             userId: user.id,
-            role: finalRole,
+            role: user.role,
             email: user.email
         })
             .setProtectedHeader({ alg: "HS256" })
@@ -57,15 +58,13 @@ export async function POST(req) {
 
         // 4. Set Cookie (exact same as login route)
         let cookieName = "token";
-        const roleUpper = finalRole.toUpperCase();
-
-        if (roleUpper === "SUPER_ADMIN") {
+        if (normalizedInputRole === "SUPER_ADMIN") {
             cookieName = "SUPER_ADMIN";
-        } else if (roleUpper === "PATIENT") {
+        } else if (normalizedInputRole === "PATIENT") {
             cookieName = "PATIENT";
-        } else if (roleUpper === "DOCTOR") {
+        } else if (normalizedInputRole === "DOCTOR") {
             cookieName = "DOCTOR";
-        } else if (roleUpper === "LAB") {
+        } else if (normalizedInputRole === "LAB") {
             cookieName = "LAB";
         }
 
