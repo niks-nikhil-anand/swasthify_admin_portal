@@ -27,7 +27,6 @@ export function PasswordlessLoginForm({ className, onBackToLogin, redirectTo = "
         setIsLoading(true)
 
         const actionCodeSettings = {
-            // Using window.location.origin ensures we stay on the same domain (swasthify.in vs www.swasthify.in)
             url: `${window.location.origin}/login/verify?redirectTo=${encodeURIComponent(redirectTo)}&role=${role}`,
             handleCodeInApp: true,
         }
