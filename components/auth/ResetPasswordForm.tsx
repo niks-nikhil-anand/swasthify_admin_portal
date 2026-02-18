@@ -23,6 +23,7 @@ export function ResetPasswordForm({ className, ...props }: React.HTMLAttributes<
     const [showPassword, setShowPassword] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(false)
     const [isSuccess, setIsSuccess] = React.useState(false)
+    const [userRole, setUserRole] = React.useState<string | null>(null)
     const [email, setEmail] = React.useState<string | null>(null)
     const [isVerifying, setIsVerifying] = React.useState(true)
     const [isValidCode, setIsValidCode] = React.useState(false)
@@ -83,7 +84,26 @@ export function ResetPasswordForm({ className, ...props }: React.HTMLAttributes<
 
         try {
             if (!oobCode) throw new Error("Missing reset code")
+
+            // 1. Update in Firebase
             await confirmPasswordReset(auth, oobCode, password)
+
+            // 2. Sync to our database
+            if (email) {
+                const response = await fetch('/api/auth/reset-password-sync', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                })
+
+                if (response.ok) {
+                    const data = await response.json()
+                    setUserRole(data.role)
+                } else {
+                    console.error("Failed to sync password to database")
+                }
+            }
+
             setIsSuccess(true)
             toast.success("Password has been reset successfully!")
         } catch (error: any) {
@@ -128,6 +148,12 @@ export function ResetPasswordForm({ className, ...props }: React.HTMLAttributes<
     }
 
     if (isSuccess) {
+        // Map roles to login routes
+        let loginUrl = "/login"
+        if (userRole === "SUPER_ADMIN") loginUrl = "/auth/superAdmin"
+        else if (userRole === "DOCTOR") loginUrl = "/auth/doctor"
+        else if (userRole === "LAB") loginUrl = "/auth/lab"
+
         return (
             <div className="text-center space-y-6 py-8 animate-in zoom-in-95 duration-500">
                 <div className="mx-auto w-20 h-20 rounded-full bg-green-100 flex items-center justify-center text-green-600 shadow-inner">
@@ -136,10 +162,10 @@ export function ResetPasswordForm({ className, ...props }: React.HTMLAttributes<
                 <div className="space-y-2">
                     <h3 className="text-2xl font-bold text-foreground">Securely Updated!</h3>
                     <p className="text-sm text-muted-foreground px-4">
-                        Your password has been successfully updated. You can now use your new credentials to sign in.
+                        Your password has been successfully updated in our system. You can now use your new credentials to sign in.
                     </p>
                 </div>
-                <Link href="/login">
+                <Link href={loginUrl}>
                     <Button className="w-full mt-4 h-11 text-base font-medium transition-all hover:translate-y-[-2px] hover:shadow-lg">
                         Proceed to Login
                     </Button>
