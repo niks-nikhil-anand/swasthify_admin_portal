@@ -9,17 +9,29 @@ function MagicLinkHandler() {
     const searchParams = useSearchParams()
 
     useEffect(() => {
-        const params = new URLSearchParams(searchParams.toString())
+        const queryString = window.location.search
+        const params = new URLSearchParams(queryString)
         const mode = params.get('mode')
+        const currentHost = window.location.hostname
 
-        let targetUrl = `/login/verify?${params.toString()}`
-
-        if (mode === 'resetPassword') {
-            targetUrl = `/reset-password?${params.toString()}`
+        // 1. Normalize Domain
+        if (currentHost === "swasthify.in") {
+            const targetUrl = `https://www.swasthify.in${window.location.pathname}${queryString}`
+            console.log("Normalization: Moving to www domain", targetUrl)
+            window.location.href = targetUrl
+            return
         }
 
-        console.log(`MagicLinkHandler (mode: ${mode}): Redirecting to`, targetUrl)
-        router.push(targetUrl)
+        // 2. Direct Redirection
+        let targetPath = "/login/verify"
+
+        if (mode === 'resetPassword') {
+            targetPath = "/reset-password"
+        }
+
+        const finalUrl = `${targetPath}${queryString}`
+        console.log(`MagicLinkHandler (mode: ${mode}): Redirecting to`, finalUrl)
+        router.push(finalUrl)
     }, [router, searchParams])
 
     return (
