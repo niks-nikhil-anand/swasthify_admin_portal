@@ -16,6 +16,8 @@ export default function LabLoginPage() {
             backButtonLabel="Don't have an account? Register"
             backButtonHref="/lab-partner"
             showSocial
+            role="lab"
+            redirectTo="/lab-panel/profile"
         >
             <LoginForm redirectTo="/lab-panel/profile" role="lab" />
         </AuthWrapper>

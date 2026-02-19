@@ -15,7 +15,9 @@ export default function SuperAdminLoginPage() {
                 ? "Secure area for administrators only"
                 : "Enter your admin email to receive a secure sign-in link"
             }
-            showSocial={true} // Enabled to show the Email Link button
+            showSocial={true}
+            role="superAdmin"
+            redirectTo="/superAdmin/dashboard"
             onEmailLinkClick={() => setAuthMode("passwordless")}
         >
             {authMode === "standard" ? (
