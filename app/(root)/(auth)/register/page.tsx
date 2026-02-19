@@ -16,6 +16,8 @@ export default function RegisterPage() {
             backButtonLabel="Already have an account? Login"
             backButtonHref="/login"
             showSocial
+            role="patient"
+            redirectTo="/me"
         >
             <RegisterForm />
         </AuthWrapper>

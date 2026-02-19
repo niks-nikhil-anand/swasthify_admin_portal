@@ -18,6 +18,8 @@ export default function DoctorLoginPage() {
             backButtonLabel="Don't have an account? Register"
             backButtonHref="/doctor-profile"
             showSocial
+            role="doctor"
+            redirectTo="/doctor-panel/profile"
             onEmailLinkClick={() => setAuthMode("passwordless")}
         >
             {authMode === "standard" ? (

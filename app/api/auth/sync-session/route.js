@@ -9,9 +9,9 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 export async function POST(req) {
     try {
         const body = await req.json();
-        const { email, role: inputRole } = body;
+        const { email, role: inputRole, name } = body;
 
-        console.log("Session sync request:", { email, inputRole });
+        console.log("Session sync request:", { email, inputRole, name });
 
         if (!email) {
             return NextResponse.json(
@@ -20,27 +20,46 @@ export async function POST(req) {
             );
         }
 
-        // 1. Find User
-        const user = await db.user.findUnique({
+        // 1. Find or Create User
+        // Note: For social login, if the user doesn't exist, we create them.
+        let user = await db.user.findUnique({
             where: { email },
         });
 
         if (!user) {
-            console.error(`Session sync failed: User not found for email ${email}`);
-            return NextResponse.json(
-                { error: "User not found" },
-                { status: 404 }
-            );
+            console.log(`User not found for ${email}. Creating new account via social login...`);
+
+            // Normalize role
+            const roleToSet = (inputRole?.toUpperCase() || "PATIENT");
+
+            user = await db.$transaction(async (tx) => {
+                const newUser = await tx.user.create({
+                    data: {
+                        email,
+                        name: name || email.split('@')[0],
+                        role: roleToSet,
+                        isVerified: true, // Social login verifies email
+                    },
+                });
+
+                if (roleToSet === "PATIENT") {
+                    await tx.patient.create({
+                        data: {
+                            userId: newUser.id,
+                            name: newUser.name,
+                        }
+                    });
+                }
+
+                return newUser;
+            });
+
+            await logAuthEvent(user.id, "SIGN_UP_SOCIAL");
         }
 
-        console.log(`User found: ${user.email}, DB Role: ${user.role}`);
+        console.log(`User found/created: ${user.email}, DB Role: ${user.role}`);
 
-        // 2. Validate/Normalize Role
-        // Instead of strictly failing if inputRole doesn't match, 
-        // we use the DB role as the source of truth for the session.
-        // This makes the magic link more robust if someone clicks a link with a stale role.
-
-        const dbRole = user.role; // This is the Prisma enum value
+        const dbRole = user.role;
 
         // 3. Generate JWT
         const secret = new TextEncoder().encode(JWT_SECRET);

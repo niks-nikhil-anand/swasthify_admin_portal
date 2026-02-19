@@ -20,6 +20,8 @@ export default function LoginPage({ searchParams }: { searchParams: Promise<{ re
             backButtonLabel="Don't have an account? Sign Up"
             backButtonHref="/register"
             showSocial
+            role="patient"
+            redirectTo={redirectTo}
             onEmailLinkClick={() => setAuthMode("passwordless")}
         >
             {authMode === "standard" ? (
