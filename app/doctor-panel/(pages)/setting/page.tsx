@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bell, Lock, User, Globe, Shield, ImagePlus, Camera, Building2, CreditCard, Landmark, UserCircle, BadgeCheck, Trash2, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { GeneralSettings } from "./components/GeneralSettings";
+import { ProfessionalSettings } from "./components/ProfessionalSettings";
+import { PaymentSettings } from "./components/PaymentSettings";
+import { NotificationSettings } from "./components/NotificationSettings";
+import { SecuritySettings } from "./components/SecuritySettings";
 
 export default function SettingsPage() {
     const [loading, setLoading] = useState(true);
@@ -170,283 +170,37 @@ export default function SettingsPage() {
 
                 {/* General Settings */}
                 <TabsContent value="general" className="space-y-4">
-                    <Card className="border-none shadow-sm bg-muted/30">
-                        <CardHeader>
-                            <CardTitle>Account Preferences</CardTitle>
-                            <CardDescription>
-                                Manage your basic account settings.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center justify-between p-4 bg-background border rounded-xl transition-all hover:border-primary/50 group">
-                                <div className="space-y-0.5">
-                                    <div className="flex items-center gap-2 font-semibold">
-                                        <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                                            <Globe className="h-4 w-4 text-primary" />
-                                        </div>
-                                        Language
-                                    </div>
-                                    <p className="text-sm text-muted-foreground">Select your preferred language for the interface.</p>
-                                </div>
-                                <select className="h-10 rounded-lg border border-input bg-background px-3 py-1 shadow-sm text-sm focus:ring-2 focus:ring-primary outline-none transition-all">
-                                    <option>English</option>
-                                    <option>Hindi</option>
-                                    <option>Marathi</option>
-                                </select>
-                            </div>
-                            <div className="flex items-center justify-between p-4 bg-background border rounded-xl transition-all hover:border-primary/50 group">
-                                <div className="space-y-0.5">
-                                    <div className="flex items-center gap-2 font-semibold">
-                                        <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                                            <User className="h-4 w-4 text-primary" />
-                                        </div>
-                                        Timezone
-                                    </div>
-                                    <p className="text-sm text-muted-foreground">Set your local timezone.</p>
-                                </div>
-                                <select className="h-10 rounded-lg border border-input bg-background px-3 py-1 shadow-sm text-sm focus:ring-2 focus:ring-primary outline-none transition-all">
-                                    <option>IST (UTC+05:30)</option>
-                                    <option>UTC</option>
-                                </select>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <GeneralSettings />
                 </TabsContent>
 
                 {/* Professional Settings */}
                 <TabsContent value="professional" className="space-y-4">
-                    <Card className="border-none shadow-sm bg-muted/30">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-2xl font-bold">
-                                <Camera className="h-6 w-6 text-primary" />
-                                Professional Practice Gallery
-                            </CardTitle>
-                            <CardDescription className="text-base mt-2 max-w-4xl">
-                                Visual trust is essential in healthcare. Upload up to 5 high-quality images of your clinic, operation theater, or reception area to help patients feel comfortable and confident before their visit.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-8">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                                {clinicImages.length < 5 && (
-                                    <label className="aspect-square border-2 border-dashed rounded-3xl flex flex-col items-center justify-center space-y-4 text-muted-foreground hover:border-primary hover:bg-primary/5 transition-all cursor-pointer group scale-100 hover:scale-[1.03] active:scale-[0.98] shadow-xs">
-                                        <input type="file" className="hidden" onChange={handleImageUpload} disabled={saving} accept="image/*" />
-                                        <div className="p-5 rounded-2xl bg-primary/10 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shadow-lg shadow-primary/10">
-                                            <ImagePlus className="h-10 w-10" />
-                                        </div>
-                                        <div className="text-center px-4">
-                                            <span className="text-sm font-bold block text-foreground">
-                                                {saving ? "Uploading..." : "Add Clinic Photo"}
-                                            </span>
-                                            <span className="text-[10px] opacity-70 uppercase tracking-wider font-semibold">
-                                                {clinicImages.length}/5 Slots Used
-                                            </span>
-                                        </div>
-                                    </label>
-                                )}
-
-                                {clinicImages.map((url, index) => (
-                                    <div key={index} className="aspect-square border rounded-3xl bg-muted/20 relative group overflow-hidden shadow-md transition-all duration-500 hover:shadow-xl ring-1 ring-border/50">
-                                        <img src={url} alt={`Clinic ${index}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                                        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-5">
-                                            <div className="flex items-center justify-between gap-3 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75">
-                                                <span className="text-white text-[10px] font-bold uppercase tracking-widest truncate flex-1 drop-shadow-md">Photo {index + 1}</span>
-                                                <Button
-                                                    variant="destructive"
-                                                    size="icon"
-                                                    className="h-9 w-9 rounded-2xl shrink-0 shadow-lg hover:scale-110 active:scale-95 transition-all"
-                                                    onClick={() => removeImage(index)}
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-
-                                {clinicImages.length === 0 && !saving && (
-                                    <div className="aspect-square border-2 border-dashed rounded-3xl bg-muted/5 relative group overflow-hidden flex items-center justify-center col-span-full py-12">
-                                        <div className="flex flex-col items-center gap-4 text-muted-foreground/30 animate-pulse">
-                                            <Camera className="h-16 w-16" />
-                                            <div className="text-center">
-                                                <span className="text-base font-bold text-muted-foreground/40 block">Your practice gallery is empty</span>
-                                                <span className="text-xs">Upload up to 5 highlights of your clinic</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <ProfessionalSettings
+                        clinicImages={clinicImages}
+                        handleImageUpload={handleImageUpload}
+                        removeImage={removeImage}
+                        saving={saving}
+                    />
                 </TabsContent>
 
                 {/* Payments Settings */}
                 <TabsContent value="payments" className="space-y-4">
-                    <Card className="border-none shadow-sm bg-muted/30 overflow-hidden">
-                        <div className="h-2 bg-linear-to-r from-primary to-blue-400" />
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <CardTitle className="flex items-center gap-2">
-                                    <Landmark className="h-5 w-5 text-primary" />
-                                    Bank Account Details
-                                </CardTitle>
-                                <div className="flex items-center gap-1.5 px-3 py-1 bg-green-500/10 text-green-600 rounded-full text-xs font-bold border border-green-500/20">
-                                    <BadgeCheck className="h-3.5 w-3.5" />
-                                    Secure Connection
-                                </div>
-                            </div>
-                            <CardDescription>
-                                Securely manage your bank information for direct appointment payouts.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <Label htmlFor="bankName" className="flex items-center gap-2 text-foreground/80">
-                                        <Building2 className="h-3.5 w-3.5" /> Bank Name
-                                    </Label>
-                                    <Input
-                                        id="bankName"
-                                        placeholder="e.g. HDFC Bank"
-                                        value={bankDetails.bankName}
-                                        onChange={(e) => setBankDetails({ ...bankDetails, bankName: e.target.value })}
-                                        className="h-11 rounded-xl bg-background border-none ring-1 ring-input focus-visible:ring-2 focus-visible:ring-primary transition-all"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="accountHolder" className="flex items-center gap-2 text-foreground/80">
-                                        <UserCircle className="h-3.5 w-3.5" /> Account Holder Name
-                                    </Label>
-                                    <Input
-                                        id="accountHolder"
-                                        placeholder="Enter name as per records"
-                                        value={bankDetails.accountHolderName}
-                                        onChange={(e) => setBankDetails({ ...bankDetails, accountHolderName: e.target.value })}
-                                        className="h-11 rounded-xl bg-background border-none ring-1 ring-input focus-visible:ring-2 focus-visible:ring-primary transition-all"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="accountNumber" className="flex items-center gap-2 text-foreground/80">
-                                        <CreditCard className="h-3.5 w-3.5" /> Account Number
-                                    </Label>
-                                    <Input
-                                        id="accountNumber"
-                                        placeholder="XXXX XXXX XXXX XXXX"
-                                        value={bankDetails.accountNumber}
-                                        onChange={(e) => setBankDetails({ ...bankDetails, accountNumber: e.target.value })}
-                                        className="h-11 rounded-xl bg-background border-none ring-1 ring-input focus-visible:ring-2 focus-visible:ring-primary transition-all"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="ifsc" className="flex items-center gap-2 text-foreground/80">
-                                        <BadgeCheck className="h-3.5 w-3.5" /> IFSC Code
-                                    </Label>
-                                    <Input
-                                        id="ifsc"
-                                        placeholder="e.g. HDFC0001234"
-                                        value={bankDetails.ifscCode}
-                                        onChange={(e) => setBankDetails({ ...bankDetails, ifscCode: e.target.value.toUpperCase() })}
-                                        className="h-11 rounded-xl bg-background border-none ring-1 ring-input focus-visible:ring-2 focus-visible:ring-primary transition-all uppercase"
-                                    />
-                                </div>
-                            </div>
-                            <div className="pt-4 flex justify-end">
-                                <Button
-                                    onClick={handleBankDetailsUpdate}
-                                    disabled={saving}
-                                    className="px-8 shadow-lg shadow-primary/20 bg-linear-to-r from-primary to-primary/80 hover:to-primary"
-                                >
-                                    {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Payment Details"}
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <PaymentSettings
+                        bankDetails={bankDetails}
+                        setBankDetails={setBankDetails}
+                        handleBankDetailsUpdate={handleBankDetailsUpdate}
+                        saving={saving}
+                    />
                 </TabsContent>
 
                 {/* Notifications Settings */}
                 <TabsContent value="notifications" className="space-y-4">
-                    <Card className="border-none shadow-sm bg-muted/30">
-                        <CardHeader>
-                            <CardTitle>Notification Preferences</CardTitle>
-                            <CardDescription>
-                                Choose what you want to be notified about.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center justify-between p-4 bg-background border rounded-xl hover:border-primary/30 transition-all">
-                                <div className="space-y-0.5">
-                                    <div className="flex items-center gap-2 font-semibold">
-                                        <Bell className="h-4 w-4 text-primary" />
-                                        Appointment Reminders
-                                    </div>
-                                    <p className="text-sm text-muted-foreground">Receive alerts for upcoming appointments.</p>
-                                </div>
-                                <Switch defaultChecked />
-                            </div>
-                            <div className="flex items-center justify-between p-4 bg-background border rounded-xl hover:border-primary/30 transition-all">
-                                <div className="space-y-0.5">
-                                    <div className="font-semibold">New Patient Registrations</div>
-                                    <p className="text-sm text-muted-foreground">Get notified when a new patient registers.</p>
-                                </div>
-                                <Switch defaultChecked />
-                            </div>
-                            <div className="flex items-center justify-between p-4 bg-background border rounded-xl hover:border-primary/30 transition-all">
-                                <div className="space-y-0.5">
-                                    <div className="font-semibold">Campaign Updates</div>
-                                    <p className="text-sm text-muted-foreground">Receive performance reports for your campaigns.</p>
-                                </div>
-                                <Switch />
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <NotificationSettings />
                 </TabsContent>
 
                 {/* Security Settings */}
                 <TabsContent value="security" className="space-y-4">
-                    <Card className="border-none shadow-sm bg-muted/30">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Lock className="h-5 w-5 text-primary" />
-                                Security & Password
-                            </CardTitle>
-                            <CardDescription>
-                                To ensure your account is safe, update your password regularly.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="current">Current Password</Label>
-                                <Input id="current" type="password" className="rounded-xl h-11" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="new">New Password</Label>
-                                <Input id="new" type="password" className="rounded-xl h-11" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="confirm">Confirm Password</Label>
-                                <Input id="confirm" type="password" className="rounded-xl h-11" />
-                            </div>
-                            <div className="pt-2">
-                                <Button className="w-full md:w-auto px-8">Update Password</Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="border-red-200/50 dark:border-red-900/30 bg-red-500/5 shadow-none ring-1 ring-red-500/10">
-                        <CardHeader>
-                            <CardTitle className="text-red-600 dark:text-red-400 flex items-center gap-2">
-                                <Shield className="h-5 w-5" />
-                                Danger Zone
-                            </CardTitle>
-                            <CardDescription>
-                                Irreversible actions for your account. Please be careful.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Button variant="destructive" className="rounded-xl px-8 shadow-lg shadow-red-500/10 hover:bg-red-600">
-                                Deactivate Account
-                            </Button>
-                        </CardContent>
-                    </Card>
+                    <SecuritySettings />
                 </TabsContent>
             </Tabs>
         </div>
