@@ -17,7 +17,15 @@ export async function middleware(req) {
     const doctorAuthToken = cookies.DOCTOR;
     const patientAuthToken = cookies.PATIENT;
     const labAuthToken = cookies.LAB;
-    const anyAuthToken = superAdminAuthToken || doctorAuthToken || patientAuthToken || labAuthToken || cookies.token;
+
+    // Support for Authorization: Bearer <token> (primarily for mobile/API clients)
+    let authHeaderToken = null;
+    const authHeader = req.headers.get('authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        authHeaderToken = authHeader.substring(7);
+    }
+
+    const anyAuthToken = superAdminAuthToken || doctorAuthToken || patientAuthToken || labAuthToken || cookies.token || authHeaderToken;
 
     const token = await getToken({ req });
     const { pathname } = req.nextUrl;

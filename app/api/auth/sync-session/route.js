@@ -104,7 +104,8 @@ export async function POST(req) {
                 name: user.name,
                 email: user.email,
                 role: dbRole,
-            }
+            },
+            token: token
         });
 
     } catch (error) {

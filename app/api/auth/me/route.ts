@@ -10,30 +10,39 @@ export async function GET(req: Request) {
         const cookieStore = await cookies();
         const referer = req.headers.get("referer") || "";
 
-        // Determine which cookie to check first based on the route
+        // Determine which token to check
         let token: string | undefined;
         let roleType: string | undefined;
 
-        if (referer.includes("/superAdmin")) {
-            token = cookieStore.get("SUPER_ADMIN")?.value;
-            roleType = "SUPER_ADMIN";
-        } else if (referer.includes("/doctor-panel")) {
-            token = cookieStore.get("DOCTOR")?.value;
-            roleType = "DOCTOR";
-        } else if (referer.includes("/lab-panel")) {
-            token = cookieStore.get("LAB")?.value;
-            roleType = "LAB";
-        } else if (referer.includes("/me") || referer.includes("/")) {
-            token = cookieStore.get("PATIENT")?.value;
-            roleType = "PATIENT";
+        // Check Authorization header for Bearer token
+        const authHeader = req.headers.get("authorization");
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
         }
 
-        // Fallback to any available token if the specific one isn't found
+        // Fallback to cookies if no Bearer token
         if (!token) {
-            token = cookieStore.get("SUPER_ADMIN")?.value ||
-                cookieStore.get("DOCTOR")?.value ||
-                cookieStore.get("LAB")?.value ||
-                cookieStore.get("PATIENT")?.value;
+            if (referer.includes("/superAdmin")) {
+                token = cookieStore.get("SUPER_ADMIN")?.value;
+                roleType = "SUPER_ADMIN";
+            } else if (referer.includes("/doctor-panel")) {
+                token = cookieStore.get("DOCTOR")?.value;
+                roleType = "DOCTOR";
+            } else if (referer.includes("/lab-panel")) {
+                token = cookieStore.get("LAB")?.value;
+                roleType = "LAB";
+            } else if (referer.includes("/me") || referer.includes("/")) {
+                token = cookieStore.get("PATIENT")?.value;
+                roleType = "PATIENT";
+            }
+
+            // Fallback to any available token if the specific one isn't found
+            if (!token) {
+                token = cookieStore.get("SUPER_ADMIN")?.value ||
+                    cookieStore.get("DOCTOR")?.value ||
+                    cookieStore.get("LAB")?.value ||
+                    cookieStore.get("PATIENT")?.value;
+            }
         }
 
         if (!token) {
