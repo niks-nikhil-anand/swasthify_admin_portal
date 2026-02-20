@@ -136,6 +136,10 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ error: "clinicImages must be an array" }, { status: 400 });
         }
 
+        if (clinicImages.length > 5) {
+            return NextResponse.json({ error: "Maximum 5 clinic images allowed" }, { status: 400 });
+        }
+
         const updatedDoctor = await prisma.doctor.update({
             where: { id: doctorId },
             data: {
