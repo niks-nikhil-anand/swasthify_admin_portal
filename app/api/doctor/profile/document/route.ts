@@ -140,7 +140,7 @@ export async function PUT(req: NextRequest) {
             where: { id: doctorId },
             data: {
                 clinicImages: clinicImages
-            }
+            } as any
         });
 
         return NextResponse.json({ success: true, doctor: updatedDoctor });
