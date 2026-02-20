@@ -1,14 +1,150 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bell, Lock, User, Globe, Shield, ImagePlus, Camera, Building2, CreditCard, Landmark, UserCircle, BadgeCheck, Trash2, Save } from "lucide-react";
+import { Bell, Lock, User, Globe, Shield, ImagePlus, Camera, Building2, CreditCard, Landmark, UserCircle, BadgeCheck, Trash2, Loader2 } from "lucide-react";
 
 export default function SettingsPage() {
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [clinicImages, setClinicImages] = useState<string[]>([]);
+    const [bankDetails, setBankDetails] = useState({
+        bankName: "",
+        accountHolderName: "",
+        accountNumber: "",
+        ifscCode: ""
+    });
+
+    useEffect(() => {
+        fetchDoctorProfile();
+    }, []);
+
+    const fetchDoctorProfile = async () => {
+        try {
+            const res = await fetch("/api/doctor/profile");
+            const data = await res.json();
+            if (data.success) {
+                setClinicImages(data.doctor.clinicImages || []);
+                setBankDetails({
+                    bankName: data.doctor.bankName || "",
+                    accountHolderName: data.doctor.accountHolderName || "",
+                    accountNumber: data.doctor.accountNumber || "",
+                    ifscCode: data.doctor.ifscCode || ""
+                });
+            }
+        } catch (error) {
+            console.error("Failed to fetch profile:", error);
+            toast.error("Failed to load settings data");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("type", "clinic");
+
+        try {
+            setSaving(true);
+            const res = await fetch("/api/upload", {
+                method: "POST",
+                body: formData
+            });
+            const data = await res.json();
+
+            if (data.url) {
+                const updatedImages = [...clinicImages, data.url];
+                await updateClinicImages(updatedImages);
+            } else {
+                toast.error(data.error || "Upload failed");
+            }
+        } catch (error) {
+            console.error("Upload error:", error);
+            toast.error("Failed to upload image");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const updateClinicImages = async (images: string[]) => {
+        try {
+            const res = await fetch("/api/doctor/profile/document", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ clinicImages: images })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setClinicImages(images);
+                toast.success("Clinic gallery updated");
+            } else {
+                toast.error(data.error || "Failed to update gallery");
+            }
+        } catch (error) {
+            console.error("Update error:", error);
+            toast.error("Connection error");
+        }
+    };
+
+    const removeImage = async (index: number) => {
+        const updatedImages = clinicImages.filter((_, i) => i !== index);
+        await updateClinicImages(updatedImages);
+    };
+
+    const handleBankDetailsUpdate = async () => {
+        // Validation Regex
+        const accountNumberRegex = /^\d{9,18}$/;
+        const ifscCodeRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+
+        if (bankDetails.accountNumber && !accountNumberRegex.test(bankDetails.accountNumber)) {
+            toast.error("Invalid account number. Must be 9-18 digits.");
+            return;
+        }
+
+        if (bankDetails.ifscCode && !ifscCodeRegex.test(bankDetails.ifscCode)) {
+            toast.error("Invalid IFSC code format (e.g., HDFC0001234).");
+            return;
+        }
+
+        try {
+            setSaving(true);
+            const res = await fetch("/api/doctor/profile/payment", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(bankDetails)
+            });
+            const data = await res.json();
+            if (data.success) {
+                toast.success("Payment details saved");
+            } else {
+                toast.error(data.error || "Failed to save details");
+            }
+        } catch (error) {
+            console.error("Update error:", error);
+            toast.error("Failed to connect to server");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-[60vh]">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-8  mx-auto">
             <div className="flex flex-col gap-2">
@@ -86,32 +222,39 @@ export default function SettingsPage() {
                         </CardHeader>
                         <CardContent className="space-y-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                <div className="aspect-video border-2 border-dashed rounded-2xl flex flex-col items-center justify-center space-y-3 text-muted-foreground hover:border-primary hover:bg-primary/5 transition-all cursor-pointer group scale-100 hover:scale-[1.02] active:scale-[0.98]">
+                                <label className="aspect-video border-2 border-dashed rounded-2xl flex flex-col items-center justify-center space-y-3 text-muted-foreground hover:border-primary hover:bg-primary/5 transition-all cursor-pointer group scale-100 hover:scale-[1.02] active:scale-[0.98]">
+                                    <input type="file" className="hidden" onChange={handleImageUpload} disabled={saving} accept="image/*" />
                                     <div className="p-4 rounded-full bg-primary/10 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
                                         <ImagePlus className="h-8 w-8" />
                                     </div>
                                     <div className="text-center">
-                                        <span className="text-sm font-bold block text-foreground">Add Clinic Photo</span>
+                                        <span className="text-sm font-bold block text-foreground">
+                                            {saving ? "Uploading..." : "Add Clinic Photo"}
+                                        </span>
                                         <span className="text-xs">JPG, PNG up to 5MB</span>
                                     </div>
-                                </div>
+                                </label>
 
-                                <div className="aspect-video border rounded-2xl bg-background relative group overflow-hidden shadow-sm">
-                                    <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-4">
-                                        <span className="text-white text-xs font-medium">Entrance.jpg</span>
-                                        <Button variant="destructive" size="icon" className="h-8 w-8 rounded-full">
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
+                                {clinicImages.map((url, index) => (
+                                    <div key={index} className="aspect-video border rounded-2xl bg-background relative group overflow-hidden shadow-sm">
+                                        <img src={url} alt={`Clinic ${index}`} className="w-full h-full object-cover" />
+                                        <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-4">
+                                            <span className="text-white text-xs font-medium truncate flex-1 mr-2">{url.split('/').pop()}</span>
+                                            <Button variant="destructive" size="icon" className="h-8 w-8 rounded-full shrink-0" onClick={() => removeImage(index)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center justify-center h-full bg-accent/20">
-                                        <Camera className="h-12 w-12 text-muted-foreground/20" />
+                                ))}
+
+                                {clinicImages.length === 0 && !saving && (
+                                    <div className="aspect-video border rounded-2xl bg-background relative group overflow-hidden shadow-sm flex items-center justify-center">
+                                        <div className="flex flex-col items-center gap-2 text-muted-foreground/40">
+                                            <Camera className="h-12 w-12" />
+                                            <span className="text-xs">No images uploaded</span>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div className="flex justify-end pt-4">
-                                <Button className="px-8 shadow-lg shadow-primary/20 bg-linear-to-r from-primary to-primary/80 hover:to-primary">
-                                    <Save className="mr-2 h-4 w-4" /> Save Gallery
-                                </Button>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
@@ -142,30 +285,58 @@ export default function SettingsPage() {
                                     <Label htmlFor="bankName" className="flex items-center gap-2 text-foreground/80">
                                         <Building2 className="h-3.5 w-3.5" /> Bank Name
                                     </Label>
-                                    <Input id="bankName" placeholder="e.g. HDFC Bank" className="h-11 rounded-xl bg-background border-none ring-1 ring-input focus-visible:ring-2 focus-visible:ring-primary transition-all" />
+                                    <Input
+                                        id="bankName"
+                                        placeholder="e.g. HDFC Bank"
+                                        value={bankDetails.bankName}
+                                        onChange={(e) => setBankDetails({ ...bankDetails, bankName: e.target.value })}
+                                        className="h-11 rounded-xl bg-background border-none ring-1 ring-input focus-visible:ring-2 focus-visible:ring-primary transition-all"
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="accountHolder" className="flex items-center gap-2 text-foreground/80">
                                         <UserCircle className="h-3.5 w-3.5" /> Account Holder Name
                                     </Label>
-                                    <Input id="accountHolder" placeholder="Enter name as per records" className="h-11 rounded-xl bg-background border-none ring-1 ring-input focus-visible:ring-2 focus-visible:ring-primary transition-all" />
+                                    <Input
+                                        id="accountHolder"
+                                        placeholder="Enter name as per records"
+                                        value={bankDetails.accountHolderName}
+                                        onChange={(e) => setBankDetails({ ...bankDetails, accountHolderName: e.target.value })}
+                                        className="h-11 rounded-xl bg-background border-none ring-1 ring-input focus-visible:ring-2 focus-visible:ring-primary transition-all"
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="accountNumber" className="flex items-center gap-2 text-foreground/80">
                                         <CreditCard className="h-3.5 w-3.5" /> Account Number
                                     </Label>
-                                    <Input id="accountNumber" placeholder="XXXX XXXX XXXX XXXX" className="h-11 rounded-xl bg-background border-none ring-1 ring-input focus-visible:ring-2 focus-visible:ring-primary transition-all" />
+                                    <Input
+                                        id="accountNumber"
+                                        placeholder="XXXX XXXX XXXX XXXX"
+                                        value={bankDetails.accountNumber}
+                                        onChange={(e) => setBankDetails({ ...bankDetails, accountNumber: e.target.value })}
+                                        className="h-11 rounded-xl bg-background border-none ring-1 ring-input focus-visible:ring-2 focus-visible:ring-primary transition-all"
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="ifsc" className="flex items-center gap-2 text-foreground/80">
                                         <BadgeCheck className="h-3.5 w-3.5" /> IFSC Code
                                     </Label>
-                                    <Input id="ifsc" placeholder="e.g. HDFC0001234" className="h-11 rounded-xl bg-background border-none ring-1 ring-input focus-visible:ring-2 focus-visible:ring-primary transition-all uppercase" />
+                                    <Input
+                                        id="ifsc"
+                                        placeholder="e.g. HDFC0001234"
+                                        value={bankDetails.ifscCode}
+                                        onChange={(e) => setBankDetails({ ...bankDetails, ifscCode: e.target.value.toUpperCase() })}
+                                        className="h-11 rounded-xl bg-background border-none ring-1 ring-input focus-visible:ring-2 focus-visible:ring-primary transition-all uppercase"
+                                    />
                                 </div>
                             </div>
                             <div className="pt-4 flex justify-end">
-                                <Button className="px-8 shadow-lg shadow-primary/20 bg-linear-to-r from-primary to-primary/80 hover:to-primary">
-                                    Save Payment Details
+                                <Button
+                                    onClick={handleBankDetailsUpdate}
+                                    disabled={saving}
+                                    className="px-8 shadow-lg shadow-primary/20 bg-linear-to-r from-primary to-primary/80 hover:to-primary"
+                                >
+                                    {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Payment Details"}
                                 </Button>
                             </div>
                         </CardContent>
