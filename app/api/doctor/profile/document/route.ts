@@ -120,3 +120,33 @@ export async function DELETE(req: NextRequest) {
         return NextResponse.json({ error: "Failed to delete document" }, { status: 500 });
     }
 }
+
+export async function PUT(req: NextRequest) {
+    try {
+        const doctorId = await getAuthenticatedDoctorId();
+
+        if (!doctorId) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const body = await req.json();
+        const { clinicImages } = body;
+
+        if (!Array.isArray(clinicImages)) {
+            return NextResponse.json({ error: "clinicImages must be an array" }, { status: 400 });
+        }
+
+        const updatedDoctor = await prisma.doctor.update({
+            where: { id: doctorId },
+            data: {
+                clinicImages: clinicImages
+            }
+        });
+
+        return NextResponse.json({ success: true, doctor: updatedDoctor });
+
+    } catch (error) {
+        console.error("Clinic images update error:", error);
+        return NextResponse.json({ error: "Failed to update clinic images" }, { status: 500 });
+    }
+}
