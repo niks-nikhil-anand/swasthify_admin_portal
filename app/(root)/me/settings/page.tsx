@@ -1,6 +1,7 @@
 "use client";
 
-import { Settings, Bell, Shield, CreditCard, LogOut, ChevronRight, Smartphone, EyeOff, KeyRound, Mail, Lock } from "lucide-react";
+import { ChevronRight, Mail, Lock, KeyRound, Smartphone, Shield, AtSign, Phone } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
 const settingSections = [
@@ -8,25 +9,24 @@ const settingSections = [
         title: "Account Security",
         description: "Manage your password, login methods, and account security.",
         items: [
-            { label: "Change Password", icon: KeyRound, action: "Update" },
-            { label: "Two-Factor Authentication", icon: Smartphone, action: "Enable", badge: "Recommended" },
-            { label: "Active Sessions", icon: Shield, action: "Manage" },
+            { label: "Change Password", icon: KeyRound, action: "Update", type: "link" },
+            { label: "Change Email", icon: AtSign, action: "Update", type: "link" },
+            { label: "Add Mobile Number", icon: Phone, action: "Add", type: "link" },
+            { label: "Active Sessions", icon: Shield, action: "Manage", type: "link" },
         ]
     },
     {
         title: "Notifications",
         description: "Configure how you want to receive updates and alerts.",
         items: [
-            { label: "Email Notifications", icon: Mail, action: "Configure" },
-            { label: "Push Notifications", icon: Bell, action: "Configure" },
+            { label: "Email Notifications", icon: Mail, action: "Toggle", type: "toggle" },
         ]
     },
     {
         title: "Privacy",
         description: "Control your data visibility and sharing preferences.",
         items: [
-            { label: "Profile Visibility", icon: Lock, action: "Public" },
-            { label: "Data Sharing", icon: EyeOff, action: "Manage" },
+            { label: "Medical Docs Privacy", icon: Lock, action: "Toggle", type: "toggle" },
         ]
     }
 ];
@@ -49,32 +49,37 @@ export default function SettingsPage() {
 
                         <div className="bg-background border border-border/50 rounded-3xl overflow-hidden shadow-sm shadow-black/5">
                             <div className="divide-y divide-border/40">
-                                {section.items.map((item) => (
-                                    <button
-                                        key={item.label}
-                                        className="w-full flex items-center justify-between p-5 hover:bg-muted/30 transition-all group text-left"
-                                    >
-                                        <div className="flex items-center gap-4">
-                                            <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
-                                                <item.icon className="h-5 w-5" />
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-[15px] font-bold text-foreground">{item.label}</span>
-                                                    {item.badge && (
-                                                        <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-tighter bg-green-100 text-green-600 dark:bg-green-900/30">
-                                                            {item.badge}
-                                                        </span>
-                                                    )}
+                                {section.items.map((item) => {
+                                    const Component = item.type === "toggle" ? "div" : "button";
+                                    return (
+                                        <Component
+                                            key={item.label}
+                                            className="w-full flex items-center justify-between p-5 hover:bg-muted/30 transition-all group text-left"
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                                                    <item.icon className="h-5 w-5" />
+                                                </div>
+                                                <div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[15px] font-bold text-foreground">{item.label}</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-xs font-bold text-muted-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-all uppercase tracking-widest">{item.action}</span>
-                                            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-                                        </div>
-                                    </button>
-                                ))}
+                                            <div className="flex items-center gap-3">
+                                                {item.type === "link" && (
+                                                    <>
+                                                        <span className="text-xs font-bold text-muted-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-all uppercase tracking-widest">{item.action}</span>
+                                                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                                                    </>
+                                                )}
+                                                {item.type === "toggle" && (
+                                                    <Switch onClick={(e) => e.stopPropagation()} />
+                                                )}
+                                            </div>
+                                        </Component>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
