@@ -112,6 +112,11 @@ model Doctor {
   associationProof            String?
   idProof                     String?
   profilePhoto                String?
+  clinicImages                String[]             @default([])
+  bankName                    String?
+  accountHolderName           String?
+  accountNumber               String?
+  ifscCode                    String?
   appointments                Appointment[]
   campaigns                   Campaign[]
   availability                DoctorAvailability[]
