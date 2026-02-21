@@ -1,37 +1,93 @@
 "use client";
 
-import { ChevronRight, Mail, Lock, KeyRound, Smartphone, Shield, AtSign, Phone } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ChevronRight, Mail, Lock, KeyRound, Smartphone, Shield, AtSign, Phone, Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-
-const settingSections = [
-    {
-        title: "Account Security",
-        description: "Manage your password, login methods, and account security.",
-        items: [
-            { label: "Change Password", icon: KeyRound, action: "Update", type: "link" },
-            { label: "Change Email", icon: AtSign, action: "Update", type: "link" },
-            { label: "Add Mobile Number", icon: Phone, action: "Add", type: "link" },
-            { label: "Active Sessions", icon: Shield, action: "Manage", type: "link" },
-        ]
-    },
-    {
-        title: "Notifications",
-        description: "Configure how you want to receive updates and alerts.",
-        items: [
-            { label: "Email Notifications", icon: Mail, action: "Toggle", type: "toggle" },
-        ]
-    },
-    {
-        title: "Privacy",
-        description: "Control your data visibility and sharing preferences.",
-        items: [
-            { label: "Medical Docs Privacy", icon: Lock, action: "Toggle", type: "toggle" },
-        ]
-    }
-];
+import { UpdateEmailModal } from "@/components/settings/UpdateEmailModal";
+import { UpdatePhoneModal } from "@/components/settings/UpdatePhoneModal";
+import { ChangePasswordModal } from "@/components/settings/ChangePasswordModal";
 
 export default function SettingsPage() {
+    const [user, setUser] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Modal States
+    const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+    const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
+    const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
+    const fetchUser = async () => {
+        try {
+            const response = await fetch("/api/auth/me");
+            if (response.ok) {
+                const data = await response.json();
+                setUser(data.user);
+            }
+        } catch (error) {
+            console.error("Failed to fetch user:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchUser();
+    }, []);
+
+    const settingSections = [
+        {
+            title: "Account Security",
+            description: "Manage your password, login methods, and account security.",
+            items: [
+                {
+                    label: "Change Password",
+                    icon: KeyRound,
+                    action: "Update",
+                    type: "link",
+                    onClick: () => setIsPasswordModalOpen(true)
+                },
+                {
+                    label: "Change Email",
+                    icon: AtSign,
+                    action: "Update",
+                    type: "link",
+                    onClick: () => setIsEmailModalOpen(true)
+                },
+                {
+                    label: user?.phone ? "Change Mobile Number" : "Add Mobile Number",
+                    icon: Phone,
+                    action: user?.phone ? "Update" : "Add",
+                    type: "link",
+                    onClick: () => setIsPhoneModalOpen(true)
+                },
+                { label: "Active Sessions", icon: Shield, action: "Manage", type: "link" },
+            ]
+        },
+        {
+            title: "Notifications",
+            description: "Configure how you want to receive updates and alerts.",
+            items: [
+                { label: "Email Notifications", icon: Mail, action: "Toggle", type: "toggle" },
+            ]
+        },
+        {
+            title: "Privacy",
+            description: "Control your data visibility and sharing preferences.",
+            items: [
+                { label: "Medical Docs Privacy", icon: Lock, action: "Toggle", type: "toggle" },
+            ]
+        }
+    ];
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-8">
             <div>
@@ -54,7 +110,11 @@ export default function SettingsPage() {
                                     return (
                                         <Component
                                             key={item.label}
-                                            className="w-full flex items-center justify-between p-5 hover:bg-muted/30 transition-all group text-left"
+                                            onClick={item.onClick}
+                                            className={cn(
+                                                "w-full flex items-center justify-between p-5 transition-all group text-left",
+                                                item.type !== "toggle" && "hover:bg-muted/30"
+                                            )}
                                         >
                                             <div className="flex items-center gap-4">
                                                 <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
@@ -100,6 +160,24 @@ export default function SettingsPage() {
                     </button>
                 </div>
             </div>
+
+            {/* Modals */}
+            <UpdateEmailModal
+                isOpen={isEmailModalOpen}
+                onClose={() => setIsEmailModalOpen(false)}
+                currentEmail={user?.email}
+                onSuccess={fetchUser}
+            />
+            <UpdatePhoneModal
+                isOpen={isPhoneModalOpen}
+                onClose={() => setIsPhoneModalOpen(false)}
+                currentPhone={user?.phone}
+                onSuccess={fetchUser}
+            />
+            <ChangePasswordModal
+                isOpen={isPasswordModalOpen}
+                onClose={() => setIsPasswordModalOpen(false)}
+            />
         </div>
     );
 }
