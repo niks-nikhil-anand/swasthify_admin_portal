@@ -62,8 +62,8 @@ export function LocationSection() {
                                     <div className="flex-1 flex flex-col items-center md:items-start justify-center text-center md:text-left">
                                         <h4 className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-4">Contact Details</h4>
                                         <div className="space-y-3">
-                                            <a href="mailto:support@swasthify.com" className="block text-lg font-medium text-foreground hover:text-emerald-600 transition-colors">
-                                                support@swasthify.com
+                                            <a href="mailto:support@swasthify.in" className="block text-lg font-medium text-foreground hover:text-emerald-600 transition-colors">
+                                                support@swasthify.in
                                             </a>
                                             <a href="tel:+919759225515" className="block text-lg font-medium text-foreground hover:text-emerald-600 transition-colors">
                                                 +91 97592 25515
