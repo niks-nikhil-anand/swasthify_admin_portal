@@ -82,7 +82,7 @@ export default function SettingsPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="supportEmail">Support Email</Label>
-                                    <Input id="supportEmail" defaultValue="support@swasthify.com" />
+                                    <Input id="supportEmail" defaultValue="support@swasthify.in" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="timezone">Timezone</Label>
