@@ -17,6 +17,7 @@ const profileSchema = z.object({
     chronicDiseases: z.string().optional().nullable(),
     emergencyContactName: z.string().optional().nullable(),
     emergencyContactPhone: z.string().optional().nullable(),
+    profilePic: z.string().optional().nullable(),
 });
 
 export async function PATCH(req: Request) {
@@ -33,6 +34,7 @@ export async function PATCH(req: Request) {
         const userId = payload.userId as string;
 
         const body = await req.json();
+        console.log("PROFILE UPDATE REQUEST BODY:", body);
         const validatedData = profileSchema.parse(body);
 
         // Find the patient record associated with this user
@@ -58,11 +60,16 @@ export async function PATCH(req: Request) {
             data: updateData,
         });
 
-        // Update user name if provided (since Name is also in User model)
-        if (validatedData.name) {
+        // Update user name and profilePic if provided
+        const userUpdateData: any = {};
+        if (validatedData.name) userUpdateData.name = validatedData.name;
+        if (validatedData.profilePic) userUpdateData.profilePic = validatedData.profilePic;
+
+        if (Object.keys(userUpdateData).length > 0) {
+            console.log("UPDATING USER MODEL WITH:", userUpdateData);
             await db.user.update({
                 where: { id: userId },
-                data: { name: validatedData.name },
+                data: userUpdateData,
             });
         }
 

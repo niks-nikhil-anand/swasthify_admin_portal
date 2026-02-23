@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { User, Mail, Phone, MapPin, Calendar, ShieldCheck, Heart, Award, Activity, Save, Loader2, Thermometer, Ruler, Droplets, AlertCircle, Stethoscope, Contact, UserPlus } from "lucide-react";
+import { User, Mail, Phone, MapPin, Calendar, ShieldCheck, Heart, Award, Activity, Save, Loader2, Thermometer, Ruler, Droplets, AlertCircle, Stethoscope, Contact, UserPlus, Camera } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [formData, setFormData] = useState<any>({});
+  const [isUploading, setIsUploading] = useState(false);
 
   const fetchUser = async () => {
     try {
@@ -96,6 +97,50 @@ export default function ProfilePage() {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File too large (max 5MB)");
+      return;
+    }
+
+    setIsUploading(true);
+    const uploadFormData = new FormData();
+    uploadFormData.append("file", file);
+    uploadFormData.append("type", "profile");
+
+    try {
+      const uploadRes = await fetch("/api/upload", {
+        method: "POST",
+        body: uploadFormData,
+      });
+
+      if (!uploadRes.ok) throw new Error("Upload failed");
+
+      const { url } = await uploadRes.json();
+
+      const updateRes = await fetch("/api/me/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profilePic: url }),
+      });
+
+      if (updateRes.ok) {
+        toast.success("Profile picture updated");
+        await fetchUser();
+      } else {
+        throw new Error("Failed to update profile with image URL");
+      }
+    } catch (error) {
+      console.error("Image upload error:", error);
+      toast.error("Failed to upload image");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-6 animate-pulse">
@@ -124,10 +169,39 @@ export default function ProfilePage() {
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 -z-10" />
 
         <div className="flex flex-col md:flex-row items-center gap-8 relative">
-          <div className="relative group">
-            <div className="h-32 w-32 rounded-3xl bg-primary/10 flex items-center justify-center text-primary border-4 border-background shadow-xl overflow-hidden">
-              <User className="h-16 w-16" />
-            </div>
+          <div className="relative group cursor-pointer">
+            <input
+              type="file"
+              id="profile-upload"
+              className="hidden"
+              accept="image/*"
+              onChange={handleImageUpload}
+              disabled={isUploading}
+            />
+            <label htmlFor="profile-upload" className="cursor-pointer">
+              <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center text-primary border-4 border-background shadow-xl overflow-hidden relative transition-all group-hover:brightness-75">
+                {user?.profilePic ? (
+                  <img src={user.profilePic} alt={user.name} className="h-full w-full object-cover rounded-full" />
+                ) : (
+                  <div className="relative h-full w-full flex items-center justify-center">
+                    <User className="h-16 w-16 opacity-20" />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/5 backdrop-blur-[2px]">
+                      <Camera className="h-8 w-8 text-primary/40" />
+                    </div>
+                  </div>
+                )}
+                <div className={cn(
+                  "absolute inset-0 flex items-center justify-center transition-opacity bg-black/20",
+                  user?.profilePic ? "opacity-0 group-hover:opacity-100" : "opacity-0 group-hover:opacity-100"
+                )}>
+                  {isUploading ? (
+                    <Loader2 className="h-8 w-8 animate-spin text-white" />
+                  ) : (
+                    <Camera className="h-8 w-8 text-white" />
+                  )}
+                </div>
+              </div>
+            </label>
             <div className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-green-500 border-4 border-background" />
           </div>
 
