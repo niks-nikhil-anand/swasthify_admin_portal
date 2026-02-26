@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -27,6 +28,25 @@ import {
     TabsTrigger,
 } from "@/components/ui/tabs"
 import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { toast } from "sonner"
+import {
     Bell,
     CreditCard,
     Database,
@@ -36,10 +56,127 @@ import {
     Save,
     Shield,
     Smartphone,
-    User
+    User,
+    Plus,
+    Edit2,
+    Loader2,
+    Trash2
 } from "lucide-react"
 
+interface PlatformFee {
+    id: string
+    name: string
+    description?: string
+    feeType: "PERCENTAGE" | "FLAT"
+    fee: number
+    discount: number
+    discountType: "PERCENTAGE" | "FLAT"
+    entityType: "DOCTOR" | "LAB" | "ALL"
+    minAmount?: number
+    maxAmount?: number
+    isActive: boolean
+}
+
 export default function SettingsPage() {
+    const [fees, setFees] = useState<PlatformFee[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [isSaving, setIsSaving] = useState(false)
+    const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [editingFee, setEditingFee] = useState<Partial<PlatformFee> | null>(null)
+
+    // Form states for real-time calculation
+    const [formValues, setFormValues] = useState({
+        fee: 0,
+        feeType: "PERCENTAGE",
+        discount: 0,
+        discountType: "PERCENTAGE"
+    })
+
+    useEffect(() => {
+        if (editingFee) {
+            setFormValues({
+                fee: editingFee.fee || 0,
+                feeType: editingFee.feeType || "PERCENTAGE",
+                discount: editingFee.discount || 0,
+                discountType: editingFee.discountType || "PERCENTAGE"
+            })
+        } else {
+            setFormValues({
+                fee: 0,
+                feeType: "PERCENTAGE",
+                discount: 0,
+                discountType: "PERCENTAGE"
+            })
+        }
+    }, [editingFee, isDialogOpen])
+
+    useEffect(() => {
+        fetchFees()
+    }, [])
+
+    const calculateFinalFee = (fee: number, feeType: string, discount: number, discountType: string) => {
+        if (feeType === discountType) {
+            const final = Math.max(0, fee - discount)
+            return `₹${final}`
+        }
+        return `₹${fee} (${feeType === "PERCENTAGE" ? "%" : "Flat"}) - ₹${discount} (${discountType === "PERCENTAGE" ? "%" : "Flat"})`
+    }
+
+    const fetchFees = async () => {
+        try {
+            const response = await fetch("/api/admin/system/platform-fee")
+            if (response.ok) {
+                const data = await response.json()
+                setFees(data)
+            }
+        } catch (error) {
+            console.error("Failed to fetch fees", error)
+            toast.error("Failed to load platform fees")
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const handleSaveFee = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        setIsSaving(true)
+
+        const formData = new FormData(e.currentTarget)
+        const data = {
+            name: formData.get("name"),
+            description: formData.get("description"),
+            feeType: formData.get("feeType"),
+            fee: formData.get("fee"),
+            discount: formData.get("discount"),
+            discountType: formData.get("discountType"),
+            entityType: formData.get("entityType"),
+            minAmount: formData.get("minAmount"),
+            maxAmount: formData.get("maxAmount"),
+            isActive: formData.get("isActive") === "on",
+        }
+
+        try {
+            const response = await fetch("/api/admin/system/platform-fee", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            })
+
+            if (response.ok) {
+                toast.success("Platform fee updated successfully")
+                setIsDialogOpen(false)
+                fetchFees()
+            } else {
+                toast.error("Failed to save platform fee")
+            }
+        } catch (error) {
+            console.error("Error saving fee", error)
+            toast.error("An error occurred while saving")
+        } finally {
+            setIsSaving(false)
+        }
+    }
+
     return (
         <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
@@ -270,6 +407,214 @@ export default function SettingsPage() {
                                     <Input type="number" defaultValue="18" />
                                 </div>
                             </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Platform Fee Management Section */}
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <div>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Smartphone className="h-5 w-5" />
+                                    Platform Fees
+                                </CardTitle>
+                                <CardDescription>
+                                    Manage service fees for doctors and labs.
+                                </CardDescription>
+                            </div>
+                            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                                <DialogTrigger asChild>
+                                    <Button onClick={() => setEditingFee(null)}>
+                                        <Plus className="mr-2 h-4 w-4" /> Add/Update Fee
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[500px]">
+                                    <form onSubmit={handleSaveFee}>
+                                        <DialogHeader>
+                                            <DialogTitle>Manage Platform Fee</DialogTitle>
+                                            <DialogDescription>
+                                                Configure fee, discount, and targeting details.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="grid gap-4 py-4">
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="entityType" className="text-right">Target</Label>
+                                                <Select name="entityType" defaultValue={editingFee?.entityType || "ALL"} required>
+                                                    <SelectTrigger className="col-span-3">
+                                                        <SelectValue placeholder="Select target" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="ALL">All Entities</SelectItem>
+                                                        <SelectItem value="DOCTOR">Doctors Only</SelectItem>
+                                                        <SelectItem value="LAB">Labs Only</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="name" className="text-right">Name</Label>
+                                                <Input id="name" name="name" defaultValue={editingFee?.name || ""} className="col-span-3" placeholder="e.g. Doctor Consultation Fee" required />
+                                            </div>
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="description" className="text-right">Description</Label>
+                                                <Input id="description" name="description" defaultValue={editingFee?.description || ""} className="col-span-3" />
+                                            </div>
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="feeType" className="text-right">Fee Type</Label>
+                                                <Select
+                                                    name="feeType"
+                                                    defaultValue={formValues.feeType}
+                                                    onValueChange={(v) => setFormValues(prev => ({ ...prev, feeType: v }))}
+                                                    required
+                                                >
+                                                    <SelectTrigger className="col-span-3">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="PERCENTAGE">Percentage (%)</SelectItem>
+                                                        <SelectItem value="FLAT">Flat Amount</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="fee" className="text-right">Amount</Label>
+                                                <Input
+                                                    id="fee"
+                                                    name="fee"
+                                                    type="number"
+                                                    step="0.01"
+                                                    defaultValue={formValues.fee}
+                                                    onChange={(e) => setFormValues(prev => ({ ...prev, fee: parseFloat(e.target.value) || 0 }))}
+                                                    className="col-span-3"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="discountType" className="text-right">Discount Type</Label>
+                                                <Select
+                                                    name="discountType"
+                                                    defaultValue={formValues.discountType}
+                                                    onValueChange={(v) => setFormValues(prev => ({ ...prev, discountType: v }))}
+                                                    required
+                                                >
+                                                    <SelectTrigger className="col-span-3">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="PERCENTAGE">Percentage (%)</SelectItem>
+                                                        <SelectItem value="FLAT">Flat Amount</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="discount" className="text-right">Discount</Label>
+                                                <Input
+                                                    id="discount"
+                                                    name="discount"
+                                                    type="number"
+                                                    step="0.01"
+                                                    defaultValue={formValues.discount}
+                                                    onChange={(e) => setFormValues(prev => ({ ...prev, discount: parseFloat(e.target.value) || 0 }))}
+                                                    className="col-span-3"
+                                                    required
+                                                />
+                                            </div>
+
+                                            {/* Final Amount Preview */}
+                                            <div className="grid grid-cols-4 items-center gap-4 border-t pt-2 mt-2">
+                                                <Label className="text-right font-bold text-blue-600">Final Fee</Label>
+                                                <div className="col-span-3 font-bold text-blue-600">
+                                                    {calculateFinalFee(formValues.fee, formValues.feeType, formValues.discount, formValues.discountType)}
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="minAmount" className="text-right">Min Order</Label>
+                                                <Input id="minAmount" name="minAmount" type="number" step="0.01" defaultValue={editingFee?.minAmount || ""} className="col-span-3" placeholder="Optional" />
+                                            </div>
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="maxAmount" className="text-right">Max Fee Cap</Label>
+                                                <Input id="maxAmount" name="maxAmount" type="number" step="0.01" defaultValue={editingFee?.maxAmount || ""} className="col-span-3" placeholder="Optional" />
+                                            </div>
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="isActive" className="text-right">Active</Label>
+                                                <div className="col-span-3 flex items-center">
+                                                    <Switch name="isActive" defaultChecked={editingFee?.isActive ?? true} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <DialogFooter>
+                                            <Button type="submit" disabled={isSaving}>
+                                                {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                                Save Settings
+                                            </Button>
+                                        </DialogFooter>
+                                    </form>
+                                </DialogContent>
+                            </Dialog>
+                        </CardHeader>
+                        <CardContent>
+                            {isLoading ? (
+                                <div className="flex justify-center p-8">
+                                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                                </div>
+                            ) : fees.length > 0 ? (
+                                <div className="rounded-md border overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Target</TableHead>
+                                                <TableHead>Name</TableHead>
+                                                <TableHead>Amount</TableHead>
+                                                <TableHead>Discount</TableHead>
+                                                <TableHead className="font-bold text-blue-600">Final Fee</TableHead>
+                                                <TableHead>Min/Max</TableHead>
+                                                <TableHead>Status</TableHead>
+                                                <TableHead className="text-right">Actions</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {fees.map((fee) => (
+                                                <TableRow key={fee.id}>
+                                                    <TableCell>
+                                                        <Badge variant="outline">{fee.entityType}</Badge>
+                                                    </TableCell>
+                                                    <TableCell className="font-medium">{fee.name}</TableCell>
+                                                    <TableCell>
+                                                        {fee.fee}{fee.feeType === "PERCENTAGE" ? "%" : " Flat"}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {fee.discount}{fee.discountType === "PERCENTAGE" ? "%" : " Flat"}
+                                                    </TableCell>
+                                                    <TableCell className="font-bold text-blue-600">
+                                                        {calculateFinalFee(fee.fee, fee.feeType, fee.discount, fee.discountType)}
+                                                    </TableCell>
+                                                    <TableCell className="text-xs text-muted-foreground">
+                                                        {fee.minAmount ? `Min: ${fee.minAmount}` : "-"} / {fee.maxAmount ? `Max: ${fee.maxAmount}` : "-"}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Badge variant={fee.isActive ? "default" : "secondary"}>
+                                                            {fee.isActive ? "Active" : "Inactive"}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="text-right">
+                                                        <Button variant="ghost" size="icon" onClick={() => {
+                                                            setEditingFee(fee)
+                                                            setIsDialogOpen(true)
+                                                        }}>
+                                                            <Edit2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            ) : (
+                                <div className="text-center p-8 border-2 border-dashed rounded-lg bg-muted/50">
+                                    <p className="text-muted-foreground">No platform fees configured yet.</p>
+                                    <p className="text-xs mt-1">Add a fee to start collecting commissions on transactions.</p>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </TabsContent>
