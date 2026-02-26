@@ -198,9 +198,7 @@ export default function CampaignPage() {
                                                     <Copy className="w-4 h-4 mr-2" /> Copy ID
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem>View Stats</DropdownMenuItem>
-                                                <DropdownMenuItem>Duplicate</DropdownMenuItem>
                                                 {camp.status === 'DRAFT' && <DropdownMenuItem>Edit</DropdownMenuItem>}
-                                                <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </div>
