@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Calendar as CalendarIcon, Clock, ChevronRight, Check, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -35,8 +35,24 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
     const [isBooking, setIsBooking] = useState(false);
-    const [bookingStep, setBookingStep] = useState<"SELECT" | "PAYMENT" | "SUCCESS">("SELECT");
+    const [bookingStep, setBookingStep] = useState<"SELECT" | "REVIEW" | "PAYMENT" | "SUCCESS">("SELECT");
     const [bookedAppointment, setBookedAppointment] = useState<any>(null);
+    const [platformFees, setPlatformFees] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchPlatformFees = async () => {
+            try {
+                const res = await fetch("/api/public/platform-fee");
+                if (res.ok) {
+                    const data = await res.json();
+                    setPlatformFees(data);
+                }
+            } catch (err) {
+                console.error("Error fetching platform fees:", err);
+            }
+        };
+        fetchPlatformFees();
+    }, []);
 
     // Generate next 7 days
     const dates = Array.from({ length: 7 }, (_, i) => addDays(new Date(), i));
@@ -52,7 +68,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     type: "DOCTOR",
-                    organizerId: campaign.doctor.id,
+                    organizerId: campaign.id,
                     date: selectedDate,
                     timeSlot: selectedTime,
                 }),
@@ -304,16 +320,152 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                                         </p>
                                     </div>
                                     <Button
-                                        onClick={handlePayToBook}
+                                        onClick={() => setBookingStep("REVIEW")}
                                         disabled={!selectedTime || isBooking}
                                         className="px-8 h-12 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                                    >
+                                        Proceed to Review
+                                    </Button>
+                                </div>
+                            </>
+                        )}
+
+
+                        {bookingStep === "REVIEW" && (
+                            <>
+                                {/* Header */}
+                                <div className="p-6 border-b bg-muted/30">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h2 className="text-xl font-bold text-foreground">Review Booking</h2>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={handleClose}
+                                            className="rounded-full hover:bg-muted"
+                                        >
+                                            <X className="w-5 h-5" />
+                                        </Button>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground">Please review your appointment details and fee breakdown.</p>
+                                </div>
+
+                                <div className="p-6 space-y-6">
+                                    {/* Appointment Info Summary */}
+                                    <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary shrink-0 text-xl">
+                                            🩺
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-foreground">Dr. {campaign.doctor.user.name}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                                {format(selectedDate, "EEEE, MMMM do")} • {selectedTime}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Fee Breakdown */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Fee Breakdown</h3>
+                                        <div className="space-y-3 bg-muted/30 rounded-2xl p-5 border border-border/50">
+                                            {(() => {
+                                                const doctorFee = campaign.price;
+                                                const campaignDiscount = (doctorFee * (campaign.discountPercentage || 0)) / 100;
+
+                                                // Find relevant platform fee (DOCTOR or ALL)
+                                                const platformFeeObj = platformFees.find(f => f.entityType === "DOCTOR") || platformFees.find(f => f.entityType === "ALL");
+
+                                                let platformFeeValue = 0;
+                                                let platformDiscountValue = 0;
+
+                                                if (platformFeeObj) {
+                                                    // Platform Fee is now always a flat amount as per user request
+                                                    platformFeeValue = platformFeeObj.fee;
+
+                                                    // Calculate Platform Discount
+                                                    if (platformFeeObj.discountType === "PERCENTAGE") {
+                                                        platformDiscountValue = (platformFeeValue * platformFeeObj.discount) / 100;
+                                                    } else {
+                                                        platformDiscountValue = platformFeeObj.discount;
+                                                    }
+                                                }
+
+                                                const finalAmount = Math.max(0, doctorFee - campaignDiscount + platformFeeValue - platformDiscountValue);
+
+                                                return (
+                                                    <>
+                                                        <div className="flex justify-between text-sm">
+                                                            <span className="text-muted-foreground">Doctor Consultation Fee</span>
+                                                            <span className="font-medium">₹{doctorFee}</span>
+                                                        </div>
+                                                        {campaignDiscount > 0 && (
+                                                            <div className="flex justify-between text-sm text-green-600">
+                                                                <span>Campaign Discount ({campaign.discountPercentage}%)</span>
+                                                                <span className="font-medium">-₹{campaignDiscount.toFixed(2)}</span>
+                                                            </div>
+                                                        )}
+
+                                                        {platformFeeObj && (
+                                                            <div className="pt-2 border-t border-border/30 mt-2 space-y-2">
+                                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Platform Service Fee</p>
+                                                                <div className="flex justify-between text-sm">
+                                                                    <span className="text-muted-foreground">Amount</span>
+                                                                    <span className="font-medium">₹{platformFeeValue.toFixed(2)}</span>
+                                                                </div>
+                                                                {platformFeeObj.discount > 0 && (
+                                                                    <div className="flex justify-between text-sm text-green-600">
+                                                                        <span>Discount ({platformFeeObj.discountType === "PERCENTAGE" ? `${platformFeeObj.discount}%` : "Flat"})</span>
+                                                                        <span className="font-medium">-₹{platformDiscountValue.toFixed(2)}</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+
+                                                        <div className="border-t border-dashed pt-3 mt-3 flex justify-between items-center bg-primary/5 -mx-5 px-5 py-3 rounded-b-2xl">
+                                                            <div>
+                                                                <span className="font-bold text-foreground block">Total Amount</span>
+                                                                <span className="text-[10px] text-muted-foreground italic">Inc. all fees and discounts</span>
+                                                            </div>
+                                                            <span className="text-2xl font-black text-primary">₹{Math.round(finalAmount)}</span>
+                                                        </div>
+                                                    </>
+                                                );
+                                            })()}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-start gap-3 p-3 bg-amber-50 rounded-xl border border-amber-100">
+                                        <div className="text-amber-500 mt-0.5">⚠️</div>
+                                        <p className="text-xs text-amber-700 leading-normal">
+                                            By proceeding, you agree to pay the final amount for the appointment. This amount includes service charges and applicable taxes.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Footer */}
+                                <div className="p-6 bg-muted/30 border-t flex items-center gap-4">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setBookingStep("SELECT")}
+                                        className="rounded-xl h-12"
+                                    >
+                                        Back
+                                    </Button>
+                                    <Button
+                                        onClick={handlePayToBook}
+                                        disabled={isBooking}
+                                        className="flex-1 h-12 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
                                     >
                                         {isBooking ? (
                                             <div className="flex items-center gap-2">
                                                 <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
                                                 Processing...
                                             </div>
-                                        ) : "Pay to Book"}
+                                        ) : (
+                                            <div className="flex items-center gap-2">
+                                                <CreditCard className="w-4 h-4" />
+                                                Pay & Confirm
+                                            </div>
+                                        )}
                                     </Button>
                                 </div>
                             </>

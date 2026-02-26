@@ -59,15 +59,57 @@ export async function POST(req: Request) {
 
         appointmentDateTime.setHours(hours, minutes, 0, 0);
 
-        // 4. Create Appointment
+        // 4. Calculate Consultation Fee (Campaign Price + Platform Fee - Discounts)
+        let finalFee = 0;
+
+        if (type === "DOCTOR") {
+            const campaign = await db.campaign.findUnique({
+                where: { id: organizerId }, // organizerId passed from client is campaignId here
+            });
+
+            if (campaign) {
+                const doctorFee = campaign.price;
+                const campaignDiscount = (doctorFee * (campaign.discountPercentage || 0)) / 100;
+
+                // Get active platform fee
+                const platformFees = await db.platformFee.findMany({
+                    where: { isActive: true }
+                });
+                const platformFeeObj = platformFees.find((f: any) => f.entityType === "DOCTOR") || platformFees.find((f: any) => f.entityType === "ALL");
+
+                let platformFeeValue = 0;
+                let platformDiscountValue = 0;
+
+                if (platformFeeObj) {
+                    // Platform Fee is now always a flat amount (Rupees)
+                    platformFeeValue = platformFeeObj.fee;
+
+                    if (platformFeeObj.discountType === "PERCENTAGE") {
+                        platformDiscountValue = (platformFeeValue * platformFeeObj.discount) / 100;
+                    } else {
+                        platformDiscountValue = platformFeeObj.discount;
+                    }
+                }
+
+                finalFee = Math.max(0, doctorFee - campaignDiscount + platformFeeValue - platformDiscountValue);
+            }
+        }
+
+        // 5. Create Appointment
         const appointmentData: any = {
             patientId: patient.id,
             dateTime: appointmentDateTime,
             status: "PENDING",
+            consultationFee: Math.round(finalFee),
         };
 
         if (type === "DOCTOR") {
-            appointmentData.doctorId = organizerId;
+            // Need doctor's actual ID, not campaign ID
+            const campaign = await db.campaign.findUnique({
+                where: { id: organizerId },
+                select: { doctorId: true }
+            });
+            appointmentData.doctorId = campaign?.doctorId;
         } else if (type === "LAB") {
             appointmentData.labId = organizerId;
         }

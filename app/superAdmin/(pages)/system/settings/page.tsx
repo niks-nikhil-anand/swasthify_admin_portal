@@ -115,11 +115,18 @@ export default function SettingsPage() {
     }, [])
 
     const calculateFinalFee = (fee: number, feeType: string, discount: number, discountType: string) => {
-        if (feeType === discountType) {
-            const final = Math.max(0, fee - discount)
-            return `₹${final}`
+        // Amount (fee) is now always a flat rupee amount as per user request
+        let platformFeeValue = fee;
+        let platformDiscountValue = 0;
+
+        if (discountType === "PERCENTAGE") {
+            platformDiscountValue = (platformFeeValue * discount) / 100;
+        } else {
+            platformDiscountValue = discount;
         }
-        return `₹${fee} (${feeType === "PERCENTAGE" ? "%" : "Flat"}) - ₹${discount} (${discountType === "PERCENTAGE" ? "%" : "Flat"})`
+
+        const final = Math.max(0, platformFeeValue - platformDiscountValue);
+        return `₹${final}`;
     }
 
     const fetchFees = async () => {
@@ -458,23 +465,7 @@ export default function SettingsPage() {
                                                 <Label htmlFor="description" className="text-right">Description</Label>
                                                 <Input id="description" name="description" defaultValue={editingFee?.description || ""} className="col-span-3" />
                                             </div>
-                                            <div className="grid grid-cols-4 items-center gap-4">
-                                                <Label htmlFor="feeType" className="text-right">Fee Type</Label>
-                                                <Select
-                                                    name="feeType"
-                                                    defaultValue={formValues.feeType}
-                                                    onValueChange={(v) => setFormValues(prev => ({ ...prev, feeType: v }))}
-                                                    required
-                                                >
-                                                    <SelectTrigger className="col-span-3">
-                                                        <SelectValue />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="PERCENTAGE">Percentage (%)</SelectItem>
-                                                        <SelectItem value="FLAT">Flat Amount</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
+                                            {/* Fee Type removed as per user request - Amount is always Rupees */}
                                             <div className="grid grid-cols-4 items-center gap-4">
                                                 <Label htmlFor="fee" className="text-right">Amount</Label>
                                                 <Input
@@ -580,10 +571,10 @@ export default function SettingsPage() {
                                                     </TableCell>
                                                     <TableCell className="font-medium">{fee.name}</TableCell>
                                                     <TableCell>
-                                                        {fee.fee}{fee.feeType === "PERCENTAGE" ? "%" : " Flat"}
+                                                        ₹{fee.fee}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {fee.discount}{fee.discountType === "PERCENTAGE" ? "%" : " Flat"}
+                                                        ₹{fee.discount}
                                                     </TableCell>
                                                     <TableCell className="font-bold text-blue-600">
                                                         {calculateFinalFee(fee.fee, fee.feeType, fee.discount, fee.discountType)}
