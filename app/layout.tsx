@@ -17,8 +17,50 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Swasthify",
-  description: "Doctor Patient Appointment",
+  title: {
+    default: "Swasthify | Bihar’s Trusted Healthcare Platform",
+    template: "%s | Swasthify"
+  },
+  description: "Swasthify is Bihar's largest and most trusted healthcare platform, serving Patna and beyond. Find doctors, book appointments, and schedule lab tests with doorstep sample collection. Connect your ABHA (Ayushman Bharat Health Account), consult verified doctors, and secure your reports in a unified digital health record.",
+  keywords: [
+    "Swasthify",
+    "Bihar healthcare platform",
+    "Patna healthcare",
+    "doctor appointment Patna",
+    "online doctor consultation Bihar",
+    "diagnostic lab tests Patna",
+    "doorstep sample collection Patna",
+    "Personal Health Records",
+    "unified digital health record",
+    "book lab test online Patna",
+    "Swasthify.in"
+  ],
+  authors: [{ name: "Swasthify Team" }],
+  creator: "Swasthify",
+  publisher: "Swasthify",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    title: "Swasthify | Bihar’s Trusted Healthcare Platform",
+    description: "Bihar's largest platform for doctor appointments and lab tests in Patna. Connect your ABHA and manage your digital health records.",
+    url: "https://swasthify.in",
+    siteName: "Swasthify",
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Swasthify | Bihar’s Largest Healthcare Network",
+    description: "Book doctors and labs in Patna & Bihar. Secure your health records with ABHA integration.",
+    creator: "@swasthify",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
