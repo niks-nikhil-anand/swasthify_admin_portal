@@ -3,7 +3,6 @@
 import { Video, MapPin, FlaskConical, Stethoscope, ArrowRight, Ambulance, HeartPulse, Building2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { CTA } from "@/components/shared/CTA";
 
@@ -12,7 +11,7 @@ const allServices = [
         title: "Video Consultation",
         description: "Connect with top specialists from the comfort of your home via secure video calls. Get prescriptions and medical advice instantly.",
         icon: Video,
-        href: "/consultation",
+        href: "/login",
         color: "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400",
         features: ["Instant Connect", "Digital Prescriptions", "Secure & Private"]
     },
@@ -20,7 +19,7 @@ const allServices = [
         title: "Find Doctor Near Me",
         description: "Locate and book appointments with the best doctors in your neighborhood. Filter by specialty, experience, and fees.",
         icon: MapPin,
-        href: "/find-doctor",
+        href: "/login",
         color: "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400",
         features: ["Verified Reviews", "Instant Booking", "GPS Navigation"]
     },
@@ -28,7 +27,7 @@ const allServices = [
         title: "Lab Tests",
         description: "Book diagnostic tests online and get sample collection from your doorstep. Receive accurate reports within 24 hours.",
         icon: FlaskConical,
-        href: "/lab-tests",
+        href: "/login",
         color: "bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400",
         features: ["Home Collection", "NABL Accredited Labs", "Smart Reports"]
     },
@@ -36,7 +35,7 @@ const allServices = [
         title: "Surgeries",
         description: "Expert surgical care with end-to-end assistance and cashless insurance support. We take care of admission to discharge.",
         icon: Stethoscope,
-        href: "/surgeries",
+        href: "/login",
         color: "bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400",
         features: ["Insurance Support", "Care Buddy", "Free Second Opinion"]
     },
@@ -44,7 +43,7 @@ const allServices = [
         title: "Emergency Ambulance",
         description: "24/7 GPS-enabled ambulance service with basic to advanced life support systems. Quickest response time guaranteed.",
         icon: Ambulance,
-        href: "/ambulance",
+        href: "/login",
         color: "bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400",
         features: ["GPS Tracking", "24/7 Support", "Ventilator Support"]
     },
@@ -52,7 +51,7 @@ const allServices = [
         title: "Health Checkups",
         description: "Comprehensive health packages for all age groups. Preventive care to keep you and your family healthy.",
         icon: HeartPulse,
-        href: "/health-checkups",
+        href: "/login",
         color: "bg-pink-50 text-pink-600 dark:bg-pink-500/10 dark:text-pink-400",
         features: ["Full Body Checkup", "Tax Benefits", "Consultation Included"]
     },
@@ -60,7 +59,7 @@ const allServices = [
         title: "Corporate Wellness",
         description: "Tailored health and wellness plans for organizations. Boost employee productivity and health.",
         icon: Building2,
-        href: "/corporate",
+        href: "/login",
         color: "bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400",
         features: ["On-site Camps", "Tele-consultation", "Wellness Analytics"]
     }
@@ -109,42 +108,41 @@ export default function ServicesPage() {
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                         {allServices.map((service, index) => (
-                            <Card
-                                key={index}
-                                className="group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border-border/50 overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-8 fill-mode-backwards"
-                                style={{ animationDelay: `${index * 100}ms` }}
-                            >
-                                <CardHeader className="relative p-6">
-                                    <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl mb-4 ${service.color} flex items-center justify-center transition-transform group-hover:scale-110 duration-300`}>
-                                        <service.icon className="w-6 h-6 md:w-7 md:h-7" />
-                                    </div>
-                                    <CardTitle className="text-xl md:text-2xl font-bold group-hover:text-primary transition-colors">
-                                        {service.title}
-                                    </CardTitle>
-                                </CardHeader>
+                            <Link href={service.href} key={index} className="flex flex-col">
+                                <Card
+                                    className="group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border-border/50 overflow-hidden flex flex-col h-full animate-in fade-in slide-in-from-bottom-8 fill-mode-backwards"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                >
+                                    <CardHeader className="relative p-6">
+                                        <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl mb-4 ${service.color} flex items-center justify-center transition-transform group-hover:scale-110 duration-300`}>
+                                            <service.icon className="w-6 h-6 md:w-7 md:h-7" />
+                                        </div>
+                                        <CardTitle className="text-xl md:text-2xl font-bold group-hover:text-primary transition-colors">
+                                            {service.title}
+                                        </CardTitle>
+                                    </CardHeader>
 
-                                <CardContent className="flex-1 p-6 pt-0">
-                                    <p className="text-sm md:text-base text-muted-foreground mb-6 leading-relaxed">
-                                        {service.description}
-                                    </p>
-                                    <div className="space-y-3">
-                                        {service.features.map((feature, fIndex) => (
-                                            <div key={fIndex} className="flex items-center text-sm text-foreground/80">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-primary/60 mr-2" />
-                                                {feature}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </CardContent>
+                                    <CardContent className="flex-1 p-6 pt-0">
+                                        <p className="text-sm md:text-base text-muted-foreground mb-6 leading-relaxed">
+                                            {service.description}
+                                        </p>
+                                        <div className="space-y-3">
+                                            {service.features.map((feature, fIndex) => (
+                                                <div key={fIndex} className="flex items-center text-sm text-foreground/80">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-primary/60 mr-2" />
+                                                    {feature}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </CardContent>
 
-                                <CardFooter className="p-6 pt-4 border-t border-border/50 bg-muted/5">
-                                    <Button variant="link" asChild className="p-0 h-auto font-bold text-primary hover:no-underline group/btn">
-                                        <Link href={service.href} className="flex items-center gap-1">
-                                            Book Now <ArrowRight className="w-4 h-4 ml-1 group-hover/btn:translate-x-1 transition-transform" />
-                                        </Link>
-                                    </Button>
-                                </CardFooter>
-                            </Card>
+                                    <CardFooter className="p-6 pt-4 border-t border-border/50 bg-muted/5">
+                                        <div className="flex items-center gap-1 text-primary font-bold">
+                                            Book Now <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                                        </div>
+                                    </CardFooter>
+                                </Card>
+                            </Link>
                         ))}
                     </div>
                 </div>
