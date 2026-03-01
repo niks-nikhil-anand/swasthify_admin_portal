@@ -16,7 +16,7 @@ export default function DoctorLoginPage() {
                 : "Enter your doctor email to receive a secure sign-in link"
             }
             backButtonLabel="Don't have an account? Register"
-            backButtonHref="/doctor-profile"
+            backButtonHref="/doctor-partner"
             showSocial
             role="doctor"
             redirectTo="/doctor-panel/profile"
