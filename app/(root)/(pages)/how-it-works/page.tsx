@@ -93,9 +93,11 @@ export default function HowItWorksPage() {
                         </div>
 
                         <div className="mt-12 md:mt-16 text-center animate-in fade-in zoom-in duration-500 delay-500">
-                            <Button size="lg" className="rounded-full px-8 h-12 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all">
-                                Get Started Now <ArrowRight className="w-4 h-4 ml-2" />
-                            </Button>
+                            <Link href="/login">
+                                <Button size="lg" className="rounded-full px-8 h-12 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all">
+                                    Get Started Now <ArrowRight className="w-4 h-4 ml-2" />
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -132,9 +134,11 @@ export default function HowItWorksPage() {
                                         </p>
 
                                         <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                                            <Link href="/login">
                                             <Button size="lg" className="gap-2 rounded-full w-full sm:w-auto">
                                                 Link ABHA Now <LinkIcon className="h-4 w-4" />
                                             </Button>
+                                            </Link>
                                             <Button variant="outline" size="lg" asChild className="gap-2 rounded-full w-full sm:w-auto">
                                                 <a href="https://abdm.gov.in/" target="_blank" rel="noopener noreferrer">
                                                     Learn More <ExternalLink className="h-4 w-4" />
