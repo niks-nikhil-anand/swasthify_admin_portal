@@ -92,11 +92,15 @@ const sidebarGroups = [
                 icon: Ticket,
             },
             {
+                title: "Specialization",
+                href: "/superAdmin/operations/specialization",
+                icon: Stethoscope,
+            },
+            {
                 title: "Complaints",
                 href: "/superAdmin/operations/complaints",
                 icon: MessageSquareWarning,
             },
-
         ]
     },
     {
