@@ -31,6 +31,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         const formData = await req.formData();
         const name = formData.get("name") as string;
         const type = formData.get("type") as string;
+        const startingPriceValue = formData.get("startingPrice");
+        const startingPrice = startingPriceValue ? parseFloat(startingPriceValue as string) : undefined;
         const description = formData.get("description") as string;
         const imageFile = formData.get("image") as File;
 
@@ -60,6 +62,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
             data: {
                 name,
                 type: type as any,
+                startingPrice,
                 description,
                 image: imageUrl
             }
