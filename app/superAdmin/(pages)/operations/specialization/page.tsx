@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { DataTable, FacetedFilter } from "@/components/superAdmin/DataTable"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -14,7 +15,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Copy, Edit, Eye, MoreHorizontal, Plus, Trash, Stethoscope } from "lucide-react"
+import { ArrowUpDown, Copy, Edit, Eye, MoreHorizontal, Plus, Trash, Stethoscope, User, Building } from "lucide-react"
 import { AddSpecializationModal } from "./components/AddSpecializationModal"
 import { ViewSpecializationModal } from "./components/ViewSpecializationModal"
 import { AlertModal } from "@/components/superAdmin/modals/AlertModal"
@@ -25,6 +26,7 @@ type Specialization = {
     name: string
     description: string | null
     image: string | null
+    type: "DOCTOR" | "LAB" | "ALL"
     createdAt: string
 }
 
@@ -131,6 +133,22 @@ export default function SpecializationsPage() {
                 )
             },
             cell: ({ row }) => <div className="font-semibold">{row.getValue("name")}</div>,
+        },
+        {
+            accessorKey: "type",
+            header: "Entity",
+            cell: ({ row }) => {
+                const type = row.getValue("type") as string
+                return (
+                    <Badge
+                        variant={type === "ALL" ? "default" : "secondary"}
+                        className="flex w-fit items-center gap-1"
+                    >
+                        {type === "LAB" ? <Building className="h-3 w-3" /> : <User className="h-3 w-3" />}
+                        {type}
+                    </Badge>
+                )
+            },
         },
         {
             accessorKey: "description",
