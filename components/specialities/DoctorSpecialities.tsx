@@ -8,111 +8,61 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 
-const specialities = [
-    {
-        title: "Gynaecology",
-        price: "₹599",
-        image: "/images/specialities/gynaecology_real.png",
-        color: "bg-pink-50/50 dark:bg-pink-900/20",
-    },
-    {
-        title: "Sexology",
-        price: "₹599",
-        image: "/images/specialities/sexology_real.png",
-        color: "bg-indigo-50/50 dark:bg-indigo-900/20",
-    },
-    {
-        title: "General physician",
-        price: "₹499",
-        image: "/images/specialities/general_physician_real.png",
-        color: "bg-blue-50/50 dark:bg-blue-900/20",
-    },
-    {
-        title: "Dermatology",
-        price: "₹549",
-        image: "/images/specialities/dermatology_real_v2.png",
-        color: "bg-teal-50/50 dark:bg-teal-900/20",
-    },
-    {
-        title: "Psychiatry",
-        price: "₹599",
-        image: "/images/specialities/psychiatry_real.png",
-        color: "bg-green-50/50 dark:bg-green-900/20",
-    },
-    {
-        title: "Stomach and digestion",
-        price: "₹499",
-        image: "/images/specialities/stomach_digestion_real.png",
-        color: "bg-orange-50/50 dark:bg-orange-900/20",
-    },
-    {
-        title: "Cardiology",
-        price: "₹799",
-        image: "/images/specialities/cardiology_real.png",
-        color: "bg-red-50/50 dark:bg-red-900/20",
-    },
-    {
-        title: "Pediatrics",
-        price: "₹499",
-        image: "/images/specialities/pediatrics_real.png",
-        color: "bg-yellow-50/50 dark:bg-yellow-900/20",
-    },
-    {
-        title: "Orthopedics",
-        price: "₹599",
-        image: "/images/specialities/orthopedics_real.png",
-        color: "bg-orange-50/50 dark:bg-orange-900/20",
-    },
-    {
-        title: "Neurology",
-        price: "₹899",
-        image: "/images/specialities/neurology_real.png",
-        color: "bg-purple-50/50 dark:bg-purple-900/20",
-    },
-    {
-        title: "Ophthalmology",
-        price: "₹499",
-        image: "/images/specialities/ophthalmology_real.png",
-        color: "bg-sky-50/50 dark:bg-sky-900/20",
-    },
-    {
-        title: "Dentist",
-        price: "₹249",
-        image: "/images/specialities/dentist_v2.png",
-        color: "bg-slate-50/50 dark:bg-slate-900/20",
-    },
-    {
-        title: "Dietitian",
-        price: "₹349",
-        image: "/images/specialities/dietitian_v2.png",
-        color: "bg-lime-50/50 dark:bg-lime-900/20",
-    },
-    {
-        title: "Physiotherapist",
-        price: "₹449",
-        image: "/images/specialities/physiotherapist_v2.png",
-        color: "bg-cyan-50/50 dark:bg-cyan-900/20",
-    },
-];
-
 // Individual item animation variant
 const itemFadeIn = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } }
 };
 
-
 export function DoctorSpecialities() {
     const [visibleCount, setVisibleCount] = useState(6);
     const [isPatient, setIsPatient] = useState(false);
+    const [specialities, setSpecialities] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         setIsPatient(document.cookie.includes("PATIENT="));
+        fetchSpecialities();
     }, []);
+
+    const fetchSpecialities = async () => {
+        try {
+            const response = await fetch('/api/public/specializations?type=DOCTOR');
+            if (response.ok) {
+                const data = await response.json();
+                setSpecialities(data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch specialities:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const showMore = () => {
         setVisibleCount((prev: number) => Math.min(prev + 6, specialities.length));
     };
+
+    if (isLoading) {
+        return (
+            <section className="py-24 bg-background overflow-hidden">
+                <div className="container mx-auto px-4 text-center">
+                    <div className="animate-pulse space-y-4">
+                        <div className="h-8 bg-muted rounded w-1/3 mx-auto"></div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-12">
+                            {[1, 2, 3, 4, 5, 6].map((i) => (
+                                <div key={i} className="h-64 bg-muted rounded-[2rem]"></div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
+    if (specialities.length === 0) {
+        return null;
+    }
 
     return (
         <section className="py-24 bg-background overflow-hidden">
@@ -140,7 +90,7 @@ export function DoctorSpecialities() {
                             const targetUrl = `/doctors?specialization=${encodeURIComponent(speciality.title)}`;
                             const href = isPatient ? targetUrl : `/login?redirect=${encodeURIComponent(targetUrl)}`;
                             return (
-                                <Link href={href} key={speciality.title || index}>
+                                <Link href={href} key={speciality.id || speciality.title || index}>
                                     <motion.div
                                         layout
                                         variants={itemFadeIn}
@@ -161,7 +111,7 @@ export function DoctorSpecialities() {
                                                         fill
                                                         className="object-cover"
                                                     />
-                                                    <div className="absolute inset-0 bg-gradient-to-tr from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                    <div className="absolute inset-0 bg-linear-to-tr from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                                 </div>
                                             </div>
 
