@@ -96,11 +96,11 @@ export function ViewSpecializationModal({
                                 {data.type === "LAB" ? <Building className="h-3 w-3" /> : <User className="h-3 w-3" />}
                                 <span>Entity Type</span>
                             </div>
-                            <p className="text-sm font-medium flex items-center gap-2">
+                            <div className="text-sm font-medium flex items-center gap-2">
                                 <Badge variant="secondary" className="font-semibold">
                                     {data.type}
                                 </Badge>
-                            </p>
+                            </div>
                         </div>
                     </div>
 
