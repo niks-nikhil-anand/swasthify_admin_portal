@@ -75,6 +75,7 @@ const getColumns = (
         {
             accessorKey: "type",
             header: "Type",
+            enableGrouping: true,
         },
         {
             accessorKey: "price",
@@ -87,6 +88,10 @@ const getColumns = (
                 }).format(price)
                 return <div>{formatted}</div>
             },
+        },
+        {
+            accessorKey: "dailyLimit",
+            header: "Daily Limit",
         },
         {
             accessorKey: "startDate",
@@ -107,6 +112,7 @@ const getColumns = (
         {
             accessorKey: "status",
             header: "Status",
+            enableGrouping: true,
             cell: ({ row }) => {
                 const status = row.getValue("status") as string
                 return (
@@ -114,7 +120,7 @@ const getColumns = (
                         variant={
                             status === "ACTIVE"
                                 ? "success"
-                                : status === "DRAFT"
+                                : status === "DRAFT" || status === "IN_REVIEW"
                                     ? "secondary"
                                     : status === "COMPLETED"
                                         ? "outline"
@@ -140,6 +146,14 @@ const getColumns = (
                         )}
                     </div>
                 )
+            },
+        },
+        {
+            accessorKey: "createdAt",
+            header: "Created At",
+            cell: ({ row }) => {
+                const date = row.getValue("createdAt") as string
+                return <div>{new Date(date).toLocaleDateString()}</div>
             },
         },
         {
@@ -223,10 +237,8 @@ export default function CampaignsPage() {
             const response = await fetch("/api/admin/campaigns")
             if (response.ok) {
                 const data = await response.json()
-                const filteredData = data.filter((campaign: Campaign) =>
-                    !campaign.isVerified || campaign.status === "IN_REVIEW"
-                )
-                setCampaigns(filteredData)
+                // Fetch all campaigns for superadmin operations
+                setCampaigns(data)
             }
         } catch (error) {
             console.error("Failed to fetch campaigns", error)
@@ -236,6 +248,28 @@ export default function CampaignsPage() {
     }
 
     const columns = getColumns(handleViewDetails, handleEdit, handleDelete)
+
+    const facetedFilters = [
+        {
+            columnId: "status",
+            title: "Status",
+            options: [
+                { label: "Active", value: "ACTIVE" },
+                { label: "In Review", value: "IN_REVIEW" },
+                { label: "Draft", value: "DRAFT" },
+                { label: "Completed", value: "COMPLETED" },
+                { label: "Paused", value: "PAUSED" },
+            ]
+        },
+        {
+            columnId: "organizerType",
+            title: "Organizer Type",
+            options: [
+                { label: "Doctor", value: "Doctor" },
+                { label: "Lab", value: "Lab" },
+            ]
+        }
+    ]
 
     if (!isMounted) {
         return null
@@ -284,9 +318,9 @@ export default function CampaignsPage() {
                                 </div>
                             </div>
                             <div className="space-y-2 max-w-md">
-                                <h3 className="text-xl font-bold tracking-tight">No Pending Campaigns</h3>
+                                <h3 className="text-xl font-bold tracking-tight">No Campaigns Found</h3>
                                 <p className="text-muted-foreground text-sm leading-relaxed">
-                                    There are currently no campaigns waiting for verification or review. All caught up!
+                                    There are currently no campaigns available.
                                 </p>
                             </div>
                             <div className="pt-2">
@@ -297,7 +331,12 @@ export default function CampaignsPage() {
                             </div>
                         </div>
                     ) : (
-                        <DataTable columns={columns} data={campaigns} searchKey="name" />
+                        <DataTable
+                            columns={columns}
+                            data={campaigns}
+                            searchKey="name"
+                            facetedFilters={facetedFilters}
+                        />
                     )}
                 </CardContent>
             </Card>
