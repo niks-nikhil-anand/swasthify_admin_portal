@@ -15,7 +15,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Copy, Edit, Eye, MoreHorizontal, Plus, Trash, Stethoscope, User, Building } from "lucide-react"
+import { ArrowUpDown, Copy, Edit, Eye, MoreHorizontal, Plus, Trash, Stethoscope, User, Building, IndianRupee } from "lucide-react"
 import { AddSpecializationModal } from "./components/AddSpecializationModal"
 import { ViewSpecializationModal } from "./components/ViewSpecializationModal"
 import { AlertModal } from "@/components/superAdmin/modals/AlertModal"
@@ -27,6 +27,7 @@ type Specialization = {
     description: string | null
     image: string | null
     type: "DOCTOR" | "LAB" | "ALL"
+    startingPrice: number
     createdAt: string
 }
 
@@ -151,10 +152,33 @@ export default function SpecializationsPage() {
             },
         },
         {
+            accessorKey: "startingPrice",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        Starts With
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                )
+            },
+            cell: ({ row }) => {
+                const amount = parseFloat(row.getValue("startingPrice")?.toString() || "0")
+                return (
+                    <div className="flex items-center font-medium text-green-600">
+                        <IndianRupee className="h-3.5 w-3.5 mr-0.5" />
+                        {(amount || 0).toLocaleString("en-IN")}
+                    </div>
+                )
+            },
+        },
+        {
             accessorKey: "description",
             header: "Description",
             cell: ({ row }) => (
-                <div className="max-w-[400px] truncate" title={row.getValue("description")}>
+                <div className="max-w-[300px] truncate" title={row.getValue("description")}>
                     {row.getValue("description") || "No description"}
                 </div>
             ),
