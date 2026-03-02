@@ -30,7 +30,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Loader2 } from "lucide-react"
+import { Loader2, IndianRupee } from "lucide-react"
 import { toast } from "sonner"
 
 const specializationSchema = z.object({
@@ -38,6 +38,7 @@ const specializationSchema = z.object({
     description: z.string().optional(),
     image: z.string().optional(),
     type: z.enum(["DOCTOR", "LAB", "ALL"]),
+    startingPrice: z.coerce.number().min(0, "Starting price must be at least 0"),
 })
 
 type SpecializationFormValues = z.infer<typeof specializationSchema>
@@ -52,6 +53,7 @@ interface AddSpecializationModalProps {
         description?: string | null
         image?: string | null
         type?: string
+        startingPrice?: number
     }
 }
 
@@ -70,6 +72,7 @@ export function AddSpecializationModal({
             description: initialData?.description || "",
             image: initialData?.image || "",
             type: (initialData?.type as any) || "DOCTOR",
+            startingPrice: initialData?.startingPrice || 0,
         },
     })
 
@@ -80,6 +83,7 @@ export function AddSpecializationModal({
                 description: initialData?.description || "",
                 image: initialData?.image || "",
                 type: (initialData?.type as any) || "DOCTOR",
+                startingPrice: initialData?.startingPrice || 0,
             })
         }
     }, [initialData, isOpen, form])
@@ -90,6 +94,7 @@ export function AddSpecializationModal({
             const formData = new FormData()
             formData.append("name", values.name)
             formData.append("type", values.type)
+            formData.append("startingPrice", values.startingPrice.toString())
             if (values.description) formData.append("description", values.description)
 
             // Handle image file
@@ -140,32 +145,55 @@ export function AddSpecializationModal({
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <FormField
-                            control={form.control}
-                            name="type"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Entity Type</FormLabel>
-                                    <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                        value={field.value}
-                                    >
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="type"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Entity Type</FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                            value={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select type" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="DOCTOR">Doctor</SelectItem>
+                                                <SelectItem value="LAB">Lab</SelectItem>
+                                                <SelectItem value="ALL">All (Both)</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="startingPrice"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Starting Price (INR)</FormLabel>
                                         <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select entity type" />
-                                            </SelectTrigger>
+                                            <div className="relative">
+                                                <IndianRupee className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Input
+                                                    type="number"
+                                                    placeholder="0"
+                                                    className="pl-9"
+                                                    {...field}
+                                                />
+                                            </div>
                                         </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="DOCTOR">Doctor</SelectItem>
-                                            <SelectItem value="LAB">Lab</SelectItem>
-                                            <SelectItem value="ALL">All (Both)</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                         <FormField
                             control={form.control}
                             name="name"

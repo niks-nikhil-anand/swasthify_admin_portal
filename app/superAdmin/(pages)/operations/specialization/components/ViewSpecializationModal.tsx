@@ -8,7 +8,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Stethoscope, Image as ImageIcon, AlignLeft, User, Building } from "lucide-react"
+import { Calendar, Stethoscope, Image as ImageIcon, AlignLeft, User, Building, IndianRupee } from "lucide-react"
 import { format } from "date-fns"
 
 interface ViewSpecializationModalProps {
@@ -20,6 +20,7 @@ interface ViewSpecializationModalProps {
         description: string | null
         image: string | null
         type: "DOCTOR" | "LAB" | "ALL"
+        startingPrice: number
         createdAt: string
     }
 }
@@ -101,6 +102,15 @@ export function ViewSpecializationModal({
                                     {data.type}
                                 </Badge>
                             </div>
+                        </div>
+                        <div className="bg-muted/30 p-3 rounded-xl border space-y-1 col-span-2">
+                            <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                                <IndianRupee className="h-3 w-3" />
+                                <span>Starts With (Starting Price)</span>
+                            </div>
+                            <p className="text-lg font-bold text-green-600">
+                                ₹{(data.startingPrice || 0).toLocaleString("en-IN")}
+                            </p>
                         </div>
                     </div>
 
