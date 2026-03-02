@@ -8,7 +8,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Stethoscope, Image as ImageIcon, AlignLeft } from "lucide-react"
+import { Calendar, Stethoscope, Image as ImageIcon, AlignLeft, User, Building } from "lucide-react"
 import { format } from "date-fns"
 
 interface ViewSpecializationModalProps {
@@ -19,6 +19,7 @@ interface ViewSpecializationModalProps {
         name: string
         description: string | null
         image: string | null
+        type: "DOCTOR" | "LAB" | "ALL"
         createdAt: string
     }
 }
@@ -92,12 +93,13 @@ export function ViewSpecializationModal({
                         </div>
                         <div className="bg-muted/30 p-3 rounded-xl border space-y-1">
                             <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                                <Stethoscope className="h-3 w-3" />
-                                <span>Total Doctors</span>
+                                {data.type === "LAB" ? <Building className="h-3 w-3" /> : <User className="h-3 w-3" />}
+                                <span>Entity Type</span>
                             </div>
-                            <p className="text-sm font-medium">
-                                {/* This would normally be a separate count or included in data */}
-                                View in Doctor Management
+                            <p className="text-sm font-medium flex items-center gap-2">
+                                <Badge variant="secondary" className="font-semibold">
+                                    {data.type}
+                                </Badge>
                             </p>
                         </div>
                     </div>
