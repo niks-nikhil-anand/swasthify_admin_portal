@@ -205,13 +205,14 @@ model Lab {
 }
 
 model Specialization {
-  id          String   @id @default(uuid())
-  name        String   @unique
+  id          String     @id @default(uuid())
+  name        String     @unique
   description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
   image       String?
-  doctors     Doctor[] @relation("DoctorToSpecialization")
+  type        EntityType @default(DOCTOR)
+  doctors     Doctor[]   @relation("DoctorToSpecialization")
 
   @@map("specializations")
 }
