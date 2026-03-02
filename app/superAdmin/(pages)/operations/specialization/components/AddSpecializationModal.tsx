@@ -20,6 +20,13 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
@@ -30,6 +37,7 @@ const specializationSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
     description: z.string().optional(),
     image: z.string().optional(),
+    type: z.enum(["DOCTOR", "LAB", "ALL"]),
 })
 
 type SpecializationFormValues = z.infer<typeof specializationSchema>
@@ -43,6 +51,7 @@ interface AddSpecializationModalProps {
         name: string
         description?: string | null
         image?: string | null
+        type?: string
     }
 }
 
@@ -60,6 +69,7 @@ export function AddSpecializationModal({
             name: initialData?.name || "",
             description: initialData?.description || "",
             image: initialData?.image || "",
+            type: (initialData?.type as any) || "DOCTOR",
         },
     })
 
@@ -69,6 +79,7 @@ export function AddSpecializationModal({
                 name: initialData?.name || "",
                 description: initialData?.description || "",
                 image: initialData?.image || "",
+                type: (initialData?.type as any) || "DOCTOR",
             })
         }
     }, [initialData, isOpen, form])
@@ -78,6 +89,7 @@ export function AddSpecializationModal({
         try {
             const formData = new FormData()
             formData.append("name", values.name)
+            formData.append("type", values.type)
             if (values.description) formData.append("description", values.description)
 
             // Handle image file
@@ -128,6 +140,32 @@ export function AddSpecializationModal({
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField
+                            control={form.control}
+                            name="type"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Entity Type</FormLabel>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                        value={field.value}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select entity type" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="DOCTOR">Doctor</SelectItem>
+                                            <SelectItem value="LAB">Lab</SelectItem>
+                                            <SelectItem value="ALL">All (Both)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                             control={form.control}
                             name="name"
