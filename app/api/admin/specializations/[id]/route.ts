@@ -30,6 +30,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         const { id } = await params;
         const formData = await req.formData();
         const name = formData.get("name") as string;
+        const type = formData.get("type") as string;
         const description = formData.get("description") as string;
         const imageFile = formData.get("image") as File;
 
@@ -58,6 +59,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
             where: { id: id },
             data: {
                 name,
+                type: type as any,
                 description,
                 image: imageUrl
             }
