@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -42,20 +42,7 @@ import { DoctorValidation } from "@/lib/validators"
 type DoctorFormValues = z.infer<typeof DoctorValidation>
 type FieldName = keyof DoctorFormValues
 
-const SPECIALIZATIONS = [
-    { id: "general_physician", label: "General Physician" },
-    { id: "cardiologist", label: "Cardiologist" },
-    { id: "dermatologist", label: "Dermatologist" },
-    { id: "pediatrician", label: "Pediatrician" },
-    { id: "neurologist", label: "Neurologist" },
-    { id: "orthopedist", label: "Orthopedist" },
-    { id: "gynecologist", label: "Gynecologist" },
-    { id: "dentist", label: "Dentist" },
-    { id: "ent", label: "ENT Specialist" },
-    { id: "psychiatrist", label: "Psychiatrist" },
-    { id: "ophthalmologist", label: "Ophthalmologist" },
-    { id: "urologist", label: "Urologist" },
-]
+
 
 
 
@@ -65,6 +52,24 @@ export default function DoctorRegistrationForm() {
     const [isLoading, setIsLoading] = useState(false)
     const [currentStep, setCurrentStep] = useState(1)
     const [direction, setDirection] = useState(0)
+    const [specializations, setSpecializations] = useState<{ id: string; label: string }[]>([])
+    const [specsLoading, setSpecsLoading] = useState(true)
+
+    useEffect(() => {
+        async function fetchSpecializations() {
+            try {
+                const res = await fetch("/api/public/specializations?type=DOCTOR")
+                if (!res.ok) throw new Error("Failed to fetch")
+                const data: { id: string; title: string }[] = await res.json()
+                setSpecializations(data.map((s) => ({ id: s.title, label: s.title })))
+            } catch (err) {
+                console.error("Failed to load specializations:", err)
+            } finally {
+                setSpecsLoading(false)
+            }
+        }
+        fetchSpecializations()
+    }, [])
 
     const form = useForm<DoctorFormValues>({
         resolver: zodResolver(DoctorValidation) as any,
@@ -356,21 +361,28 @@ export default function DoctorRegistrationForm() {
                                                         <FormLabel>Specializations</FormLabel>
                                                         <FormControl>
                                                             <div className="flex flex-wrap gap-2 mt-2">
-                                                                {SPECIALIZATIONS.map((spec) => {
-                                                                    const isSelected = field.value?.includes(spec.id)
-                                                                    return (
-                                                                        <Badge
-                                                                            key={spec.id}
-                                                                            variant={isSelected ? "default" : "outline"}
-                                                                            className={`cursor-pointer py-2 px-4 rounded-full transition-all ${isSelected ? "shadow-md scale-105" : "hover:bg-accent"
-                                                                                }`}
-                                                                            onClick={() => toggleSpecialization(spec.id, field.value || [], field.onChange)}
-                                                                        >
-                                                                            {isSelected && <Check className="w-3 h-3 mr-2" />}
-                                                                            {spec.label}
-                                                                        </Badge>
-                                                                    )
-                                                                })}
+                                                                {specsLoading ? (
+                                                                    Array.from({ length: 8 }).map((_, i) => (
+                                                                        <div key={i} className="h-9 w-28 rounded-full bg-muted animate-pulse" />
+                                                                    ))
+                                                                ) : specializations.length === 0 ? (
+                                                                    <p className="text-sm text-muted-foreground">No specializations available. Please try again later.</p>
+                                                                ) : (
+                                                                    specializations.map((spec) => {
+                                                                        const isSelected = field.value?.includes(spec.id)
+                                                                        return (
+                                                                            <Badge
+                                                                                key={spec.id}
+                                                                                variant={isSelected ? "default" : "outline"}
+                                                                                className={`cursor-pointer py-2 px-4 rounded-full transition-all ${isSelected ? "shadow-md scale-105" : "hover:bg-accent"}`}
+                                                                                onClick={() => toggleSpecialization(spec.id, field.value || [], field.onChange)}
+                                                                            >
+                                                                                {isSelected && <Check className="w-3 h-3 mr-2" />}
+                                                                                {spec.label}
+                                                                            </Badge>
+                                                                        )
+                                                                    })
+                                                                )}
                                                             </div>
                                                         </FormControl>
                                                         <FormMessage />
