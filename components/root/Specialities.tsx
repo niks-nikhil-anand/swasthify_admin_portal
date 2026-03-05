@@ -5,46 +5,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 
-
-const specialities = [
-    {
-        title: "Gynaecology",
-        price: "₹599",
-        image: "/images/specialities/gynaecology_real.png",
-        color: "bg-pink-50/50 dark:bg-pink-900/20",
-    },
-    {
-        title: "Sexology",
-        price: "₹599",
-        image: "/images/specialities/sexology_real.png",
-        color: "bg-indigo-50/50 dark:bg-indigo-900/20",
-    },
-    {
-        title: "General physician",
-        price: "₹499",
-        image: "/images/specialities/general_physician_real.png",
-        color: "bg-blue-50/50 dark:bg-blue-900/20",
-    },
-    {
-        title: "Dermatology",
-        price: "₹549",
-        image: "/images/specialities/dermatology_real_v2.png",
-        color: "bg-teal-50/50 dark:bg-teal-900/20",
-    },
-    {
-        title: "Psychiatry",
-        price: "₹599",
-        image: "/images/specialities/psychiatry_real.png",
-        color: "bg-green-50/50 dark:bg-green-900/20",
-    },
-    {
-        title: "Stomach and digestion",
-        price: "₹499",
-        image: "/images/specialities/stomach_digestion_real.png",
-        color: "bg-orange-50/50 dark:bg-orange-900/20",
-    },
-];
+interface Speciality {
+    id: string;
+    title: string;
+    price: string;
+    image: string;
+    color: string;
+    type: string;
+}
 
 const container = {
     hidden: { opacity: 0 },
@@ -61,7 +31,37 @@ const item = {
     show: { opacity: 1, scale: 1, transition: { stiffness: 50 } }
 };
 
+// Skeleton card shown while loading
+function SkeletonCard() {
+    return (
+        <div className="bg-card/60 backdrop-blur-md rounded-[2rem] border border-border/50 flex flex-col items-center text-center p-4 md:p-8 h-full animate-pulse">
+            <div className="w-16 h-16 md:w-32 md:h-32 rounded-full bg-muted mb-2 md:mb-4" />
+            <div className="h-4 w-24 bg-muted rounded mb-1" />
+            <div className="h-3 w-16 bg-muted rounded" />
+        </div>
+    );
+}
+
 export function Specialities() {
+    const [specialities, setSpecialities] = useState<Speciality[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchSpecialities() {
+            try {
+                const res = await fetch("/api/public/specializations?limit=6");
+                if (!res.ok) throw new Error("Failed to fetch");
+                const data: Speciality[] = await res.json();
+                setSpecialities(data);
+            } catch (err) {
+                console.error("Failed to load specialities:", err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchSpecialities();
+    }, []);
+
     return (
         <section className="pt-20 bg-background overflow-hidden">
             <div className="container mx-auto px-4">
@@ -88,46 +88,56 @@ export function Specialities() {
                     </Link>
                 </div>
 
-                <motion.div
-                    variants={container}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true }}
-                    className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-6"
-                >
-                    {specialities.map((speciality, index) => (
-                        <Link href="/login" key={index}>
-                            <motion.div
-                                variants={item}
-                                whileHover={{ y: -8, scale: 1.02 }}
-                                className="group bg-card/60 backdrop-blur-md hover:bg-card hover:shadow-[0_20px_50px_rgba(16,185,129,0.1)] transition-all duration-500 p-4 md:p-8 rounded-[2rem] border border-border/50 hover:border-emerald-500/30 flex flex-col items-center text-center h-full cursor-pointer"
-                            >
-                                <div className={`w-16 h-16 md:w-32 md:h-32 relative mb-2 md:mb-4 ${speciality.color} rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-2xl group-hover:shadow-emerald-500/20 overflow-hidden`}>
-                                    <div className="absolute inset-0 rounded-full bg-linear-to-tr from-white/60 dark:from-background/40 to-transparent pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity z-10" />
-                                    <div className="absolute inset-0 rounded-full scale-0 group-hover:scale-150 bg-emerald-500/5 blur-2xl transition-transform duration-700 -z-10" />
-                                    <Image
-                                        src={speciality.image}
-                                        alt={speciality.title}
-                                        fill
-                                        className="object-cover rounded-full"
-                                    />
-                                </div>
+                {loading ? (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-6">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <SkeletonCard key={i} />
+                        ))}
+                    </div>
+                ) : specialities.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-12">No specialities available at the moment.</p>
+                ) : (
+                    <motion.div
+                        variants={container}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-6"
+                    >
+                        {specialities.map((speciality, index) => (
+                            <Link href="/login" key={speciality.id ?? index}>
+                                <motion.div
+                                    variants={item}
+                                    whileHover={{ y: -8, scale: 1.02 }}
+                                    className="group bg-card/60 backdrop-blur-md hover:bg-card hover:shadow-[0_20px_50px_rgba(16,185,129,0.1)] transition-all duration-500 p-4 md:p-8 rounded-[2rem] border border-border/50 hover:border-emerald-500/30 flex flex-col items-center text-center h-full cursor-pointer"
+                                >
+                                    <div className={`w-16 h-16 md:w-32 md:h-32 relative mb-2 md:mb-4 ${speciality.color} rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-2xl group-hover:shadow-emerald-500/20 overflow-hidden`}>
+                                        <div className="absolute inset-0 rounded-full bg-linear-to-tr from-white/60 dark:from-background/40 to-transparent pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity z-10" />
+                                        <div className="absolute inset-0 rounded-full scale-0 group-hover:scale-150 bg-emerald-500/5 blur-2xl transition-transform duration-700 -z-10" />
+                                        <Image
+                                            src={speciality.image}
+                                            alt={speciality.title}
+                                            fill
+                                            className="object-cover rounded-full"
+                                        />
+                                    </div>
 
-                                <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-2 px-1 text-xs md:text-base">
-                                    {speciality.title}
-                                </h3>
+                                    <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-2 px-1 text-xs md:text-base">
+                                        {speciality.title}
+                                    </h3>
 
-                                <div className="text-[10px] md:text-sm text-muted-foreground mb-2 md:mb-4">
-                                    starts from <span className="font-bold text-foreground text-xs md:text-base">{speciality.price}</span>
-                                </div>
+                                    <div className="text-[10px] md:text-sm text-muted-foreground mb-2 md:mb-4">
+                                        starts from <span className="font-bold text-foreground text-xs md:text-base">{speciality.price}</span>
+                                    </div>
 
-                                <span className="mt-auto text-[10px] md:text-xs font-bold text-primary opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center bg-primary/10 px-2 py-0.5 md:px-3 md:py-1 rounded-full shadow-md shadow-primary/10">
-                                    Consult <ChevronRight className="w-2 h-2 md:w-3 md:h-3 ml-1" />
-                                </span>
-                            </motion.div>
-                        </Link>
-                    ))}
-                </motion.div>
+                                    <span className="mt-auto text-[10px] md:text-xs font-bold text-primary opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center bg-primary/10 px-2 py-0.5 md:px-3 md:py-1 rounded-full shadow-md shadow-primary/10">
+                                        Consult <ChevronRight className="w-2 h-2 md:w-3 md:h-3 ml-1" />
+                                    </span>
+                                </motion.div>
+                            </Link>
+                        ))}
+                    </motion.div>
+                )}
 
                 <div className="mt-12 text-center md:hidden">
                     <Link href="/specialities">
