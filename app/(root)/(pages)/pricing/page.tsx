@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, User, Activity, Settings, CreditCard, ArrowRight, ShieldCheck, Zap } from "lucide-react";
-import { FeatureComparison } from "@/components/pricing/FeatureComparison";
+import { Check, Activity, ArrowRight, ShieldCheck, Zap } from "lucide-react";
 import { PricingFAQ } from "@/components/pricing/PricingFAQ";
 import { PricingTestimonials } from "@/components/pricing/PricingTestimonials";
 import { CTA } from "@/components/shared/CTA";
@@ -12,8 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 export default function PricingPage() {
-    const [view, setView] = useState<"patient" | "doctor">("patient");
-
     const patientServices = [
         {
             name: "General Consultation",
@@ -54,45 +50,6 @@ export default function PricingPage() {
         },
     ];
 
-    const doctorFeatures = [
-        {
-            name: "Fee Control Dashboard",
-            description: "Complete autonomy over your consultation and service fees.",
-            features: [
-                "Set Custom Consultation Fees",
-                "Dynamic Follow-up Pricing",
-                "Urgent Care Surcharges",
-                "Global Currency Support",
-            ],
-            icon: <Settings className="w-6 h-6 text-primary" />,
-        },
-        {
-            name: "Revenue Management",
-            description: "Track your earnings and manage payouts with total transparency.",
-            features: [
-                "Instant Payout Processing",
-                "Detailed Earnings Reports",
-                "Tax & GST Automation",
-                "0% Platform Commission",
-            ],
-            icon: <CreditCard className="w-6 h-6 text-primary" />,
-            mostPopular: true,
-        },
-        {
-            name: "Patient Acquisition",
-            description: "Grow your practice with our integrated marketing tools.",
-            features: [
-                "Verified Badge Profile",
-                "Review Management",
-                "Appointment Analytics",
-                "Marketing Campaign Support",
-            ],
-            icon: <User className="w-6 h-6 text-primary" />,
-        },
-    ];
-
-    const activeData = view === "patient" ? patientServices : doctorFeatures;
-
     return (
         <div className="flex flex-col min-h-screen bg-background">
             {/* Hero Section */}
@@ -101,58 +58,22 @@ export default function PricingPage() {
 
                 <div className="container mx-auto px-4 text-center relative z-10">
                     <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-medium text-sm md:text-base mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        {view === "patient" ? "Patient-First Pricing" : "Empowering Doctors"}
+                        Patient-First Pricing
                     </div>
                     <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
-                        {view === "patient" ? (
-                            <>Affordable care, <br /> <span className="text-primary font-extrabold italic">zero hidden costs</span></>
-                        ) : (
-                            <>You define your value, <br /> <span className="text-primary font-extrabold italic">we handle the rest</span></>
-                        )}
+                        Affordable care, <br /> <span className="text-primary font-extrabold italic">zero hidden costs</span>
                     </h1>
                     <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
-                        {view === "patient"
-                            ? "Transparent pricing for every service. Know exactly what you pay before you book. No surprises, just quality care."
-                            : "Take control of your practice. Set your own fees, manage your earnings, and grow your digital presence with Swasthify."}
+                        Transparent pricing for every service. Know exactly what you pay before you book. No surprises, just quality care.
                     </p>
-
-                    {/* View Toggle */}
-                    <div className="flex justify-center mb-0 md:mb-8">
-                        <div className="inline-flex p-1 bg-muted rounded-xl shadow-inner border border-border/50 backdrop-blur-sm">
-                            <button
-                                onClick={() => setView("patient")}
-                                className={cn(
-                                    "px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2",
-                                    view === "patient"
-                                        ? "bg-background text-primary shadow-md scale-105"
-                                        : "text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                <User className="w-4 h-4" />
-                                For Patients
-                            </button>
-                            <button
-                                onClick={() => setView("doctor")}
-                                className={cn(
-                                    "px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2",
-                                    view === "doctor"
-                                        ? "bg-background text-primary shadow-md scale-105"
-                                        : "text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                <Activity className="w-4 h-4" />
-                                For Doctors
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </section>
 
-            {/* Pricing/Feature Cards */}
+            {/* Pricing cards */}
             <section className="-mt-12 py-12 relative z-20">
                 <div className="container mx-auto px-4">
                     <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-                        {activeData.map((item, index) => (
+                        {patientServices.map((item, index) => (
                             <div key={item.name} className="flex flex-col animate-in fade-in slide-in-from-bottom-12 duration-700 fill-mode-backwards" style={{ animationDelay: `${index * 150}ms` }}>
                                 <Card
                                     className={cn(
@@ -165,7 +86,7 @@ export default function PricingPage() {
                                     {item.mostPopular && (
                                         <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                                             <Badge className="bg-primary hover:bg-primary/90 px-4 py-1.5 text-sm shadow-lg border-none">
-                                                {view === "patient" ? "Best Value" : "Recommended"}
+                                                Best Value
                                             </Badge>
                                         </div>
                                     )}
@@ -181,14 +102,12 @@ export default function PricingPage() {
                                     </CardHeader>
 
                                     <CardContent className="flex-1 px-8">
-                                        {view === "patient" && (
-                                            <div className="flex flex-col items-center justify-center mb-8 bg-primary/5 rounded-2xl py-6 border border-primary/10">
-                                                <span className="text-sm font-medium text-primary/60 uppercase tracking-wider mb-1">Starting from</span>
-                                                <div className="flex items-baseline gap-1">
-                                                    <span className="text-4xl font-black text-foreground">{(item as any).price}</span>
-                                                </div>
+                                        <div className="flex flex-col items-center justify-center mb-8 bg-primary/5 rounded-2xl py-6 border border-primary/10">
+                                            <span className="text-sm font-medium text-primary/60 uppercase tracking-wider mb-1">Starting from</span>
+                                            <div className="flex items-baseline gap-1">
+                                                <span className="text-4xl font-black text-foreground">{item.price}</span>
                                             </div>
-                                        )}
+                                        </div>
 
                                         <ul className="space-y-4">
                                             {item.features.map((feature) => (
@@ -212,8 +131,8 @@ export default function PricingPage() {
                                                     : "bg-background border-2 border-primary/20 text-primary hover:bg-primary/5"
                                             )}
                                         >
-                                            <a href={view === "patient" ? "/register/patient" : "/register/doctor"} className="flex items-center justify-center gap-2">
-                                                {view === "patient" ? "Book Now" : "Start Your Practice"}
+                                            <a href="/register/patient" className="flex items-center justify-center gap-2">
+                                                Book Now
                                                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                             </a>
                                         </Button>
@@ -225,20 +144,16 @@ export default function PricingPage() {
                 </div>
             </section>
 
-            <FeatureComparison />
-
             <PricingTestimonials />
 
             <PricingFAQ />
 
             <CTA
-                title={view === "patient" ? "Ready to find your doctor?" : "Ready to modernize your practice?"}
-                description={view === "patient"
-                    ? "Join thousands of patients who trust Swasthify for quality healthcare at transparent prices. Book your first consultation today."
-                    : "Join thousands of healthcare professionals who trust Swasthify to manage their clinics and hospitals more efficiently."}
+                title="Ready to find your doctor?"
+                description="Join thousands of patients who trust Swasthify for quality healthcare at transparent prices. Book your first consultation today."
                 primaryAction={{
-                    text: view === "patient" ? "Find a Doctor" : "Get Started for Free",
-                    href: view === "patient" ? "/doctors" : "/register/doctor"
+                    text: "Find a Doctor",
+                    href: "/doctors"
                 }}
                 secondaryAction={{ text: "Contact Support", href: "/contact" }}
             />
