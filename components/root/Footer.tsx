@@ -50,14 +50,15 @@ export function Footer() {
                             <h4 className="text-sm font-semibold text-foreground mb-4 uppercase tracking-wider">Follow Our Journey</h4>
                             <div className="flex gap-3">
                                 {[
-                                    { icon: Facebook, label: "Facebook", color: "hover:bg-blue-600" },
-                                    { icon: Twitter, label: "Twitter", color: "hover:bg-sky-500" },
-                                    { icon: Instagram, label: "Instagram", color: "hover:bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600" },
-                                    { icon: Linkedin, label: "LinkedIn", color: "hover:bg-blue-700" }
+                                    { icon: Facebook, label: "Facebook", color: "hover:bg-blue-600", href: "https://www.facebook.com/share/1CvB36owEe/" },
+                                    { icon: Instagram, label: "Instagram", color: "hover:bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600", href: "https://www.instagram.com/swasthify_in?igsh=MWk4eWp6bjF5Y3I0cw==" },
+                                    { icon: Linkedin, label: "LinkedIn", color: "hover:bg-blue-700", href: "https://www.linkedin.com/company/swasthify-healthcare/" }
                                 ].map((social) => (
                                     <a
                                         key={social.label}
-                                        href="#"
+                                        href={social.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                         aria-label={social.label}
                                         className={cn(
                                             "h-10 w-10 flex items-center justify-center rounded-xl bg-muted/50 text-muted-foreground hover:text-white transition-all duration-300 border border-border/50",
