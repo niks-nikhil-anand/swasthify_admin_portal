@@ -97,6 +97,11 @@ const sidebarGroups = [
                 icon: Stethoscope,
             },
             {
+                title: "Health Packages",
+                href: "/superAdmin/operations/health-packages",
+                icon: Activity,
+            },
+            {
                 title: "Complaints",
                 href: "/superAdmin/operations/complaints",
                 icon: MessageSquareWarning,
