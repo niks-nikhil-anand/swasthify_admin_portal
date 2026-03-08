@@ -800,6 +800,25 @@ model PageView {
   @@map("page_views")
 }
 
+model HealthPackage {
+  id            String   @id @default(uuid())
+  title         String
+  description   String?
+  purpose       String?
+  image         String?
+  price         Float
+  originalPrice Float
+  discount      String?
+  tests         String[] @default([])
+  keywords      String[] @default([])
+  category      String   @default("General")
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("health_packages")
+}
+
 model AnalyticsEvent {
   id         String   @id @default(uuid())
   sessionId  String?
