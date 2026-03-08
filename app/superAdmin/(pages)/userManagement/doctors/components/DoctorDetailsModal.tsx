@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
     Dialog,
     DialogContent,
@@ -38,7 +39,8 @@ import {
     Shield,
     Eye,
     Lock,
-    Megaphone
+    Megaphone,
+    ExternalLink
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -116,6 +118,7 @@ export function DoctorDetailsModal({
     const [loading, setLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(defaultEditing);
     const [saving, setSaving] = useState(false);
+    const [impersonating, setImpersonating] = useState(false);
     const [viewingDoc, setViewingDoc] = useState<{ url: string; type: string } | null>(null);
 
     // Campaign Details State
@@ -173,6 +176,36 @@ export function DoctorDetailsModal({
             toast.error("Failed to update doctor");
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleEnterDoctorPanel = async () => {
+        try {
+            setImpersonating(true);
+            const res = await fetch("/api/admin/impersonate/doctor", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ doctorId }),
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || "Failed to impersonate doctor");
+            }
+
+            const data = await res.json();
+            toast.success("Redirecting to doctor panel...");
+
+            // Wait a moment for cookies to be set before redirecting
+            setTimeout(() => {
+                window.location.href = data.redirectUrl;
+            }, 500);
+
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error.message || "Failed to enter doctor panel");
+        } finally {
+            setImpersonating(false);
         }
     };
 
@@ -295,6 +328,19 @@ export function DoctorDetailsModal({
                                                 ID: {data.id.substring(0, 8)}...
                                             </Badge>
                                         </div>
+                                    </div>
+
+                                    <Separator />
+
+                                    <div className="w-full">
+                                        <Button
+                                            className="w-full gap-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                            onClick={handleEnterDoctorPanel}
+                                            disabled={impersonating || loading}
+                                        >
+                                            {impersonating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
+                                            Enter Doctor Panel
+                                        </Button>
                                     </div>
 
                                     <Separator />
