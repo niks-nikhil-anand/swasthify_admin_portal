@@ -149,10 +149,10 @@ export default function SettingsPage() {
         setIsSaving(true)
 
         const formData = new FormData(e.currentTarget)
-        const data = {
+        const data: any = {
             name: formData.get("name"),
             description: formData.get("description"),
-            feeType: formData.get("feeType"),
+            feeType: "FLAT", // Amount is always flat rupee amount now
             fee: formData.get("fee"),
             discount: formData.get("discount"),
             discountType: formData.get("discountType"),
@@ -162,9 +162,14 @@ export default function SettingsPage() {
             isActive: formData.get("isActive") === "on",
         }
 
+        if (editingFee?.id) {
+            data.id = editingFee.id
+        }
+
         try {
+            const method = editingFee?.id ? "PUT" : "POST"
             const response = await fetch("/api/admin/system/platform-fee", {
-                method: "POST",
+                method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
             })
