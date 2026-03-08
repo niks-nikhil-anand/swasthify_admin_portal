@@ -196,9 +196,9 @@ export function DoctorDetailsModal({
             const data = await res.json();
             toast.success("Redirecting to doctor panel...");
 
-            // Wait a moment for cookies to be set before redirecting
+            // Wait a moment for cookies to be set before opening the new tab
             setTimeout(() => {
-                window.location.href = data.redirectUrl;
+                window.open(data.redirectUrl, "_blank");
             }, 500);
 
         } catch (error: any) {
