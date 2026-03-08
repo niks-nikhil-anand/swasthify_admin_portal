@@ -84,3 +84,49 @@ export async function POST(req: Request) {
         return new NextResponse("Internal Error", { status: 500 });
     }
 }
+
+export async function PUT(req: Request) {
+    try {
+        const body = await req.json();
+        const {
+            id,
+            name,
+            description,
+            feeType,
+            fee,
+            discount,
+            discountType,
+            entityType,
+            minAmount,
+            maxAmount,
+            isActive,
+        } = body;
+
+        if (!id) {
+            return new NextResponse("Fee ID is required", { status: 400 });
+        }
+
+        const platformFee = await db.platformFee.update({
+            where: {
+                id,
+            },
+            data: {
+                name,
+                description,
+                feeType,
+                fee: fee !== undefined ? parseFloat(fee) : undefined,
+                discount: discount !== undefined ? parseFloat(discount) : undefined,
+                discountType,
+                entityType,
+                minAmount: minAmount !== undefined ? (minAmount ? parseFloat(minAmount) : null) : undefined,
+                maxAmount: maxAmount !== undefined ? (maxAmount ? parseFloat(maxAmount) : null) : undefined,
+                isActive: isActive !== undefined ? !!isActive : undefined,
+            },
+        });
+
+        return NextResponse.json(platformFee);
+    } catch (error) {
+        console.error("[PLATFORM_FEE_PUT]", error);
+        return new NextResponse("Internal Error", { status: 500 });
+    }
+}
