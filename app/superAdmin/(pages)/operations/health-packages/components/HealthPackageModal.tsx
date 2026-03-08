@@ -33,8 +33,8 @@ const formSchema = z.object({
     description: z.string().optional(),
     purpose: z.string().optional(),
     image: z.string().optional(),
-    price: z.preprocess((val) => parseFloat(val as string), z.number().min(0)),
-    originalPrice: z.preprocess((val) => parseFloat(val as string), z.number().min(0)),
+    price: z.coerce.number().min(0),
+    originalPrice: z.coerce.number().min(0),
     discount: z.string().optional(),
     category: z.string().min(1, "Category is required"),
     isActive: z.boolean().default(true),
@@ -60,7 +60,7 @@ export function HealthPackageModal({
     const [newKeyword, setNewKeyword] = useState("");
 
     const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(formSchema) as any,
         defaultValues: {
             title: "",
             description: "",
@@ -162,7 +162,7 @@ export function HealthPackageModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="w-[60vw] max-w-[60vw] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>{initialData ? "Edit" : "Add"} Health Package</DialogTitle>
                     <DialogDescription>
@@ -170,8 +170,8 @@ export function HealthPackageModal({
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
                                 name="title"
@@ -199,7 +199,7 @@ export function HealthPackageModal({
                                 )}
                             />
                         </div>
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <FormField
                                 control={form.control}
                                 name="price"
@@ -240,32 +240,34 @@ export function HealthPackageModal({
                                 )}
                             />
                         </div>
-                        <FormField
-                            control={form.control}
-                            name="image"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Image URL</FormLabel>
-                                    <FormControl>
-                                        <Input disabled={loading} placeholder="https://..." {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="purpose"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Purpose</FormLabel>
-                                    <FormControl>
-                                        <Input disabled={loading} placeholder="e.g. For monitoring health" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <FormField
+                                control={form.control}
+                                name="image"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Image URL</FormLabel>
+                                        <FormControl>
+                                            <Input disabled={loading} placeholder="https://..." {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="purpose"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Purpose</FormLabel>
+                                        <FormControl>
+                                            <Input disabled={loading} placeholder="e.g. For monitoring health" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                         <FormField
                             control={form.control}
                             name="description"
