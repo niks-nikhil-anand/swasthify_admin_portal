@@ -70,6 +70,8 @@ export default function VerifyEmailLinkPage() {
                             finalRedirect = "/doctor-panel/dashboard";
                         } else if (userRole === "LAB" && !redirectTo.startsWith("/lab-panel")) {
                             finalRedirect = "/lab-panel/dashboard";
+                        } else if (userRole === "PATIENT" && !redirectTo.startsWith("/me")) {
+                            finalRedirect = "/me";
                         }
 
                         console.log("Redirecting to:", finalRedirect);
