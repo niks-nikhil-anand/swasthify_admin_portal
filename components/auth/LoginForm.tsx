@@ -5,6 +5,9 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff, Loader2, Smartphone, Mail, KeyRound } from "lucide-react"
 import { toast } from "sonner"
+import { RecaptchaVerifier, signInWithPhoneNumber, type ConfirmationResult } from "firebase/auth"
+
+import { auth, identityAuth } from "@/lib/firebase"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -22,6 +25,15 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
     const [isLoading, setIsLoading] = React.useState<boolean>(false)
     const [loginMethod, setLoginMethod] = React.useState<"email" | "mobile">("email")
     const [showPassword, setShowPassword] = React.useState(false)
+    const [loginStatus, setLoginStatus] = React.useState<string | null>(null)
+
+    const getDashboardRedirect = (userRole: string) => {
+        const normalizedRole = userRole.toUpperCase();
+        if (normalizedRole === "SUPER_ADMIN" || normalizedRole === "ADMIN") return "/superAdmin/dashboard";
+        if (normalizedRole === "DOCTOR") return "/doctor-panel/dashboard";
+        if (normalizedRole === "LAB") return "/lab-panel/dashboard";
+        return "/me";
+    }
 
     // Form states
     const [email, setEmail] = React.useState("")
@@ -29,6 +41,7 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
     const [mobile, setMobile] = React.useState("")
     const [otp, setOtp] = React.useState("")
     const [isOtpSent, setIsOtpSent] = React.useState(false)
+    const [confirmationResult, setConfirmationResult] = React.useState<ConfirmationResult | null>(null)
 
     // Email OTP states
     const [emailMode, setEmailMode] = React.useState<"password" | "otp">("password")
@@ -79,15 +92,49 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
 
                 console.log("Login successful", data)
                 toast.success("Login successful")
+                
+                const finalRedirect = data.user?.role ? getDashboardRedirect(data.user.role) : redirectTo;
+                
                 router.refresh()
-                router.push(redirectTo)
+                router.push(finalRedirect)
             } else {
-                // Mobile/OTP not implemented yet
-                console.log("Mobile login not implemented")
-                toast.info("Mobile login coming soon")
-                setTimeout(() => {
-                    setIsLoading(false)
-                }, 2000)
+                // Mobile/OTP Verification
+                if (!confirmationResult || !otp) {
+                    toast.error("Please request OTP first");
+                    setIsLoading(false);
+                    return;
+                }
+
+                try {
+                    const result = await confirmationResult.confirm(otp);
+                    const user = result.user;
+                    const idToken = await user.getIdToken();
+
+                    const response = await fetch("/api/auth/identity-mobile-otp", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ idToken, role }),
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        toast.error(data.error || "Verification failed");
+                        setIsLoading(false);
+                        return;
+                    }
+
+                    toast.success("Login successful");
+                    
+                    const finalRedirect = data.user?.role ? getDashboardRedirect(data.user.role) : redirectTo;
+                    
+                    router.refresh();
+                    router.push(finalRedirect);
+                } catch (error: any) {
+                    console.error("Verification Error:", error);
+                    toast.error(error.message || "Invalid OTP");
+                    setIsLoading(false);
+                }
             }
         } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : "Authentication failed"
@@ -97,15 +144,41 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
         }
     }
 
-    const handleSendOtp = () => {
-        if (!mobile) return
+    const setupRecaptcha = () => {
+        if ((window as any).recaptchaVerifier) {
+            (window as any).recaptchaVerifier.clear();
+            (window as any).recaptchaVerifier = null;
+        }
+        (window as any).recaptchaVerifier = new RecaptchaVerifier(identityAuth, "recaptcha-container", {
+            size: "invisible",
+            callback: () => {
+                console.log("Recaptcha verified");
+            },
+        });
+    };
+
+    const handleSendOtp = async () => {
+        if (!mobile || mobile.length < 10) return
         setIsLoading(true)
-        setTimeout(() => {
-            setIsLoading(false)
+        try {
+            setupRecaptcha();
+            const appVerifier = (window as any).recaptchaVerifier;
+            const formattedNumber = `+91${mobile}`;
+            const result = await signInWithPhoneNumber(identityAuth, formattedNumber, appVerifier);
+            setConfirmationResult(result);
             setIsOtpSent(true)
-            setTimeLeft(30) // Reset timer
-            console.log("OTP Sent to", mobile)
-        }, 1500)
+            setTimeLeft(30)
+            toast.success("OTP sent to your mobile")
+        } catch (error: any) {
+            console.error("SMS Error:", error);
+            toast.error(error.message || "Failed to send OTP");
+            if ((window as any).recaptchaVerifier) {
+                (window as any).recaptchaVerifier.clear();
+                (window as any).recaptchaVerifier = null;
+            }
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     const handleSendEmailOtp = async () => {
@@ -406,6 +479,7 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
                     </Button>
                 </div>
             </form>
+            <div id="recaptcha-container" />
         </div>
     )
 }
