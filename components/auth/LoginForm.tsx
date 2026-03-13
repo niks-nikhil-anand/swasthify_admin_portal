@@ -64,30 +64,25 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
         return () => clearInterval(interval)
     }, [isOtpSent, isEmailOtpSent, timeLeft])
 
+    // Initialize reCAPTCHA ONCE on mount - clean and simple
+    React.useEffect(() => {
+        recaptchaVerifierRef.current = new RecaptchaVerifier(identityAuth, "recaptcha-container", {
+            size: "invisible",
+        });
+
+        return () => {
+            recaptchaVerifierRef.current?.clear();
+            recaptchaVerifierRef.current = null;
+        };
+    }, []);
+
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
         setIsLoading(true)
 
         try {
-            // Execute reCAPTCHA Enterprise
-            let recaptchaToken = "";
-            if (typeof window !== "undefined" && (window as any).grecaptcha?.enterprise) {
-                try {
-                    await new Promise<void>((resolve) => (window as any).grecaptcha.enterprise.ready(resolve));
-                    // Use reCAPTCHA Enterprise site key
-                    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6LdhFoksAAAAANqU8prkZaamrVeApu9lbJ38AIYe";
-                    recaptchaToken = await (window as any).grecaptcha.enterprise.execute(
-                        siteKey,
-                        { action: loginMethod === "email" ? "LOGIN" : "MOBILE_LOGIN" }
-                    );
-                    console.log("ReCAPTCHA Token generated:", recaptchaToken);
-                } catch (recaptchaError) {
-                    console.error("ReCAPTCHA Execution Error:", recaptchaError);
-                }
-            }
-
             if (loginMethod === "email") {
-                const body: Record<string, string | undefined> = { email, password, role, recaptchaToken }
+                const body: Record<string, string | undefined> = { email, password, role }
 
                 if (emailMode === "otp") {
                     body.otp = emailOtp
@@ -162,66 +157,39 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
         }
     }
 
-    const setupRecaptcha = () => {
-        // Clear existing verifier
-        if (recaptchaVerifierRef.current) {
-            try {
-                recaptchaVerifierRef.current.clear();
-            } catch (e) {
-                console.warn("Error clearing recaptcha:", e);
-            }
-            recaptchaVerifierRef.current = null;
-        }
-
-        // Initialize new verifier
-        try {
-            recaptchaVerifierRef.current = new RecaptchaVerifier(identityAuth, "recaptcha-container", {
-                size: "invisible",
-                callback: () => {
-                    console.log("Recaptcha verified via Firebase");
-                },
-                'expired-callback': () => {
-                    console.log("Recaptcha expired");
-                    recaptchaVerifierRef.current = null;
-                    toast.error("reCAPTCHA expired. Please try again.");
-                }
-            });
-        } catch (error) {
-            console.error("Firebase RecaptchaVerifier Init Error:", error);
-            toast.error("Failed to initialize authentication security");
-        }
-    };
-
     const handleSendOtp = async () => {
-        if (!mobile || mobile.length < 10) return
-        setIsLoading(true)
-        try {
-            setupRecaptcha();
-            
-            if (!recaptchaVerifierRef.current) {
-                throw new Error("Failed to initialize reCAPTCHA");
-            }
+        if (!mobile || mobile.length < 10) return;
+        setIsLoading(true);
 
-            // Explicitly render the verifier before sending
-            await recaptchaVerifierRef.current.render();
+        try {
+            // Reset verifier if it was already used (e.g. user clicked "Change number")
+            if (!recaptchaVerifierRef.current) {
+                recaptchaVerifierRef.current = new RecaptchaVerifier(identityAuth, "recaptcha-container", {
+                    size: "invisible",
+                });
+            }
 
             const formattedNumber = `+91${mobile}`;
-            const result = await signInWithPhoneNumber(identityAuth, formattedNumber, recaptchaVerifierRef.current);
+            const result = await signInWithPhoneNumber(
+                identityAuth,
+                formattedNumber,
+                recaptchaVerifierRef.current
+            );
             setConfirmationResult(result);
-            setIsOtpSent(true)
-            setTimeLeft(30)
-            toast.success("OTP sent to your mobile")
+            setIsOtpSent(true);
+            setTimeLeft(30);
+            toast.success("OTP sent to your mobile");
         } catch (error: any) {
             console.error("SMS Error:", error);
             toast.error(error.message || "Failed to send OTP");
-            if (recaptchaVerifierRef.current) {
-                recaptchaVerifierRef.current.clear();
-                recaptchaVerifierRef.current = null;
-            }
+
+            // Clear verifier on error so next attempt gets a fresh one
+            recaptchaVerifierRef.current?.clear();
+            recaptchaVerifierRef.current = null;
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
-    }
+    };
 
     const handleSendEmailOtp = async () => {
         if (!email) return
@@ -472,7 +440,13 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
                                         <button
                                             type="button"
                                             className="text-xs text-primary hover:text-primary/80"
-                                            onClick={() => setIsOtpSent(false)}
+                                            onClick={() => {
+                                                setIsOtpSent(false);
+                                                setOtp("");
+                                                // Clear so next send gets a fresh verifier
+                                                recaptchaVerifierRef.current?.clear();
+                                                recaptchaVerifierRef.current = null;
+                                            }}
                                         >
                                             Change number
                                         </button>
