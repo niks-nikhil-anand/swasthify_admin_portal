@@ -26,9 +26,19 @@ export function PasswordlessLoginForm({ className, onBackToLogin, redirectTo = "
         event.preventDefault()
         setIsLoading(true)
 
+        const getDashboardRedirect = (r: string) => {
+            const normalizedRole = r.toUpperCase();
+            if (normalizedRole === "SUPER_ADMIN") return "/superAdmin/dashboard";
+            if (normalizedRole === "DOCTOR") return "/doctor-panel/dashboard";
+            if (normalizedRole === "LAB") return "/lab-panel/dashboard";
+            return "/me";
+        }
+
+        const finalRedirect = (redirectTo === "/me" && role !== "patient") ? getDashboardRedirect(role) : redirectTo;
+
         const actionCodeSettings = {
             // Using window.location.origin ensures we stay on the same domain (swasthify.in vs www.swasthify.in)
-            url: `${window.location.origin}/login/verify?redirectTo=${encodeURIComponent(redirectTo)}&role=${role}`,
+            url: `${window.location.origin}/login/verify?redirectTo=${encodeURIComponent(finalRedirect)}&role=${role}`,
             handleCodeInApp: true,
         }
 
