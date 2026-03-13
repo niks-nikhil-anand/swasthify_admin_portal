@@ -17,7 +17,7 @@ export default function AboutPage() {
             <LocationSection />
             <CTA
                 title="Be Part of Our Mission"
-                description="Join us in our journey to make healthcare accessible to everyone. Experience the difference with Swasthify."
+                description="Join  in our journey to make healthcare accessible to everyone. Experience the difference with Swasthify."
                 primaryAction={{ text: "Join Now", href: "/register" }}
             />
         </div>
