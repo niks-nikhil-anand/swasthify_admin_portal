@@ -26,6 +26,7 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
     const [loginMethod, setLoginMethod] = React.useState<"email" | "mobile">("email")
     const [showPassword, setShowPassword] = React.useState(false)
     const [loginStatus, setLoginStatus] = React.useState<string | null>(null)
+    const recaptchaVerifierRef = React.useRef<RecaptchaVerifier | null>(null);
 
     const getDashboardRedirect = (userRole: string) => {
         const normalizedRole = userRole.toUpperCase();
@@ -68,8 +69,25 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
         setIsLoading(true)
 
         try {
+            // Execute reCAPTCHA Enterprise
+            let recaptchaToken = "";
+            if (typeof window !== "undefined" && (window as any).grecaptcha?.enterprise) {
+                try {
+                    await new Promise<void>((resolve) => (window as any).grecaptcha.enterprise.ready(resolve));
+                    // Use reCAPTCHA Enterprise site key
+                    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6LdhFoksAAAAANqU8prkZaamrVeApu9lbJ38AIYe";
+                    recaptchaToken = await (window as any).grecaptcha.enterprise.execute(
+                        siteKey,
+                        { action: loginMethod === "email" ? "LOGIN" : "MOBILE_LOGIN" }
+                    );
+                    console.log("ReCAPTCHA Token generated:", recaptchaToken);
+                } catch (recaptchaError) {
+                    console.error("ReCAPTCHA Execution Error:", recaptchaError);
+                }
+            }
+
             if (loginMethod === "email") {
-                const body: Record<string, string | undefined> = { email, password, role }
+                const body: Record<string, string | undefined> = { email, password, role, recaptchaToken }
 
                 if (emailMode === "otp") {
                     body.otp = emailOtp
@@ -145,16 +163,33 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
     }
 
     const setupRecaptcha = () => {
-        if ((window as any).recaptchaVerifier) {
-            (window as any).recaptchaVerifier.clear();
-            (window as any).recaptchaVerifier = null;
+        // Clear existing verifier
+        if (recaptchaVerifierRef.current) {
+            try {
+                recaptchaVerifierRef.current.clear();
+            } catch (e) {
+                console.warn("Error clearing recaptcha:", e);
+            }
+            recaptchaVerifierRef.current = null;
         }
-        (window as any).recaptchaVerifier = new RecaptchaVerifier(identityAuth, "recaptcha-container", {
-            size: "invisible",
-            callback: () => {
-                console.log("Recaptcha verified");
-            },
-        });
+
+        // Initialize new verifier
+        try {
+            recaptchaVerifierRef.current = new RecaptchaVerifier(identityAuth, "recaptcha-container", {
+                size: "invisible",
+                callback: () => {
+                    console.log("Recaptcha verified via Firebase");
+                },
+                'expired-callback': () => {
+                    console.log("Recaptcha expired");
+                    recaptchaVerifierRef.current = null;
+                    toast.error("reCAPTCHA expired. Please try again.");
+                }
+            });
+        } catch (error) {
+            console.error("Firebase RecaptchaVerifier Init Error:", error);
+            toast.error("Failed to initialize authentication security");
+        }
     };
 
     const handleSendOtp = async () => {
@@ -162,9 +197,16 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
         setIsLoading(true)
         try {
             setupRecaptcha();
-            const appVerifier = (window as any).recaptchaVerifier;
+            
+            if (!recaptchaVerifierRef.current) {
+                throw new Error("Failed to initialize reCAPTCHA");
+            }
+
+            // Explicitly render the verifier before sending
+            await recaptchaVerifierRef.current.render();
+
             const formattedNumber = `+91${mobile}`;
-            const result = await signInWithPhoneNumber(identityAuth, formattedNumber, appVerifier);
+            const result = await signInWithPhoneNumber(identityAuth, formattedNumber, recaptchaVerifierRef.current);
             setConfirmationResult(result);
             setIsOtpSent(true)
             setTimeLeft(30)
@@ -172,9 +214,9 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
         } catch (error: any) {
             console.error("SMS Error:", error);
             toast.error(error.message || "Failed to send OTP");
-            if ((window as any).recaptchaVerifier) {
-                (window as any).recaptchaVerifier.clear();
-                (window as any).recaptchaVerifier = null;
+            if (recaptchaVerifierRef.current) {
+                recaptchaVerifierRef.current.clear();
+                recaptchaVerifierRef.current = null;
             }
         } finally {
             setIsLoading(false)
