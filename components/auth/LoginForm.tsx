@@ -50,19 +50,30 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
     const [isEmailOtpSent, setIsEmailOtpSent] = React.useState(false)
 
     // Timer state
-    const [timeLeft, setTimeLeft] = React.useState(30)
+    const [mobileTimeLeft, setMobileTimeLeft] = React.useState(30)
+    const [emailTimeLeft, setEmailTimeLeft] = React.useState(30)
 
     React.useEffect(() => {
-        let interval: NodeJS.Timeout
+        let mobileInterval: NodeJS.Timeout
+        let emailInterval: NodeJS.Timeout
 
-        if ((isOtpSent || isEmailOtpSent) && timeLeft > 0) {
-            interval = setInterval(() => {
-                setTimeLeft((prev) => prev - 1)
+        if (isOtpSent && mobileTimeLeft > 0) {
+            mobileInterval = setInterval(() => {
+                setMobileTimeLeft((prev) => prev - 1)
             }, 1000)
         }
 
-        return () => clearInterval(interval)
-    }, [isOtpSent, isEmailOtpSent, timeLeft])
+        if (isEmailOtpSent && emailTimeLeft > 0) {
+            emailInterval = setInterval(() => {
+                setEmailTimeLeft((prev) => prev - 1)
+            }, 1000)
+        }
+
+        return () => {
+            clearInterval(mobileInterval)
+            clearInterval(emailInterval)
+        }
+    }, [isOtpSent, mobileTimeLeft, isEmailOtpSent, emailTimeLeft])
 
     // Initialize reCAPTCHA ONCE on mount - clean and simple
     React.useEffect(() => {
@@ -177,7 +188,7 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
             );
             setConfirmationResult(result);
             setIsOtpSent(true);
-            setTimeLeft(30);
+            setMobileTimeLeft(30);
             toast.success("OTP sent to your mobile");
         } catch (error: any) {
             console.error("SMS Error:", error);
@@ -210,7 +221,7 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
             }
 
             setIsEmailOtpSent(true)
-            setTimeLeft(30) // Reset timer
+            setEmailTimeLeft(30) // Reset timer
             toast.success("OTP sent to your email")
         } catch (error) {
             console.error(error)
@@ -366,7 +377,7 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
                                         </div>
                                         <Input
                                             id="emailOtp"
-                                            placeholder="123456"
+                                            placeholder="Enter 6 digit OTP"
                                             type="text"
                                             maxLength={6}
                                             disabled={isLoading}
@@ -377,21 +388,20 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
                                             }}
                                             required
                                         />
-                                        <div className="flex justify-end">
-                                            {timeLeft > 0 ? (
-                                                <p className="text-xs text-muted-foreground">
-                                                    Resend OTP in {timeLeft}s
-                                                </p>
-                                            ) : (
-                                                <button
-                                                    type="button"
-                                                    className="text-xs text-primary hover:text-primary/80 font-medium"
-                                                    onClick={handleSendEmailOtp}
-                                                    disabled={isLoading}
-                                                >
-                                                    Resend OTP
-                                                </button>
-                                            )}
+                                        <div className="flex justify-end mt-1">
+                                            <button
+                                                type="button"
+                                                className={cn(
+                                                    "text-xs font-medium transition-colors",
+                                                    emailTimeLeft > 0 
+                                                        ? "text-muted-foreground cursor-not-allowed" 
+                                                        : "text-primary hover:text-primary/80"
+                                                )}
+                                                onClick={handleSendEmailOtp}
+                                                disabled={isLoading || emailTimeLeft > 0}
+                                            >
+                                                {emailTimeLeft > 0 ? `Resend OTP in ${emailTimeLeft}s` : "Resend OTP"}
+                                            </button>
                                         </div>
                                     </div>
                                 )
@@ -453,7 +463,7 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
                                     </div>
                                     <Input
                                         id="otp"
-                                        placeholder="123456"
+                                        placeholder="Enter 6 digit OTP"
                                         type="text"
                                         maxLength={6}
                                         disabled={isLoading}
@@ -464,21 +474,20 @@ export function LoginForm({ className, redirectTo = "/doctor-panel", role = "doc
                                         }}
                                         required
                                     />
-                                    <div className="flex justify-end">
-                                        {timeLeft > 0 ? (
-                                            <p className="text-xs text-muted-foreground">
-                                                Resend OTP in {timeLeft}s
-                                            </p>
-                                        ) : (
-                                            <button
-                                                type="button"
-                                                className="text-xs text-primary hover:text-primary/80 font-medium"
-                                                onClick={handleSendOtp}
-                                                disabled={isLoading}
-                                            >
-                                                Resend OTP
-                                            </button>
-                                        )}
+                                    <div className="flex justify-end mt-1">
+                                        <button
+                                            type="button"
+                                            className={cn(
+                                                "text-xs font-medium transition-colors",
+                                                mobileTimeLeft > 0 
+                                                    ? "text-muted-foreground cursor-not-allowed" 
+                                                    : "text-primary hover:text-primary/80"
+                                            )}
+                                            onClick={handleSendOtp}
+                                            disabled={isLoading || mobileTimeLeft > 0}
+                                        >
+                                            {mobileTimeLeft > 0 ? `Resend OTP in ${mobileTimeLeft}s` : "Resend OTP"}
+                                        </button>
                                     </div>
                                 </div>
                             )}
