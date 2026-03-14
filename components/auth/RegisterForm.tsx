@@ -23,6 +23,9 @@ import {
 const RegisterSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Invalid email address"),
+    mobile: z.string().refine((val) => /^\d{10}$/.test(val), {
+        message: "Mobile number must be exactly 10 digits",
+    }),
     password: z
         .string()
         .min(6, "Password must be at least 6 characters")
@@ -49,6 +52,7 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
         defaultValues: {
             name: "",
             email: "",
+            mobile: "",
             password: "",
             confirmPassword: "",
         },
@@ -66,6 +70,7 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
                 body: JSON.stringify({
                     name: values.name,
                     email: values.email,
+                    phone: values.mobile,
                     password: values.password,
                     role: "PATIENT"
                 }),
@@ -126,6 +131,35 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
                                     <Input placeholder="name@example.com" type="email" disabled={isLoading} {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="mobile"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Mobile Number</FormLabel>
+                                <FormControl>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-2.5 text-sm text-muted-foreground border-r border-slate-300 pr-2 h-5 flex items-center">
+                                            +91
+                                        </span>
+                                        <Input 
+                                            placeholder="9876543210" 
+                                            type="tel"
+                                            className="pl-16"
+                                            maxLength={10}
+                                            disabled={isLoading} 
+                                            {...field}
+                                            onChange={(e) => {
+                                                const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                                field.onChange(val);
+                                            }}
+                                        />
+                                    </div>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
