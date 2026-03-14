@@ -23,6 +23,14 @@ export async function POST(req: Request) {
 
     const { name, email, password, phone, role } = validationResult.data;
 
+    // Strict check for phone number (required for new phone auth flow)
+    if (!phone) {
+      return NextResponse.json(
+        { error: "Mobile number is required" },
+        { status: 400 }
+      );
+    }
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
