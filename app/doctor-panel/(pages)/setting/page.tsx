@@ -20,6 +20,7 @@ export default function SettingsPage() {
         accountNumber: "",
         ifscCode: ""
     });
+    const [specialities, setSpecialities] = useState<{id: string, name: string}[]>([]);
 
     useEffect(() => {
         fetchDoctorProfile();
@@ -37,6 +38,7 @@ export default function SettingsPage() {
                     accountNumber: data.doctor.accountNumber || "",
                     ifscCode: data.doctor.ifscCode || ""
                 });
+                setSpecialities(data.doctor.specializations || []);
             }
         } catch (error) {
             console.error("Failed to fetch profile:", error);
@@ -142,6 +144,29 @@ export default function SettingsPage() {
         }
     };
 
+    const updateSpecialities = async (specializationIds: string[]) => {
+        try {
+            setSaving(true);
+            const res = await fetch("/api/doctor/profile/specializations", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ specializations: specializationIds })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setSpecialities(data.specializations);
+                toast.success("Specialities updated successfully");
+            } else {
+                toast.error(data.error || "Failed to update specialities");
+            }
+        } catch (error) {
+            console.error("Update error:", error);
+            toast.error("Connection error");
+        } finally {
+            setSaving(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-[60vh]">
@@ -170,7 +195,11 @@ export default function SettingsPage() {
 
                 {/* General Settings */}
                 <TabsContent value="general" className="space-y-4">
-                    <GeneralSettings />
+                    <GeneralSettings 
+                        specialities={specialities} 
+                        updateSpecialities={updateSpecialities}
+                        saving={saving}
+                    />
                 </TabsContent>
 
                 {/* Professional Settings */}
