@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
 
         const doctor = await prisma.doctor.findUnique({
             where: { id: doctorId },
-            include: { user: true }
+            include: { user: true, specializations: true }
         });
 
         if (!doctor) {
