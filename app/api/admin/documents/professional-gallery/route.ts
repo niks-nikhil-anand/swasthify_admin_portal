@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
         const entityId = searchParams.get("entityId");
