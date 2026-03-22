@@ -32,9 +32,9 @@ export function Footer() {
             <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl translate-y-1/2 -z-10" />
 
             <div className="container mx-auto px-4 relative">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 mb-16">
                     {/* Brand Section */}
-                    <div className="md:col-span-4 space-y-6">
+                    <div className="md:col-span-2 lg:col-span-4 space-y-6">
                         <Link href="/" className="flex items-center space-x-3 group">
                             <div className="relative h-16 w-16 transition-transform group-hover:scale-110 duration-500">
                                 <Image src="/logo.png" alt="Swasthify Logo" fill className="object-contain" />
@@ -73,7 +73,7 @@ export function Footer() {
                     </div>
 
                     {/* Quick Links */}
-                    <div className="md:col-span-2">
+                    <div className="md:col-span-1 lg:col-span-2">
                         <h3 className="font-bold text-foreground mb-6 text-lg tracking-tight">Quick Links</h3>
                         <ul className="space-y-3">
                             {quickLinks.map((link) => (
@@ -91,7 +91,7 @@ export function Footer() {
                     </div>
 
                     {/* Services */}
-                    <div className="md:col-span-2">
+                    <div className="md:col-span-1 lg:col-span-2">
                         <h3 className="font-bold text-foreground mb-6 text-lg tracking-tight">Services</h3>
                         <ul className="space-y-3">
                             {services.map((link) => (
@@ -109,7 +109,7 @@ export function Footer() {
                     </div>
 
                     {/* Contact Info */}
-                    <div className="md:col-span-4">
+                    <div className="md:col-span-2 lg:col-span-4">
                         <h3 className="font-bold text-foreground mb-6 text-lg tracking-tight">Get in Touch</h3>
                         <div className="bg-muted/30 p-6 rounded-2xl border border-border/50 backdrop-blur-sm">
                             <ul className="space-y-4 text-[15px] text-muted-foreground">
