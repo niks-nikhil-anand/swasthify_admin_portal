@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Camera, ImagePlus, Trash2 } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Camera, ImagePlus, Trash2, Eye } from "lucide-react";
 
 interface ProfessionalSettingsProps {
     clinicImages: string[];
@@ -12,6 +14,8 @@ interface ProfessionalSettingsProps {
 }
 
 export function ProfessionalSettings({ clinicImages, handleImageUpload, removeImage, saving }: ProfessionalSettingsProps) {
+    const [viewImage, setViewImage] = useState<string | null>(null);
+
     return (
         <Card className="border-none shadow-sm bg-muted/30">
             <CardHeader>
@@ -38,16 +42,28 @@ export function ProfessionalSettings({ clinicImages, handleImageUpload, removeIm
                                     <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-5">
                                         <div className="flex items-center justify-between gap-3 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75">
                                             <span className="text-white text-[10px] font-bold uppercase tracking-widest truncate flex-1 drop-shadow-md">Photo {index + 1}</span>
-                                            <Button
-                                                title={`Remove Photo ${index + 1}`}
-                                                type="button"
-                                                variant="destructive"
-                                                size="icon"
-                                                className="h-9 w-9 rounded-2xl shrink-0 shadow-lg hover:scale-110 active:scale-95 transition-all"
-                                                onClick={() => removeImage(index)}
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    title={`View Photo ${index + 1}`}
+                                                    type="button"
+                                                    variant="secondary"
+                                                    size="icon"
+                                                    className="h-9 w-9 rounded-2xl shrink-0 shadow-lg hover:scale-110 active:scale-95 transition-all bg-white/20 hover:bg-white text-white hover:text-black border-none"
+                                                    onClick={() => setViewImage(url)}
+                                                >
+                                                    <Eye className="h-4 w-4" />
+                                                </Button>
+                                                <Button
+                                                    title={`Remove Photo ${index + 1}`}
+                                                    type="button"
+                                                    variant="destructive"
+                                                    size="icon"
+                                                    className="h-9 w-9 rounded-2xl shrink-0 shadow-lg hover:scale-110 active:scale-95 transition-all"
+                                                    onClick={() => removeImage(index)}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -72,6 +88,15 @@ export function ProfessionalSettings({ clinicImages, handleImageUpload, removeIm
                         );
                     })}
                 </div>
+
+                <Dialog open={!!viewImage} onOpenChange={(open) => !open && setViewImage(null)}>
+                    <DialogContent className="sm:max-w-[600px] p-6 bg-background border shadow-2xl rounded-2xl">
+                        <DialogTitle className="sr-only">View Clinic Image</DialogTitle>
+                        <div className="relative w-full h-[500px] bg-muted/20 rounded-xl flex items-center justify-center border overflow-hidden">
+                            {viewImage && <img src={viewImage} alt="Clinic view" className="w-full h-full object-contain" />}
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </CardContent>
         </Card>
     );
