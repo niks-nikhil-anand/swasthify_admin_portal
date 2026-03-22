@@ -73,9 +73,9 @@ export function Navbar() {
         { name: "Labs", href: "/labs" },
         { name: "Specialities", href: "/specialities" },
         { name: "How It Works", href: "/how-it-works" },
-        { name: "Pricing", href: "/pricing" },
-        { name: "About", href: "/aboutUs" },
-        { name: "Contact", href: "/contact" },
+        { name: "Pricing", href: "/pricing", hideOnTablet: true },
+        { name: "About", href: "/aboutUs", hideOnTablet: true },
+        { name: "Contact", href: "/contact", hideOnTablet: true },
     ];
 
     const isActive = (path: string) => pathname === path;
@@ -92,12 +92,14 @@ export function Navbar() {
                     </Link>
 
                     {/* Desktop Menu */}
-                    <div className="hidden md:flex gap-8 items-center">
+                    <div className="hidden md:flex gap-3 lg:gap-8 items-center">
                         {navItems.map((item) => (
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                className={`text-sm font-medium transition-colors ${isActive(item.href)
+                                className={`text-sm font-medium transition-colors whitespace-nowrap ${
+                                    item.hideOnTablet ? "hidden xl:block" : ""
+                                } ${isActive(item.href)
                                     ? "text-primary font-semibold"
                                     : "text-muted-foreground hover:text-primary"
                                     }`}
