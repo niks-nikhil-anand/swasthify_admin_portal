@@ -154,10 +154,10 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
 
                                 {/* Very faint text Background */}
                                 <div className="absolute left-4 lg:left-8 top-[48%] -translate-y-1/2 flex flex-col justify-center pointer-events-none md:gap-0.5 z-0">
-                                    <span className="text-[#F6F7F8] dark:text-zinc-800/30 font-black uppercase text-[22px] lg:text-[30px] leading-[0.8] tracking-[0.05em] whitespace-nowrap origin-left transition-transform duration-500 group-hover/cta:translate-x-1">
+                                    <span className="text-zinc-200 dark:text-zinc-800/50 font-black uppercase text-[22px] lg:text-[30px] leading-[0.8] tracking-[0.05em] whitespace-nowrap origin-left transition-transform duration-500 group-hover/cta:translate-x-1">
                                         Book
                                     </span>
-                                    <span className="text-[#F6F7F8] dark:text-zinc-800/30 font-black uppercase text-[22px] lg:text-[30px] leading-[0.8] tracking-[0.05em] whitespace-nowrap origin-left transition-transform duration-500 group-hover/cta:translate-x-1">
+                                    <span className="text-zinc-200 dark:text-zinc-800/50 font-black uppercase text-[22px] lg:text-[30px] leading-[0.8] tracking-[0.05em] whitespace-nowrap origin-left transition-transform duration-500 group-hover/cta:translate-x-1">
                                         Now
                                     </span>
                                 </div>
