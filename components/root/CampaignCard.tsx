@@ -54,7 +54,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
 
                 {/* Profile Avatar Sticking Out of Top */}
                 <div className="absolute top-[-60px] md:top-[-75px] left-1/2 -translate-x-1/2 z-10 w-[120px] h-[120px] md:w-[150px] md:h-[150px]">
-                    <div className="w-full h-full rounded-full border-[8px] md:border-[10px] border-[#F8F9F9] dark:border-zinc-950 bg-emerald-500 text-white flex items-center justify-center overflow-hidden shadow-sm">
+                    <div className="w-full h-full rounded-full border-[8px] md:border-8 border-[#F8F9F9] dark:border-zinc-950 bg-emerald-500 text-white flex items-center justify-center overflow-hidden shadow-sm">
                         {campaign.doctor?.profilePhoto ? (
                             <img src={campaign.doctor.profilePhoto} alt={campaign.doctor.user?.name || "Doctor"} className="w-full h-full object-cover" />
                         ) : (
@@ -75,7 +75,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                 <div className="relative z-10 pt-[180px] flex flex-col items-center flex-1 w-full">
 
                     {/* Doctor / Hospital Name */}
-                    <div className="text-center px-6">
+                    <div className="text-center px-4 lg:px-6">
                         <h3 className="font-extrabold text-[#111111] dark:text-zinc-100 text-[18px] md:text-[20px] leading-[1.3] tracking-tight">
                             {campaign.doctor?.hospitalName || campaign.name}
                         </h3>
@@ -86,14 +86,14 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                             </span>
                         </div>
                     </div>
-                    
+
                     {/* Divider line mimicking exactly the screenshot's faint line */}
-                    <div className="w-full px-8 mt-7 mb-5">
+                    <div className="w-full px-4 lg:px-8 mt-7 mb-5">
                         <div className="w-full h-[1px] bg-zinc-200/60 dark:bg-zinc-800" />
                     </div>
 
                     {/* Stats Row */}
-                    <div className="flex items-center justify-between w-full px-6 md:px-8 text-center">
+                    <div className="flex items-center justify-between w-full px-2 lg:px-8 text-center">
                         <div className="flex flex-col flex-1 items-center">
                             <span className="font-black text-[22px] md:text-[26px] text-[#111111] dark:text-zinc-100 leading-none">
                                 {campaign.doctor?.experienceYears}+
@@ -124,23 +124,23 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                     </div>
 
                     {/* Feature Pills */}
-                    <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3 w-full px-4 mt-8 md:mt-10">
-                        <div className="bg-emerald-500/10 px-4 md:px-5 py-2 rounded-full flex items-center gap-2 shadow-[0_2px_10px_-4px_rgba(16,185,129,0.1)] dark:shadow-none transition-transform hover:scale-105">
+                    <div className="flex flex-wrap items-center justify-center gap-1.5 lg:gap-3 w-full px-2 lg:px-4 mt-8 md:mt-10">
+                        <div className="bg-emerald-500/10 px-3 md:px-4 py-2 rounded-full flex items-center gap-2 shadow-[0_2px_10px_-4px_rgba(16,185,129,0.1)] dark:shadow-none transition-transform hover:scale-105">
                             <span className="text-emerald-600 dark:text-emerald-500 text-xs">★</span>
-                            <span className="text-emerald-600 dark:text-emerald-500 text-[11px] md:text-[12px] font-black uppercase tracking-wide">
+                            <span className="text-emerald-600 dark:text-emerald-500 text-[10px] md:text-[11px] lg:text-[12px] font-black uppercase tracking-wide">
                                 OPD
                             </span>
                         </div>
-                        <div className="bg-[#F2F2F2] dark:bg-zinc-800/80 px-4 md:px-5 py-2 rounded-full flex items-center gap-2 transition-transform hover:scale-105">
+                        <div className="bg-[#F2F2F2] dark:bg-zinc-800/80 px-3 md:px-4 py-2 rounded-full flex items-center gap-2 transition-transform hover:scale-105">
                             <span className="text-amber-500 text-xs">⚡</span>
-                            <span className="text-[#333333] dark:text-zinc-300 text-[11px] md:text-[12px] font-black uppercase tracking-wide">
+                            <span className="text-[#333333] dark:text-zinc-300 text-[10px] md:text-[11px] lg:text-[12px] font-black uppercase tracking-wide">
                                 Fast Booking
                             </span>
                         </div>
                         {((campaign as any).isVerified !== false) && (
-                            <div className="bg-emerald-500/10 px-4 md:px-5 py-2 rounded-full flex items-center gap-2 shadow-[0_2px_10px_-4px_rgba(16,185,129,0.1)] dark:shadow-none transition-transform hover:scale-105">
+                            <div className="bg-emerald-500/10 px-3 md:px-4 py-2 rounded-full flex items-center gap-2 shadow-[0_2px_10px_-4px_rgba(16,185,129,0.1)] dark:shadow-none transition-transform hover:scale-105">
                                 <span className="text-emerald-600 dark:text-emerald-500 text-[11px]">✔</span>
-                                <span className="text-emerald-600 dark:text-emerald-500 text-[11px] md:text-[12px] font-black uppercase tracking-wide">
+                                <span className="text-emerald-600 dark:text-emerald-500 text-[10px] md:text-[11px] lg:text-[12px] font-black uppercase tracking-wide">
                                     Verified
                                 </span>
                             </div>
@@ -148,24 +148,24 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                     </div>
 
                     {/* Bottom CTA block */}
-                    <div className="w-full px-4 md:px-6 pt-8 mt-auto">
+                    <div className="w-full px-2 lg:px-6 pt-8 mt-auto">
                         <div className="block">
                             <div className="relative overflow-hidden w-full h-[65px] md:h-[75px] rounded-[18px] md:rounded-[20px] border border-zinc-200/60 dark:border-zinc-800/60 bg-[#FFFFFF] dark:bg-zinc-950 flex items-center shadow-[0_4px_24px_-8px_rgba(0,0,0,0.06)] dark:shadow-none transition-all duration-300 group-hover:border-emerald-500/40 group-hover:shadow-[0_8px_30px_-5px_rgba(16,185,129,0.15)] group/cta">
-                                
+
                                 {/* Very faint text Background */}
-                                <div className="absolute left-6 md:left-8 top-[48%] -translate-y-1/2 flex flex-col justify-center pointer-events-none md:gap-0.5 z-0">
-                                    <span className="text-[#F6F7F8] dark:text-zinc-800/30 font-black uppercase text-[26px] md:text-[30px] leading-[0.8] tracking-[0.05em] whitespace-nowrap origin-left transition-transform duration-500 group-hover/cta:translate-x-1">
+                                <div className="absolute left-4 lg:left-8 top-[48%] -translate-y-1/2 flex flex-col justify-center pointer-events-none md:gap-0.5 z-0">
+                                    <span className="text-[#F6F7F8] dark:text-zinc-800/30 font-black uppercase text-[22px] lg:text-[30px] leading-[0.8] tracking-[0.05em] whitespace-nowrap origin-left transition-transform duration-500 group-hover/cta:translate-x-1">
                                         Book
                                     </span>
-                                    <span className="text-[#F6F7F8] dark:text-zinc-800/30 font-black uppercase text-[26px] md:text-[30px] leading-[0.8] tracking-[0.05em] whitespace-nowrap origin-left transition-transform duration-500 group-hover/cta:translate-x-1">
+                                    <span className="text-[#F6F7F8] dark:text-zinc-800/30 font-black uppercase text-[22px] lg:text-[30px] leading-[0.8] tracking-[0.05em] whitespace-nowrap origin-left transition-transform duration-500 group-hover/cta:translate-x-1">
                                         Appointment
                                     </span>
                                 </div>
 
                                 {/* Vibrant Price Box */}
-                                <div className="ml-auto flex items-center gap-2 md:gap-3 relative z-10 pointer-events-none pr-3">
+                                <div className="ml-auto flex items-center gap-1.5 lg:gap-3 relative z-10 pointer-events-none pr-1.5 lg:pr-3">
                                     {campaign.discountPercentage > 0 && (
-                                        <div className="flex flex-col items-end mr-1 md:mr-2">
+                                        <div className="flex flex-col items-end mr-0.5 lg:mr-2">
                                             <span className="text-emerald-500 dark:text-emerald-400 text-[9px] md:text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 px-1.5 py-0.5 rounded-sm mb-0.5 whitespace-nowrap">
                                                 {campaign.discountPercentage}% OFF
                                             </span>
@@ -174,12 +174,12 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                                             </span>
                                         </div>
                                     )}
-                                    <div className="bg-emerald-500 text-white font-black text-[18px] md:text-[24px] px-5 md:px-7 py-1.5 md:py-2 rounded-[12px] shadow-[0_6px_16px_rgba(16,185,129,0.25)] flex flex-col items-center justify-center leading-none">
+                                    <div className="bg-emerald-500 text-white font-black text-[16px] xl:text-[24px] px-3 md:px-4 lg:px-7 py-1.5 md:py-2 rounded-[12px] shadow-[0_6px_16px_rgba(16,185,129,0.25)] flex flex-col items-center justify-center leading-none">
                                         {campaign.price === 0 ? "FREE" : `₹${discountedPrice}`}
                                     </div>
                                     <div className="text-zinc-200 dark:text-zinc-700 mr-1 md:mr-2 transition-transform duration-300 group-hover/cta:translate-x-1.5">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lg:w-6 lg:h-6">
+                                            <path d="M5 12h14M12 5l7 7-7 7" />
                                         </svg>
                                     </div>
                                 </div>
