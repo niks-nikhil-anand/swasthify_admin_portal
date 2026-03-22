@@ -24,7 +24,8 @@ import {
     Megaphone,
     Files,
     ShieldCheck,
-    Activity
+    Activity,
+    Image as ImageIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -126,6 +127,11 @@ const sidebarGroups = [
                 href: "/superAdmin/documents/verificationDocs",
                 icon: ShieldCheck,
             },
+            {
+                title: "Professional Gallery",
+                href: "/superAdmin/documents/professionalGallery",
+                icon: ImageIcon,
+            },
         ]
     },
     {
@@ -211,7 +217,7 @@ export function Sidebar({ className }: SidebarProps) {
                                                 {isActive && <ChevronRight className="h-3 w-3 opacity-50" />}
                                                 {/* Active Indicator Glow */}
                                                 {isActive && (
-                                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] animate-[shimmer_2s_infinite]" />
+                                                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
                                                 )}
                                             </Link>
                                         </Button>
@@ -224,8 +230,8 @@ export function Sidebar({ className }: SidebarProps) {
             </div>
 
             {/* Bottom Section */}
-            <div className="p-4 mt-auto border-t bg-gradient-to-b from-transparent to-muted/20 shrink-0">
-                <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-4 rounded-xl border border-primary/10 mb-2 relative overflow-hidden group">
+            <div className="p-4 mt-auto border-t bg-linear-to-b from-transparent to-muted/20 shrink-0">
+                <div className="bg-linear-to-br from-primary/10 via-primary/5 to-transparent p-4 rounded-xl border border-primary/10 mb-2 relative overflow-hidden group">
                     {/* Decorative circle */}
                     <div className="absolute -right-4 -top-4 h-16 w-16 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-colors duration-500" />
 
