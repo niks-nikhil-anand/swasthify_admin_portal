@@ -827,9 +827,8 @@ export function DoctorDetailsModal({
             </Dialog >
 
             {/* Document Viewer Modal */}
-            < Dialog open={!!viewingDoc
-            } onOpenChange={(open) => !open && setViewingDoc(null)}>
-                <DialogContent className="max-w-4xl h-[85vh] flex flex-col p-0 overflow-hidden">
+            <Dialog open={!!viewingDoc} onOpenChange={(open) => !open && setViewingDoc(null)}>
+                <DialogContent showCloseButton={false} className="max-w-4xl h-[85vh] flex flex-col p-0 overflow-hidden">
                     <div className="px-6 py-4 border-b flex items-center justify-between bg-muted/30">
                         <DialogTitle>{viewingDoc?.type}</DialogTitle>
                         <Button variant="ghost" size="icon" onClick={() => setViewingDoc(null)}>
