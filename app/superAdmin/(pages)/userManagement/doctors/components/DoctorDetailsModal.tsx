@@ -40,7 +40,8 @@ import {
     Eye,
     Lock,
     Megaphone,
-    ExternalLink
+    ExternalLink,
+    Camera
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -91,6 +92,11 @@ interface DoctorData {
     profilePhoto: string | null;
     idProof: string | null;
     associationProof: string | null;
+    clinicImages?: string[];
+    bankName?: string | null;
+    accountNumber?: string | null;
+    ifscCode?: string | null;
+    accountHolderName?: string | null;
     isProfileComplete: boolean;
     profileCompletionPercentage: number | null;
 
@@ -509,6 +515,82 @@ export function DoctorDetailsModal({
                                                                 <div className="p-3 border rounded-md bg-muted/20 text-sm font-mono">{data.licenseNumber || "N/A"}</div>
                                                             )}
                                                         </div>
+                                                    </div>
+                                                    
+                                                    {/* Bank Details */}
+                                                    <div className="bg-white p-6 rounded-xl border shadow-sm">
+                                                        <h3 className="text-lg font-semibold mb-6 flex items-center text-gray-800">
+                                                            <div className="w-1 h-6 bg-primary rounded-full mr-3"></div>
+                                                            Bank Account Details
+                                                        </h3>
+                                                        <div className="grid grid-cols-2 gap-6">
+                                                            <div className="space-y-3">
+                                                                <Label>Bank Name</Label>
+                                                                {isEditing ? (
+                                                                    <Input value={formData.bankName || ""} onChange={(e) => handleChange("bankName", e.target.value)} />
+                                                                ) : (
+                                                                    <div className="p-3 border rounded-md bg-muted/20 text-sm font-medium">{data.bankName || "N/A"}</div>
+                                                                )}
+                                                            </div>
+                                                            <div className="space-y-3">
+                                                                <Label>Account Holder Name</Label>
+                                                                {isEditing ? (
+                                                                    <Input value={formData.accountHolderName || ""} onChange={(e) => handleChange("accountHolderName", e.target.value)} />
+                                                                ) : (
+                                                                    <div className="p-3 border rounded-md bg-muted/20 text-sm">{data.accountHolderName || "N/A"}</div>
+                                                                )}
+                                                            </div>
+                                                            <div className="space-y-3">
+                                                                <Label>Account Number</Label>
+                                                                {isEditing ? (
+                                                                    <Input value={formData.accountNumber || ""} onChange={(e) => handleChange("accountNumber", e.target.value)} />
+                                                                ) : (
+                                                                    <div className="p-3 border rounded-md bg-muted/20 text-sm font-mono tracking-wider">{data.accountNumber || "N/A"}</div>
+                                                                )}
+                                                            </div>
+                                                            <div className="space-y-3">
+                                                                <Label>IFSC Code</Label>
+                                                                {isEditing ? (
+                                                                    <Input value={formData.ifscCode || ""} onChange={(e) => handleChange("ifscCode", e.target.value)} />
+                                                                ) : (
+                                                                    <div className="p-3 border rounded-md bg-muted/20 text-sm font-mono tracking-wider">{data.ifscCode || "N/A"}</div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Professional Gallery */}
+                                                    <div className="bg-white p-6 rounded-xl border shadow-sm">
+                                                        <h3 className="text-lg font-semibold mb-6 flex items-center text-gray-800">
+                                                            <div className="w-1 h-6 bg-primary rounded-full mr-3"></div>
+                                                            Professional Practice Gallery
+                                                        </h3>
+                                                        {data.clinicImages && data.clinicImages.length > 0 ? (
+                                                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                                                                {data.clinicImages.map((img, idx) => (
+                                                                    <div key={idx} className="aspect-square border rounded-2xl bg-muted/20 relative group overflow-hidden shadow-sm hover:shadow-md transition-all">
+                                                                        <img src={img} alt={`Clinic Image ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                                                            <Button
+                                                                                title={`View Photo ${idx + 1}`}
+                                                                                type="button"
+                                                                                variant="secondary"
+                                                                                size="icon"
+                                                                                className="h-10 w-10 rounded-full bg-white/20 hover:bg-white text-white hover:text-black border-none backdrop-blur-sm shadow-xl"
+                                                                                onClick={() => setViewingDoc({ url: img, type: `Clinic Image ${idx + 1}` })}
+                                                                            >
+                                                                                <Eye className="h-5 w-5" />
+                                                                            </Button>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex flex-col items-center justify-center py-10 text-center text-muted-foreground bg-muted/10 rounded-xl border border-dashed">
+                                                                <Camera className="w-10 h-10 mb-2 opacity-20" />
+                                                                <p className="font-medium">No photos uploaded</p>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </TabsContent>
 
