@@ -158,7 +158,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                                         Book
                                     </span>
                                     <span className="text-[#F6F7F8] dark:text-zinc-800/30 font-black uppercase text-[22px] lg:text-[30px] leading-[0.8] tracking-[0.05em] whitespace-nowrap origin-left transition-transform duration-500 group-hover/cta:translate-x-1">
-                                        Appointment
+                                        Now
                                     </span>
                                 </div>
 
