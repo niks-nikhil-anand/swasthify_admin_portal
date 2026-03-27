@@ -73,18 +73,18 @@ export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) =>
             transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
             className="h-full block pt-[60px] md:pt-[75px]"
         >
-            <div onClick={handleCardClick} className="relative bg-[#F8F9F9] dark:bg-zinc-950 rounded-[2.5rem] border border-zinc-100 dark:border-zinc-900 shadow-sm hover:shadow-xl transition-all duration-300 w-full h-full flex flex-col group pb-4 md:pb-6 cursor-pointer block text-left outline-none">
+            <div onClick={handleCardClick} className="relative bg-[#F8F9F9] dark:bg-zinc-950 rounded-[2.5rem] border border-zinc-100 dark:border-zinc-900 shadow-sm hover:shadow-xl transition-all duration-300 w-full h-full flex flex-col group pb-4 md:pb-6 cursor-pointer outline-none">
                 
                 {/* Top Header Shape Container */}
                 <div className="absolute top-0 left-0 w-full h-[180px] pointer-events-none z-0">
-                    <svg width="100%" height="180" viewBox="0 0 400 180" preserveAspectRatio="none" className="text-emerald-800 dark:text-emerald-950 rounded-t-[2.5rem]">
+                    <svg width="100%" height="180" viewBox="0 0 400 180" preserveAspectRatio="none" className="text-primary dark:text-primary/90 rounded-t-[2.5rem]">
                         <path d="M0,0 L400,0 L400,60 Q200,240 0,60 Z" fill="currentColor" />
                     </svg>
                 </div>
 
                 {/* Profile Avatar Sticking Out of Top */}
                 <div className="absolute top-[-60px] md:top-[-75px] left-1/2 -translate-x-1/2 z-10 w-[120px] h-[120px] md:w-[150px] md:h-[150px]">
-                    <div className="w-full h-full rounded-full border-[8px] md:border-8 border-[#F8F9F9] dark:border-zinc-950 bg-emerald-500 text-white flex items-center justify-center overflow-hidden shadow-sm">
+                    <div className="w-full h-full rounded-full border-8 border-[#F8F9F9] dark:border-zinc-950 bg-primary text-white flex items-center justify-center overflow-hidden shadow-sm">
                         {campaign.lab?.profilePhoto ? (
                             <img src={campaign.lab.profilePhoto} alt={campaign.lab.user?.name || "Lab"} className="w-full h-full object-cover" />
                         ) : (
@@ -95,8 +95,8 @@ export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) =>
 
                 {/* Specialization Pill */}
                 <div className="absolute top-[138px] left-1/2 -translate-x-1/2 z-20">
-                    <div className="bg-emerald-800 dark:bg-emerald-900 px-[24px] py-1.5 rounded-full shadow-sm border-[4px] border-[#F8F9F9] dark:border-zinc-950 whitespace-nowrap">
-                        <span className="text-emerald-50 text-[10px] md:text-[11px] font-black uppercase tracking-[0.16em]">
+                    <div className="bg-primary px-[24px] py-1.5 rounded-full shadow-sm border-4 border-[#F8F9F9] dark:border-zinc-950 whitespace-nowrap">
+                        <span className="text-primary-foreground text-[10px] md:text-[11px] font-black uppercase tracking-[0.16em]">
                             {campaign.type.replace("_", " ")}
                         </span>
                     </div>
@@ -119,7 +119,7 @@ export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) =>
 
                     {/* Divider line mimicking exactly the screenshot's faint line */}
                     <div className="w-full px-4 lg:px-8 mt-7 mb-5">
-                        <div className="w-full h-[1px] bg-zinc-200/60 dark:bg-zinc-800" />
+                        <div className="w-full h-px bg-zinc-200/60 dark:bg-zinc-800" />
                     </div>
 
                     {/* Stats Row */}
@@ -132,7 +132,7 @@ export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) =>
                                 Tests
                             </span>
                         </div>
-                        <div className="w-[1px] h-12 bg-zinc-200/60 dark:bg-zinc-800" />
+                        <div className="w-px h-12 bg-zinc-200/60 dark:bg-zinc-800" />
                         <div className="flex flex-col flex-1 items-center">
                             <span className="font-black text-[22px] md:text-[26px] text-[#111111] dark:text-zinc-100 leading-none">
                                 5k+
@@ -141,7 +141,7 @@ export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) =>
                                 Patients
                             </span>
                         </div>
-                        <div className="w-[1px] h-12 bg-zinc-200/60 dark:bg-zinc-800" />
+                        <div className="w-px h-12 bg-zinc-200/60 dark:bg-zinc-800" />
                         <div className="flex flex-col flex-1 items-center">
                             <span className="font-black text-[22px] md:text-[26px] text-[#111111] dark:text-zinc-100 leading-none flex items-center justify-center gap-[0.5px]">
                                 <span className="text-[20px] mb-0.5">★</span>
@@ -153,11 +153,10 @@ export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) =>
                         </div>
                     </div>
 
-                    {/* Feature Pills */}
                     <div className="flex flex-wrap items-center justify-center gap-1.5 lg:gap-3 w-full px-2 lg:px-4 mt-8 md:mt-10">
-                        <div className="bg-emerald-500/10 px-3 md:px-4 py-2 rounded-full flex items-center gap-2 shadow-[0_2px_10px_-4px_rgba(16,185,129,0.1)] dark:shadow-none transition-transform hover:scale-105">
-                            <span className="text-emerald-600 dark:text-emerald-500 text-xs">★</span>
-                            <span className="text-emerald-600 dark:text-emerald-500 text-[10px] md:text-[11px] lg:text-[12px] font-black uppercase tracking-wide">
+                        <div className="bg-primary/10 px-3 md:px-4 py-2 rounded-full flex items-center gap-2 shadow-[0_2px_10px_-4px_rgba(13,169,110,0.1)] dark:shadow-none transition-transform hover:scale-105">
+                            <span className="text-primary text-xs">★</span>
+                            <span className="text-primary text-[10px] md:text-[11px] lg:text-[12px] font-black uppercase tracking-wide">
                                 Lab Test
                             </span>
                         </div>
@@ -168,9 +167,9 @@ export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) =>
                             </span>
                         </div>
                         {((campaign as any).isVerified !== false) && (
-                            <div className="bg-emerald-500/10 px-3 md:px-4 py-2 rounded-full flex items-center gap-2 shadow-[0_2px_10px_-4px_rgba(16,185,129,0.1)] dark:shadow-none transition-transform hover:scale-105">
-                                <span className="text-emerald-600 dark:text-emerald-500 text-[11px]">✔</span>
-                                <span className="text-emerald-600 dark:text-emerald-500 text-[10px] md:text-[11px] lg:text-[12px] font-black uppercase tracking-wide">
+                            <div className="bg-primary/10 px-3 md:px-4 py-2 rounded-full flex items-center gap-2 shadow-[0_2px_10px_-4px_rgba(13,169,110,0.1)] dark:shadow-none transition-transform hover:scale-105">
+                                <span className="text-primary text-[11px]">✔</span>
+                                <span className="text-primary text-[10px] md:text-[11px] lg:text-[12px] font-black uppercase tracking-wide">
                                     Verified
                                 </span>
                             </div>
@@ -180,7 +179,7 @@ export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) =>
                     {/* Bottom CTA block */}
                     <div className="w-full px-2 lg:px-6 pt-8 mt-auto">
                         <div className="block">
-                            <div className="relative overflow-hidden w-full h-[65px] md:h-[75px] rounded-[18px] md:rounded-[20px] border border-zinc-200/60 dark:border-zinc-800/60 bg-[#FFFFFF] dark:bg-zinc-950 flex items-center shadow-[0_4px_24px_-8px_rgba(0,0,0,0.06)] dark:shadow-none transition-all duration-300 group-hover:border-emerald-500/40 group-hover:shadow-[0_8px_30px_-5px_rgba(16,185,129,0.15)] group/cta">
+                            <div className="relative overflow-hidden w-full h-[65px] md:h-[75px] rounded-[18px] md:rounded-[20px] border border-zinc-200/60 dark:border-zinc-800/60 bg-[#FFFFFF] dark:bg-zinc-950 flex items-center shadow-[0_4px_24px_-8px_rgba(0,0,0,0.06)] dark:shadow-none transition-all duration-300 group-hover:border-primary/40 group-hover:shadow-[0_8px_30px_-5px_rgba(13,169,110,0.15)] group/cta">
 
                                 {/* Very faint text Background */}
                                 <div className="absolute left-4 lg:left-8 top-[48%] -translate-y-1/2 flex flex-col justify-center pointer-events-none md:gap-0.5 z-0">
@@ -192,11 +191,11 @@ export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) =>
                                     </span>
                                 </div>
 
-                                {/* Vibrant Price Box */}
+                                    {/* Vibrant Price Box */}
                                 <div className="ml-auto flex items-center gap-1.5 lg:gap-3 relative z-10 pointer-events-none pr-1.5 lg:pr-3">
                                     {campaign.discountPercentage > 0 && (
                                         <div className="flex flex-col items-end mr-0.5 lg:mr-2">
-                                            <span className="text-emerald-500 dark:text-emerald-400 text-[9px] md:text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 px-1.5 py-0.5 rounded-sm mb-0.5 whitespace-nowrap">
+                                            <span className="text-primary text-[9px] md:text-[10px] font-black uppercase tracking-wider bg-primary/10 px-1.5 py-0.5 rounded-sm mb-0.5 whitespace-nowrap">
                                                 {campaign.discountPercentage}% OFF
                                             </span>
                                             <span className="text-zinc-400 dark:text-zinc-500 line-through text-[11px] md:text-xs font-bold whitespace-nowrap">
@@ -204,7 +203,7 @@ export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) =>
                                             </span>
                                         </div>
                                     )}
-                                    <div className="bg-emerald-500 text-white font-black text-[16px] xl:text-[24px] px-3 md:px-4 lg:px-7 py-1.5 md:py-2 rounded-[12px] shadow-[0_6px_16px_rgba(16,185,129,0.25)] flex flex-col items-center justify-center leading-none">
+                                    <div className="bg-primary text-white font-black text-[16px] xl:text-[24px] px-3 md:px-4 lg:px-7 py-1.5 md:py-2 rounded-[12px] shadow-[0_6px_16px_rgba(13,169,110,0.25)] flex flex-col items-center justify-center leading-none">
                                         {campaign.price === 0 ? "FREE" : `₹${discountedPrice}`}
                                     </div>
                                     <div className="text-zinc-200 dark:text-zinc-700 mr-1 md:mr-2 transition-transform duration-300 group-hover/cta:translate-x-1.5">
