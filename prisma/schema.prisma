@@ -257,6 +257,7 @@ model Appointment {
   docs               Docs[]
   payment            Payment?
   prescription       Prescription?
+  queueNumber        Int?
 
   @@index([doctorId])
   @@index([patientId])
