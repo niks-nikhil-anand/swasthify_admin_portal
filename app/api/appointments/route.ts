@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { db } from "@/lib/db";
-import { parse, format, add } from "date-fns";
+import { parse, format, add, startOfDay, endOfDay } from "date-fns";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
@@ -109,13 +109,35 @@ export async function POST(req: Request) {
                 where: { id: organizerId },
                 select: { doctorId: true }
             });
-            appointmentData.doctorId = campaign?.doctorId;
+            const doctorId = campaign?.doctorId;
+            appointmentData.doctorId = doctorId;
+
+            if (doctorId) {
+                // Calculate daily unique sequential queue number per doctor
+                const start = startOfDay(appointmentDateTime);
+                const end = endOfDay(appointmentDateTime);
+
+                const lastAppointment = await db.appointment.findFirst({
+                    where: {
+                        doctorId: doctorId,
+                        dateTime: {
+                            gte: start,
+                            lte: end,
+                        }
+                    },
+                    orderBy: {
+                        queueNumber: 'desc'
+                    } as any
+                }) as any;
+
+                appointmentData.queueNumber = (lastAppointment?.queueNumber || 0) + 1;
+            }
         } else if (type === "LAB") {
             appointmentData.labId = organizerId;
         }
 
         const appointment = await db.appointment.create({
-            data: appointmentData
+            data: appointmentData as any
         });
 
         return NextResponse.json({
