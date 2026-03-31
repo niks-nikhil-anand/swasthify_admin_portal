@@ -296,6 +296,14 @@ function AppointmentCard({ appointment, onViewDetails }: { appointment: any; onV
                         <span className="tracking-tight">{format(new Date(appointment.dateTime), "hh:mm a")}</span>
                     </div>
                 </div>
+                <div className="flex flex-col items-start min-w-[80px]">
+                    <p className="text-[10px] text-muted-foreground uppercase mb-1 tracking-tighter opacity-50">Queue No</p>
+                    <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 bg-primary/10 rounded-lg flex items-center justify-center">
+                            <span className="text-primary font-black text-sm">{appointment.queueNumber || "--"}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end mt-4 sm:mt-0">
