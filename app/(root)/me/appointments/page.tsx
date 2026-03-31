@@ -35,36 +35,18 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ExternalLink } from "lucide-react";
-
-interface Appointment {
-    id: string;
-    doctor: string;
-    speciality: string;
-    date: string;
-    type: string;
-    status: string;
-    img: string;
-    rawStatus: string;
-    consultationFee?: number;
-    reason?: string;
-    doctorDetails?: {
-        profilePhoto?: string;
-        qualification?: string;
-        experienceYears?: number;
-        clinicName?: string;
-        hospitalName?: string;
-        bio?: string;
-        address?: {
-            street: string;
-            city: string;
-            state: string;
-            zipCode: string;
-            latitude?: number;
-            longitude?: number;
-        } | null;
-    } | null;
-}
+import { ExternalLink, ChevronLeft } from "lucide-react";
+import { AppointmentCard, Appointment } from "./components/AppointmentCard";
+import { SkeletonAppointments } from "./components/SkeletonAppointmentCard";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function AppointmentsPage() {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -77,6 +59,10 @@ export default function AppointmentsPage() {
     const [sortBy, setSortBy] = useState("newest");
     const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 4;
 
     const fetchAppointments = async () => {
         try {
@@ -95,6 +81,11 @@ export default function AppointmentsPage() {
     useEffect(() => {
         fetchAppointments();
     }, []);
+
+    // Reset to first page when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, statusFilter, sortBy]);
 
     const handleCancelClick = (id: string) => {
         setCancellingId(id);
@@ -146,6 +137,12 @@ export default function AppointmentsPage() {
 
         return result;
     }, [appointments, searchQuery, statusFilter, sortBy]);
+
+    const totalPages = Math.ceil(filteredAppointments.length / pageSize);
+    const paginatedAppointments = useMemo(() => {
+        const start = (currentPage - 1) * pageSize;
+        return filteredAppointments.slice(start, start + pageSize);
+    }, [filteredAppointments, currentPage]);
 
     return (
         <div className="max-w-6xl mx-auto space-y-10 pb-20">
@@ -209,162 +206,83 @@ export default function AppointmentsPage() {
             </div>
 
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-20 space-y-4">
-                    <Loader2 className="h-10 w-10 text-primary animate-spin" />
-                    <p className="text-muted-foreground font-medium">Fetching your appointments...</p>
-                </div>
-            ) : filteredAppointments.length > 0 ? (
-                <div className="space-y-6">
-                    {filteredAppointments.map((apt) => (
-                        <div
-                            key={apt.id}
-                            className={cn(
-                                "group relative overflow-hidden bg-background border border-border/50 rounded-3xl transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 p-5 sm:p-6",
-                                apt.status === "Upcoming" ? "hover:border-blue-500/30" :
-                                    apt.status === "CANCELLED" ? "hover:border-red-500/30" :
-                                        "hover:border-emerald-500/30"
-                            )}
-                        >
-                            {/* Status Accent Line */}
-                            <div className={cn(
-                                "absolute left-0 top-0 bottom-0 w-1.5 transition-all duration-500",
-                                apt.status === "Upcoming" ? "bg-blue-500 shadow-[2px_0_15px_-3px_rgba(59,130,246,0.3)]" :
-                                    apt.status === "CANCELLED" ? "bg-red-500 shadow-[2px_0_15px_-3px_rgba(239,68,68,0.3)]" :
-                                        "bg-emerald-500 shadow-[2px_0_15px_-3px_rgba(16,185,129,0.3)]"
-                            )} />
+                <SkeletonAppointments />
+            ) : paginatedAppointments.length > 0 ? (
+                <div className="space-y-10">
+                    <div className="space-y-6">
+                        {paginatedAppointments.map((apt) => (
+                            <AppointmentCard
+                                key={apt.id}
+                                appointment={apt}
+                                onViewDetails={(apt) => {
+                                    setSelectedAppointment(apt);
+                                    setIsDetailsModalOpen(true);
+                                }}
+                                onCancel={handleCancelClick}
+                            />
+                        ))}
+                    </div>
 
-                            <div className="flex flex-col md:flex-row items-start md:items-center gap-5 sm:gap-6 relative z-10">
-                                {/* Header section with Image and Status - flexible for mobile */}
-                                <div className="flex items-center justify-between w-full md:w-auto gap-4">
-                                    <Avatar className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl border-2 border-primary/10 shrink-0 shadow-lg group-hover:scale-105 transition-transform duration-500">
-                                        <AvatarImage src={apt.img.length > 2 ? apt.img : undefined} className="object-cover" />
-                                        <AvatarFallback className="bg-primary/5 text-primary text-xl font-black rounded-2xl">
-                                            {apt.img.length <= 2 ? apt.img : apt.doctor.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)}
-                                        </AvatarFallback>
-                                    </Avatar>
-
-                                    {/* Status Badge - visible on mobile at the top right */}
-                                    <div className="md:hidden">
-                                        <span className={cn(
-                                            "inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm",
-                                            apt.status === "Upcoming" ? "bg-blue-50 text-blue-600 border border-blue-100 dark:bg-blue-950/30 dark:border-blue-800/20" :
-                                                apt.status === "CANCELLED" ? "bg-red-50 text-red-600 border border-red-100 dark:bg-red-950/30 dark:border-red-800/20" :
-                                                    "bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-emerald-950/30 dark:border-emerald-800/20"
-                                        )}>
-                                            {apt.status === "Upcoming" ? <Timer className="h-3 w-3 animate-pulse" /> :
-                                                apt.status === "CANCELLED" ? <XCircle className="h-3 w-3" /> :
-                                                    <CheckCircle2 className="h-3 w-3" />}
-                                            {apt.status}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="flex-1 space-y-4 w-full text-left">
-                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                                        <div className="space-y-1">
-                                            <h3 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white leading-tight tracking-tight group-hover:text-primary transition-colors duration-300">
-                                                {apt.doctor}
-                                            </h3>
-                                            <div className="flex items-center gap-2">
-                                                <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest py-0.5 px-2.5 rounded-lg border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400">
-                                                    {apt.speciality}
-                                                </Badge>
-                                            </div>
-                                        </div>
-
-                                        {/* Status Badge Desktop */}
-                                        <div className="hidden md:block">
-                                            <span className={cn(
-                                                "inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-sm transition-all duration-300 group-hover:shadow-md",
-                                                apt.status === "Upcoming" ? "bg-blue-50 text-blue-600 border border-blue-100 dark:bg-blue-950/30 dark:border-blue-800/20 shadow-blue-500/5" :
-                                                    apt.status === "CANCELLED" ? "bg-red-50 text-red-600 border border-red-100 dark:bg-red-950/30 dark:border-red-800/20 shadow-red-500/5" :
-                                                        "bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-emerald-950/30 dark:border-emerald-800/20 shadow-emerald-500/5"
-                                            )}>
-                                                {apt.status === "Upcoming" ? <Timer className="h-3.5 w-3.5 animate-pulse" /> :
-                                                    apt.status === "CANCELLED" ? <XCircle className="h-3.5 w-3.5" /> :
-                                                        <CheckCircle2 className="h-3.5 w-3.5" />}
-                                                {apt.status}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 py-2 border-t border-b border-zinc-100 dark:border-zinc-800/50">
-                                        <div className="space-y-1.5">
-                                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Consultation</p>
-                                            <div className="flex items-center gap-2 group/date">
-                                                <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 group-hover/date:border-primary/30 transition-colors">
-                                                    <Calendar className="h-3.5 w-3.5 text-primary" />
-                                                </div>
-                                                <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">{formatAppointmentDate(apt.date)}</span>
-                                            </div>
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Scheduled At</p>
-                                            <div className="flex items-center gap-2 group/time">
-                                                <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 group-hover/time:border-primary/30 transition-colors">
-                                                    <Clock className="h-3.5 w-3.5 text-primary" />
-                                                </div>
-                                                <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">{apt.date.split("T")[1]?.substring(0, 5) || "Check details"}</span>
-                                            </div>
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Method</p>
-                                            <div className="flex items-center gap-2 group/method">
-                                                <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 group-hover/method:border-primary/30 transition-colors">
-                                                    {apt.type === "Video Consultation" ? <Video className="h-3.5 w-3.5 text-primary" /> : <MapPin className="h-3.5 w-3.5 text-primary" />}
-                                                </div>
-                                                <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-                                                    <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">{apt.type}</span>
-                                                    {apt.type === "In-Person Visit" && apt.doctorDetails?.address && (
-                                                        <a
-                                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                                                `${apt.doctorDetails.address.street}, ${apt.doctorDetails.address.city}, ${apt.doctorDetails.address.state}`
-                                                            )}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="flex items-center gap-1 text-[10px] text-primary hover:underline font-black uppercase tracking-wider"
-                                                        >
-                                                            <ExternalLink className="h-2.5 w-2.5" />
-                                                            Navigate
-                                                        </a>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Charges</p>
-                                            <div className="flex items-center gap-2">
-                                                <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800">
-                                                    <ArrowUpDown className="h-3.5 w-3.5 text-primary" />
-                                                </div>
-                                                <span className="text-sm font-bold text-zinc-900 dark:text-white">₹{apt.consultationFee || 0}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row md:flex-col gap-3 w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-border/50">
-                                    <button
-                                        onClick={() => {
-                                            setSelectedAppointment(apt);
-                                            setIsDetailsModalOpen(true);
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                        <Pagination>
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        href="#"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            if (currentPage > 1) setCurrentPage(currentPage - 1);
                                         }}
-                                        className="flex-1 px-6 py-3 md:py-2.5 text-[11px] font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 shadow-sm"
-                                    >
-                                        View Details
-                                    </button>
-                                    {(apt.status === "Upcoming") && (
-                                        <button
-                                            onClick={() => handleCancelClick(apt.id)}
-                                            className="px-6 py-3 md:py-2.5 text-[11px] font-black uppercase tracking-wider text-red-600 bg-red-50/50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-2xl hover:bg-red-100 transition-all duration-300 shadow-sm"
-                                        >
-                                            Cancel
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                                        className={cn(currentPage === 1 && "pointer-events-none opacity-50")}
+                                    />
+                                </PaginationItem>
+                                
+                                {Array.from({ length: totalPages }).map((_, i) => {
+                                    const page = i + 1;
+                                    // Logic to show a few pages around current page
+                                    if (
+                                        page === 1 ||
+                                        page === totalPages ||
+                                        (page >= currentPage - 1 && page <= currentPage + 1)
+                                    ) {
+                                        return (
+                                            <PaginationItem key={page}>
+                                                <PaginationLink
+                                                    href="#"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        setCurrentPage(page);
+                                                    }}
+                                                    isActive={currentPage === page}
+                                                >
+                                                    {page}
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        );
+                                    } else if (page === currentPage - 2 || page === currentPage + 2) {
+                                        return (
+                                            <PaginationItem key={page}>
+                                                <PaginationEllipsis />
+                                            </PaginationItem>
+                                        );
+                                    }
+                                    return null;
+                                })}
+
+                                <PaginationItem>
+                                    <PaginationNext
+                                        href="#"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                                        }}
+                                        className={cn(currentPage === totalPages && "pointer-events-none opacity-50")}
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    )}
                 </div>
             ) : (
                 <div className="pt-8 text-center border-2 border-dashed border-border/50 rounded-3xl p-12">
