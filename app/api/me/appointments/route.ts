@@ -105,7 +105,8 @@ export async function GET() {
                 doctorDetails: doctorDetails,
                 consultationFee: apt.consultationFee,
                 appointmentType: apt.type,
-                reason: apt.cancellationReason || "Routine Checkup" // Example, adjust if reason field exists
+                reason: apt.cancellationReason || "Routine Checkup", // Example, adjust if reason field exists
+                queueNumber: apt.queueNumber
             };
         });
         console.log("Debug: Formatted appointments count:", formattedAppointments.length);

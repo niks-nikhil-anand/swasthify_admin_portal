@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Clock, MapPin, Video, CheckCircle2, XCircle, Timer, ExternalLink } from "lucide-react";
+import { Calendar, Clock, MapPin, Video, CheckCircle2, XCircle, Timer, ExternalLink, Hash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatAppointmentDate } from "@/lib/date-utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -33,6 +33,7 @@ export interface Appointment {
             longitude?: number;
         } | null;
     } | null;
+    queueNumber?: number | null;
 }
 
 interface AppointmentCardProps {
@@ -117,7 +118,7 @@ export function AppointmentCard({ appointment, onViewDetails, onCancel }: Appoin
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 py-2 border-t border-b border-zinc-100 dark:border-zinc-800/50">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 py-2 border-t border-b border-zinc-100 dark:border-zinc-800/50">
                         <div className="space-y-1.5">
                             <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Consultation</p>
                             <div className="flex items-center gap-2 group/date">
@@ -134,6 +135,15 @@ export function AppointmentCard({ appointment, onViewDetails, onCancel }: Appoin
                                     <Clock className="h-3.5 w-3.5 text-primary" />
                                 </div>
                                 <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">{appointment.date.split("T")[1]?.substring(0, 5) || "Check details"}</span>
+                            </div>
+                        </div>
+                        <div className="space-y-1.5">
+                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Queue No</p>
+                            <div className="flex items-center gap-2 group/queue">
+                                <div className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 group-hover/queue:border-emerald-500/30 transition-colors">
+                                    <Hash className="h-3.5 w-3.5 text-emerald-600" />
+                                </div>
+                                <span className="text-sm font-black text-emerald-700 dark:text-emerald-400">{appointment.queueNumber ? `#${appointment.queueNumber}` : "---"}</span>
                             </div>
                         </div>
                         <div className="space-y-1.5">
@@ -158,15 +168,6 @@ export function AppointmentCard({ appointment, onViewDetails, onCancel }: Appoin
                                         </a>
                                     )}
                                 </div>
-                            </div>
-                        </div>
-                        <div className="space-y-1.5">
-                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Charges</p>
-                            <div className="flex items-center gap-2">
-                                <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800">
-                                    <Timer className="h-3.5 w-3.5 text-primary" /> {/* Replaced ArrowUpDown as it was used for fee, keeping layout */}
-                                </div>
-                                <span className="text-sm font-bold text-zinc-900 dark:text-white">₹{appointment.consultationFee || 0}</span>
                             </div>
                         </div>
                     </div>
