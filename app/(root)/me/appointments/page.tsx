@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Clock, MapPin, ChevronRight, Video, User, CheckCircle2, XCircle, Timer, Loader2, AlertCircle, Search, Filter, ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { Calendar, Clock, MapPin, ChevronRight, Video, User, CheckCircle2, XCircle, Timer, Loader2, AlertCircle, Search, Filter, ArrowUpDown, MoreHorizontal, Hash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState, useMemo } from "react";
 import { formatAppointmentDate } from "@/lib/date-utils";
@@ -329,7 +329,7 @@ export default function AppointmentsPage() {
                                             { icon: Clock, label: "Time", value: selectedAppointment.date.split("T")[1]?.substring(0, 5) || "Check details" },
                                             { icon: Video, label: "Type", value: selectedAppointment.type },
                                             { icon: CheckCircle2, label: "Status", value: selectedAppointment.status },
-                                            { icon: ArrowUpDown, label: "Fee", value: `₹${selectedAppointment.consultationFee || 0}` },
+                                            { icon: Hash, label: "Queue No", value: selectedAppointment.queueNumber ? `#${selectedAppointment.queueNumber}` : "---" },
                                             { icon: AlertCircle, label: "Reason", value: selectedAppointment.reason || "General Consultation" },
                                         ].map((item, idx) => (
                                             <div key={idx} className="flex items-center gap-3 p-3 bg-muted/30 rounded-2xl border border-border/50">

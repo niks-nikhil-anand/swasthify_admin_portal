@@ -23,7 +23,7 @@ export function SkeletonAppointmentCard() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 py-4 border-t border-b border-muted/50">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 py-4 border-t border-b border-muted/50">
                         {[1, 2, 3, 4].map((i) => (
                             <div key={i} className="space-y-2">
                                 <Skeleton className="h-3 w-16 rounded" />
