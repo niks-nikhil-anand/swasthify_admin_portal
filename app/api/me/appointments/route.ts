@@ -60,7 +60,8 @@ export async function GET() {
                             }
                         }
                     }
-                }
+                },
+                payment: true
             },
             orderBy: {
                 dateTime: "desc"
@@ -106,7 +107,14 @@ export async function GET() {
                 consultationFee: apt.consultationFee,
                 appointmentType: apt.type,
                 reason: apt.cancellationReason || "Routine Checkup", // Example, adjust if reason field exists
-                queueNumber: apt.queueNumber
+                queueNumber: apt.queueNumber,
+                payment: apt.payment ? {
+                    amount: apt.payment.amount,
+                    discountAmount: apt.payment.discountAmount,
+                    platformFee: apt.payment.platformFee,
+                    finalAmount: apt.payment.finalAmount,
+                    status: apt.payment.status
+                } : null
             };
         });
         console.log("Debug: Formatted appointments count:", formattedAppointments.length);
