@@ -417,6 +417,43 @@ export default function AppointmentsPage() {
                                         </div>
                                     )}
                                 </div>
+
+                                {/* Payment Information Section */}
+                                {selectedAppointment.payment && (
+                                    <div className="space-y-4 pt-4 border-t border-border/50">
+                                        <h4 className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
+                                            <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                                            Payment Details
+                                        </h4>
+                                        <div className="bg-muted/30 rounded-3xl p-5 border border-border/50 space-y-3">
+                                            <div className="flex justify-between items-center text-sm">
+                                                <span className="text-muted-foreground font-medium">Consultation Fee</span>
+                                                <span className="font-semibold text-foreground">₹{selectedAppointment.payment.amount}</span>
+                                            </div>
+                                            {selectedAppointment.payment.platformFee > 0 && (
+                                                <div className="flex justify-between items-center text-sm">
+                                                    <span className="text-muted-foreground font-medium">Platform Fee</span>
+                                                    <span className="font-semibold text-foreground">₹{selectedAppointment.payment.platformFee}</span>
+                                                </div>
+                                            )}
+                                            {selectedAppointment.payment.discountAmount > 0 && (
+                                                <div className="flex justify-between items-center text-sm">
+                                                    <span className="text-muted-foreground font-medium">Discount Applied</span>
+                                                    <span className="font-semibold text-emerald-600">-₹{selectedAppointment.payment.discountAmount}</span>
+                                                </div>
+                                            )}
+                                            <div className="pt-3 border-t border-border/50 flex justify-between items-center">
+                                                <span className="text-foreground font-black uppercase tracking-wider text-[10px]">Total Amount Paid</span>
+                                                <span className="text-xl font-black text-primary">₹{selectedAppointment.payment.finalAmount}</span>
+                                            </div>
+
+                                            <div className="mt-2 flex items-center gap-2 justify-center py-2 bg-emerald-500/5 rounded-2xl border border-emerald-500/10">
+                                                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Payment {selectedAppointment.payment.status}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </>
                         )}
                     </div>
