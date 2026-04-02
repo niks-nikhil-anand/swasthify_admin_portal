@@ -34,6 +34,13 @@ export interface Appointment {
         } | null;
     } | null;
     queueNumber?: number | null;
+    payment?: {
+        amount: number;
+        discountAmount: number;
+        platformFee: number;
+        finalAmount: number;
+        status: string;
+    } | null;
 }
 
 interface AppointmentCardProps {
