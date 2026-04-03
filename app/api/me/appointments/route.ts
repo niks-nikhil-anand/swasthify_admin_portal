@@ -98,13 +98,15 @@ export async function GET() {
                 } : null
             } : null;
 
+            const isPast = new Date(apt.dateTime) < new Date();
+
             return {
                 id: apt.id,
                 doctor: organizerName,
                 speciality: speciality,
                 date: apt.dateTime.toISOString(),
                 type: apt.type === "VIDEO" ? "Video Consultation" : "In-Person Visit",
-                status: apt.status === "CONFIRMED" ? "Upcoming" : apt.status,
+                status: apt.status === "CONFIRMED" ? (isPast ? "Completed" : "Upcoming") : apt.status,
                 img: apt.doctor?.profilePhoto || organizerName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2),
                 rawStatus: apt.status,
                 // New fields for details view
