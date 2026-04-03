@@ -112,6 +112,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                 modal: {
                     ondismiss: () => {
                         setIsBooking(false);
+                        toast.info("Payment cancelled. Your appointment is not yet confirmed.");
                     }
                 },
                 handler: async (response: any) => {
