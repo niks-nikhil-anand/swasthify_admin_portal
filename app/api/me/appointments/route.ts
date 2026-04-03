@@ -39,7 +39,12 @@ export async function GET() {
         // 2. Fetch Appointments
         console.log("Debug: Fetching appointments for patientId:", patient.id);
         const appointments = await db.appointment.findMany({
-            where: { patientId: patient.id },
+            where: { 
+                patientId: patient.id,
+                status: {
+                    not: "PENDING"
+                }
+            },
             include: {
                 doctor: {
                     include: {
@@ -99,7 +104,7 @@ export async function GET() {
                 speciality: speciality,
                 date: apt.dateTime.toISOString(),
                 type: apt.type === "VIDEO" ? "Video Consultation" : "In-Person Visit",
-                status: apt.status === "PENDING" || apt.status === "CONFIRMED" ? "Upcoming" : apt.status,
+                status: apt.status === "CONFIRMED" ? "Upcoming" : apt.status,
                 img: apt.doctor?.profilePhoto || organizerName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2),
                 rawStatus: apt.status,
                 // New fields for details view

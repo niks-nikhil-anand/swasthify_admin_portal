@@ -30,7 +30,10 @@ export async function GET(req: Request) {
         // 2. Fetch Appointments
         const appointments = await db.appointment.findMany({
             where: {
-                doctorId: doctor.id
+                doctorId: doctor.id,
+                status: {
+                    not: "PENDING"
+                }
             },
             include: {
                 patient: {
