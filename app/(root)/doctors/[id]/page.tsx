@@ -15,6 +15,7 @@ import { LocationSection } from "./components/LocationSection";
 import { DoctorSidebar } from "./components/DoctorSidebar";
 import { useParams as useNextParams, useRouter as useNextRouter } from "next/navigation";
 import { BookingModal } from "./components/BookingModal";
+import { ClinicImageSlider } from "./components/ClinicImageSlider";
 
 export default function CampaignDetailsPage() {
     const params = useNextParams();
@@ -96,6 +97,13 @@ export default function CampaignDetailsPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-8">
+                        {/* Clinic Image Slider */}
+                        {campaign.doctor.clinicImages && campaign.doctor.clinicImages.length > 0 && (
+                            <ClinicImageSlider
+                                images={campaign.doctor.clinicImages}
+                            />
+                        )}
+
                         {/* Mobile/Tablet Doctor Profile Header - HIDDEN ON DESKTOP */}
                         <DoctorHeaderMobile campaign={campaign} />
 
