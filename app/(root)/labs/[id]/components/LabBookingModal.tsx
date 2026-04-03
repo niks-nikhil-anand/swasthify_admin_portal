@@ -96,6 +96,7 @@ export const LabBookingModal: React.FC<LabBookingModalProps> = ({ isOpen, onClos
                 modal: {
                     ondismiss: () => {
                         setIsBooking(false);
+                        toast.info("Payment cancelled. Your test booking is not yet confirmed.");
                     }
                 },
                 handler: async (response: any) => {

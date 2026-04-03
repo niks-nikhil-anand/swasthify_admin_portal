@@ -4,6 +4,11 @@ import { db } from "@/lib/db";
 export async function GET() {
     try {
         const appointments = await db.appointment.findMany({
+            where: {
+                status: {
+                    not: "PENDING"
+                }
+            },
             include: {
                 patient: {
                     include: {
