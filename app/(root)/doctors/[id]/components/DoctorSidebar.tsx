@@ -4,6 +4,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Award, Briefcase, GraduationCap, ShieldCheck } from "lucide-react";
 import { Campaign } from "../../types";
 
 interface DoctorSidebarProps {
@@ -32,20 +33,20 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({ campaign, onBookAp
                                 {campaign.doctor.specializations.length > 2 && <span className="text-xs text-muted-foreground">+{campaign.doctor.specializations.length - 2} more</span>}
                             </p>
                             <div className="text-sm text-muted-foreground flex items-center justify-center gap-2 mt-1">
+                                <GraduationCap className="w-4 h-4 text-primary/60" />
                                 <span>{campaign.doctor.qualification || "MBBS"}</span>
-                                <span className="w-1 h-1 rounded-full bg-gray-300"></span>
-                                <span>{campaign.doctor.experienceYears} Yrs Exp.</span>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3 mb-6">
-                            <div className="p-3 bg-muted/50 rounded-xl border border-border">
-                                <div className="font-bold text-foreground text-lg">{campaign.doctor.averageRating || "New"}</div>
-                                <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Rating</div>
-                            </div>
-                            <div className="p-3 bg-muted/50 rounded-xl border border-border">
-                                <div className="font-bold text-foreground text-lg">{campaign.doctor.totalReviews || 0}</div>
-                                <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Reviews</div>
+                        <div className="mb-6">
+                            <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-center justify-center gap-3 transition-colors hover:bg-primary/10">
+                                <div className="p-2 bg-primary/10 rounded-xl text-primary">
+                                    <ShieldCheck className="w-6 h-6" />
+                                </div>
+                                <div className="text-left">
+                                    <div className="font-black text-foreground text-lg leading-tight">{campaign.doctor.experienceYears}+ Years</div>
+                                    <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Medical Expertise</div>
+                                </div>
                             </div>
                         </div>
 

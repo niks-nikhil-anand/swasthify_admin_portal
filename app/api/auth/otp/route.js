@@ -8,19 +8,28 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req) {
     try {
-        const { email, role } = await req.json();
+        const { email, mobile, role } = await req.json();
 
-        if (!email || !role) {
+        if ((!email && !mobile) || !role) {
             return NextResponse.json(
-                { error: "Email and role are required" },
+                { error: "Email/mobile and role are required" },
                 { status: 400 }
             );
         }
 
-        // 1. Find User
-        const user = await db.user.findUnique({
-            where: { email },
-        });
+        // 1. Find User either by email or by phone
+        let user;
+        if (email && email.includes('@')) {
+            user = await db.user.findUnique({
+                where: { email },
+            });
+        } else {
+            // Frontend might pass phone in the 'mobile' key or 'email' key
+            const phoneSearch = mobile || email;
+            user = await db.user.findUnique({
+                where: { phone: phoneSearch },
+            });
+        }
 
         if (!user) {
             // Don't reveal user existence
@@ -47,20 +56,27 @@ export async function POST(req) {
             },
         });
 
-        // 5. Send Email
-        // Pass role for context (e.g. "Doctor Panel", "SuperAdmin Panel")
+        // 5. Send Deliverable
         const displayRole = role === "DOCTOR" ? "Doctor" :
             role === "SUPERADMIN" ? "SuperAdmin" :
                 role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
 
-        await resend.emails.send({
-            from: "Swasthify <noreply@swasthify.in>",
-            to: email,
-            subject: "Your Login OTP",
-            react: LoginOtpEmail({ otp, role: displayRole, userName: user.name }),
-        });
-
-        console.log(`OTP sent to ${email}`);
+        // If an email address was used to request this, actually send the email.
+        if (email && email.includes('@') && user.email) {
+            await resend.emails.send({
+                from: "Swasthify <noreply@swasthify.in>",
+                to: user.email,
+                subject: "Your Login OTP",
+                react: LoginOtpEmail({ otp, role: displayRole, userName: user.name }),
+            });
+            console.log(`OTP sent via email to ${user.email}`);
+        } else {
+            // Because no SMS provider is configured, we must mock the SMS so the developer can read the OTP
+            console.log(`\n===========================================`);
+            console.log(`📱 MOCK SMS DISPATCHED TO: ${user.phone}`);
+            console.log(`🔑 YOUR OTP IS: ${otp}`);
+            console.log(`===========================================\n`);
+        }
 
         return NextResponse.json(
             { message: "OTP sent successfully" },
