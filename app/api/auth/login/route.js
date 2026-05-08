@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { SignJWT } from "jose";
 import { cookies } from "next/headers";
 import { logAuthEvent } from "@/lib/auth-tracking";
+import { admin } from "@/lib/firebase-admin";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key"; // Replace with process.env in production
 
@@ -53,9 +54,32 @@ export async function POST(req) {
       );
     }
 
-    // 3. Verify Credentials (Password or OTP)
-    if (body.otp) {
-      // --- OTP Verification Mode ---
+    // 3. Verify Credentials (Password, custom OTP, OR FIREBASE)
+    if (body.firebaseToken) {
+      // --- FIREBASE VERIFICATION MODE ---
+      try {
+        const decodedToken = await admin.auth().verifyIdToken(body.firebaseToken);
+        const verifiedPhone = decodedToken.phone_number;
+        
+        if (!verifiedPhone.includes(mobile)) {
+          console.log(`Login failed: Firebase Phone mismatch. Expected ${mobile}, got ${verifiedPhone}`);
+          return NextResponse.json(
+            { error: "Phone number mismatch between device and Firebase verification" },
+            { status: 401 }
+          );
+        }
+        
+        console.log("Firebase SMS Verification Successful for:", verifiedPhone);
+      } catch (error) {
+        console.log("Login failed: Invalid Firebase Token:", error);
+        return NextResponse.json(
+          { error: "Invalid Firebase Authorization Token" },
+          { status: 401 }
+        );
+      }
+
+    } else if (body.otp) {
+      // --- LEGACY OTP VERIFICATION MODE ---
       if (!user.loginOtp || !user.otpExpiry) {
         return NextResponse.json(
           { error: "Invalid or expired OTP" },
