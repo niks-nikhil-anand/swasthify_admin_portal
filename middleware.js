@@ -93,3 +93,16 @@ export async function middleware(req) {
 
     return NextResponse.next();
 }
+
+export const config = {
+    matcher: [
+        /*
+         * Match all request paths EXCEPT:
+         * - /api/* (API routes — must be publicly accessible for mobile app)
+         * - /_next/static (Next.js static files)
+         * - /_next/image (Next.js image optimization)
+         * - /favicon.ico, /sitemap.xml, /robots.txt
+         */
+        '/((?!api/|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
+    ],
+};
