@@ -96,6 +96,10 @@ interface CampaignData {
     };
 
     stats: any;
+    doctorName?: string | null;
+    doctorImage?: string | null;
+    doctorExperience?: number | null;
+    specialisation?: string | null;
 }
 
 export function DoctorCampaignDetailsModal({
@@ -398,6 +402,38 @@ export function DoctorCampaignDetailsModal({
 
                                             {/* Doctor Details */}
                                             <div className="flex-1 space-y-6">
+                                                {(data.doctorName || data.doctorExperience || data.specialisation || data.doctorImage) && (
+                                                    <div className="p-4 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 rounded-xl space-y-3">
+                                                        <h4 className="text-sm font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wider">Campaign Overrides</h4>
+                                                        <div className="grid grid-cols-2 gap-4 text-sm">
+                                                            {data.doctorName && (
+                                                                <div>
+                                                                    <span className="text-xs font-semibold text-muted-foreground">Doctor Name</span>
+                                                                    <div className="font-medium text-foreground">{data.doctorName}</div>
+                                                                </div>
+                                                            )}
+                                                            {data.doctorExperience !== undefined && data.doctorExperience !== null && (
+                                                                <div>
+                                                                    <span className="text-xs font-semibold text-muted-foreground">Experience</span>
+                                                                    <div className="font-medium text-foreground">{data.doctorExperience} Years</div>
+                                                                </div>
+                                                            )}
+                                                            {data.specialisation && (
+                                                                <div className="col-span-2">
+                                                                    <span className="text-xs font-semibold text-muted-foreground">Specialisation</span>
+                                                                    <div className="font-medium text-foreground">{data.specialisation}</div>
+                                                                </div>
+                                                            )}
+                                                            {data.doctorImage && (
+                                                                <div className="col-span-2">
+                                                                    <span className="text-xs font-semibold text-muted-foreground block mb-1">Doctor Image</span>
+                                                                    <img src={data.doctorImage} alt="Override" className="h-16 w-16 object-cover rounded border" />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+
                                                 <div>
                                                     <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">About</h4>
                                                     <div className="p-4 bg-muted/10 rounded-xl border text-sm leading-relaxed text-muted-foreground">

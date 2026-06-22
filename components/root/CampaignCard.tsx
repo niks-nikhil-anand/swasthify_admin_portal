@@ -55,10 +55,10 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                 {/* Profile Avatar Sticking Out of Top */}
                 <div className="absolute top-[-60px] md:top-[-75px] left-1/2 -translate-x-1/2 z-10 w-[120px] h-[120px] md:w-[150px] md:h-[150px]">
                     <div className="w-full h-full rounded-full border-8 border-[#F8F9F9] dark:border-zinc-950 bg-primary text-white flex items-center justify-center overflow-hidden shadow-sm">
-                        {campaign.doctor?.profilePhoto ? (
-                            <img src={campaign.doctor.profilePhoto} alt={campaign.doctor.user?.name || "Doctor"} className="w-full h-full object-cover" />
+                        {campaign.doctorImage || campaign.doctor?.profilePhoto ? (
+                            <img src={campaign.doctorImage || campaign.doctor?.profilePhoto || ""} alt={campaign.doctorName || campaign.doctor?.user?.name || "Doctor"} className="w-full h-full object-cover" />
                         ) : (
-                            <span className="text-[44px] md:text-[56px] tracking-tighter font-black">{getInitials(campaign.doctor?.user?.name)}</span>
+                            <span className="text-[44px] md:text-[56px] tracking-tighter font-black">{getInitials(campaign.doctorName || campaign.doctor?.user?.name)}</span>
                         )}
                     </div>
                 </div>
@@ -67,7 +67,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                 <div className="absolute top-[138px] left-1/2 -translate-x-1/2 z-20">
                     <div className="bg-primary px-[24px] py-1.5 rounded-full shadow-sm border-4 border-[#F8F9F9] dark:border-zinc-950 whitespace-nowrap">
                         <span className="text-primary-foreground text-[10px] md:text-[11px] font-black uppercase tracking-[0.16em]">
-                            {campaign.doctor?.specializations?.[0]?.name || campaign.type.replace("_", " ")}
+                            {campaign.specialisation || campaign.doctor?.specializations?.[0]?.name || campaign.type.replace("_", " ")}
                         </span>
                     </div>
                 </div>
@@ -76,19 +76,45 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
 
                     {/* Doctor / Hospital Name */}
                     <div className="text-center px-4 lg:px-6">
-                        <h3 className="font-extrabold text-[#111111] dark:text-zinc-100 text-[18px] md:text-[20px] leading-[1.3] tracking-tight">
-                            {campaign.doctor?.hospitalName || campaign.name}
-                        </h3>
-                        {campaign.doctor?.clinicName && campaign.doctor.clinicName !== campaign.doctor.hospitalName && (
-                            <p className="text-zinc-500 dark:text-zinc-400 font-semibold text-[13px] md:text-[14px] mt-0.5">
-                                {campaign.doctor.clinicName}
-                            </p>
-                        )}
-                        {campaign.doctor?.user?.name && (
-                            <p className="text-primary font-bold text-[14px] md:text-[15px] mt-1">
-                                {campaign.doctor.user.name.startsWith("Dr.") ? campaign.doctor.user.name : `Dr. ${campaign.doctor.user.name}`}
-                            </p>
-                        )}
+                        {(() => {
+                            const rawDocName = campaign.doctorName || campaign.doctor?.user?.name;
+                            const specialties = campaign.specialisation || campaign.doctor?.specializations?.map(s => s.name).join(", ");
+                            const orgName = campaign.doctor?.hospitalName || campaign.doctor?.clinicName || campaign.name;
+
+                            if (rawDocName) {
+                                const formattedDocName = rawDocName.startsWith("Dr.") ? rawDocName : `Dr. ${rawDocName}`;
+                                return (
+                                    <>
+                                        <h3 className="font-extrabold text-[#111111] dark:text-zinc-100 text-[18px] md:text-[20px] leading-[1.3] tracking-tight">
+                                            {formattedDocName}
+                                        </h3>
+                                        {specialties && (
+                                            <p className="text-primary font-bold text-[13px] md:text-[14px] mt-1 uppercase tracking-wide">
+                                                {specialties}
+                                            </p>
+                                        )}
+                                        {orgName && (
+                                            <p className="text-zinc-500 dark:text-zinc-400 font-semibold text-[13px] md:text-[14px] mt-0.5">
+                                                {orgName}
+                                            </p>
+                                        )}
+                                    </>
+                                );
+                            } else {
+                                return (
+                                    <>
+                                        <h3 className="font-extrabold text-[#111111] dark:text-zinc-100 text-[18px] md:text-[20px] leading-[1.3] tracking-tight">
+                                            {orgName}
+                                        </h3>
+                                        {specialties && (
+                                            <p className="text-primary font-bold text-[13px] md:text-[14px] mt-1 uppercase tracking-wide">
+                                                {specialties}
+                                            </p>
+                                        )}
+                                    </>
+                                );
+                            }
+                        })()}
                         <div className="flex items-center justify-center gap-1.5 mt-2 text-[#888888] font-semibold text-[13px] md:text-[14px]">
                             <MapPin className="w-4 h-4 text-[#888888]" />
                             <span className="truncate max-w-[280px]">
@@ -106,7 +132,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                     <div className="flex items-center justify-between w-full px-2 lg:px-8 text-center">
                         <div className="flex flex-col flex-1 items-center">
                             <span className="font-black text-[22px] md:text-[26px] text-[#111111] dark:text-zinc-100 leading-none">
-                                {campaign.doctor?.experienceYears}+
+                                {campaign.doctorExperience !== undefined && campaign.doctorExperience !== null ? campaign.doctorExperience : (campaign.doctor?.experienceYears || 0)}+
                             </span>
                             <span className="text-[11px] font-semibold text-[#A0A0A0] dark:text-zinc-400 uppercase tracking-wide mt-2.5">
                                 Yrs Exp.

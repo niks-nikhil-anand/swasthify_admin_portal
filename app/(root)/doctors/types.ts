@@ -51,4 +51,8 @@ export interface Campaign {
         clinicImages: string[];
     };
     isVerified: boolean;
+    doctorName?: string | null;
+    doctorImage?: string | null;
+    doctorExperience?: number | null;
+    specialisation?: string | null;
 }

@@ -20,21 +20,21 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({ campaign, onBookAp
                     <div className="h-24 bg-linear-to-r from-primary/10 to-primary/5"></div>
                     <CardContent className="relative pt-0 px-6 pb-6 text-center -mt-12">
                         <Avatar className="w-24 h-24 mx-auto border-4 border-background shadow-md mb-4 bg-background">
-                            <AvatarImage src={campaign.doctor.profilePhoto || ""} className="object-cover" />
+                            <AvatarImage src={campaign.doctorImage || campaign.doctor?.profilePhoto || ""} className="object-cover" />
                             <AvatarFallback className="text-2xl font-bold bg-primary/5 text-primary">
-                                {campaign.doctor.user.name.charAt(0)}
+                                {(campaign.doctorName || campaign.doctor?.user?.name || "D").charAt(0)}
                             </AvatarFallback>
                         </Avatar>
 
                         <div className="space-y-1 mb-6">
-                            <h3 className="font-bold text-xl text-foreground">{campaign.doctor.user.name}</h3>
+                            <h3 className="font-bold text-xl text-foreground">{campaign.doctorName || campaign.doctor?.user?.name}</h3>
                             <p className="text-primary font-medium flex items-center justify-center gap-1.5 flex-wrap">
-                                {campaign.doctor.specializations.slice(0, 2).map(s => s.name).join(", ")}
-                                {campaign.doctor.specializations.length > 2 && <span className="text-xs text-muted-foreground">+{campaign.doctor.specializations.length - 2} more</span>}
+                                {campaign.specialisation || campaign.doctor?.specializations.slice(0, 2).map(s => s.name).join(", ")}
+                                {!campaign.specialisation && campaign.doctor?.specializations.length > 2 && <span className="text-xs text-muted-foreground">+{campaign.doctor.specializations.length - 2} more</span>}
                             </p>
                             <div className="text-sm text-muted-foreground flex items-center justify-center gap-2 mt-1">
                                 <GraduationCap className="w-4 h-4 text-primary/60" />
-                                <span>{campaign.doctor.qualification || "MBBS"}</span>
+                                <span>{campaign.doctor?.qualification || "MBBS"}</span>
                             </div>
                         </div>
 
@@ -44,7 +44,9 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({ campaign, onBookAp
                                     <ShieldCheck className="w-6 h-6" />
                                 </div>
                                 <div className="text-left">
-                                    <div className="font-black text-foreground text-lg leading-tight">{campaign.doctor.experienceYears}+ Years</div>
+                                    <div className="font-black text-foreground text-lg leading-tight">
+                                        {campaign.doctorExperience !== undefined && campaign.doctorExperience !== null ? campaign.doctorExperience : (campaign.doctor?.experienceYears || 0)}+ Years
+                                    </div>
                                     <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Medical Expertise</div>
                                 </div>
                             </div>
@@ -53,7 +55,7 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({ campaign, onBookAp
                         <div className="text-left bg-muted/30 p-4 rounded-xl mb-6">
                             <p className="text-xs font-semibold text-gray-500 uppercase mb-2">About Doctor</p>
                             <p className="text-sm text-muted-foreground line-clamp-4 leading-relaxed">
-                                {campaign.doctor.bio || `Dr. ${campaign.doctor.user.name} is a dedicated professional committed to providing excellent healthcare services.`}
+                                {campaign.doctor?.bio || `Dr. ${campaign.doctorName || campaign.doctor?.user?.name} is a dedicated professional committed to providing excellent healthcare services.`}
                             </p>
                         </div>
 

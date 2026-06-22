@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Megaphone, Send, Users, Eye, MousePointerClick, MoreHorizontal, Calendar, Loader2, Copy } from "lucide-react";
+import { Megaphone, Send, Users, Eye, MousePointerClick, MoreHorizontal, Calendar, Loader2, Copy, Edit } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { CreateCampaign } from "./_components/CreateCampaign";
 import { toast } from "sonner";
 import { CampaignDetailsModal } from "./_components/CampaignDetailsModal";
+import { EditCampaignModal } from "./_components/EditCampaignModal";
 
 interface Campaign {
     id: string;
@@ -41,6 +42,8 @@ export default function CampaignPage() {
     const [loading, setLoading] = useState(true);
     const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     useEffect(() => {
         fetchCampaigns();
@@ -71,6 +74,11 @@ export default function CampaignPage() {
     const handleViewDetails = (campaign: Campaign) => {
         setSelectedCampaign(campaign);
         setIsModalOpen(true);
+    };
+
+    const handleEditCampaign = (campaign: Campaign) => {
+        setEditingCampaign(campaign);
+        setIsEditModalOpen(true);
     };
 
     return (
@@ -198,7 +206,9 @@ export default function CampaignPage() {
                                                     <Copy className="w-4 h-4 mr-2" /> Copy ID
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem>View Stats</DropdownMenuItem>
-                                                {camp.status === 'DRAFT' && <DropdownMenuItem>Edit</DropdownMenuItem>}
+                                                <DropdownMenuItem onClick={() => handleEditCampaign(camp)}>
+                                                    <Edit className="w-4 h-4 mr-2" /> Edit
+                                                </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </div>
@@ -213,6 +223,13 @@ export default function CampaignPage() {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 campaign={selectedCampaign as any}
+            />
+
+            <EditCampaignModal
+                open={isEditModalOpen}
+                onOpenChange={setIsEditModalOpen}
+                campaign={editingCampaign}
+                onSuccess={fetchCampaigns}
             />
         </div>
     );

@@ -106,13 +106,23 @@ export const LabCampaignCard: React.FC<LabCampaignCardProps> = ({ campaign }) =>
 
                     {/* Lab / Campaign Name */}
                     <div className="text-center px-4 lg:px-6">
-                        <h3 className="font-extrabold text-[#111111] dark:text-zinc-100 text-[18px] md:text-[20px] leading-[1.3] tracking-tight">
-                            {campaign.name}
+                        <h3 className="font-extrabold text-[#111111] dark:text-zinc-100 text-[18px] md:text-[20px] leading-[1.3] tracking-tight text-center">
+                            {campaign.lab?.user?.name || campaign.name}
                         </h3>
+                        {campaign.lab?.testTypes && campaign.lab.testTypes.length > 0 && (
+                            <p className="text-primary font-bold text-[13px] md:text-[14px] mt-1 uppercase tracking-wide">
+                                {campaign.lab.testTypes.slice(0, 3).join(", ")}
+                            </p>
+                        )}
+                        {campaign.lab?.user?.name && campaign.name !== campaign.lab.user.name && (
+                            <p className="text-zinc-500 dark:text-zinc-400 font-semibold text-[13px] md:text-[14px] mt-0.5">
+                                {campaign.name}
+                            </p>
+                        )}
                         <div className="flex items-center justify-center gap-1.5 mt-2 text-[#888888] font-semibold text-[13px] md:text-[14px]">
                             <MapPin className="w-4 h-4 text-[#888888]" />
                             <span className="truncate max-w-[280px]">
-                                {campaign.location?.city} • {campaign.lab?.user?.name || "Diagnostic Laboratory"}
+                                {campaign.location?.city} • {campaign.location?.address}
                             </span>
                         </div>
                     </div>

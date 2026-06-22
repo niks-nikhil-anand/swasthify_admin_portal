@@ -33,6 +33,10 @@ const campaignSchema = z.object({
         totalCapacity: z.number().nullable().optional(),
         requiredDetails: z.array(z.string()).optional(),
     }).optional(),
+    doctorName: z.string().optional().nullable(),
+    doctorImage: z.string().optional().nullable(),
+    doctorExperience: z.number().int().min(0).optional().nullable(),
+    specialisation: z.string().optional().nullable(),
 });
 
 export async function POST(req: Request) {
@@ -103,6 +107,10 @@ export async function POST(req: Request) {
                 totalCapacity: data.appointmentConfig?.totalCapacity || null,
                 requiredDetails: data.appointmentConfig?.requiredDetails || [],
                 status: "IN_REVIEW", // Default status
+                doctorName: data.doctorName || null,
+                doctorImage: data.doctorImage || null,
+                doctorExperience: data.doctorExperience || null,
+                specialisation: data.specialisation || null,
             },
         });
 

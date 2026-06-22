@@ -25,7 +25,8 @@ import {
     Info,
     Building,
     FileText,
-    Globe
+    Globe,
+    User
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -58,6 +59,10 @@ interface CampaignData {
 
     stats?: any;
     doctor?: any;
+    doctorName?: string | null;
+    doctorImage?: string | null;
+    doctorExperience?: number | null;
+    specialisation?: string | null;
 }
 
 interface CampaignDetailsModalProps {
@@ -156,6 +161,40 @@ export function CampaignDetailsModal({
                                                     {data.description || "No description provided."}
                                                 </p>
                                             </div>
+
+                                            {(data.doctorName || data.doctorExperience || data.specialisation || data.doctorImage) && (
+                                                <div className="bg-muted/10 p-5 rounded-xl border space-y-3">
+                                                    <h3 className="font-semibold flex items-center gap-2 text-foreground">
+                                                        <User className="w-4 h-4 text-primary" /> Doctor Info Overrides
+                                                    </h3>
+                                                    <div className="grid grid-cols-2 gap-4 text-sm">
+                                                        {data.doctorName && (
+                                                            <div>
+                                                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">Doctor Name</span>
+                                                                <div className="font-medium text-foreground mt-0.5">{data.doctorName}</div>
+                                                            </div>
+                                                        )}
+                                                        {data.doctorExperience !== undefined && data.doctorExperience !== null && (
+                                                            <div>
+                                                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">Experience</span>
+                                                                <div className="font-medium text-foreground mt-0.5">{data.doctorExperience} Years</div>
+                                                            </div>
+                                                        )}
+                                                        {data.specialisation && (
+                                                            <div className="col-span-2">
+                                                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">Specialisation</span>
+                                                                <div className="font-medium text-foreground mt-0.5">{data.specialisation}</div>
+                                                            </div>
+                                                        )}
+                                                        {data.doctorImage && (
+                                                            <div className="col-span-2">
+                                                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">Doctor Image</span>
+                                                                <img src={data.doctorImage} alt="Custom Doctor" className="h-16 w-16 object-cover rounded border" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
 
                                             <div className="bg-muted/10 p-5 rounded-xl border">
                                                 <h3 className="font-semibold mb-4 flex items-center gap-2 text-foreground">

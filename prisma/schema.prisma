@@ -167,6 +167,10 @@ model Campaign {
   reportTime                 String?        @map("report_time")
   testCategory               String[]       @default([]) @map("test_category")
   testsIncluded              String[]       @default([]) @map("tests_included")
+  doctorName                 String?        @map("doctor_name")
+  doctorImage                String?        @map("doctor_image")
+  doctorExperience           Int?           @map("doctor_experience")
+  specialisation             String?
   doctor                     Doctor?        @relation(fields: [doctorId], references: [id], onDelete: Cascade)
   lab                        Lab?           @relation(fields: [labId], references: [id], onDelete: Cascade)
 

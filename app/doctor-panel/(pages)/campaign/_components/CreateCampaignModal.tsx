@@ -33,6 +33,7 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
 
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [uploadingImage, setUploadingImage] = useState(false);
     const [formData, setFormData] = useState<{
         name: string;
         description: string;
@@ -55,6 +56,10 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         appointmentRequirements: string[];
         price: string;
         discountPercentage: string;
+        doctorName: string;
+        doctorImage: string;
+        doctorExperience: string;
+        specialisation: string;
     }>({
         name: "",
         description: "",
@@ -77,11 +82,68 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         appointmentRequirements: ["Name", "Age", "Gender", "Phone Number"],
         price: "",
         discountPercentage: "",
+        doctorName: "",
+        doctorImage: "",
+        doctorExperience: "",
+        specialisation: "",
     });
 
     const [detectingLocation, setDetectingLocation] = useState(false);
 
-    // ... existing handlers
+    useEffect(() => {
+        const fetchDoctorProfile = async () => {
+            try {
+                const res = await fetch("/api/doctor/profile");
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success && data.doctor) {
+                        const doc = data.doctor;
+                        setFormData((prev) => ({
+                            ...prev,
+                            doctorName: prev.doctorName || `${doc.firstName || ""} ${doc.lastName || ""}`.trim() || doc.user?.name || "",
+                            doctorImage: prev.doctorImage || doc.profilePhoto || "",
+                            doctorExperience: prev.doctorExperience || doc.experienceYears?.toString() || "",
+                            specialisation: prev.specialisation || doc.specializations?.map((s: any) => s.name).join(", ") || "",
+                        }));
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch doctor profile:", err);
+            }
+        };
+
+        if (open) {
+            fetchDoctorProfile();
+        }
+    }, [open]);
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploadingImage(true);
+        const uploadData = new FormData();
+        uploadData.append("file", file);
+        uploadData.append("type", "profile");
+
+        try {
+            const res = await fetch("/api/upload", {
+                method: "POST",
+                body: uploadData,
+            });
+            if (!res.ok) {
+                throw new Error("Upload failed");
+            }
+            const result = await res.json();
+            setFormData((prev) => ({ ...prev, doctorImage: result.url }));
+            toast.success("Image uploaded successfully");
+        } catch (error: any) {
+            console.error("Image upload error:", error);
+            toast.error(error.message || "Failed to upload image");
+        } finally {
+            setUploadingImage(false);
+        }
+    };
 
     const handleDetectLocation = () => {
         if (!navigator.geolocation) {
@@ -155,6 +217,10 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
         description: z.string().optional(),
         startDate: z.string().min(1, "Start Date is required"),
         endDate: z.string().min(1, "End Date is required"),
+        doctorName: z.string().optional(),
+        doctorImage: z.string().optional(),
+        doctorExperience: z.string().optional().refine((val) => !val || (!isNaN(parseInt(val)) && parseInt(val) >= 0), "Experience must be a non-negative number"),
+        specialisation: z.string().optional(),
     }).refine((data) => {
         if (!data.startDate || !data.endDate) return true;
         return new Date(data.startDate) < new Date(data.endDate);
@@ -275,6 +341,10 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                 },
                 bookingRules: {},
                 eligibility: {},
+                doctorName: formData.doctorName || undefined,
+                doctorImage: formData.doctorImage || undefined,
+                doctorExperience: formData.doctorExperience ? parseInt(formData.doctorExperience) : undefined,
+                specialisation: formData.specialisation || undefined,
             };
 
             const response = await fetch("/api/doctor/campaigns", {
@@ -314,6 +384,10 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                 appointmentRequirements: ["Name", "Age", "Gender", "Phone Number"],
                 price: "",
                 discountPercentage: "",
+                doctorName: "",
+                doctorImage: "",
+                doctorExperience: "",
+                specialisation: "",
             });
 
         } catch (error: any) {
@@ -410,6 +484,85 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                         value={formData.endDate}
                                         onChange={handleChange}
                                     />
+                                </div>
+                            </div>
+
+                            {/* Custom Doctor Details Section */}
+                            <div className="border-t pt-4 mt-4 space-y-4">
+                                <h4 className="font-semibold text-sm text-foreground">Doctor Details for this Campaign (Optional Overrides)</h4>
+                                
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="doctorName" className="mb-2 block">Doctor Name</Label>
+                                        <Input
+                                            id="doctorName"
+                                            name="doctorName"
+                                            placeholder="e.g. Dr. Jane Doe"
+                                            value={formData.doctorName}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="doctorExperience" className="mb-2 block">Experience (in Years)</Label>
+                                        <Input
+                                            id="doctorExperience"
+                                            name="doctorExperience"
+                                            type="number"
+                                            placeholder="e.g. 10"
+                                            value={formData.doctorExperience}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="specialisation" className="mb-2 block">Specialisation</Label>
+                                        <Input
+                                            id="specialisation"
+                                            name="specialisation"
+                                            placeholder="e.g. Cardiologist, General Physician"
+                                            value={formData.specialisation}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="doctorImageFile" className="mb-2 block">Doctor Image</Label>
+                                        <div className="flex gap-2 items-center">
+                                            <Input
+                                                id="doctorImage"
+                                                name="doctorImage"
+                                                placeholder="Image URL"
+                                                value={formData.doctorImage}
+                                                onChange={handleChange}
+                                                className="flex-1"
+                                            />
+                                            <div className="relative">
+                                                <input
+                                                    type="file"
+                                                    id="doctorImageFile"
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                    onChange={handleImageUpload}
+                                                    disabled={uploadingImage}
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    onClick={() => document.getElementById("doctorImageFile")?.click()}
+                                                    disabled={uploadingImage}
+                                                    className="whitespace-nowrap"
+                                                >
+                                                    {uploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : "Upload"}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        {formData.doctorImage && (
+                                            <div className="mt-2 h-16 w-16 relative rounded-md overflow-hidden border">
+                                                <img src={formData.doctorImage} alt="Preview" className="object-cover h-full w-full" />
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -738,6 +891,23 @@ export function CreateCampaignModal({ open, onOpenChange }: CreateCampaignModalP
                                         <p className="text-muted-foreground text-xs">{formData.appointmentRequirements.join(", ")}</p>
                                     </div>
                                 </div>
+
+                                {(formData.doctorName || formData.doctorExperience || formData.specialisation || formData.doctorImage) && (
+                                    <div className="pt-2 border-t mt-2">
+                                        <h4 className="font-semibold text-foreground mb-1">Doctor Info (Overrides)</h4>
+                                        <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                                            {formData.doctorName && <p>Name: {formData.doctorName}</p>}
+                                            {formData.doctorExperience && <p>Experience: {formData.doctorExperience} Years</p>}
+                                            {formData.specialisation && <p className="col-span-2">Specialisation: {formData.specialisation}</p>}
+                                            {formData.doctorImage && (
+                                                <div className="col-span-2 mt-1">
+                                                    <span className="block mb-1">Doctor Image:</span>
+                                                    <img src={formData.doctorImage} alt="Review" className="h-10 w-10 object-cover rounded border" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
 
                                 <div className="pt-2 border-t mt-2">
                                     <div className="flex justify-between items-center font-bold text-lg">
