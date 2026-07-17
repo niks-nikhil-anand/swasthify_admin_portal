@@ -43,9 +43,6 @@ const campaignSchema = z.object({
 export async function POST(req: Request) {
     try {
         // 1. Auth Check
-        console.log("DEBUG: POST /api/doctor/campaigns hit");
-        console.log("DEBUG: db keys:", Object.keys(db));
-        console.log("DEBUG: db.campaign type:", typeof (db as any).campaign);
 
         const cookieStore = await cookies();
         const token = cookieStore.get("DOCTOR");
@@ -128,7 +125,7 @@ export async function POST(req: Request) {
     }
 }
 
-export async function GET(req: Request) {
+export async function GET() {
     try {
         const cookieStore = await cookies();
         const token = cookieStore.get("DOCTOR");

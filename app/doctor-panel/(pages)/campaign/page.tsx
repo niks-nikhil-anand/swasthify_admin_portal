@@ -28,8 +28,8 @@ interface Campaign {
         reach?: number;
     };
     // Detailed fields for modal (assuming API returns them)
-    location?: any;
-    schedule?: any;
+    location?: unknown;
+    schedule?: unknown;
     dailyLimit?: number;
     hourlyLimit?: number;
     totalCapacity?: number | null;
@@ -227,7 +227,7 @@ export default function CampaignPage() {
             <CampaignDetailsModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                campaign={selectedCampaign as any}
+                campaign={selectedCampaign as never}
             />
 
             <EditCampaignModal
