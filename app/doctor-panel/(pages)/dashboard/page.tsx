@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import DoctorProfileForm from "@/components/doctor/DoctorProfileForm";
 import { toast } from "sonner";
+import { PackageStatusCard } from "@/components/doctor-panel/PackageStatusCard";
 import {
     getDoctorDashboardStats,
     getUpcomingAppointments,
@@ -286,6 +287,8 @@ export default function DoctorPanelPage() {
                     </div>
                 </div>
             )}
+
+            <PackageStatusCard />
 
 
             {/* Stats Overview */}
