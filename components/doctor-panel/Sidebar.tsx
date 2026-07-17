@@ -18,7 +18,8 @@ import {
     BarChart3,
     Megaphone,
     HandCoins,
-    ShieldCheck
+    ShieldCheck,
+    CreditCard
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -80,6 +81,11 @@ const sidebarGroups = [
                 title: "Pricing",
                 href: "/doctor-panel/pricing",
                 icon: HandCoins,
+            },
+            {
+                title: "Package & Billing",
+                href: "/doctor-panel/package",
+                icon: CreditCard,
             },
             {
                 title: "Do's & Don'ts",

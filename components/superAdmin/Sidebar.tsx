@@ -25,6 +25,7 @@ import {
     Files,
     ShieldCheck,
     Activity,
+    CreditCard,
     Image as ImageIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -101,6 +102,11 @@ const sidebarGroups = [
                 title: "Health Packages",
                 href: "/superAdmin/operations/health-packages",
                 icon: Activity,
+            },
+            {
+                title: "Doctor Packages",
+                href: "/superAdmin/operations/doctor-packages",
+                icon: CreditCard,
             },
             {
                 title: "Complaints",
