@@ -1,125 +1,91 @@
-Swasthify V1 Application - Launch Scope & Deliverables
-Date: January 2, 2026
-Version: 1.0
+# Swasthify — Project Overview
 
-This document outlines the complete scope of features, functionalities, and site map for the Swasthify V1 launch.
+Swasthify is a multi-role healthcare marketplace for Bihar and Patna. Patients can discover verified doctors and diagnostic labs, book appointments or tests, pay online, manage health records, and contact support. Dedicated operational portals support doctors, labs, and super administrators.
 
-================================================================================
-1. PUBLIC WEBSITE (Patient & General Access)
-================================================================================
-The public portal serves as the entry point for patients, doctors, and general users to learn about Swasthify and access services.
+## Core User Flows
 
-Site Map & Pages:
------------------
-1. Home Page [/]
-   - Description: Main landing page featuring service overview, value proposition, and call-to-action for patients and doctors.
-   
-2. About Us [/about-us]
-   - Description: Company mission, vision, and team information.
+```mermaid
+flowchart LR
+  P[Patient] --> D[Browse Doctors / Labs]
+  D --> C[Select active verified campaign]
+  C --> B[Book appointment / test]
+  B --> R[Razorpay payment]
+  R --> A[Confirmed appointment]
+  A --> H[Appointments, reports & records]
 
-3. Services [/services]
-   - Description: Detailed catalog of medical services provided (e.g., Consultations, Lab Tests).
+  DR[Doctor] --> O[Onboarding & profile]
+  O --> CA[Create campaigns]
+  CA --> V[Admin verification]
+  V --> D
 
-4. Contact Us [/contact]
-   - Description: Inquiry form and contact details for support.
+  L[Lab] --> LO[Onboarding & profile]
+  LO --> LC[Create test campaigns]
+  LC --> V
 
-5. How It Works [/how-it-works]
-   - Description: User guides for patients (booking appointments) and doctors (joining the platform).
+  SA[Super Admin] --> V
+  SA --> M[Users, appointments, campaigns, packages, reports, support]
+```
 
-6. Pricing [/pricing]
-   - Description: Service plans or subscription tiers (if applicable).
+### Patient Journey
 
-7. Doctor Onboarding (Join as a Doctor) [/doctor-profile]
-   - Description: Detailed portal for doctors to sign up and submit credentials.
+1. Register or sign in, then browse available doctors and labs.
+2. Select a verified, active campaign.
+3. Create a pending booking; pricing includes campaign discounts and platform fees.
+4. Complete payment through Razorpay. A verified payment confirms the appointment and sends a confirmation email.
+5. Access appointments, reports, health records, and account settings from the patient portal.
 
+### Provider and Administration Journey
 
-================================================================================
-2. DOCTOR ONBOARDING & VERIFICATION WORKFLOW
-================================================================================
-Objective: Ensure trust and safety by verifying every medical professional before they go live.
+- Doctors and labs submit onboarding details and documents, complete their profiles, create campaigns, and manage operations in their own dashboards.
+- Super administrators verify providers and manage user status and permissions, campaigns, appointments, health packages, specialties, documents, tickets, notifications, analytics, and platform settings.
+- A scheduled cleanup endpoint removes unpaid pending appointments after 30 minutes.
+- Doctor package renewals run daily at 02:00 UTC through Vercel Cron. Set `CRON_SECRET` in Vercel Production environment variables; Vercel sends it to the worker as a bearer token. `DOCTOR_PACKAGE_GRACE_DAYS` is optional and defaults to `7`.
 
-Step 1: Registration
-- link: /doctor-profile
-- Action: Doctor signs up using Email and Phone Number.
-- Outcome: Account created in "Pending" state.
+## Portals
 
-Step 2: Credential Submission
-Doctors must upload the following clear documents via the secure portal:
-A. Personal Identity Verification:
-   - Pan Card
-   - Aadhaar Card
-B. Professional Verification:
-   - Medical Registration / License Number
-   - Specialization Certificates
-C. Practice Details:
-   - Clinic/Hospital Name & Address
-   - Location Coordinates
-   - Clinic Photographs
+| Area | Purpose |
+| --- | --- |
+| Public website | Marketing pages, services, specialties, pricing, contact, FAQs, and doctor/lab discovery. |
+| Patient portal (`/me`) | Profile, appointments, health records, reports, and settings. |
+| Doctor panel (`/doctor-panel`) | Dashboard, profile, campaigns, appointments, patients, analytics, pricing, and settings. |
+| Lab panel (`/lab-panel`) | Dashboard, profile, campaigns, tests, appointments, reports, and settings. |
+| Super admin (`/superAdmin`) | Platform operations, user and document review, campaigns, analytics, support, and configuration. |
 
-Step 3: Admin Review Process (Offline/Backend)
-- Status: The doctor's profile remains hidden from search results until verified.
-- Verification: Admin team reviews uploaded documents against public registries.
-- Decision: Admin approves (Go Live) or Rejects (Request Resubmission).
+## Main Data Model
 
+The PostgreSQL/Prisma schema centers around:
 
-================================================================================
-3. SUPER ADMIN PANEL (Management Console)
-================================================================================
-A centralized dashboard for the Swasthify Operations Team to manage the entire platform.
+- **Users and access:** Role-based users for patients, doctors, labs, admins, and super admins, with separate patient, doctor, and lab profiles.
+- **Bookable services:** Campaigns for doctor OPDs, health camps, free checkups, and laboratory offerings.
+- **Bookings and payments:** Appointments, payments, platform fees, coupons, discounts, and queue numbers.
+- **Healthcare and platform operations:** Medical records, prescriptions, medications, lab reports, uploads, reviews, favorites, insurance, wallets, notifications, audit logs, and analytics events.
 
-Dashboard & Overview:
----------------------
-1. Main Dashboard [/superAdmin/dashboard]
-   - Key metrics: Total Users, Active Doctors, Pending Verifications, Today's Appointments.
+## Technology
 
-User Management Modules:
-------------------------
-2. Doctor Management [/superAdmin/userManagement/doctors]
-   - View all registered doctors.
-   - Filter by status (Verified, Pending, Blocked).
-   - Action: Verify documents and approve "Live" status.
+| Area | Technology |
+| --- | --- |
+| Frontend / full stack | Next.js 16, React 19, and TypeScript |
+| Styling and UI | Tailwind CSS 4, Radix UI, shadcn-style components, Lucide, Framer Motion, and Sonner |
+| Database | PostgreSQL, Prisma 7, and the Prisma PostgreSQL adapter |
+| Authentication | Custom JWT authentication in role-specific HTTP-only cookies, bcrypt password hashing, Firebase / Identity Platform mobile OTP, and Google authentication support |
+| Payments | Razorpay order creation and HMAC signature verification |
+| Storage | AWS S3 for profile images and verification/document uploads |
+| Email | Resend with React Email onboarding and appointment templates |
+| AI assistant | Gemini API with embedding-based retrieval over a local healthcare/product knowledge base |
+| Analytics | Custom visitor, page-view, and event collection with device/browser parsing and dashboard reporting |
+| Charts, tables, and forms | Recharts, TanStack Table, React Hook Form, and Zod |
+| SEO | Metadata, sitemap generation, structured public pages, and Open Graph/Twitter metadata |
 
-3. Patient Management [/superAdmin/userManagement/patient]
-   - View all registered patient accounts.
-   - Manage user details and history.
+## Project Structure
 
-4. Lab Management [/superAdmin/userManagement/labs]
-   - Manage diagnostic lab partners.
+| Path | Responsibility |
+| --- | --- |
+| [`app`](./app) | Routes, pages, layouts, and server API endpoints. |
+| [`components`](./components) | Reusable UI and patient, doctor, lab, admin, analytics, and chatbot components. |
+| [`lib`](./lib) | Database, payment, storage, Firebase, email, validation, and analytics helpers. |
+| [`prisma/schema.prisma`](./prisma/schema.prisma) | Complete relational data model and migrations. |
+| [`middleware.js`](./middleware.js) | Role-aware route protection and redirects. |
 
-5. General Users [/superAdmin/userManagement/users]
-   - Internal staff or sub-admin account management.
+## Summary
 
-Operations & Workflows:
------------------------
-6. Appointments [/superAdmin/operations/appointment]
-   - Monitor booking status and flow.
-
-7. Complaints [/superAdmin/operations/complaints]
-   - Helpdesk ticketing system for user grievances.
-
-8. Support Tickets [/superAdmin/operations/tickets]
-   - Technical or account-related support requests.
-
-System & Analytics:
--------------------
-9. Analytics [/superAdmin/analytics]
-   - Detailed reports on platform usage and performance.
-
-10. Reports [/superAdmin/system/reports]
-    - Downloadable data reports (Daily/Weekly/Monthly).
-
-11. Push Notifications [/superAdmin/system/pushNotification]
-    - Send alerts and updates to user apps.
-
-12. Platform Settings [/superAdmin/system/settings]
-    - Global configuration and variables.
-
-
-================================================================================
-4. LAUNCH READINESS
-================================================================================
-- All core public pages are responsive and content-ready.
-- Secure Doctor Onboarding pipeline is tested and active.
-- Admin Panel is equipped with full "verification" and "live" toggle capabilities.
-
-End of Document
+Swasthify is an end-to-end healthcare platform: public discovery and booking for patients, alongside full provider and administrator operations for managing healthcare delivery.
