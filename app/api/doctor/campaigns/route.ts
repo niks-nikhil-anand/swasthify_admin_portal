@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { z } from "zod";
+import { getDoctorCampaignEntitlement } from "@/lib/doctor-package-entitlement";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
@@ -72,6 +73,9 @@ export async function POST(req: Request) {
                 { status: 404 }
             );
         }
+
+        const entitlement = await getDoctorCampaignEntitlement(user.doctor.id);
+        if (!entitlement.allowed) return NextResponse.json({ error: entitlement.reason, entitlement }, { status: 403 });
 
         // 3. Parse Body
         const body = await req.json();
