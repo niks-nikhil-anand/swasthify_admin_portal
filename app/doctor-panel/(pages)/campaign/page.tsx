@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Megaphone, Send, Users, Eye, MousePointerClick, MoreHorizontal, Calendar, Loader2, Copy, Edit } from "lucide-react";
+import { Megaphone, Send, Users, Eye, MousePointerClick, MoreHorizontal, Calendar, Loader2, Copy, Edit, ShieldAlert } from "lucide-react";
+import Link from "next/link";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { CreateCampaign } from "./_components/CreateCampaign";
@@ -44,9 +45,11 @@ export default function CampaignPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [entitlement, setEntitlement] = useState<{ allowed: boolean; reason: string | null; used: number; limit: number | null; remaining: number | null; periodEnd?: string; packageName?: string } | null>(null);
 
     useEffect(() => {
         fetchCampaigns();
+        fetch("/api/doctor-panel/package").then((response) => response.ok ? response.json() : null).then((data) => setEntitlement(data?.entitlement || null));
     }, []);
 
     const fetchCampaigns = async () => {
@@ -88,8 +91,10 @@ export default function CampaignPage() {
                     <h1 className="text-3xl font-bold tracking-tight text-foreground">Campaigns</h1>
                     <p className="text-muted-foreground">Engage with your patients through targeted messages.</p>
                 </div>
-                <CreateCampaign />
+                <CreateCampaign disabled={entitlement?.allowed === false} />
             </div>
+
+            {entitlement && <Card className={entitlement.allowed ? "border-primary/20 bg-primary/5" : "border-destructive/30 bg-destructive/5"}><CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex gap-3"><ShieldAlert className={entitlement.allowed ? "mt-0.5 h-5 w-5 text-primary" : "mt-0.5 h-5 w-5 text-destructive"} /><div><p className="font-semibold">{entitlement.packageName || "Package required"}</p><p className="text-sm text-muted-foreground">{entitlement.limit === null ? "Unlimited campaigns this billing period" : `${entitlement.used} of ${entitlement.limit} campaigns used · ${entitlement.remaining} remaining`}{entitlement.periodEnd ? ` · Resets ${new Date(entitlement.periodEnd).toLocaleDateString()}` : ""}</p>{!entitlement.allowed && <p className="mt-1 text-sm text-destructive">{entitlement.reason}</p>}</div></div><Button asChild variant="outline" size="sm"><Link href="/doctor-panel/package">Manage package</Link></Button></CardContent></Card>}
 
             {/* Campaign Stats - Placeholders for now */}
             <div className="grid gap-4 md:grid-cols-3">
