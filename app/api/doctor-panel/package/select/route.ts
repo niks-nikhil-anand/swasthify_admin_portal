@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     if (!doctor || !doctorPackage?.isActive) return NextResponse.json({ error: "Selected package is unavailable" }, { status: 400 });
     const now = new Date();
     const subscription = await db.$transaction(async (tx) => {
-      const created = await tx.doctorSubscription.create({ data: { doctorId: doctor.id, packageId, monthlyPrice: doctorPackage.isFree ? 0 : doctorPackage.monthlyPrice, currency: doctorPackage.currency, status: doctorPackage.isFree ? "ACTIVE" : "PAST_DUE", startedAt: now, currentPeriodStart: now, currentPeriodEnd: addMonth(now, 1) } });
+      const created = await tx.doctorSubscription.create({ data: { doctorId: doctor.id, packageId, monthlyPrice: doctorPackage.isFree ? 0 : doctorPackage.monthlyPrice, currency: doctorPackage.currency, status: doctorPackage.isFree ? "ACTIVE" : "PAST_DUE", startedAt: now, currentPeriodStart: now, currentPeriodEnd: addMonth(now) } });
       if (doctorPackage.isFree) await tx.doctorSubscription.updateMany({ where: { doctorId: doctor.id, id: { not: created.id }, status: { in: ["ACTIVE", "TRIAL", "PAST_DUE", "PAUSED"] } }, data: { status: "CANCELLED", cancelledAt: now, endedAt: now } });
       await tx.doctorSubscriptionEvent.create({ data: { subscriptionId: created.id, eventType: "ASSIGNED", notes: doctorPackage.isFree ? "Doctor selected a free package." : "Doctor selected package and is awaiting payment." } });
       return created;
