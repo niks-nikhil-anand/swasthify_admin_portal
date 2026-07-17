@@ -47,6 +47,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { DoctorCampaignDetailsModal } from "../../../operations/campaigns/components/DoctorCampaignDetailsModal";
+import { PackageBillingTab } from "./PackageBillingTab";
 
 interface DoctorDetailsModalProps {
     isOpen: boolean;
@@ -416,7 +417,9 @@ export function DoctorDetailsModal({
                                                     <TabsTrigger value="documents" className="rounded-lg py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">Documents</TabsTrigger>
                                                     <TabsTrigger value="permissions" className="rounded-lg py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">Permissions</TabsTrigger>
                                                     <TabsTrigger value="campaigns" className="rounded-lg py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">Campaigns</TabsTrigger>
+                                                    <TabsTrigger value="package" className="rounded-lg py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">Package & Billing</TabsTrigger>
                                                 </TabsList>
+                                                <TabsContent value="package"><PackageBillingTab doctorId={data.id} /></TabsContent>
 
                                                 {/* OVERVIEW TAB */}
                                                 <TabsContent value="overview" className="space-y-8 mt-0">
