@@ -33,6 +33,7 @@ model User {
   patients         Patient[]
   userRoles        UserRole[]
   wallet           Wallet?
+  doctorSubscriptionEvents DoctorSubscriptionEvent[] @relation("DoctorSubscriptionEventActor")
 
   @@index([email])
   @@index([phone])
@@ -129,6 +130,7 @@ model Doctor {
   docs                        Docs[]
   prescriptions               Prescription[]
   reviews                     Review[]
+  subscriptions               DoctorSubscription[]
   waitlist                    Waitlist[]
   specializations             Specialization[]     @relation("DoctorToSpecialization")
 
@@ -409,6 +411,105 @@ model Payment {
   coupon         CouponCode?   @relation(fields: [couponId], references: [id])
 
   @@map("payments")
+}
+
+// ─── Doctor Monthly Packages ────────────────────────────────────────────────
+
+model DoctorPackage {
+  id           String               @id @default(uuid())
+  name         String               @unique
+  description  String?
+  monthlyPrice Decimal              @default(0) @db.Decimal(12, 2)
+  currency     String               @default("INR") @db.Char(3)
+  isFree       Boolean              @default(false)
+  isDefault    Boolean              @default(false)
+  isActive     Boolean              @default(true)
+  benefits     Json?
+  limits       Json?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  subscriptions DoctorSubscription[]
+
+  @@index([isActive])
+  @@index([isDefault])
+  @@map("doctor_packages")
+}
+
+model DoctorSubscription {
+  id                  String                    @id @default(uuid())
+  doctorId            String
+  packageId           String
+  status              DoctorSubscriptionStatus  @default(ACTIVE)
+  // Snapshot of the price agreed for this assignment. It is never changed by
+  // subsequent edits to DoctorPackage.monthlyPrice.
+  monthlyPrice        Decimal                   @db.Decimal(12, 2)
+  currency            String                    @default("INR") @db.Char(3)
+  isPriceOverride     Boolean                   @default(false)
+  priceOverrideReason String?
+  startedAt           DateTime
+  currentPeriodStart  DateTime
+  currentPeriodEnd    DateTime
+  freeMonthsGranted   Int                       @default(0)
+  freePeriodEndsAt    DateTime?
+  cancelledAt         DateTime?
+  endedAt             DateTime?
+  createdAt           DateTime                  @default(now())
+  updatedAt           DateTime                  @updatedAt
+  doctor              Doctor                    @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  package             DoctorPackage             @relation(fields: [packageId], references: [id], onDelete: Restrict)
+  payments            DoctorPackagePayment[]
+  events              DoctorSubscriptionEvent[]
+
+  @@index([doctorId])
+  @@index([packageId])
+  @@index([status])
+  @@index([currentPeriodEnd])
+  @@index([doctorId, status])
+  @@map("doctor_subscriptions")
+}
+
+model DoctorPackagePayment {
+  id                 String                     @id @default(uuid())
+  subscriptionId     String
+  amount             Decimal                    @db.Decimal(12, 2)
+  currency           String                     @default("INR") @db.Char(3)
+  status             DoctorPackagePaymentStatus @default(PENDING)
+  dueAt              DateTime
+  paidAt             DateTime?
+  periodStart        DateTime
+  periodEnd          DateTime
+  razorpayOrderId    String?                    @unique
+  razorpayPaymentId  String?                    @unique
+  razorpaySignature  String?
+  failureReason      String?
+  waivedReason       String?
+  refundedAt         DateTime?
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+  subscription       DoctorSubscription         @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@unique([subscriptionId, periodStart, periodEnd])
+  @@index([subscriptionId])
+  @@index([status, dueAt])
+  @@map("doctor_package_payments")
+}
+
+model DoctorSubscriptionEvent {
+  id             String                       @id @default(uuid())
+  subscriptionId String
+  actorId        String?
+  eventType      DoctorSubscriptionEventType
+  previousValue  Json?
+  newValue       Json?
+  notes          String?
+  createdAt      DateTime                     @default(now())
+  subscription   DoctorSubscription           @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  actor          User?                        @relation("DoctorSubscriptionEventActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([subscriptionId, createdAt])
+  @@index([actorId])
+  @@index([eventType])
+  @@map("doctor_subscription_events")
 }
 
 // ─── Platform Fee ──────────────────────────────────────────────────────────────
@@ -888,6 +989,41 @@ enum PaymentStatus {
   SUCCESS
   FAILED
   REFUNDED
+}
+
+enum DoctorSubscriptionStatus {
+  ACTIVE
+  TRIAL
+  PAST_DUE
+  PAUSED
+  CANCELLED
+  EXPIRED
+}
+
+enum DoctorPackagePaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  WAIVED
+  REFUNDED
+}
+
+enum DoctorSubscriptionEventType {
+  ASSIGNED
+  PACKAGE_CHANGED
+  PRICE_OVERRIDDEN
+  FREE_MONTHS_GRANTED
+  STATUS_CHANGED
+  PAUSED
+  CANCELLED
+  REACTIVATED
+  PERIOD_RENEWED
+  PAYMENT_CREATED
+  PAYMENT_PAID
+  PAYMENT_FAILED
+  PAYMENT_WAIVED
+  PAYMENT_REFUNDED
+  BACKFILLED
 }
 
 enum ReportStatus {
