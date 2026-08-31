@@ -10,7 +10,7 @@ export default function DashboardLayout({
             <div className="container mx-auto px-4 py-8 lg:py-12">
                 <div className="flex flex-col lg:flex-row gap-8">
                     <DashboardSidebar />
-                    <main className="flex-1">
+                    <main className="order-1 flex-1 lg:order-2">
                         {children}
                     </main>
                 </div>
