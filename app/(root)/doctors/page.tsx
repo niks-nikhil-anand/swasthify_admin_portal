@@ -130,14 +130,14 @@ export default function DoctorCampaignsPage() {
 
             {/* Grid */}
             {loading ? (
-                <div className={cn("grid gap-6", "grid-cols-1 md:grid-cols-2 lg:grid-cols-3")}>
+                <div className={cn("grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-6 xl:grid-cols-3")}>
                     {[1, 2, 3, 4, 5, 6].map((i) => (
                         <CampaignCardSkeleton key={i} />
                     ))}
                 </div>
             ) : campaigns.length > 0 ? (
                 <>
-                    <div className={cn("grid gap-6", "grid-cols-1 md:grid-cols-2 lg:grid-cols-3")}>
+                    <div className={cn("grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-6 xl:grid-cols-3")}>
                         {campaigns.map((campaign) => (
                             <CampaignCard key={campaign.id} campaign={campaign} />
                         ))}
