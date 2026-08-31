@@ -63,7 +63,7 @@ export function Specialities() {
     }, []);
 
     return (
-        <section className="pt-20 bg-background overflow-hidden">
+        <section className="overflow-hidden bg-background pb-24 pt-20 md:pb-36 md:pt-28">
             <div className="container mx-auto px-4">
                 <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
                     <motion.div
@@ -102,16 +102,17 @@ export function Specialities() {
                         initial="hidden"
                         whileInView="show"
                         viewport={{ once: true }}
-                        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-6"
+                        className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-6 lg:grid-cols-6"
                     >
                         {specialities.map((speciality, index) => (
                             <Link href="/login" key={speciality.id ?? index}>
                                 <motion.div
                                     variants={item}
                                     whileHover={{ y: -8, scale: 1.02 }}
-                                    className="group bg-card/60 backdrop-blur-md hover:bg-card hover:shadow-[0_20px_50px_rgba(16,185,129,0.1)] transition-all duration-500 p-4 md:p-8 rounded-[2rem] border border-border/50 hover:border-emerald-500/30 flex flex-col items-center text-center h-full cursor-pointer"
+                                    className="group relative flex h-full min-h-[238px] cursor-pointer flex-col items-center overflow-hidden rounded-[1.75rem] border border-border/70 bg-card/60 p-4 text-center shadow-sm backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:border-primary/40 hover:bg-card hover:shadow-[0_24px_55px_rgba(16,185,129,0.14)] md:min-h-[290px] md:rounded-[2rem] md:p-6"
                                 >
-                                    <div className={`w-16 h-16 md:w-32 md:h-32 relative mb-2 md:mb-4 ${speciality.color} rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-2xl group-hover:shadow-emerald-500/20 overflow-hidden`}>
+                                    <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-linear-to-b from-primary/8 to-transparent" />
+                                    <div className={`relative mb-3 flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-4 border-background shadow-lg ring-1 ring-primary/15 transition-all duration-500 group-hover:scale-105 group-hover:ring-4 group-hover:ring-primary/15 md:mb-5 md:h-28 md:w-28 ${speciality.color}`}>
                                         <div className="absolute inset-0 rounded-full bg-linear-to-tr from-white/60 dark:from-background/40 to-transparent pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity z-10" />
                                         <div className="absolute inset-0 rounded-full scale-0 group-hover:scale-150 bg-emerald-500/5 blur-2xl transition-transform duration-700 -z-10" />
                                         <Image
@@ -122,16 +123,16 @@ export function Specialities() {
                                         />
                                     </div>
 
-                                    <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-2 px-1 text-xs md:text-base">
+                                    <h3 className="mb-2 line-clamp-2 px-1 text-xs font-bold text-foreground transition-colors group-hover:text-primary md:text-base">
                                         {speciality.title}
                                     </h3>
 
-                                    <div className="text-[10px] md:text-sm text-muted-foreground mb-2 md:mb-4">
-                                        starts from <span className="font-bold text-foreground text-xs md:text-base">{speciality.price}</span>
+                                    <div className="mb-4 rounded-full bg-muted/70 px-3 py-1 text-[10px] text-muted-foreground md:text-xs">
+                                        Starts from <span className="font-bold text-foreground text-xs md:text-sm">{speciality.price}</span>
                                     </div>
 
-                                    <span className="mt-auto text-[10px] md:text-xs font-bold text-primary opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 flex items-center bg-primary/10 px-2 py-0.5 md:px-3 md:py-1 rounded-full shadow-md shadow-primary/10">
-                                        Consult <ChevronRight className="w-2 h-2 md:w-3 md:h-3 ml-1" />
+                                    <span className="mt-auto flex items-center rounded-full bg-primary/10 px-3 py-1.5 text-[10px] font-bold text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground md:px-4 md:py-2 md:text-xs">
+                                        View doctors <ChevronRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-0.5 md:h-3.5 md:w-3.5" />
                                     </span>
                                 </motion.div>
                             </Link>

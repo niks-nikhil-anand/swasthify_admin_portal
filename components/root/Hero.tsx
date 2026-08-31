@@ -50,7 +50,7 @@ export function Hero() {
                             className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/7 text-primary text-xs md:text-sm font-black uppercase tracking-[0.2em] border border-primary/20 backdrop-blur-md shadow-2xl shadow-primary/5"
                         >
                             <Badge variant="outline" className="border-none bg-transparent p-0 text-inherit font-inherit shadow-none">
-                                Transforming Healthcare
+                                Your health, simplified
                             </Badge>
                         </motion.div>
 
@@ -60,8 +60,7 @@ export function Hero() {
                             transition={{ delay: 0.3, duration: 0.7 }}
                             className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.15]"
                         >
-                            Your Health. <br className="hidden lg:block" />
-                            <span className="text-primary">One Place.</span>
+                            Better healthcare starts with <span className="text-primary">one simple place.</span>
                         </motion.h1>
 
                         <motion.p
@@ -70,7 +69,7 @@ export function Hero() {
                             transition={{ delay: 0.4, duration: 0.7 }}
                             className="text-lg md:text-xl text-muted-foreground w-full max-w-lg leading-relaxed"
                         >
-                            Link your ABHA, book trusted doctors, and manage lab reports securely. Expert healthcare is just a click away.
+                            Find trusted doctors, book diagnostic tests, consult specialists online, and keep your health records together — all from Swasthify.
                         </motion.p>
 
                         {/* Search Bar - Simplified */}
@@ -85,10 +84,11 @@ export function Hero() {
                             </div>
                             <Input
                                 type="text"
-                                placeholder="Search doctors, specialities, symptoms..."
+                                aria-label="Search doctors, specialties, or symptoms"
+                                placeholder="Search doctors, specialties or symptoms"
                                 className="border-0 shadow-none focus-visible:ring-0 px-2 h-10 text-base bg-transparent"
                             />
-                            <Button className="rounded-full px-6 h-10 shadow-lg">Search</Button>
+                            <Button className="rounded-full px-6 h-10 shadow-lg">Find care</Button>
                         </motion.div>
 
                         <motion.div
@@ -99,12 +99,12 @@ export function Hero() {
                         >
                             <Link href="/doctors" className="w-full sm:w-auto">
                                 <Button size="lg" className="w-full sm:w-auto cursor-pointer rounded-full text-base font-semibold shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all">
-                                    Book Appointment <ArrowRight className="w-4 h-4 ml-2" />
+                                    Find a Doctor <ArrowRight className="w-4 h-4 ml-2" />
                                 </Button>
                             </Link>
-                            <Link href="/how-it-works" className="w-full sm:w-auto">
+                            <Link href="/labs" className="w-full sm:w-auto">
                                 <Button variant="outline" size="lg" className="w-full sm:w-auto cursor-pointer rounded-full text-base font-semibold border-primary/20 bg-background/50 backdrop-blur-sm hover:bg-background/80">
-                                    Learn More
+                                    Book a Lab Test
                                 </Button>
                             </Link>
                         </motion.div>

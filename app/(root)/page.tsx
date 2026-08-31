@@ -1,10 +1,12 @@
 import { LabSection } from "@/components/root/LabSection";
+import { TrustBar } from "@/components/root/TrustBar";
+import { HealthConcerns } from "@/components/root/HealthConcerns";
+import { HowItWorks } from "@/components/root/HowItWorks";
 import dynamic from "next/dynamic";
 
 const Hero = dynamic(() => import("@/components/root/Hero").then((mod) => mod.Hero));
 const Services = dynamic(() => import("@/components/root/Services").then((mod) => mod.Services));
 const DoctorSection = dynamic(() => import("@/components/root/DoctorSection").then((mod) => mod.DoctorSection));
-const HealthPackages = dynamic(() => import("@/components/root/HealthPackages").then((mod) => mod.HealthPackages));
 const AbhaIntegration = dynamic(() => import("@/components/root/AbhaIntegration").then((mod) => mod.AbhaIntegration));
 const Specialities = dynamic(() => import("@/components/root/Specialities").then((mod) => mod.Specialities));
 const InClinic = dynamic(() => import("@/components/root/InClinic").then((mod) => mod.InClinic));
@@ -35,8 +37,11 @@ export default function Home() {
 
       <main className="flex-1 relative z-10">
         <Hero />
+        <TrustBar />
         <Services />
+        <HowItWorks />
         <Specialities />
+        <HealthConcerns />
         <DoctorSection />
         <AbhaIntegration />
         <LabSection />

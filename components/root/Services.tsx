@@ -10,28 +10,28 @@ const services = [
         title: "Find Doctor Near Me",
         description: "Locate and book appointments with the best doctors in your neighborhood.",
         icon: MapPin,
-        href: "/find-doctor",
+        href: "/doctors",
         color: "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400",
     },
     {
         title: "Lab Tests",
         description: "Book diagnostic tests online and get sample collection from your doorstep.",
         icon: FlaskConical,
-        href: "/lab-tests",
+        href: "/labs",
         color: "bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400",
     },
     {
         title: "Surgeries",
         description: "Expert surgical care with end-to-end assistance and cashless insurance support.",
         icon: Stethoscope,
-        href: "/surgeries",
+        href: "/services",
         color: "bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400",
     },
     {
         title: "Video Consultation",
         description: "Connect with top specialists from the comfort of your home via secure video calls.",
         icon: Video,
-        href: "/consultation",
+        href: "/doctors",
         color: "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400",
     },
 
@@ -64,10 +64,10 @@ export function Services() {
                     className="text-center md:text-left mb-16 px-4"
                 >
                     <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground mb-6">
-                        <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-2 rounded-md">Integrated Healthcare</span> Services for Every Need
+                        Everything you need for <span className="text-emerald-600 dark:text-emerald-400">better healthcare</span>
                     </h2>
                     <p className="text-lg md:text-xl text-muted-foreground max-w-2xl md:mx-0 mx-auto leading-relaxed">
-                        Access world-class medical expertise, advanced diagnostics, and surgical care – all through one unified platform.
+                        From finding the right doctor to managing reports, Swasthify brings your healthcare journey together.
                     </p>
                 </motion.div>
 
@@ -98,9 +98,9 @@ export function Services() {
                                 {service.description}
                             </p>
 
-                            <Link href="/login" className="w-full mt-auto">
+                            <Link href={service.href} className="w-full mt-auto">
                                 <Button variant="outline" size="sm" className="w-full cursor-pointer group justify-between h-8 md:h-10 text-xs md:text-sm px-2 md:px-4 shadow-sm hover:shadow-primary/10">
-                                    Book Now
+                                    Explore service
                                     <ArrowRight className="w-3 h-3 md:w-4 md:h-4 ml-1 transition-transform group-hover:translate-x-1" />
                                 </Button>
                             </Link>
