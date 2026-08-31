@@ -84,18 +84,18 @@ export function HowItWorks() {
                 >
                     <div aria-hidden="true" className="absolute left-[12.5%] right-[12.5%] top-12 hidden h-px bg-linear-to-r from-primary/20 via-primary/60 to-primary/20 md:block" />
                     {steps.map((step, index) => (
-                        <motion.div key={index} variants={item} className="group relative flex min-h-[230px] flex-row items-start gap-4 rounded-3xl border border-border/70 bg-card/75 p-5 text-left shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 md:min-h-0 md:flex-col md:items-center md:p-6 md:text-center">
-                            {index < steps.length - 1 && <div aria-hidden="true" className="absolute bottom-[-18px] left-[35px] top-[78px] w-px bg-linear-to-b from-primary/50 to-primary/10 md:hidden" />}
+                        <motion.div key={index} variants={item} className="group relative flex min-h-[154px] flex-row items-center gap-4 rounded-3xl border border-border/70 bg-card/75 p-4 text-left shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 sm:min-h-[168px] sm:p-5 md:min-h-0 md:flex-col md:items-center md:p-6 md:text-center">
+                            {index < steps.length - 1 && <div aria-hidden="true" className="absolute bottom-[-18px] left-[35px] top-[76px] w-px bg-linear-to-b from-primary/50 to-primary/10 md:hidden" />}
                             <motion.div
                                 whileHover={{ scale: 1.06 }}
                                 className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-primary/25 bg-background shadow-lg shadow-primary/10 transition-all duration-300 group-hover:border-primary/60 group-hover:bg-primary/5 md:mb-6 md:h-24 md:w-24 md:rounded-3xl"
                             >
-                                <Image src={step.image} alt="" width={112} height={112} className="h-12 w-12 object-contain md:h-20 md:w-20" />
+                                <Image src={step.image} alt="" width={112} height={112} className="h-14 w-14 object-contain md:h-20 md:w-20" />
                                 <span className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full border-4 border-background bg-primary text-xs font-bold text-primary-foreground">{String(index + 1).padStart(2, "0")}</span>
                             </motion.div>
 
-                            <div className="relative z-10"><h3 className="mb-2 text-base font-bold text-foreground md:text-lg">{step.title}</h3>
-                            <p className="text-sm leading-relaxed text-muted-foreground md:text-[15px]">
+                            <div className="relative z-10"><h3 className="mb-1.5 text-base font-bold text-foreground md:mb-2 md:text-lg">{step.title}</h3>
+                            <p className="text-[13px] leading-6 text-muted-foreground md:text-[15px] md:leading-relaxed">
                                 {step.description}
                             </p></div>
                         </motion.div>
