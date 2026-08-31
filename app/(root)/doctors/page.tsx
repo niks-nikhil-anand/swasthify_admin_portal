@@ -1,39 +1,45 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { CampaignCard, Campaign } from "@/components/root/CampaignCard";
 import { CampaignCardSkeleton } from "@/components/root/CampaignCardSkeleton";
 import { DoctorFilters } from "./components/DoctorFilters";
 import { DoctorPagination } from "./components/DoctorPagination";
 import { EmptyState } from "./components/EmptyState";
-import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function DoctorCampaignsPage() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [selectedType, setSelectedType] = useState<string>("ALL");
-    const [selectedSpecialization, setSelectedSpecialization] = useState<string>("ALL");
+    const [searchQuery, setSearchQuery] = useState(() => searchParams.get("query") || "");
+    const [selectedType, setSelectedType] = useState<string>(() => searchParams.get("type") || "ALL");
+    const [selectedSpecialization, setSelectedSpecialization] = useState<string>(() => searchParams.get("specialization") || "ALL");
+    const [sortBy, setSortBy] = useState<string>(() => searchParams.get("sort") || "recommended");
 
     // Pagination state
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
-    const fetchCampaigns = async () => {
-        setLoading(true);
-        try {
+    useEffect(() => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(async () => {
+            setLoading(true);
+            try {
             const params = new URLSearchParams();
-            if (searchQuery) params.append("query", searchQuery);
+            if (searchQuery.trim()) params.append("query", searchQuery.trim());
             if (selectedType && selectedType !== "ALL") params.append("type", selectedType);
             if (selectedSpecialization && selectedSpecialization !== "ALL") params.append("specialization", selectedSpecialization);
+            params.append("sort", sortBy);
 
             params.append("page", page.toString());
             params.append("limit", "9");
             params.append("source", "doctor"); // Only fetch doctor campaigns
 
-            const response = await fetch(`/api/public/campaigns?${params.toString()}`);
+            const response = await fetch(`/api/public/campaigns?${params.toString()}`, { signal: controller.signal });
             if (!response.ok) throw new Error("Failed to fetch campaigns");
             const result = await response.json();
 
@@ -45,22 +51,45 @@ export default function DoctorCampaignsPage() {
                 setCampaigns(result.data);
                 setTotalPages(result.pagination.totalPages);
             }
-        } catch (error) {
+            } catch (error) {
+            if (error instanceof DOMException && error.name === "AbortError") return;
             console.error("Error fetching campaigns:", error);
             toast.error("Failed to load campaigns");
-        } finally {
-            setLoading(false);
-        }
+            } finally {
+                if (!controller.signal.aborted) setLoading(false);
+            }
+        }, 300);
+        return () => { clearTimeout(timeoutId); controller.abort(); };
+    }, [page, searchQuery, selectedType, selectedSpecialization, sortBy]);
+
+    useEffect(() => {
+        const nextParams = new URLSearchParams();
+        if (searchQuery.trim()) nextParams.set("query", searchQuery.trim());
+        if (selectedType !== "ALL") nextParams.set("type", selectedType);
+        if (selectedSpecialization !== "ALL") nextParams.set("specialization", selectedSpecialization);
+        if (sortBy !== "recommended") nextParams.set("sort", sortBy);
+        if (page > 1) nextParams.set("page", page.toString());
+        const nextUrl = nextParams.toString() ? `/doctors?${nextParams.toString()}` : "/doctors";
+        const currentUrl = searchParams.toString() ? `/doctors?${searchParams.toString()}` : "/doctors";
+        if (nextUrl !== currentUrl) router.replace(nextUrl, { scroll: false });
+    }, [searchQuery, selectedType, selectedSpecialization, sortBy, page, router, searchParams]);
+
+    useEffect(() => {
+        setSearchQuery(searchParams.get("query") || "");
+        setSelectedType(searchParams.get("type") || "ALL");
+        setSelectedSpecialization(searchParams.get("specialization") || "ALL");
+        setSortBy(searchParams.get("sort") || "recommended");
+        setPage(Math.max(1, Number(searchParams.get("page") || "1")));
+    }, [searchParams]);
+
+    const updateSearch = (value: string) => { setSearchQuery(value); setPage(1); };
+    const updateType = (value: string) => { setSelectedType(value); setPage(1); };
+    const updateSpecialization = (value: string) => { setSelectedSpecialization(value); setPage(1); };
+    const updateSort = (value: string) => { setSortBy(value); setPage(1); };
+    const hasActiveFilters = Boolean(searchQuery || selectedType !== "ALL" || selectedSpecialization !== "ALL" || sortBy !== "recommended");
+    const clearFilters = () => {
+        setSearchQuery(""); setSelectedType("ALL"); setSelectedSpecialization("ALL"); setSortBy("recommended"); setPage(1);
     };
-
-    useEffect(() => {
-        // Debounce search - reset page when filters change
-        setPage(1);
-    }, [searchQuery, selectedType, selectedSpecialization]);
-
-    useEffect(() => {
-        fetchCampaigns();
-    }, [page, searchQuery, selectedType, selectedSpecialization]);
 
     const handlePageChange = (newPage: number) => {
         if (newPage >= 1 && newPage <= totalPages) {
@@ -85,12 +114,19 @@ export default function DoctorCampaignsPage() {
             {/* Filters */}
             <DoctorFilters
                 searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
+                onSearchChange={updateSearch}
                 selectedSpecialization={selectedSpecialization}
-                onSpecializationChange={setSelectedSpecialization}
+                onSpecializationChange={updateSpecialization}
                 selectedType={selectedType}
-                onTypeChange={setSelectedType}
+                onTypeChange={updateType}
+                sortBy={sortBy}
+                onSortChange={updateSort}
             />
+
+            {!loading && <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
+                <span>{campaigns.length === 0 ? "No doctors found" : `Showing ${campaigns.length} doctor campaign${campaigns.length === 1 ? "" : "s"}`}</span>
+                {hasActiveFilters && <button type="button" onClick={clearFilters} className="min-h-11 rounded-full px-4 font-semibold text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Clear all filters</button>}
+            </div>}
 
             {/* Grid */}
             {loading ? (
