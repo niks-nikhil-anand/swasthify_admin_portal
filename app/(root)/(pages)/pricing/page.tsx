@@ -8,6 +8,7 @@ import { CTA } from "@/components/shared/CTA";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export default function PricingPage() {
     const patientServices = [
@@ -131,10 +132,10 @@ export default function PricingPage() {
                                                     : "bg-background border-2 border-primary/20 text-primary hover:bg-primary/5"
                                             )}
                                         >
-                                            <a href="/register/patient" className="flex items-center justify-center gap-2">
+                                            <Link href="/doctors" className="flex items-center justify-center gap-2">
                                                 Book Now
                                                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                            </a>
+                                            </Link>
                                         </Button>
                                     </CardFooter>
                                 </Card>
