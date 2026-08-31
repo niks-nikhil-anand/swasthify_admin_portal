@@ -185,6 +185,9 @@ export function Navbar() {
 
                     {/* Mobile Menu Button */}
                     <button
+                        type="button"
+                        aria-expanded={isOpen}
+                        aria-controls="mobile-navigation-drawer"
                         className="md:hidden p-2 text-foreground"
                         onClick={() => setIsOpen(!isOpen)}
                     >
@@ -204,6 +207,7 @@ export function Navbar() {
                     <>
                         {/* Backdrop */}
                         <motion.div
+                            id="mobile-navigation-drawer"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
@@ -217,7 +221,7 @@ export function Navbar() {
                             animate={{ x: 0 }}
                             exit={{ x: "-100%" }}
                             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                            className="fixed inset-y-0 left-0 z-50 w-3/4 max-w-sm bg-background/95 backdrop-blur-xl border-r shadow-2xl p-6 md:hidden flex flex-col gap-6"
+                        className="fixed inset-y-0 left-0 z-50 flex h-dvh w-3/4 max-w-sm flex-col gap-5 overflow-hidden border-r bg-background/95 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-2xl backdrop-blur-xl md:hidden sm:p-6"
                         >
                             <div className="flex items-center justify-between mb-2">
                                 <Link href="/" className="flex items-center space-x-2" onClick={() => setIsOpen(false)}>
@@ -229,6 +233,8 @@ export function Navbar() {
                                 <div className="flex items-center gap-2">
                                     <ModeToggle />
                                     <button
+                                        type="button"
+                                        aria-label="Close navigation menu"
                                         onClick={() => setIsOpen(false)}
                                         className="p-2 -mr-2 text-muted-foreground hover:text-foreground rounded-full hover:bg-muted/20"
                                     >
@@ -237,7 +243,8 @@ export function Navbar() {
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-1">
+                            <div className="min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:thin]">
+                                <div className="flex flex-col gap-1">
                                 {navItems.map((item) => (
                                     <Link
                                         key={item.href}
@@ -251,71 +258,53 @@ export function Navbar() {
                                         {item.name}
                                     </Link>
                                 ))}
-                            </div>
-
-                            <div className="mt-auto flex flex-col gap-3">
-                                {!isLoading && (
-                                    user && user.role === "PATIENT" ? (
-                                        <>
-                                            <div className="px-4 py-3 flex items-center gap-3 bg-muted/30 rounded-xl">
-                                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                                    <User className="h-6 w-6" />
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="text-sm font-semibold">{user.name}</span>
-                                                    <span className="text-xs text-muted-foreground">{user.email}</span>
-                                                    <span className="text-[10px] uppercase tracking-wider text-primary font-bold">PATIENT</span>
-                                                </div>
-                                            </div>
-
+                                </div>
+                                {!isLoading && user && user.role === "PATIENT" && (
+                                    <div className="mt-5 border-t border-border/60 pt-4">
                                             <Link href="/me" onClick={() => setIsOpen(false)}>
-                                                <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                <span className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-base font-medium text-foreground transition-colors hover:bg-muted/50">
                                                     <User className="h-5 w-5 text-muted-foreground" /> My Dashboard
-                                                </button>
+                                                </span>
                                             </Link>
                                             <Link href="/me/appointments" onClick={() => setIsOpen(false)}>
-                                                <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                <span className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-base font-medium text-foreground transition-colors hover:bg-muted/50">
                                                     <Calendar className="h-5 w-5 text-muted-foreground" /> Appointments
-                                                </button>
+                                                </span>
                                             </Link>
                                             <Link href="/me/reports" onClick={() => setIsOpen(false)}>
-                                                <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                <span className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-base font-medium text-foreground transition-colors hover:bg-muted/50">
                                                     <FileText className="h-5 w-5 text-muted-foreground" /> Lab Reports
-                                                </button>
+                                                </span>
                                             </Link>
                                             <Link href="/me/health-records" onClick={() => setIsOpen(false)}>
-                                                <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                <span className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-base font-medium text-foreground transition-colors hover:bg-muted/50">
                                                     <ClipboardList className="h-5 w-5 text-muted-foreground" /> Health Records
-                                                </button>
+                                                </span>
                                             </Link>
                                             <Link href="/me/settings" onClick={() => setIsOpen(false)}>
-                                                <button className="w-full px-4 py-3 text-base font-medium text-foreground flex items-center gap-3 hover:bg-muted/50 rounded-xl transition-colors">
+                                                <span className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-base font-medium text-foreground transition-colors hover:bg-muted/50">
                                                     <Settings className="h-5 w-5 text-muted-foreground" /> Settings
-                                                </button>
+                                                </span>
                                             </Link>
                                             <button
                                                 onClick={() => { handleLogout(); setIsOpen(false); }}
-                                                className="w-full px-4 py-3 text-base font-medium text-red-600 flex items-center gap-3 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-colors"
+                                                className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-base font-medium text-red-600 transition-colors hover:bg-red-50 dark:hover:bg-red-900/10"
                                             >
                                                 <LogOut className="h-5 w-5" /> Log out
                                             </button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Link href="/login" onClick={() => setIsOpen(false)}>
-                                                <button className="w-full px-4 py-3 text-base font-medium text-primary border border-primary/20 rounded-xl hover:bg-primary/5 transition-colors">
-                                                    Log in
-                                                </button>
-                                            </Link>
-                                            <Link href="/register" onClick={() => setIsOpen(false)}>
-                                                <button className="w-full px-4 py-3 text-base font-medium text-primary-foreground bg-primary rounded-xl hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
-                                                    Get Started
-                                                </button>
-                                            </Link>
-                                        </>
-                                    )
+                                    </div>
                                 )}
                             </div>
+                            {!isLoading && (user && user.role === "PATIENT" ? (
+                                <div className="sticky bottom-0 shrink-0 rounded-2xl border border-border/50 bg-card p-3 shadow-[0_-12px_30px_rgba(0,0,0,0.12)]">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"><User className="h-6 w-6" /></div>
+                                        <div className="min-w-0"><span className="block truncate text-sm font-bold text-foreground">{user.name}</span><span className="block truncate text-xs text-muted-foreground">{user.email}</span><span className="text-[10px] font-bold uppercase tracking-wider text-primary">Patient account</span></div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex shrink-0 flex-col gap-3 border-t border-border/60 pt-4"><Link href="/login" onClick={() => setIsOpen(false)}><span className="block w-full rounded-xl border border-primary/20 px-4 py-3 text-center text-base font-medium text-primary transition-colors hover:bg-primary/5">Log in</span></Link><Link href="/register" onClick={() => setIsOpen(false)}><span className="block w-full rounded-xl bg-primary px-4 py-3 text-center text-base font-medium text-primary-foreground shadow-lg shadow-primary/20 transition-colors hover:bg-primary/90">Get Started</span></Link></div>
+                            ))}
                         </motion.div>
                     </>
                 )}
