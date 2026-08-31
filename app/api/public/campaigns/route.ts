@@ -7,37 +7,51 @@ export async function GET(req: Request) {
         const query = searchParams.get("query");
         const type = searchParams.get("type");
         const specialization = searchParams.get("specialization");
+        const sort = searchParams.get("sort") || "recommended";
         const source = searchParams.get("source"); // "doctor" or "lab"
 
-        const page = parseInt(searchParams.get("page") || "1");
-        const limit = parseInt(searchParams.get("limit") || "9");
+        const page = Math.max(1, parseInt(searchParams.get("page") || "1") || 1);
+        const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") || "9") || 9));
         const skip = (page - 1) * limit;
+        const allowedTypes = ["OPD", "HEALTH_CAMP", "FREE_CHECKUP"] as const;
+        const allowedSorts = ["recommended", "newest", "price_asc", "price_desc", "rating_desc", "experience_desc"] as const;
+        const normalizedQuery = query?.trim();
 
         const whereClause = {
-            status: "ACTIVE" as any,
+            status: "ACTIVE" as const,
             isVerified: true,
-            ...(type ? { type: type as any } : {}),
+            ...(type && allowedTypes.includes(type as typeof allowedTypes[number]) ? { type: type as typeof allowedTypes[number] } : {}),
             ...(source === "doctor" ? { doctorId: { not: null } } : {}),
             ...(source === "lab" ? { labId: { not: null } } : {}),
             ...(specialization ? {
                 doctor: {
                     specializations: {
                         some: {
-                            name: {
-                                equals: specialization,
-                                mode: "insensitive" as const
-                            }
+                            OR: [
+                                { id: specialization },
+                                { name: { equals: specialization, mode: "insensitive" as const } }
+                            ]
                         }
                     }
                 }
             } : {}),
-            ...(query ? {
+            ...(normalizedQuery ? {
                 OR: [
-                    { name: { contains: query, mode: "insensitive" as const } },
+                    { name: { contains: normalizedQuery, mode: "insensitive" as const } },
+                    { specialisation: { contains: normalizedQuery, mode: "insensitive" as const } },
                     {
                         doctor: {
                             user: {
-                                name: { contains: query, mode: "insensitive" as const }
+                                name: { contains: normalizedQuery, mode: "insensitive" as const }
+                            }
+                        }
+                    },
+                    { doctor: { clinicName: { contains: normalizedQuery, mode: "insensitive" as const } } },
+                    { doctor: { hospitalName: { contains: normalizedQuery, mode: "insensitive" as const } } },
+                    {
+                        doctor: {
+                            specializations: {
+                                some: { name: { contains: normalizedQuery, mode: "insensitive" as const } }
                             }
                         }
                     }
@@ -45,11 +59,21 @@ export async function GET(req: Request) {
             } : {})
         };
 
+        const safeSort = allowedSorts.includes(sort as typeof allowedSorts[number])
+            ? sort as typeof allowedSorts[number]
+            : "recommended";
+        const orderBy = {
+            recommended: { createdAt: "desc" },
+            newest: { createdAt: "desc" },
+            price_asc: { price: "asc" },
+            price_desc: { price: "desc" },
+            rating_desc: { doctor: { averageRating: "desc" } },
+            experience_desc: { doctor: { experienceYears: "desc" } },
+        } as const;
+
         // Get total count for pagination
-        // @ts-ignore
         const total = await db.campaign.count({ where: whereClause });
 
-        // @ts-ignore
         const campaigns = await db.campaign.findMany({
             where: whereClause,
             include: {
@@ -73,9 +97,7 @@ export async function GET(req: Request) {
                     }
                 }
             },
-            orderBy: {
-                createdAt: "desc"
-            },
+            orderBy: orderBy[safeSort],
             skip,
             take: limit
         });

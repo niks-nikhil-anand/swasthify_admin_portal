@@ -7,8 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function Hero() {
+    const router = useRouter();
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const handleSearch = () => {
+        const query = searchQuery.trim();
+        router.push(query ? `/doctors?query=${encodeURIComponent(query)}` : "/doctors");
+    };
+
     return (
         <section className="relative overflow-hidden bg-linear-to-b from-primary/10 via-background to-transparent pt-10 pb-14 md:pt-24 md:pb-32 lg:pt-32 lg:pb-40">
             {/* Background Decor */}
@@ -85,10 +95,15 @@ export function Hero() {
                             <Input
                                 type="text"
                                 aria-label="Search doctors, specialties, or symptoms"
-                                placeholder="Search doctors, specialties or symptoms"
+                                placeholder="Search doctors or specialties"
                                 className="border-0 shadow-none focus-visible:ring-0 px-2 h-10 text-base bg-transparent"
+                                value={searchQuery}
+                                onChange={(event) => setSearchQuery(event.target.value)}
+                                onKeyDown={(event) => {
+                                    if (event.key === "Enter") handleSearch();
+                                }}
                             />
-                            <Button className="rounded-full px-6 h-10 shadow-lg">Find care</Button>
+                            <Button type="button" onClick={handleSearch} className="rounded-full px-6 h-10 shadow-lg">Find care</Button>
                         </motion.div>
 
                         <motion.div
