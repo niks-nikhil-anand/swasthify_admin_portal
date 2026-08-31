@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
     Select,
     SelectContent,
@@ -10,20 +10,13 @@ import {
 } from "@/components/ui/select";
 import { Search as SearchBar } from "./Search";
 
-export const SPECIALIZATIONS = [
-    { id: "ALL", label: "All Specializations" },
-    { id: "general_physician", label: "General Physician" },
-    { id: "cardiologist", label: "Cardiologist" },
-    { id: "dermatologist", label: "Dermatologist" },
-    { id: "pediatrician", label: "Pediatrician" },
-    { id: "neurologist", label: "Neurologist" },
-    { id: "orthopedist", label: "Orthopedist" },
-    { id: "gynecologist", label: "Gynecologist" },
-    { id: "dentist", label: "Dentist" },
-    { id: "ent", label: "ENT Specialist" },
-    { id: "psychiatrist", label: "Psychiatrist" },
-    { id: "ophthalmologist", label: "Ophthalmologist" },
-    { id: "urologist", label: "Urologist" },
+export const SORT_OPTIONS = [
+    { id: "recommended", label: "Recommended" },
+    { id: "newest", label: "Newest campaigns" },
+    { id: "price_asc", label: "Price: low to high" },
+    { id: "price_desc", label: "Price: high to low" },
+    { id: "rating_desc", label: "Highest rated" },
+    { id: "experience_desc", label: "Most experienced" },
 ];
 
 interface DoctorFiltersProps {
@@ -33,6 +26,8 @@ interface DoctorFiltersProps {
     onSpecializationChange: (value: string) => void;
     selectedType: string;
     onTypeChange: (value: string) => void;
+    sortBy: string;
+    onSortChange: (value: string) => void;
 }
 
 export const DoctorFilters: React.FC<DoctorFiltersProps> = ({
@@ -42,26 +37,46 @@ export const DoctorFilters: React.FC<DoctorFiltersProps> = ({
     onSpecializationChange,
     selectedType,
     onTypeChange,
+    sortBy,
+    onSortChange,
 }) => {
+    const [specializations, setSpecializations] = useState<{ id: string; title: string }[]>([]);
+
+    useEffect(() => {
+        let active = true;
+        fetch("/api/public/specializations?type=DOCTOR&limit=100")
+            .then((response) => response.ok ? response.json() : [])
+            .then((data) => { if (active) setSpecializations(data); })
+            .catch(() => { if (active) setSpecializations([]); });
+        return () => { active = false; };
+    }, []);
+
     return (
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            <SearchBar onSearch={onSearchChange} placeholder="Search by campaign or doctor..." />
-            <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
+        <div className="space-y-4 rounded-3xl border border-border/60 bg-background/60 p-4 shadow-sm md:p-5">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <p className="text-sm font-semibold text-foreground">Find the right doctor</p>
+                    <p className="text-xs text-muted-foreground">Search by doctor, campaign, or specialization</p>
+                </div>
+                <SearchBar value={searchQuery} onSearch={onSearchChange} placeholder="Search by doctor or campaign..." className="max-w-none lg:max-w-md" />
+            </div>
+            <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <Select value={selectedSpecialization} onValueChange={onSpecializationChange}>
-                    <SelectTrigger className="w-full sm:w-[200px] rounded-full shadow-md border-border/50">
+                    <SelectTrigger aria-label="Filter by specialization" className="w-full rounded-full shadow-md border-border/50">
                         <SelectValue placeholder="Specialization" />
                     </SelectTrigger>
                     <SelectContent>
-                        {SPECIALIZATIONS.map((spec) => (
+                        <SelectItem value="ALL">All Specializations</SelectItem>
+                        {specializations.map((spec) => (
                             <SelectItem key={spec.id} value={spec.id}>
-                                {spec.label}
+                                {spec.title}
                             </SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
 
                 <Select value={selectedType} onValueChange={onTypeChange}>
-                    <SelectTrigger className="w-full sm:w-[180px] rounded-full shadow-md border-border/50">
+                    <SelectTrigger aria-label="Filter by campaign type" className="w-full rounded-full shadow-md border-border/50">
                         <SelectValue placeholder="Campaign Type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -69,6 +84,16 @@ export const DoctorFilters: React.FC<DoctorFiltersProps> = ({
                         <SelectItem value="OPD">OPD</SelectItem>
                         <SelectItem value="HEALTH_CAMP">Health Camp</SelectItem>
                         <SelectItem value="FREE_CHECKUP">Free Checkup</SelectItem>
+                    </SelectContent>
+                </Select>
+                <Select value={sortBy} onValueChange={onSortChange}>
+                    <SelectTrigger aria-label="Sort doctors" className="w-full rounded-full shadow-md border-border/50">
+                        <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {SORT_OPTIONS.map((option) => (
+                            <SelectItem key={option.id} value={option.id}>{option.label}</SelectItem>
+                        ))}
                     </SelectContent>
                 </Select>
             </div>

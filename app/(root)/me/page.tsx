@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { User, Mail, Phone, MapPin, Calendar, ShieldCheck, Heart, Award, Activity, Save, Loader2, Thermometer, Ruler, Droplets, AlertCircle, Stethoscope, Contact, UserPlus, Camera } from "lucide-react";
+import Link from "next/link";
+import { User, Mail, Phone, Calendar, ShieldCheck, Activity, Save, Loader2, Ruler, AlertCircle, Stethoscope, Camera, ArrowRight, ClipboardList } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -154,13 +155,10 @@ export default function ProfilePage() {
     );
   }
 
-  const stats = [
-    { label: "Health Score", value: "85", icon: Heart, color: "text-red-500", bg: "bg-red-50" },
-    { label: "Checkups", value: "12", icon: ShieldCheck, color: "text-blue-500", bg: "bg-blue-50" },
-    { label: "Rewards", value: "450", icon: Award, color: "text-amber-500", bg: "bg-amber-50" },
-  ];
-
   const patient = user?.patient;
+  const profileFields = [user?.name, user?.email, user?.phone, patient?.dateOfBirth, patient?.gender, patient?.bloodGroup, patient?.height, patient?.weight, patient?.emergencyContactName];
+  const completedFields = profileFields.filter(Boolean).length;
+  const profileCompletion = Math.round((completedFields / profileFields.length) * 100);
 
   return (
     <div className="space-y-8">
@@ -208,7 +206,7 @@ export default function ProfilePage() {
           <div className="flex-1 text-center md:text-left space-y-2">
             <h1 className="text-3xl font-bold tracking-tight text-foreground">{user?.name}</h1>
             <p className="text-muted-foreground font-medium flex items-center justify-center md:justify-start gap-2">
-              <ShieldCheck className="h-4 w-4 text-primary" /> Platinum Member
+              <ShieldCheck className="h-4 w-4 text-primary" /> Your secure patient profile
             </p>
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-4">
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50 text-xs font-semibold text-muted-foreground border border-border/50">
@@ -314,28 +312,23 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {stats.map((stat) => (
-          <div key={stat.label} className="bg-background border border-border/50 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className={cn("p-3 rounded-xl", stat.bg)}>
-                <stat.icon className={cn("h-6 w-6", stat.color)} />
-              </div>
-              <Activity className="h-4 w-4 text-muted-foreground opacity-30" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
-              <h3 className="text-2xl font-bold text-foreground mt-1">{stat.value}</h3>
-            </div>
+      {/* Profile overview and next actions */}
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+        <div className="rounded-3xl border border-primary/15 bg-primary/[0.04] p-6 shadow-sm md:p-7">
+          <div className="flex items-start justify-between gap-4">
+            <div><p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-primary">Profile readiness</p><h2 className="text-xl font-bold text-foreground">Complete your health profile</h2><p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">A complete profile helps doctors understand your needs and makes every appointment smoother.</p></div>
+            <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary">{profileCompletion}%</span>
           </div>
-        ))}
+          <div className="mt-6 h-2 overflow-hidden rounded-full bg-primary/10"><div className="h-full rounded-full bg-primary transition-all" style={{ width: `${profileCompletion}%` }} /></div>
+          <Link href="#personal-information" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-primary hover:gap-3 transition-all">Review details <ArrowRight className="h-4 w-4" /></Link>
+        </div>
+        <div className="rounded-3xl border border-border/60 bg-background p-6 shadow-sm md:p-7"><p className="mb-4 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Quick actions</p><div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-1"><Link href="/me/appointments" className="group flex items-center justify-between rounded-2xl border border-border/60 p-4 transition-all hover:border-primary/30 hover:bg-primary/[0.04]"><span className="flex items-center gap-3 text-sm font-semibold"><Calendar className="h-5 w-5 text-primary" /> Appointments</span><ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1" /></Link><Link href="/me/health-records" className="group flex items-center justify-between rounded-2xl border border-border/60 p-4 transition-all hover:border-primary/30 hover:bg-primary/[0.04]"><span className="flex items-center gap-3 text-sm font-semibold"><ClipboardList className="h-5 w-5 text-primary" /> Health records</span><ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1" /></Link></div></div>
       </div>
 
       {/* Profile Details Sections */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Personal Information */}
-        <div className="bg-background border border-border/50 rounded-3xl p-8 shadow-sm">
+        <div id="personal-information" className="bg-background border border-border/50 rounded-3xl p-8 shadow-sm scroll-mt-24">
           <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-foreground">
             <User className="h-5 w-5 text-primary" /> Personal Information
           </h3>
