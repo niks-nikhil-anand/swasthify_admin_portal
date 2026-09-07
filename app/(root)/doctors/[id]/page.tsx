@@ -13,7 +13,7 @@ import { CampaignKeyMetrics } from "./components/CampaignKeyMetrics";
 import { ScheduleSection } from "./components/ScheduleSection";
 import { LocationSection } from "./components/LocationSection";
 import { DoctorSidebar } from "./components/DoctorSidebar";
-import { useParams as useNextParams, useRouter as useNextRouter } from "next/navigation";
+import { useParams as useNextParams } from "next/navigation";
 import { BookingModal } from "./components/BookingModal";
 import { ClinicImageSlider } from "./components/ClinicImageSlider";
 
@@ -21,10 +21,8 @@ export default function CampaignDetailsPage() {
     const params = useNextParams();
     const [campaign, setCampaign] = useState<Campaign | null>(null);
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState<any>(null);
-    const [checkingAuth, setCheckingAuth] = useState(true);
+    const [user, setUser] = useState<{ id: string } | null>(null);
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-    const router = useNextRouter();
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -36,20 +34,12 @@ export default function CampaignDetailsPage() {
                 }
             } catch (error) {
                 console.error("Failed to fetch user:", error);
-            } finally {
-                setCheckingAuth(false);
             }
         };
         fetchUser();
     }, []);
 
     const handleBookAppointment = () => {
-        if (!user) {
-            toast.error("Please login to book an appointment");
-            router.push("/login");
-            return;
-        }
-
         setIsBookingModalOpen(true);
     };
 
@@ -83,7 +73,7 @@ export default function CampaignDetailsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50/30 font-sans">
+        <div className="min-h-screen bg-muted/30 font-sans">
             <div className="container mx-auto py-8 px-4 max-w-6xl">
                 {/* Back Button */}
                 <div className="mb-6">
@@ -153,6 +143,7 @@ export default function CampaignDetailsPage() {
                 isOpen={isBookingModalOpen}
                 onClose={() => setIsBookingModalOpen(false)}
                 campaign={campaign}
+                isAuthenticated={Boolean(user)}
             />
         </div>
     );
