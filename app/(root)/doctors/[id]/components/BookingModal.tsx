@@ -1,50 +1,131 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Calendar as CalendarIcon, Clock, ChevronRight, Check, CreditCard } from "lucide-react";
+import { X, Calendar as CalendarIcon, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Campaign } from "../../types";
 import { format, addDays, isSameDay } from "date-fns";
 import { cn } from "@/lib/utils";
 
 import { toast } from "sonner";
-import { loadRazorpay, openRazorpayCheckout } from "@/utils/razorpay-client";
+import { loadRazorpay, openRazorpayCheckout, type RazorpayPaymentResponse } from "@/utils/razorpay-client";
 import { PaymentSuccessUI } from "@/components/root/PaymentSuccessUI";
+import { RecaptchaVerifier, signInWithPhoneNumber, type ConfirmationResult } from "firebase/auth";
+import { identityAuth } from "@/lib/firebase";
 
 interface BookingModalProps {
     isOpen: boolean;
     onClose: () => void;
     campaign: Campaign;
+    isAuthenticated: boolean;
 }
 
-const timeCategories = [
-    { id: "morning", label: "Morning", range: "10AM - 12PM", icon: "🌅" },
-    { id: "afternoon", label: "Afternoon", range: "12PM - 4PM", icon: "☀️" },
-    { id: "evening", label: "Evening", range: "4PM - 9PM", icon: "🌆" },
-];
+interface AvailabilitySlot {
+    startMinutes: number;
+    endMinutes: number;
+    label: string;
+    status: "AVAILABLE" | "BOOKED";
+}
 
-const timeSlotsData: Record<string, string[]> = {
-    morning: ["10:00 AM - 11:00 AM", "11:00 AM - 12:00 PM"],
-    afternoon: ["12:00 PM - 1:00 PM", "1:00 PM - 2:00 PM", "3:00 PM - 4:00 PM"],
-    evening: ["4:00 PM - 5:00 PM", "5:00 PM - 6:00 PM", "6:00 PM - 7:00 PM", "7:00 PM - 8:00 PM", "8:00 PM - 9:00 PM"],
-};
+interface AvailabilityResponse {
+    available: boolean;
+    reason: string | null;
+    slots: AvailabilitySlot[];
+}
 
-export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, campaign }) => {
+interface AppointmentSummary { id: string; }
+interface AppointmentResponse { appointment?: AppointmentSummary; error?: string; }
+interface PlatformFee { entityType: string; fee: number; discount: number; discountType: string; }
+interface PaymentOrderResponse {
+    error?: string;
+    key: string;
+    amount: number;
+    currency: string;
+    orderId: string;
+    appointmentDetails: { doctorName: string; patientName: string };
+}
+
+function formatDoctorName(name?: string | null) {
+    const trimmed = (name || "").trim();
+    if (!trimmed) return "Doctor";
+    return /^dr\.?\s/i.test(trimmed) ? trimmed : `Dr. ${trimmed}`;
+}
+
+function getErrorMessage(error: unknown, fallback: string) {
+    return error instanceof Error ? error.message : fallback;
+}
+
+export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, campaign, isAuthenticated }) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
     const [isBooking, setIsBooking] = useState(false);
     const [bookingStep, setBookingStep] = useState<"SELECT" | "REVIEW" | "PAYMENT" | "SUCCESS">("SELECT");
-    const [bookedAppointment, setBookedAppointment] = useState<any>(null);
-    const [platformFees, setPlatformFees] = useState<any[]>([]);
+    const [bookedAppointment, setBookedAppointment] = useState<AppointmentSummary | null>(null);
+    const [platformFees, setPlatformFees] = useState<PlatformFee[]>([]);
+    const [guestName, setGuestName] = useState("");
+    const [guestMobile, setGuestMobile] = useState("");
+    const [guestOtp, setGuestOtp] = useState("");
+    const [guestOtpSent, setGuestOtpSent] = useState(false);
+    const [guestVerified, setGuestVerified] = useState(false);
+    const [guestOtpLoading, setGuestOtpLoading] = useState(false);
+    const [availabilityByDate, setAvailabilityByDate] = useState<Record<string, AvailabilityResponse>>({});
+    const [availabilityLoading, setAvailabilityLoading] = useState(false);
+    const confirmationResultRef = React.useRef<ConfirmationResult | null>(null);
+    const recaptchaVerifierRef = React.useRef<RecaptchaVerifier | null>(null);
+    const modalContentRef = React.useRef<HTMLDivElement>(null);
+    const previouslyFocusedRef = React.useRef<HTMLElement | null>(null);
+
+    const handleClose = useCallback(() => {
+        setBookingStep("SELECT");
+        setBookedAppointment(null);
+        setSelectedTime(null);
+        setGuestName("");
+        setGuestMobile("");
+        setGuestOtp("");
+        setGuestOtpSent(false);
+        setGuestVerified(false);
+        confirmationResultRef.current = null;
+        recaptchaVerifierRef.current?.clear();
+        recaptchaVerifierRef.current = null;
+        onClose();
+    }, [onClose]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
+        modalContentRef.current?.focus();
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                handleClose();
+                return;
+            }
+            if (event.key !== "Tab" || !modalContentRef.current) return;
+            const focusable = modalContentRef.current.querySelectorAll<HTMLElement>("button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex='-1'])");
+            if (focusable.length === 0) return;
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+        document.addEventListener("keydown", handleKeyDown);
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+            previouslyFocusedRef.current?.focus();
+        };
+    }, [handleClose, isOpen]);
 
     useEffect(() => {
         const fetchPlatformFees = async () => {
             try {
                 const res = await fetch("/api/public/platform-fee");
                 if (res.ok) {
-                    const data = await res.json();
+                    const data = await res.json() as PlatformFee[];
                     setPlatformFees(data);
                 }
             } catch (err) {
@@ -54,13 +135,59 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
         fetchPlatformFees();
     }, []);
 
-    // Generate next 7 days
-    const dates = Array.from({ length: 7 }, (_, i) => addDays(new Date(), i));
+    const dates = useMemo(() => {
+        const today = new Date();
+        const campaignStart = new Date(campaign.startDate);
+        const campaignEnd = new Date(campaign.endDate);
+        const firstDate = campaignStart > today ? campaignStart : today;
+        return Array.from({ length: 14 }, (_, index) => addDays(firstDate, index))
+            .filter((date) => date <= campaignEnd);
+    }, [campaign.startDate, campaign.endDate]);
+
+    useEffect(() => {
+        if (!isOpen || dates.length === 0) return;
+        const controller = new AbortController();
+        const loadAvailability = async () => {
+            setAvailabilityLoading(true);
+            try {
+                const results = await Promise.all(dates.map(async (date) => {
+                    const key = format(date, "yyyy-MM-dd");
+                    const response = await fetch(`/api/public/campaigns/${campaign.id}/availability?date=${key}`, { signal: controller.signal });
+                    if (!response.ok) throw new Error("Unable to load availability");
+                    return [key, await response.json() as AvailabilityResponse] as const;
+                }));
+                setAvailabilityByDate(Object.fromEntries(results));
+            } catch (error) {
+                if (!controller.signal.aborted) {
+                    console.error("Availability error:", error);
+                    toast.error("Unable to load appointment availability");
+                }
+            } finally {
+                if (!controller.signal.aborted) setAvailabilityLoading(false);
+            }
+        };
+        loadAvailability();
+        return () => controller.abort();
+    }, [campaign.id, dates, isOpen]);
+
+    useEffect(() => {
+        if (isOpen && dates.length > 0 && !dates.some((date) => isSameDay(date, selectedDate))) {
+            setSelectedDate(dates[0]);
+        }
+    }, [dates, isOpen, selectedDate]);
+
+    const selectedDateKey = format(selectedDate, "yyyy-MM-dd");
+    const selectedAvailability = availabilityByDate[selectedDateKey];
 
     const handlePayToBook = async () => {
         if (!selectedTime) return;
+        if (!isAuthenticated && !guestVerified) {
+            toast.error("Verify your mobile number before confirming the booking");
+            return;
+        }
 
         setIsBooking(true);
+        let activeAppointmentId: string | null = null;
         try {
             // 1. Create Appointment (Reserved)
             const response = await fetch("/api/appointments", {
@@ -69,23 +196,27 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                 body: JSON.stringify({
                     type: "DOCTOR",
                     organizerId: campaign.id,
-                    date: selectedDate,
+                    date: format(selectedDate, "yyyy-MM-dd"),
                     timeSlot: selectedTime,
                 }),
             });
 
-            const data = await response.json();
+            const data = await response.json() as AppointmentResponse;
             if (!response.ok) {
                 throw new Error(data.error || "Failed to book appointment");
             }
 
+            if (!data.appointment) throw new Error("Appointment was not created");
             const appointment = data.appointment;
+            activeAppointmentId = appointment.id;
             setBookedAppointment(appointment);
 
             // 2. Initiate Payment Immediately
             const isLoaded = await loadRazorpay();
             if (!isLoaded) {
+                await releaseAppointment(appointment.id, "Payment gateway unavailable");
                 toast.error("Failed to load payment gateway. Please check your internet.");
+                setIsBooking(false);
                 return;
             }
 
@@ -95,7 +226,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                 body: JSON.stringify({ appointmentId: appointment.id }),
             });
 
-            const orderData = await orderRes.json();
+            const orderData = await orderRes.json() as PaymentOrderResponse;
             if (!orderRes.ok) throw new Error(orderData.error || "Failed to initiate payment");
 
             const options = {
@@ -111,11 +242,12 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                 theme: { color: "#22c55e" },
                 modal: {
                     ondismiss: () => {
+                        void releaseAppointment(appointment.id, "Payment cancelled by patient");
                         setIsBooking(false);
-                        toast.info("Payment cancelled. Your appointment is not yet confirmed.");
+                        toast.info("Payment cancelled. Your slot has been released.");
                     }
                 },
-                handler: async (response: any) => {
+                handler: async (response: RazorpayPaymentResponse) => {
                     try {
                         const verifyRes = await fetch("/api/payments/verify", {
                             method: "POST",
@@ -133,9 +265,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                             setBookingStep("SUCCESS");
                             toast.success("Appointment Confirmed!");
                         } else {
+                            await releaseAppointment(appointment.id, "Payment verification failed");
                             toast.error(verifyData.error || "Payment verification failed");
                         }
-                    } catch (err) {
+                    } catch {
                         toast.error("Something went wrong during verification");
                     } finally {
                         setIsBooking(false);
@@ -145,29 +278,94 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
 
             openRazorpayCheckout(options);
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Booking/Payment error:", error);
-            toast.error(error.message || "Something went wrong. Please try again.");
+            if (activeAppointmentId) {
+                await releaseAppointment(activeAppointmentId, "Booking payment flow failed");
+            }
+            toast.error(getErrorMessage(error, "Something went wrong. Please try again."));
             setIsBooking(false);
         }
     };
 
-    const handleClose = () => {
-        setBookingStep("SELECT");
-        setBookedAppointment(null);
-        setSelectedTime(null);
-        onClose();
+    const releaseAppointment = async (appointmentId: string, reason: string) => {
+        try {
+            await fetch("/api/appointments/cancel", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ appointmentId, reason }),
+            });
+        } catch (error) {
+            console.error("Unable to release appointment reservation:", error);
+        }
+    };
+
+    const handleSendGuestOtp = async () => {
+        if (guestName.trim().length < 2) {
+            toast.error("Enter your full name");
+            return;
+        }
+        if (!/^\d{10}$/.test(guestMobile)) {
+            toast.error("Enter a valid 10-digit mobile number");
+            return;
+        }
+
+        setGuestOtpLoading(true);
+        try {
+            if (!recaptchaVerifierRef.current) {
+                recaptchaVerifierRef.current = new RecaptchaVerifier(identityAuth, "booking-recaptcha", { size: "invisible" });
+            }
+            confirmationResultRef.current = await signInWithPhoneNumber(
+                identityAuth,
+                `+91${guestMobile}`,
+                recaptchaVerifierRef.current
+            );
+            setGuestOtpSent(true);
+            toast.success("OTP sent to your mobile number");
+        } catch (error: unknown) {
+            recaptchaVerifierRef.current?.clear();
+            recaptchaVerifierRef.current = null;
+            toast.error(getErrorMessage(error, "Unable to send OTP"));
+        } finally {
+            setGuestOtpLoading(false);
+        }
+    };
+
+    const handleVerifyGuestOtp = async () => {
+        if (!confirmationResultRef.current || !/^\d{6}$/.test(guestOtp)) {
+            toast.error("Enter the 6-digit OTP");
+            return;
+        }
+
+        setGuestOtpLoading(true);
+        try {
+            const credential = await confirmationResultRef.current.confirm(guestOtp);
+            const response = await fetch("/api/auth/guest-mobile", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idToken: await credential.user.getIdToken(), name: guestName.trim() }),
+            });
+            const data = await response.json() as { error?: string };
+            if (!response.ok) throw new Error(data.error || "Unable to authenticate");
+            setGuestVerified(true);
+            toast.success("Mobile number verified");
+        } catch (error: unknown) {
+            toast.error(getErrorMessage(error, "Invalid OTP"));
+        } finally {
+            setGuestOtpLoading(false);
+        }
     };
 
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
+                        aria-hidden="true"
                         onClick={handleClose}
                         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
                     />
@@ -177,14 +375,24 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="relative w-full max-w-lg bg-background rounded-3xl shadow-2xl border border-border overflow-hidden"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="booking-modal-title"
+                        aria-describedby="booking-modal-description"
+                        tabIndex={-1}
+                        ref={modalContentRef}
+                        className={cn(
+                            "relative flex w-full flex-col overflow-hidden border border-border bg-background shadow-2xl",
+                            "max-h-[92dvh] rounded-t-3xl sm:max-h-[90dvh] sm:rounded-3xl",
+                            bookingStep === "REVIEW" ? "sm:max-w-lg lg:max-w-3xl" : "sm:max-w-lg"
+                        )}
                     >
                         {bookingStep === "SELECT" && (
                             <>
                                 {/* Header */}
-                                <div className="p-6 border-b bg-muted/30">
+                                <div className="shrink-0 border-b bg-muted/30 p-4 sm:p-6">
                                     <div className="flex items-center justify-between mb-4">
-                                        <h2 className="text-xl font-bold text-foreground">Book Appointment</h2>
+                                        <h2 id="booking-modal-title" className="text-xl font-bold text-foreground">Book Appointment</h2>
                                         <Button
                                             variant="ghost"
                                             size="icon"
@@ -194,13 +402,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                                             <X className="w-5 h-5" />
                                         </Button>
                                     </div>
+                                    <p id="booking-modal-description" className="sr-only">Choose an available date and appointment slot to continue booking.</p>
                                     <div className="flex items-center gap-4">
                                         <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
                                             <CalendarIcon className="w-6 h-6" />
                                         </div>
                                         <div className="min-w-0">
                                             <p className="text-sm font-semibold text-foreground truncate">
-                                                Dr. {campaign.doctor.user.name}
+                                                {formatDoctorName(campaign.doctor.user.name)}
                                             </p>
                                             <p className="text-xs text-muted-foreground truncate">
                                                 {campaign.doctor.specializations.map((s: { name: string }) => s.name).join(", ")}
@@ -209,7 +418,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                                     </div>
                                 </div>
 
-                                <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                                <div className="min-h-0 flex-1 space-y-6 overflow-y-auto custom-scrollbar p-4 sm:p-6">
                                     {/* Date Selection */}
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between">
@@ -224,12 +433,17 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                                                 return (
                                                     <button
                                                         key={date.toISOString()}
-                                                        onClick={() => setSelectedDate(date)}
+                                                        onClick={() => {
+                                                            setSelectedDate(date);
+                                                            setSelectedTime(null);
+                                                        }}
+                                                        disabled={availabilityLoading || !availabilityByDate[format(date, "yyyy-MM-dd")]?.available}
                                                         className={cn(
                                                             "flex flex-col items-center justify-center min-w-[70px] h-[86px] rounded-2xl transition-all duration-300 border-2",
                                                             isSelected
                                                                 ? "bg-primary border-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105"
-                                                                : "bg-muted/50 border-transparent text-muted-foreground hover:bg-muted hover:border-border"
+                                                                : "bg-muted/50 border-transparent text-muted-foreground hover:bg-muted hover:border-border",
+                                                            (!availabilityByDate[format(date, "yyyy-MM-dd")]?.available || availabilityLoading) && "cursor-not-allowed opacity-50"
                                                         )}
                                                     >
                                                         <span className="text-xs font-bold uppercase mb-1 opacity-80">
@@ -244,75 +458,42 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                                         </div>
                                     </div>
 
-                                    {/* Time Category Selection */}
+                                    {/* Persisted Time Slots */}
                                     <div className="space-y-4">
-                                        <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Arrival Time Frame</h3>
-                                        <div className="grid grid-cols-3 gap-3">
-                                            {timeCategories.map((cat) => {
-                                                const isSelected = selectedCategory === cat.id;
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Select Slot</h3>
+                                            {availabilityLoading && <span className="text-xs text-muted-foreground">Loading slots...</span>}
+                                        </div>
+                                        {!availabilityLoading && selectedAvailability?.slots?.length === 0 && (
+                                            <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">No appointment slots are available for this date.</p>
+                                        )}
+                                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                                            {selectedAvailability?.slots?.map((slot) => {
+                                                const isSelected = selectedTime === slot.label;
+                                                const isAvailable = slot.status === "AVAILABLE";
                                                 return (
                                                     <button
-                                                        key={cat.id}
-                                                        onClick={() => {
-                                                            setSelectedCategory(cat.id);
-                                                            setSelectedTime(null);
-                                                        }}
+                                                        key={slot.label}
+                                                        type="button"
+                                                        disabled={!isAvailable || availabilityLoading}
+                                                        aria-label={`${slot.label}, ${isAvailable ? "available" : "booked"}`}
+                                                        onClick={() => isAvailable && setSelectedTime(slot.label)}
                                                         className={cn(
-                                                            "flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 border-2",
-                                                            isSelected
-                                                                ? "bg-primary/5 border-primary shadow-sm"
-                                                                : "bg-muted/30 border-transparent hover:bg-muted/50 hover:border-border"
+                                                            "flex min-h-11 items-center justify-center rounded-xl border-2 p-3 text-sm font-semibold transition-all duration-200",
+                                                            isSelected ? "border-primary bg-primary text-primary-foreground shadow-md" : "border-border/50 bg-muted/20 text-muted-foreground hover:border-primary/30 hover:bg-muted/40",
+                                                            !isAvailable && "cursor-not-allowed border-border/30 bg-muted/40 text-muted-foreground/50 line-through"
                                                         )}
                                                     >
-                                                        <span className="text-xl mb-1">{cat.icon}</span>
-                                                        <span className={cn(
-                                                            "text-xs font-bold",
-                                                            isSelected ? "text-primary" : "text-foreground"
-                                                        )}>{cat.label}</span>
-                                                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">{cat.range}</span>
+                                                        {slot.label}{!isAvailable && " · Booked"}
                                                     </button>
                                                 );
                                             })}
                                         </div>
                                     </div>
-
-                                    {/* Detailed Time Slots */}
-                                    <AnimatePresence mode="wait">
-                                        {selectedCategory && (
-                                            <motion.div
-                                                key={selectedCategory}
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: -10 }}
-                                                className="space-y-4"
-                                            >
-                                                <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Select Slot</h3>
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    {timeSlotsData[selectedCategory].map((time) => {
-                                                        const isSelected = selectedTime === time;
-                                                        return (
-                                                            <button
-                                                                key={time}
-                                                                onClick={() => setSelectedTime(time)}
-                                                                className={cn(
-                                                                    "flex items-center justify-center p-3 rounded-xl transition-all duration-200 border-2 text-sm font-semibold",
-                                                                    isSelected
-                                                                        ? "bg-primary border-primary text-primary-foreground shadow-md"
-                                                                        : "bg-muted/20 border-border/50 text-muted-foreground hover:border-primary/30 hover:bg-muted/40"
-                                                                )}
-                                                            >
-                                                                {time}
-                                                            </button>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
                                 </div>
 
                                 {/* Footer */}
-                                <div className="p-6 bg-muted/30 border-t flex items-center gap-4">
+                                <div className="shrink-0 border-t bg-muted/30 p-4 sm:p-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
                                     <div className="flex-1">
                                         <p className="text-xs text-muted-foreground">Booking for</p>
                                         <p className="text-sm font-bold text-foreground">
@@ -323,7 +504,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                                     <Button
                                         onClick={() => setBookingStep("REVIEW")}
                                         disabled={!selectedTime || isBooking}
-                                        className="px-8 h-12 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                                        className="h-12 w-full rounded-xl px-8 font-bold shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] sm:w-auto"
                                     >
                                         Proceed to Review
                                     </Button>
@@ -335,7 +516,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                         {bookingStep === "REVIEW" && (
                             <>
                                 {/* Header */}
-                                <div className="p-6 border-b bg-muted/30">
+                                <div className="shrink-0 border-b bg-muted/30 p-4 sm:p-6">
                                     <div className="flex items-center justify-between mb-2">
                                         <h2 className="text-xl font-bold text-foreground">Review Booking</h2>
                                         <Button
@@ -350,20 +531,91 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                                     <p className="text-sm text-muted-foreground">Please review your appointment details and fee breakdown.</p>
                                 </div>
 
-                                <div className="p-6 space-y-6">
+                                <div className="min-h-0 flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6">
+                                    <div className="grid gap-5 lg:grid-cols-2 lg:items-start lg:gap-6">
+                                    <div className="space-y-5">
                                     {/* Appointment Info Summary */}
                                     <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 flex items-center gap-4">
                                         <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary shrink-0 text-xl">
                                             🩺
                                         </div>
-                                        <div>
-                                            <p className="font-bold text-foreground">Dr. {campaign.doctor.user.name}</p>
+                                        <div className="min-w-0">
+                                            <p className="font-bold text-foreground">{formatDoctorName(campaign.doctor.user.name)}</p>
                                             <p className="text-sm text-muted-foreground">
                                                 {format(selectedDate, "EEEE, MMMM do")} • {selectedTime}
                                             </p>
                                         </div>
                                     </div>
 
+                                    {!isAuthenticated && (
+                                        <div className="space-y-4 rounded-2xl border border-border/60 bg-muted/20 p-4">
+                                            <div>
+                                                <h3 className="text-sm font-bold text-foreground">Complete your booking</h3>
+                                                <p className="mt-1 text-xs text-muted-foreground">Verify your mobile number to continue. No password is required.</p>
+                                            </div>
+                                            <div className="grid gap-3 sm:grid-cols-2">
+                                                <label className="grid gap-1.5 text-sm font-medium sm:col-span-2">
+                                                    <span>Full name <span className="text-destructive">*</span></span>
+                                                    <input
+                                                        value={guestName}
+                                                        onChange={(event) => setGuestName(event.target.value)}
+                                                        disabled={guestVerified || guestOtpLoading}
+                                                        placeholder="Enter your full name"
+                                                        className="h-11 rounded-lg border border-input bg-background px-3 font-normal outline-none transition focus-visible:ring-2 focus-visible:ring-primary"
+                                                    />
+                                                </label>
+                                                <label className="grid gap-1.5 text-sm font-medium sm:col-span-2">
+                                                    <span>Mobile number <span className="text-destructive">*</span></span>
+                                                    <div className="flex">
+                                                        <span className="flex h-11 items-center rounded-l-lg border border-r-0 border-input bg-muted px-3 text-sm text-muted-foreground">+91</span>
+                                                        <input
+                                                            value={guestMobile}
+                                                            onChange={(event) => setGuestMobile(event.target.value.replace(/\D/g, "").slice(0, 10))}
+                                                            disabled={guestOtpSent || guestVerified || guestOtpLoading}
+                                                            inputMode="numeric"
+                                                            maxLength={10}
+                                                            placeholder="9876543210"
+                                                            className="h-11 min-w-0 flex-1 rounded-r-lg border border-input bg-background px-3 font-normal outline-none transition focus-visible:ring-2 focus-visible:ring-primary"
+                                                        />
+                                                    </div>
+                                                </label>
+                                            </div>
+                                            {!guestOtpSent && !guestVerified && (
+                                                <Button type="button" onClick={handleSendGuestOtp} disabled={guestOtpLoading} className="w-full sm:w-auto">
+                                                    {guestOtpLoading ? "Sending OTP..." : "Send OTP"}
+                                                </Button>
+                                            )}
+                                            {guestOtpSent && !guestVerified && (
+                                                <div className="space-y-3">
+                                                    <label className="grid gap-1.5 text-sm font-medium">
+                                                        <span>Enter OTP</span>
+                                                        <input
+                                                            value={guestOtp}
+                                                            onChange={(event) => setGuestOtp(event.target.value.replace(/\D/g, "").slice(0, 6))}
+                                                            inputMode="numeric"
+                                                            maxLength={6}
+                                                            placeholder="6-digit OTP"
+                                                            className="h-11 rounded-lg border border-input bg-background px-3 font-normal tracking-[0.35em] outline-none transition focus-visible:ring-2 focus-visible:ring-primary"
+                                                        />
+                                                    </label>
+                                                    <div className="flex flex-wrap gap-3">
+                                                        <Button type="button" onClick={handleVerifyGuestOtp} disabled={guestOtpLoading}>
+                                                            {guestOtpLoading ? "Verifying..." : "Verify OTP"}
+                                                        </Button>
+                                                        <Button type="button" variant="outline" onClick={() => { setGuestOtpSent(false); setGuestOtp(""); }} disabled={guestOtpLoading}>
+                                                            Change number
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {guestVerified && <p className="text-sm font-medium text-green-600 dark:text-green-400">Mobile number verified. You can confirm your booking.</p>}
+                                            <div id="booking-recaptcha" />
+                                        </div>
+                                    )}
+
+                                    </div>
+
+                                    <div className="space-y-5">
                                     {/* Fee Breakdown */}
                                     <div className="space-y-4">
                                         <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Fee Breakdown</h3>
@@ -434,27 +686,29 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                                         </div>
                                     </div>
 
-                                    <div className="flex items-start gap-3 p-3 bg-amber-50 rounded-xl border border-amber-100">
-                                        <div className="text-amber-500 mt-0.5">⚠️</div>
-                                        <p className="text-xs text-amber-700 leading-normal">
+                                    <div className="flex items-start gap-3 rounded-xl border border-amber-100 bg-amber-50 p-3 dark:border-amber-900/40 dark:bg-amber-950/30">
+                                        <div className="mt-0.5 text-amber-500">⚠️</div>
+                                        <p className="text-xs leading-normal text-amber-700 dark:text-amber-300">
                                             By proceeding, you agree to pay the final amount for the appointment. This amount includes service charges and applicable taxes.
                                         </p>
+                                    </div>
+                                    </div>
                                     </div>
                                 </div>
 
                                 {/* Footer */}
-                                <div className="p-6 bg-muted/30 border-t flex items-center gap-4">
+                                <div className="shrink-0 border-t bg-muted/30 p-4 sm:p-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:gap-4">
                                     <Button
                                         variant="outline"
                                         onClick={() => setBookingStep("SELECT")}
-                                        className="rounded-xl h-12"
+                                        className="h-12 w-full rounded-xl sm:w-auto"
                                     >
                                         Back
                                     </Button>
                                     <Button
                                         onClick={handlePayToBook}
                                         disabled={isBooking}
-                                        className="flex-1 h-12 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                                        className="h-12 w-full rounded-xl font-bold shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] sm:flex-1"
                                     >
                                         {isBooking ? (
                                             <div className="flex items-center gap-2">
@@ -474,6 +728,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
 
 
                         {bookingStep === "SUCCESS" && bookedAppointment && (
+                            <div className="min-h-0 flex-1 overflow-y-auto custom-scrollbar">
                             <PaymentSuccessUI
                                 providerName={campaign.doctor.user.name}
                                 appointmentDate={selectedDate}
@@ -481,6 +736,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                                 onClose={handleClose}
                                 type="DOCTOR"
                             />
+                            </div>
                         )}
                     </motion.div>
                 </div>
