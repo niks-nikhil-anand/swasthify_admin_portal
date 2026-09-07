@@ -38,7 +38,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
             transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
             className="block h-full pt-[42px] sm:pt-[52px] md:pt-[62px] lg:pt-[75px]"
         >
-            <Link href={`/doctors/${campaign.id}`} className="group relative flex h-full w-full cursor-pointer flex-col rounded-[1.75rem] border border-zinc-100 bg-[#F8F9F9] pb-4 text-left shadow-sm transition-all duration-300 hover:shadow-xl dark:border-zinc-900 dark:bg-zinc-950 sm:rounded-[2rem] md:rounded-[2.25rem] md:pb-5 lg:rounded-[2.5rem] lg:pb-6">
+            <Link href={`/doctors/${campaign.id}`} aria-label={`View details and book an appointment with ${campaign.doctorName || campaign.doctor?.user?.name || campaign.name}`} className="group relative flex h-full w-full cursor-pointer flex-col rounded-[1.75rem] border border-zinc-100 bg-[#F8F9F9] pb-4 text-left shadow-sm transition-all duration-300 hover:shadow-xl dark:border-zinc-900 dark:bg-zinc-950 sm:rounded-[2rem] md:rounded-[2.25rem] md:pb-5 lg:rounded-[2.5rem] lg:pb-6">
                 
                 {/* Top Header Shape Container */}
                 <div className="pointer-events-none absolute left-0 top-0 z-0 h-[150px] w-full sm:h-[165px] md:h-[175px] lg:h-[180px]">
@@ -186,10 +186,10 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                                 {/* Very faint text Background */}
                                 <div className="pointer-events-none absolute left-3 top-[48%] z-0 flex -translate-y-1/2 flex-col justify-center sm:left-4 lg:left-8">
                                     <span className="whitespace-nowrap text-[19px] font-black uppercase leading-[0.8] tracking-[0.05em] text-zinc-200 transition-transform duration-500 group-hover/cta:translate-x-1 dark:text-zinc-800/50 sm:text-[22px] lg:text-[30px]">
-                                        Book
+                                        View Details
                                     </span>
                                     <span className="whitespace-nowrap text-[19px] font-black uppercase leading-[0.8] tracking-[0.05em] text-zinc-200 transition-transform duration-500 group-hover/cta:translate-x-1 dark:text-zinc-800/50 sm:text-[22px] lg:text-[30px]">
-                                        Now
+                                        · Book Now
                                     </span>
                                 </div>
 
