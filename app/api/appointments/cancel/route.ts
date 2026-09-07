@@ -64,6 +64,9 @@ export async function POST(req: Request) {
         }
 
         if (appointment.status === "CANCELLED" || appointment.status === "COMPLETED") {
+            if (appointment.status === "CANCELLED") {
+                return NextResponse.json({ message: "Appointment was already cancelled", alreadyCancelled: true });
+            }
             return NextResponse.json(
                 { error: `Cannot cancel appointment with status: ${appointment.status}` },
                 { status: 400 }
@@ -85,10 +88,10 @@ export async function POST(req: Request) {
             message: "Appointment cancelled successfully"
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Cancellation error:", error);
         return NextResponse.json(
-            { error: error.message || "Internal server error" },
+            { error: error instanceof Error ? error.message : "Internal server error" },
             { status: 500 }
         );
     }
