@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getReservationThreshold } from "@/lib/booking-reservation";
 
 export async function GET(req: Request) {
     try {
@@ -9,29 +10,35 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        // 2. Define "stale" threshold (e.g., 30 minutes ago)
-        const threshold = new Date(Date.now() - 30 * 60 * 1000);
+        // Pending appointments act as temporary reservations for 15 minutes.
+        const threshold = getReservationThreshold();
 
-        // 3. Delete PENDING appointments older than the threshold
-        const deleted = await db.appointment.deleteMany({
+        // Keep the appointment record for auditability while releasing its slot.
+        const released = await db.appointment.updateMany({
             where: {
                 status: "PENDING",
                 createdAt: {
                     lt: threshold
                 }
-            }
+            },
+            data: {
+                status: "CANCELLED",
+                cancelledBy: "SYSTEM",
+                cancellationReason: "Reservation expired",
+                cancelledAt: new Date(),
+            },
         });
 
-        console.log(`[Cleanup] Deleted ${deleted.count} stale PENDING appointments.`);
+        console.log(`[Cleanup] Released ${released.count} stale pending reservations.`);
 
         return NextResponse.json({
             message: "Cleanup successful",
-            deletedCount: deleted.count,
+            releasedCount: released.count,
             threshold: threshold.toISOString()
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[Cleanup Error]:", error);
-        return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : "Internal server error" }, { status: 500 });
     }
 }
