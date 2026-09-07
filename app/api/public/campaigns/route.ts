@@ -113,6 +113,15 @@ export async function GET(req: Request) {
         });
     } catch (error) {
         console.error("[PUBLIC_CAMPAIGNS_GET]", error);
-        return new NextResponse("Internal Error", { status: 500 });
+        // Prisma P1001 means the database endpoint is unavailable. Returning a
+        // service-unavailable response lets clients retry instead of treating
+        // this as a malformed request or an application bug.
+        if (error && typeof error === "object" && "code" in error && error.code === "P1001") {
+            return NextResponse.json(
+                { error: "Campaigns are temporarily unavailable. Please try again shortly." },
+                { status: 503, headers: { "Retry-After": "30" } }
+            );
+        }
+        return NextResponse.json({ error: "Unable to load campaigns" }, { status: 500 });
     }
 }
