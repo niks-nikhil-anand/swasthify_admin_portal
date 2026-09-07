@@ -103,10 +103,10 @@ export default function DoctorCampaignsPage() {
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
                 <div className="space-y-4 text-left max-w-2xl">
                     <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-                        Find Healthcare Campaigns
+                        Find a Doctor
                     </h1>
                     <p className="text-lg text-muted-foreground">
-                        Discover active health camps, free checkups, and specialized OPD sessions from verified doctors near you.
+                        Browse verified doctors, compare their experience and fees, and book an appointment when you are ready.
                     </p>
                 </div>
             </div>
@@ -124,7 +124,7 @@ export default function DoctorCampaignsPage() {
             />
 
             {!loading && <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
-                <span>{campaigns.length === 0 ? "No doctors found" : `Showing ${campaigns.length} doctor campaign${campaigns.length === 1 ? "" : "s"}`}</span>
+                <span>{campaigns.length === 0 ? "No doctors found" : `Showing ${campaigns.length} doctor${campaigns.length === 1 ? "" : "s"}`}</span>
                 {hasActiveFilters && <button type="button" onClick={clearFilters} className="min-h-11 rounded-full px-4 font-semibold text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Clear all filters</button>}
             </div>}
 
