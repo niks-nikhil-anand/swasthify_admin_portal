@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { EntityType } from "@prisma/client";
 
 export async function GET(req: Request) {
     try {
@@ -8,7 +9,9 @@ export async function GET(req: Request) {
         const limit = parseInt(searchParams.get("limit") || "50");
 
         const whereClause = {
-            ...(type ? { type: type as any } : {}),
+            ...(type && Object.values(EntityType).includes(type as EntityType)
+                ? { type: type as EntityType }
+                : {}),
             // Optionally, we could require that there is at least one active campaign
             // for these specializations, but for now we'll return all available ones.
         };
@@ -35,6 +38,12 @@ export async function GET(req: Request) {
         return NextResponse.json(mappedSpecializations);
     } catch (error) {
         console.error("[PUBLIC_SPECIALIZATIONS_GET]", error);
-        return new NextResponse("Internal Error", { status: 500 });
+        if (error && typeof error === "object" && "code" in error && error.code === "P1001") {
+            return NextResponse.json(
+                { error: "Specializations are temporarily unavailable. Please try again shortly." },
+                { status: 503, headers: { "Retry-After": "30" } }
+            );
+        }
+        return NextResponse.json({ error: "Unable to load specializations" }, { status: 500 });
     }
 }
