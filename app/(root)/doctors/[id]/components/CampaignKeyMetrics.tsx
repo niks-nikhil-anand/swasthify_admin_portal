@@ -23,7 +23,7 @@ export const CampaignKeyMetrics: React.FC<CampaignKeyMetricsProps> = ({ campaign
                         <p className="font-semibold text-foreground mb-1">Consultation Fee</p>
                         <div className="flex flex-col">
                             {campaign.price === 0 ? (
-                                <span className="font-bold text-green-700 text-lg">Free of Cost</span>
+                                <span className="font-bold text-green-700 dark:text-green-400 text-lg">Free of Cost</span>
                             ) : (
                                 <div className="flex items-baseline gap-2">
                                     <span className="font-bold text-lg">
