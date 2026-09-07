@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { db } from "@/lib/db";
-import { parse, format, add, startOfDay, endOfDay } from "date-fns";
+import { startOfDay, endOfDay } from "date-fns";
+import { generateSlots, getDateBounds, getDayOfWeek, parseTimeToMinutes } from "@/lib/doctor-availability";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+class SlotConflictError extends Error {}
 
 export async function POST(req: Request) {
     try {
@@ -45,28 +47,62 @@ export async function POST(req: Request) {
             );
         }
 
-        // 3. Parse dateTime
-        // timeSlot is like "10:00 AM - 11:00 AM"
-        const startTimeStr = timeSlot.split(" - ")[0]; // "10:00 AM"
-        const appointmentDateTime = new Date(date);
+        // 3. Validate the requested doctor slot against persisted availability.
+        const campaign = type === "DOCTOR" ? await db.campaign.findFirst({
+            where: { id: organizerId, status: "ACTIVE", isVerified: true, doctorId: { not: null } },
+            include: { doctor: { include: { availability: true, leaves: true } } },
+        }) : null;
 
-        // Extract hours and minutes from startTimeStr
-        const [time, period] = startTimeStr.split(" ");
-        let [hours, minutes] = time.split(":").map(Number);
+        if (type === "DOCTOR" && (!campaign?.doctor || typeof date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(date))) {
+            return NextResponse.json({ error: "Invalid doctor or appointment date" }, { status: 400 });
+        }
 
-        if (period === "PM" && hours !== 12) hours += 12;
-        if (period === "AM" && hours === 12) hours = 0;
+        const appointmentDateKey = typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date)
+            ? date
+            : new Date(date).toISOString().slice(0, 10);
+        const { start: appointmentDayStart, end: appointmentDayEnd } = getDateBounds(appointmentDateKey);
+        const startTimeMinutes = parseTimeToMinutes(String(timeSlot).split(" - ")[0] || "");
+        const appointmentDateTime = new Date(appointmentDayStart);
 
-        appointmentDateTime.setHours(hours, minutes, 0, 0);
+        if (startTimeMinutes === null) {
+            return NextResponse.json({ error: "Invalid appointment slot" }, { status: 400 });
+        }
+        appointmentDateTime.setUTCMinutes(startTimeMinutes);
+
+        if (type === "DOCTOR" && campaign?.doctor) {
+            const dayOfWeek = getDayOfWeek(appointmentDateKey);
+            const onLeave = campaign.doctor.leaves.some((leave) => new Date(leave.startDate) <= appointmentDayEnd && new Date(leave.endDate) >= appointmentDayStart);
+            const persistedSchedules = campaign.doctor.availability
+                .filter((availability) => availability.dayOfWeek === dayOfWeek)
+                .map((availability) => ({ startTime: availability.startTime, endTime: availability.endTime }));
+            const campaignSchedule = campaign.schedule as { days?: string[]; startTime?: string; endTime?: string } | null;
+            const schedules = persistedSchedules.length > 0 ? persistedSchedules : (
+                campaignSchedule?.days?.map((day) => day.toUpperCase()).includes(dayOfWeek) && campaignSchedule.startTime && campaignSchedule.endTime
+                    ? [{ startTime: campaignSchedule.startTime, endTime: campaignSchedule.endTime }]
+                    : []
+            );
+            const validSlot = schedules.some((schedule) => generateSlots(schedule.startTime, schedule.endTime, 30).some((slot) => slot.startMinutes === startTimeMinutes && slot.label === timeSlot));
+            if (onLeave || !validSlot || appointmentDateTime <= new Date()) {
+                return NextResponse.json({ error: "This appointment slot is not available" }, { status: 409 });
+            }
+
+            const existingAppointment = await db.appointment.findFirst({
+                where: {
+                    doctorId: campaign.doctor.id,
+                    dateTime: appointmentDateTime,
+                    status: { in: ["PENDING", "CONFIRMED", "RESCHEDULED"] },
+                },
+                select: { id: true },
+            });
+            if (existingAppointment) {
+                return NextResponse.json({ error: "This appointment slot is no longer available" }, { status: 409 });
+            }
+        }
 
         // 4. Calculate Consultation Fee (Campaign Price + Platform Fee - Discounts)
         let finalFee = 0;
 
         if (type === "DOCTOR") {
-            const campaign = await db.campaign.findUnique({
-                where: { id: organizerId }, // organizerId passed from client is campaignId here
-            });
-
             if (campaign) {
                 const doctorFee = campaign.price;
                 const campaignDiscount = (doctorFee * (campaign.discountPercentage || 0)) / 100;
@@ -96,6 +132,7 @@ export async function POST(req: Request) {
         }
 
         // 5. Create Appointment
+        const doctorId = type === "DOCTOR" ? campaign?.doctorId : null;
         const appointmentData: any = {
             patientId: patient.id,
             dateTime: appointmentDateTime,
@@ -105,11 +142,6 @@ export async function POST(req: Request) {
 
         if (type === "DOCTOR") {
             // Need doctor's actual ID, not campaign ID
-            const campaign = await db.campaign.findUnique({
-                where: { id: organizerId },
-                select: { doctorId: true }
-            });
-            const doctorId = campaign?.doctorId;
             appointmentData.doctorId = doctorId;
 
             if (doctorId) {
@@ -136,8 +168,28 @@ export async function POST(req: Request) {
             appointmentData.labId = organizerId;
         }
 
-        const appointment = await db.appointment.create({
-            data: appointmentData as any
+        const appointment = await db.$transaction(async (tx) => {
+            if (type === "DOCTOR" && doctorId) {
+                // Serialize attempts for the same doctor and slot. This closes
+                // the race between the availability check and INSERT without
+                // requiring a destructive migration on existing appointments.
+                const lockKey = `${doctorId}:${appointmentDateTime.toISOString()}`;
+                await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey}))`;
+
+                const conflictingAppointment = await tx.appointment.findFirst({
+                    where: {
+                        doctorId,
+                        dateTime: appointmentDateTime,
+                        status: { in: ["PENDING", "CONFIRMED", "RESCHEDULED"] },
+                    },
+                    select: { id: true },
+                });
+                if (conflictingAppointment) {
+                    throw new SlotConflictError("SLOT_CONFLICT");
+                }
+            }
+
+            return tx.appointment.create({ data: appointmentData as any });
         });
 
         return NextResponse.json({
@@ -146,6 +198,9 @@ export async function POST(req: Request) {
         });
 
     } catch (error) {
+        if (error instanceof SlotConflictError) {
+            return NextResponse.json({ error: "This appointment slot is no longer available" }, { status: 409 });
+        }
         console.error("Booking error:", error);
         return NextResponse.json(
             { error: "Internal server error" },
