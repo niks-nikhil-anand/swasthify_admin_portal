@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 
 export async function GET(req: Request) {
@@ -62,8 +63,15 @@ export async function GET(req: Request) {
         const safeSort = allowedSorts.includes(sort as typeof allowedSorts[number])
             ? sort as typeof allowedSorts[number]
             : "recommended";
-        const orderBy = {
-            recommended: { createdAt: "desc" },
+        const orderBy: Record<
+            typeof allowedSorts[number],
+            Prisma.CampaignOrderByWithRelationInput | Prisma.CampaignOrderByWithRelationInput[]
+        > = {
+            recommended: [
+                { doctor: { user: { name: "asc" } } },
+                { name: "asc" },
+                { createdAt: "desc" },
+            ],
             newest: { createdAt: "desc" },
             price_asc: { price: "asc" },
             price_desc: { price: "desc" },
