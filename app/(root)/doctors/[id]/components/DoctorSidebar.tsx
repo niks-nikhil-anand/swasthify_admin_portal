@@ -16,7 +16,7 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({ campaign, onBookAp
     return (
         <div className="space-y-6 h-fit hidden lg:block">
             <div className="sticky top-28 space-y-6 max-h-[calc(100vh-8rem)] overflow-y-auto hide-scrollbar">
-                <Card className="border-0 shadow-lg ring-1 ring-black/5 overflow-hidden">
+                <Card className="border-0 shadow-lg ring-1 ring-border overflow-hidden">
                     <div className="h-24 bg-linear-to-r from-primary/10 to-primary/5"></div>
                     <CardContent className="relative pt-0 px-6 pb-6 text-center -mt-12">
                         <Avatar className="w-24 h-24 mx-auto border-4 border-background shadow-md mb-4 bg-background">
@@ -53,7 +53,7 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({ campaign, onBookAp
                         </div>
 
                         <div className="text-left bg-muted/30 p-4 rounded-xl mb-6">
-                            <p className="text-xs font-semibold text-gray-500 uppercase mb-2">About Doctor</p>
+                            <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">About Doctor</p>
                             <p className="text-sm text-muted-foreground line-clamp-4 leading-relaxed">
                                 {campaign.doctor?.bio || `Dr. ${campaign.doctorName || campaign.doctor?.user?.name} is a dedicated professional committed to providing excellent healthcare services.`}
                             </p>
