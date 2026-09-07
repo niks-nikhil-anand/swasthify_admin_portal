@@ -29,7 +29,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({ campaign }) =>
                             <p className="text-muted-foreground mt-1">
                                 {campaign.location?.address}
                             </p>
-                            <p className="text-gray-600 mt-1">
+                            <p className="text-muted-foreground mt-1">
                                 {campaign.location?.city}, {campaign.location?.district}, {campaign.location?.state} - {campaign.location?.pincode}
                             </p>
                         </div>
@@ -48,7 +48,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({ campaign }) =>
                     </div>
 
                     {/* Simple Map Placeholder - In production use a real map component */}
-                    <div className="w-full md:w-1/3 h-48 bg-slate-100 rounded-lg border overflow-hidden relative">
+                    <div className="w-full md:w-1/3 h-48 bg-muted rounded-lg border overflow-hidden relative">
                         {campaign.location?.latitude && campaign.location?.longitude ? (
                             <iframe
                                 width="100%"
