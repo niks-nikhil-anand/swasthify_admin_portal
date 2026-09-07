@@ -59,6 +59,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error("Analytics collection error:", error);
-        return NextResponse.json({ success: false }, { status: 500 });
+        // Analytics is best-effort and must never make the user's page request
+        // fail when the database is unavailable.
+        return NextResponse.json({ success: false, skipped: true });
     }
 }
