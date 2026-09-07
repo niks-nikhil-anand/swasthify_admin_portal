@@ -3,6 +3,7 @@ import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 import { razorpay } from "@/lib/razorpay";
+import { isExpiredPendingAppointment, releasePendingAppointment } from "@/lib/booking-reservation";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
@@ -35,6 +36,7 @@ export async function POST(req: Request) {
             include: {
                 patient: true,
                 doctor: { include: { user: true } },
+                payment: true,
             }
         });
 
@@ -46,6 +48,23 @@ export async function POST(req: Request) {
         if (appointment.patient.userId !== userId) {
             console.log("Ownership mismatch");
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+        }
+
+        if (appointment.status !== "PENDING" || isExpiredPendingAppointment(appointment.createdAt)) {
+            return NextResponse.json({ error: "This booking reservation has expired" }, { status: 409 });
+        }
+
+        if (appointment.payment?.status === "PENDING" && appointment.payment.transactionId) {
+            return NextResponse.json({
+                orderId: appointment.payment.transactionId,
+                amount: Math.round(appointment.payment.amount * 100),
+                currency: "INR",
+                key: process.env.RAZORPAY_LIVE_API_KEY,
+                appointmentDetails: {
+                    doctorName: appointment.doctor?.user.name || "Doctor",
+                    patientName: appointment.patient.name || "Patient",
+                },
+            });
         }
 
         // 3. Amount calculation
@@ -66,11 +85,12 @@ export async function POST(req: Request) {
                 receipt: `receipt_${appointmentId.substring(0, 30)}`,
             });
             console.log("Razorpay Order ID:", order.id);
-        } catch (rzpError: any) {
+        } catch (rzpError: unknown) {
             console.error("Razorpay Order Creation Failed:", rzpError);
+            await releasePendingAppointment(appointmentId, "Payment order creation failed");
             return NextResponse.json({
                 error: "Payment Gateway Error",
-                details: rzpError.message || "Failed to create Razorpay order"
+                details: rzpError instanceof Error ? rzpError.message : "Failed to create Razorpay order"
             }, { status: 502 });
         }
 
@@ -90,10 +110,10 @@ export async function POST(req: Request) {
                     transactionId: order.id,
                 }
             });
-        } catch (dbError: any) {
+        } catch (dbError: unknown) {
             console.error("Database Payment Update Failed:", dbError);
-            // We still return the order so payment can proceed, 
-            // but we log the error. In success verification we can recover.
+            await releasePendingAppointment(appointmentId, "Payment record creation failed");
+            return NextResponse.json({ error: "Unable to prepare payment" }, { status: 500 });
         }
 
         return NextResponse.json({
@@ -107,8 +127,8 @@ export async function POST(req: Request) {
             }
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("CRITICAL API ERROR:", error);
-        return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : "Internal server error" }, { status: 500 });
     }
 }
