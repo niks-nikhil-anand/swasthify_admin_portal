@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import crypto from "crypto";
 import { sendAppointmentEmails } from "@/lib/resend";
+import { isExpiredPendingAppointment } from "@/lib/booking-reservation";
 
 export async function POST(req: Request) {
     try {
@@ -41,23 +42,51 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Appointment not found" }, { status: 404 });
         }
 
-        // 3. Update Payment and Appointment
-        await db.$transaction([
-            db.payment.update({
-                where: { appointmentId },
+        const payment = await db.payment.findUnique({ where: { appointmentId } });
+        if (appointment.status === "CONFIRMED" && payment?.status === "SUCCESS") {
+            return NextResponse.json({ message: "Payment already verified", idempotent: true });
+        }
+
+        if (appointment.status !== "PENDING" || isExpiredPendingAppointment(appointment.createdAt)) {
+            return NextResponse.json({ error: "This booking reservation has expired" }, { status: 409 });
+        }
+
+        if (!payment || (payment.transactionId && payment.transactionId !== razorpay_order_id)) {
+            return NextResponse.json({ error: "Payment order does not match this booking" }, { status: 400 });
+        }
+
+        // 3. Update Payment and Appointment only once. updateMany makes a
+        // repeated callback harmless when two callbacks arrive together.
+        const confirmedNow = await db.$transaction(async (tx) => {
+            const paymentUpdate = await tx.payment.updateMany({
+                where: {
+                    appointmentId,
+                    status: "PENDING",
+                    transactionId: razorpay_order_id,
+                },
                 data: {
                     status: "SUCCESS",
                     transactionId: razorpay_payment_id,
                     method: "ONLINE"
                 }
-            }),
-            db.appointment.update({
-                where: { id: appointmentId },
-                data: {
-                    status: "CONFIRMED"
-                }
-            })
-        ]);
+            });
+
+            if (paymentUpdate.count === 0) return false;
+
+            await tx.appointment.updateMany({
+                where: { id: appointmentId, status: "PENDING" },
+                data: { status: "CONFIRMED" },
+            });
+            return true;
+        });
+
+        if (!confirmedNow) {
+            const latest = await db.payment.findUnique({ where: { appointmentId } });
+            if (latest?.status === "SUCCESS") {
+                return NextResponse.json({ message: "Payment already verified", idempotent: true });
+            }
+            return NextResponse.json({ error: "Payment has already been processed" }, { status: 409 });
+        }
 
         // 4. Send Emails (Async - don't block response)
         if (appointment.patient.user.email && appointment.doctor?.user.email) {
@@ -67,7 +96,11 @@ export async function POST(req: Request) {
                 doctorEmail: appointment.doctor.user.email,
                 doctorName: appointment.doctor.user.name,
                 date: appointment.dateTime,
-                timeSlot: "Confirmed Slot", // Ideally parse from dateTime if not stored elsewhere
+                timeSlot: new Date(appointment.dateTime).toLocaleTimeString("en-IN", {
+                    timeZone: "Asia/Kolkata",
+                    hour: "numeric",
+                    minute: "2-digit",
+                }) + " IST",
                 fee: appointment.consultationFee,
             }).catch(err => console.error("Email notification failed:", err));
         }
