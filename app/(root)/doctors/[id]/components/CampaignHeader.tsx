@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Share2, Copy } from "lucide-react";
+import { CheckCircle, Share2, Copy, ChevronDown, ChevronUp } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,7 +18,30 @@ interface CampaignHeaderProps {
     campaign: Campaign;
 }
 
+const DESCRIPTION_CHUNK_RATIO = 0.4;
+
 export const CampaignHeader: React.FC<CampaignHeaderProps> = ({ campaign }) => {
+    const [visibleDescriptionStep, setVisibleDescriptionStep] = useState(1);
+    const description = campaign.description || "Join us for a specialized healthcare session designed to provide expert consultation and care.";
+    const canToggleDescription = description.length > 520;
+    const totalDescriptionSteps = Math.ceil(1 / DESCRIPTION_CHUNK_RATIO);
+    const isFullDescriptionVisible = visibleDescriptionStep >= totalDescriptionSteps;
+    const visibleDescriptionLength = canToggleDescription && !isFullDescriptionVisible
+        ? Math.ceil(description.length * DESCRIPTION_CHUNK_RATIO * visibleDescriptionStep)
+        : description.length;
+    const visibleDescription = canToggleDescription && !isFullDescriptionVisible
+        ? `${description.slice(0, visibleDescriptionLength).trimEnd()}...`
+        : description;
+
+    const handleDescriptionToggle = () => {
+        if (isFullDescriptionVisible) {
+            setVisibleDescriptionStep(1);
+            return;
+        }
+
+        setVisibleDescriptionStep((current) => Math.min(current + 1, totalDescriptionSteps));
+    };
+
     return (
         <div className="bg-card p-6 rounded-2xl border shadow-sm space-y-4">
             <div className="flex items-start justify-between gap-4">
@@ -113,9 +136,28 @@ export const CampaignHeader: React.FC<CampaignHeaderProps> = ({ campaign }) => {
                 </div>
             </div>
 
-            <p className="text-lg text-muted-foreground leading-relaxed border-t pt-4">
-                {campaign.description || "Join us for a specialized healthcare session designed to provide expert consultation and care."}
-            </p>
+            <div className="border-t pt-4">
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                    {visibleDescription}
+                </p>
+
+                {canToggleDescription && (
+                    <Button
+                        type="button"
+                        variant="link"
+                        className="mt-2 h-auto p-0 text-base font-semibold text-primary hover:text-primary/80"
+                        onClick={handleDescriptionToggle}
+                        aria-expanded={isFullDescriptionVisible}
+                    >
+                        {isFullDescriptionVisible ? "View less" : "View more"}
+                        {isFullDescriptionVisible ? (
+                            <ChevronUp className="ml-1 h-4 w-4" />
+                        ) : (
+                            <ChevronDown className="ml-1 h-4 w-4" />
+                        )}
+                    </Button>
+                )}
+            </div>
         </div>
     );
 };
