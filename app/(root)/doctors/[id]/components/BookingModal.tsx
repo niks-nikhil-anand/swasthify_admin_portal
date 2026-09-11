@@ -30,7 +30,7 @@ interface AvailabilitySlot {
 
 interface AvailabilityResponse {
     available: boolean;
-    reason: string | null;
+    reason: "OUTSIDE_CAMPAIGN" | "OUTSIDE_CAMPAIGN_SCHEDULE" | "DOCTOR_ON_LEAVE" | "NO_DOCTOR_AVAILABILITY" | "NO_CAMPAIGN_SCHEDULE" | "NO_FUTURE_SLOTS" | "NO_SLOTS" | null;
     slots: AvailabilitySlot[];
 }
 
@@ -56,6 +56,36 @@ function getErrorMessage(error: unknown, fallback: string) {
     return error instanceof Error ? error.message : fallback;
 }
 
+function getAvailabilityMessage(reason?: AvailabilityResponse["reason"]) {
+    switch (reason) {
+        case "NO_DOCTOR_AVAILABILITY":
+            return "Doctor is not available on this day.";
+        case "NO_CAMPAIGN_SCHEDULE":
+            return "Appointments are not configured for this day.";
+        case "DOCTOR_ON_LEAVE":
+            return "Doctor is on leave on this day.";
+        case "OUTSIDE_CAMPAIGN":
+        case "OUTSIDE_CAMPAIGN_SCHEDULE":
+            return "Appointments are not available on this day.";
+        case "NO_FUTURE_SLOTS":
+            return "No upcoming slots are left for this day.";
+        case "NO_SLOTS":
+            return "No appointment slots are available for this date.";
+        default:
+            return "No appointment slots are available for this date.";
+    }
+}
+
+function getDateAvailabilityLabel(availability?: AvailabilityResponse) {
+    if (!availability) return "";
+    if (availability.available) return "Open";
+    if (availability.reason === "DOCTOR_ON_LEAVE") return "Leave";
+    if (availability.reason === "NO_DOCTOR_AVAILABILITY") return "Off";
+    if (availability.reason === "NO_CAMPAIGN_SCHEDULE") return "Off";
+    if (availability.reason === "NO_FUTURE_SLOTS") return "Done";
+    return "Full";
+}
+
 export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, campaign, isAuthenticated }) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
@@ -71,6 +101,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
     const [guestOtpLoading, setGuestOtpLoading] = useState(false);
     const [availabilityByDate, setAvailabilityByDate] = useState<Record<string, AvailabilityResponse>>({});
     const [availabilityLoading, setAvailabilityLoading] = useState(false);
+    const [loadingDateKeys, setLoadingDateKeys] = useState<string[]>([]);
+    const [hasAutoSelectedDate, setHasAutoSelectedDate] = useState(false);
     const confirmationResultRef = React.useRef<ConfirmationResult | null>(null);
     const recaptchaVerifierRef = React.useRef<RecaptchaVerifier | null>(null);
     const modalContentRef = React.useRef<HTMLDivElement>(null);
@@ -85,6 +117,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
         setGuestOtp("");
         setGuestOtpSent(false);
         setGuestVerified(false);
+        setHasAutoSelectedDate(false);
         confirmationResultRef.current = null;
         recaptchaVerifierRef.current?.clear();
         recaptchaVerifierRef.current = null;
@@ -144,18 +177,29 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
             .filter((date) => date <= campaignEnd);
     }, [campaign.startDate, campaign.endDate]);
 
+    const fetchAvailabilityForDate = useCallback(async (date: Date, signal?: AbortSignal) => {
+        const key = format(date, "yyyy-MM-dd");
+        setLoadingDateKeys((current) => current.includes(key) ? current : [...current, key]);
+        try {
+            const response = await fetch(`/api/public/campaigns/${campaign.id}/availability?date=${key}`, { signal });
+            if (!response.ok) throw new Error("Unable to load availability");
+            const availability = await response.json() as AvailabilityResponse;
+            setAvailabilityByDate((current) => ({ ...current, [key]: availability }));
+            return [key, availability] as const;
+        } finally {
+            setLoadingDateKeys((current) => current.filter((dateKey) => dateKey !== key));
+        }
+    }, [campaign.id]);
+
     useEffect(() => {
         if (!isOpen || dates.length === 0) return;
         const controller = new AbortController();
         const loadAvailability = async () => {
             setAvailabilityLoading(true);
+            setAvailabilityByDate({});
+            setHasAutoSelectedDate(false);
             try {
-                const results = await Promise.all(dates.map(async (date) => {
-                    const key = format(date, "yyyy-MM-dd");
-                    const response = await fetch(`/api/public/campaigns/${campaign.id}/availability?date=${key}`, { signal: controller.signal });
-                    if (!response.ok) throw new Error("Unable to load availability");
-                    return [key, await response.json() as AvailabilityResponse] as const;
-                }));
+                const results = await Promise.all(dates.map((date) => fetchAvailabilityForDate(date, controller.signal)));
                 setAvailabilityByDate(Object.fromEntries(results));
             } catch (error) {
                 if (!controller.signal.aborted) {
@@ -168,7 +212,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
         };
         loadAvailability();
         return () => controller.abort();
-    }, [campaign.id, dates, isOpen]);
+    }, [dates, fetchAvailabilityForDate, isOpen]);
 
     useEffect(() => {
         if (isOpen && dates.length > 0 && !dates.some((date) => isSameDay(date, selectedDate))) {
@@ -178,6 +222,29 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
 
     const selectedDateKey = format(selectedDate, "yyyy-MM-dd");
     const selectedAvailability = availabilityByDate[selectedDateKey];
+    const isSelectedDateLoading = loadingDateKeys.includes(selectedDateKey);
+
+    const handleSelectDate = (date: Date) => {
+        setSelectedDate(date);
+        setSelectedTime(null);
+        void fetchAvailabilityForDate(date);
+    };
+
+    useEffect(() => {
+        if (!isOpen || availabilityLoading || hasAutoSelectedDate || dates.length === 0) return;
+        const hasLoadedAllDates = dates.every((date) => availabilityByDate[format(date, "yyyy-MM-dd")]);
+        if (!hasLoadedAllDates) return;
+
+        const firstAvailableDate = dates.find((date) => availabilityByDate[format(date, "yyyy-MM-dd")]?.available);
+        if (firstAvailableDate && !isSameDay(firstAvailableDate, selectedDate)) {
+            setSelectedDate(firstAvailableDate);
+            setSelectedTime(null);
+        } else if (!firstAvailableDate && dates.length > 0 && !dates.some((date) => isSameDay(date, selectedDate))) {
+            setSelectedDate(dates[0]);
+            setSelectedTime(null);
+        }
+        setHasAutoSelectedDate(true);
+    }, [availabilityByDate, availabilityLoading, dates, hasAutoSelectedDate, isOpen, selectedDate]);
 
     const handlePayToBook = async () => {
         if (!selectedTime) return;
@@ -428,22 +495,34 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                                             </span>
                                         </div>
                                         <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar -mx-2 px-2">
-                                            {dates.map((date) => {
+                                            {availabilityLoading && dates.length > 0 && Object.keys(availabilityByDate).length === 0 ? (
+                                                dates.slice(0, 6).map((date) => (
+                                                    <div
+                                                        key={date.toISOString()}
+                                                        className="min-w-[70px] h-[86px] rounded-2xl border-2 border-transparent bg-muted/40 animate-pulse"
+                                                    />
+                                                ))
+                                            ) : dates.map((date) => {
                                                 const isSelected = isSameDay(date, selectedDate);
+                                                const dateKey = format(date, "yyyy-MM-dd");
+                                                const dateAvailability = availabilityByDate[dateKey];
+                                                const isDateAvailable = Boolean(dateAvailability?.available);
+                                                const isDateLoading = loadingDateKeys.includes(dateKey);
+                                                const availabilityLabel = getDateAvailabilityLabel(dateAvailability);
                                                 return (
                                                     <button
                                                         key={date.toISOString()}
-                                                        onClick={() => {
-                                                            setSelectedDate(date);
-                                                            setSelectedTime(null);
-                                                        }}
-                                                        disabled={availabilityLoading || !availabilityByDate[format(date, "yyyy-MM-dd")]?.available}
+                                                        onClick={() => handleSelectDate(date)}
+                                                        disabled={isDateLoading}
+                                                        aria-label={`${format(date, "EEEE, MMMM d")}${availabilityLabel ? `, ${availabilityLabel}` : ""}`}
                                                         className={cn(
                                                             "flex flex-col items-center justify-center min-w-[70px] h-[86px] rounded-2xl transition-all duration-300 border-2",
                                                             isSelected
-                                                                ? "bg-primary border-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105"
+                                                                ? "bg-primary/15 border-primary text-primary shadow-lg shadow-primary/10 scale-105"
                                                                 : "bg-muted/50 border-transparent text-muted-foreground hover:bg-muted hover:border-border",
-                                                            (!availabilityByDate[format(date, "yyyy-MM-dd")]?.available || availabilityLoading) && "cursor-not-allowed opacity-50"
+                                                            isDateAvailable && isSelected && "bg-primary border-primary text-primary-foreground shadow-primary/25",
+                                                            !isDateAvailable && !isSelected && "opacity-65",
+                                                            isDateLoading && "cursor-wait opacity-60"
                                                         )}
                                                     >
                                                         <span className="text-xs font-bold uppercase mb-1 opacity-80">
@@ -452,6 +531,16 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                                                         <span className="text-xl font-extrabold tracking-tight">
                                                             {format(date, "d")}
                                                         </span>
+                                                        {availabilityLabel && (
+                                                            <span className="mt-1 text-[10px] font-bold uppercase tracking-wide opacity-75">
+                                                                {isDateLoading ? "Checking" : availabilityLabel}
+                                                            </span>
+                                                        )}
+                                                        {!availabilityLabel && isDateLoading && (
+                                                            <span className="mt-1 text-[10px] font-bold uppercase tracking-wide opacity-75">
+                                                                Checking
+                                                            </span>
+                                                        )}
                                                     </button>
                                                 );
                                             })}
@@ -462,12 +551,21 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Select Slot</h3>
-                                            {availabilityLoading && <span className="text-xs text-muted-foreground">Loading slots...</span>}
+                                            {isSelectedDateLoading && <span className="text-xs text-muted-foreground">Checking slots...</span>}
                                         </div>
-                                        {!availabilityLoading && selectedAvailability?.slots?.length === 0 && (
-                                            <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">No appointment slots are available for this date.</p>
+                                        {isSelectedDateLoading && (
+                                            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                                                {Array.from({ length: 6 }, (_, index) => (
+                                                    <div key={index} className="min-h-11 rounded-xl border-2 border-transparent bg-muted/40 animate-pulse" />
+                                                ))}
+                                            </div>
                                         )}
-                                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                                        {!isSelectedDateLoading && (!selectedAvailability || selectedAvailability.slots.length === 0) && (
+                                            <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
+                                                {getAvailabilityMessage(selectedAvailability?.reason)}
+                                            </p>
+                                        )}
+                                        {!isSelectedDateLoading && <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                                             {selectedAvailability?.slots?.map((slot) => {
                                                 const isSelected = selectedTime === slot.label;
                                                 const isAvailable = slot.status === "AVAILABLE";
@@ -488,7 +586,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                                                     </button>
                                                 );
                                             })}
-                                        </div>
+                                        </div>}
                                     </div>
                                 </div>
 
@@ -503,7 +601,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, cam
                                     </div>
                                     <Button
                                         onClick={() => setBookingStep("REVIEW")}
-                                        disabled={!selectedTime || isBooking}
+                                        disabled={!selectedTime || isBooking || isSelectedDateLoading}
                                         className="h-12 w-full rounded-xl px-8 font-bold shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] sm:w-auto"
                                     >
                                         Proceed to Review

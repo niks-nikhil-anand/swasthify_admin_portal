@@ -1,16 +1,8 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { generateSlots, getDateBounds, getDayOfWeek, parseTimeToMinutes } from "@/lib/doctor-availability";
+import { calculateDoctorAvailability, getDateBounds } from "@/lib/doctor-availability";
 
-const BLOCKING_STATUSES = ["PENDING", "CONFIRMED", "RESCHEDULED"] as const;
-
-function getCampaignSchedule(schedule: unknown, dayOfWeek: string) {
-    if (!schedule || typeof schedule !== "object") return null;
-    const value = schedule as { days?: unknown; startTime?: unknown; endTime?: unknown };
-    const days = Array.isArray(value.days) ? value.days.map(String).map((day) => day.toUpperCase()) : [];
-    if (!days.includes(dayOfWeek) || typeof value.startTime !== "string" || typeof value.endTime !== "string") return null;
-    return { startTime: value.startTime, endTime: value.endTime };
-}
+const APPOINTMENT_STATUSES_TO_CHECK = ["PENDING", "CONFIRMED", "RESCHEDULED"] as const;
 
 export async function GET(
     req: Request,
@@ -38,49 +30,31 @@ export async function GET(
         if (!campaign?.doctor) return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
 
         const { start, end } = getDateBounds(date);
-        const campaignStart = new Date(campaign.startDate);
-        const campaignEnd = new Date(campaign.endDate);
-        const dayOfWeek = getDayOfWeek(date);
-        const inCampaignWindow = start <= campaignEnd && end >= campaignStart;
-        const onLeave = campaign.doctor.leaves.some((leave) => new Date(leave.startDate) <= end && new Date(leave.endDate) >= start);
-
-        if (!inCampaignWindow || onLeave) {
-            return NextResponse.json({ date, available: false, reason: onLeave ? "DOCTOR_ON_LEAVE" : "OUTSIDE_CAMPAIGN", slots: [] });
-        }
-
-        const persistedSchedules = campaign.doctor.availability
-            .filter((availability) => availability.dayOfWeek === dayOfWeek)
-            .map((availability) => ({ startTime: availability.startTime, endTime: availability.endTime }));
-        const schedules = persistedSchedules.length > 0
-            ? persistedSchedules
-            : [getCampaignSchedule(campaign.schedule, dayOfWeek)].filter((schedule): schedule is { startTime: string; endTime: string } => Boolean(schedule));
-
-        if (schedules.length === 0) {
-            return NextResponse.json({ date, available: false, reason: "NO_SCHEDULE", slots: [] });
-        }
 
         const appointments = await db.appointment.findMany({
-            where: { doctorId: campaign.doctor.id, dateTime: { gte: start, lte: end }, status: { in: [...BLOCKING_STATUSES] } },
-            select: { dateTime: true, duration: true },
+            where: { doctorId: campaign.doctor.id, dateTime: { gte: start, lte: end }, status: { in: [...APPOINTMENT_STATUSES_TO_CHECK] } },
+            select: { dateTime: true, status: true, createdAt: true },
         });
-        const occupiedMinutes = new Set(appointments.map((appointment) => {
-            const time = new Date(appointment.dateTime);
-            return time.getUTCHours() * 60 + time.getUTCMinutes();
-        }));
 
-        const slots = schedules.flatMap((schedule) => generateSlots(schedule.startTime, schedule.endTime, 30))
-            .filter((slot) => parseTimeToMinutes(slot.label.split(" - ")[0]) !== null)
-            .map((slot) => ({
-                ...slot,
-                status: occupiedMinutes.has(slot.startMinutes) ? "BOOKED" : "AVAILABLE",
-            }));
+        const availability = calculateDoctorAvailability({
+            date,
+            campaignStartDate: campaign.startDate,
+            campaignEndDate: campaign.endDate,
+            campaignSchedule: campaign.schedule,
+            doctorSchedules: campaign.doctor.availability.map((availability) => ({
+                dayOfWeek: availability.dayOfWeek,
+                startTime: availability.startTime,
+                endTime: availability.endTime,
+            })),
+            doctorLeaves: campaign.doctor.leaves,
+            existingAppointments: appointments,
+            timeZone: campaign.doctor.timeZone,
+        });
 
         return NextResponse.json({
             date,
             timeZone: campaign.doctor.timeZone,
-            available: slots.some((slot) => slot.status === "AVAILABLE"),
-            reason: slots.length === 0 ? "NO_SLOTS" : null,
-            slots,
+            ...availability,
         });
     } catch (error) {
         console.error("[PUBLIC_CAMPAIGN_AVAILABILITY_GET]", error);
