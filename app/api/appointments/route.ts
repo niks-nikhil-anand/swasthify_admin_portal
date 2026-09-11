@@ -20,6 +20,13 @@ export async function POST(req: Request) {
             );
         }
 
+        if (type !== "DOCTOR" && type !== "LAB") {
+            return NextResponse.json(
+                { error: "Invalid appointment type" },
+                { status: 400 }
+            );
+        }
+
         // 1. Authenticate user
         const cookieStore = await cookies();
         const token = cookieStore.get("PATIENT")?.value;
@@ -132,7 +139,7 @@ export async function POST(req: Request) {
         }
 
         // 5. Create Appointment
-        const doctorId = type === "DOCTOR" ? campaign?.doctorId : null;
+        const doctorId = type === "DOCTOR" ? campaign?.doctor?.id : null;
         const appointmentData: any = {
             patientId: patient.id,
             dateTime: appointmentDateTime,
@@ -174,7 +181,10 @@ export async function POST(req: Request) {
                 // the race between the availability check and INSERT without
                 // requiring a destructive migration on existing appointments.
                 const lockKey = `${doctorId}:${appointmentDateTime.toISOString()}`;
-                await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey}))`;
+                const [lock] = await tx.$queryRaw<{ locked: boolean }[]>`SELECT pg_try_advisory_xact_lock(hashtext(${lockKey})) AS locked`;
+                if (!lock?.locked) {
+                    throw new SlotConflictError("SLOT_LOCK_CONFLICT");
+                }
 
                 const conflictingAppointment = await tx.appointment.findFirst({
                     where: {
