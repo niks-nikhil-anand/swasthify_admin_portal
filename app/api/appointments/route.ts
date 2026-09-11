@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 import { startOfDay, endOfDay } from "date-fns";
-import { generateSlots, getDateBounds, getDayOfWeek, parseTimeToMinutes } from "@/lib/doctor-availability";
+import { calculateDoctorAvailability, getDateBounds, parseTimeToMinutes } from "@/lib/doctor-availability";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const APPOINTMENT_STATUSES_TO_CHECK = ["PENDING", "CONFIRMED", "RESCHEDULED"] as const;
 class SlotConflictError extends Error {}
 
 export async function POST(req: Request) {
@@ -77,32 +79,32 @@ export async function POST(req: Request) {
         appointmentDateTime.setUTCMinutes(startTimeMinutes);
 
         if (type === "DOCTOR" && campaign?.doctor) {
-            const dayOfWeek = getDayOfWeek(appointmentDateKey);
-            const onLeave = campaign.doctor.leaves.some((leave) => new Date(leave.startDate) <= appointmentDayEnd && new Date(leave.endDate) >= appointmentDayStart);
-            const persistedSchedules = campaign.doctor.availability
-                .filter((availability) => availability.dayOfWeek === dayOfWeek)
-                .map((availability) => ({ startTime: availability.startTime, endTime: availability.endTime }));
-            const campaignSchedule = campaign.schedule as { days?: string[]; startTime?: string; endTime?: string } | null;
-            const schedules = persistedSchedules.length > 0 ? persistedSchedules : (
-                campaignSchedule?.days?.map((day) => day.toUpperCase()).includes(dayOfWeek) && campaignSchedule.startTime && campaignSchedule.endTime
-                    ? [{ startTime: campaignSchedule.startTime, endTime: campaignSchedule.endTime }]
-                    : []
-            );
-            const validSlot = schedules.some((schedule) => generateSlots(schedule.startTime, schedule.endTime, 30).some((slot) => slot.startMinutes === startTimeMinutes && slot.label === timeSlot));
-            if (onLeave || !validSlot || appointmentDateTime <= new Date()) {
-                return NextResponse.json({ error: "This appointment slot is not available" }, { status: 409 });
-            }
-
-            const existingAppointment = await db.appointment.findFirst({
+            const existingAppointments = await db.appointment.findMany({
                 where: {
                     doctorId: campaign.doctor.id,
-                    dateTime: appointmentDateTime,
-                    status: { in: ["PENDING", "CONFIRMED", "RESCHEDULED"] },
+                    dateTime: { gte: appointmentDayStart, lte: appointmentDayEnd },
+                    status: { in: [...APPOINTMENT_STATUSES_TO_CHECK] },
                 },
-                select: { id: true },
+                select: { dateTime: true, status: true, createdAt: true },
             });
-            if (existingAppointment) {
-                return NextResponse.json({ error: "This appointment slot is no longer available" }, { status: 409 });
+
+            const availability = calculateDoctorAvailability({
+                date: appointmentDateKey,
+                campaignStartDate: campaign.startDate,
+                campaignEndDate: campaign.endDate,
+                campaignSchedule: campaign.schedule,
+                doctorSchedules: campaign.doctor.availability.map((availability) => ({
+                    dayOfWeek: availability.dayOfWeek,
+                    startTime: availability.startTime,
+                    endTime: availability.endTime,
+                })),
+                doctorLeaves: campaign.doctor.leaves,
+                existingAppointments,
+                timeZone: campaign.doctor.timeZone,
+            });
+            const requestedSlot = availability.slots.find((slot) => slot.startMinutes === startTimeMinutes && slot.label === timeSlot);
+            if (!requestedSlot || requestedSlot.status !== "AVAILABLE") {
+                return NextResponse.json({ error: "This appointment slot is not available" }, { status: 409 });
             }
         }
 
@@ -118,7 +120,7 @@ export async function POST(req: Request) {
                 const platformFees = await db.platformFee.findMany({
                     where: { isActive: true }
                 });
-                const platformFeeObj = platformFees.find((f: any) => f.entityType === "DOCTOR") || platformFees.find((f: any) => f.entityType === "ALL");
+                const platformFeeObj = platformFees.find((fee) => fee.entityType === "DOCTOR") || platformFees.find((fee) => fee.entityType === "ALL");
 
                 let platformFeeValue = 0;
                 let platformDiscountValue = 0;
@@ -140,7 +142,7 @@ export async function POST(req: Request) {
 
         // 5. Create Appointment
         const doctorId = type === "DOCTOR" ? campaign?.doctor?.id : null;
-        const appointmentData: any = {
+        const appointmentData: Prisma.AppointmentUncheckedCreateInput = {
             patientId: patient.id,
             dateTime: appointmentDateTime,
             status: "PENDING",
@@ -166,8 +168,9 @@ export async function POST(req: Request) {
                     },
                     orderBy: {
                         queueNumber: 'desc'
-                    } as any
-                }) as any;
+                    },
+                    select: { queueNumber: true },
+                });
 
                 appointmentData.queueNumber = (lastAppointment?.queueNumber || 0) + 1;
             }
@@ -199,7 +202,7 @@ export async function POST(req: Request) {
                 }
             }
 
-            return tx.appointment.create({ data: appointmentData as any });
+            return tx.appointment.create({ data: appointmentData });
         });
 
         return NextResponse.json({
