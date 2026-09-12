@@ -7,6 +7,8 @@ type CampaignLocation = {
     longitude?: unknown;
 };
 
+type CampaignWithKnownDistance<T> = T & { distanceKm: number };
+
 function toNumber(value: string | null) {
     if (value === null) return null;
     const number = Number(value);
@@ -156,11 +158,10 @@ export async function GET(req: Request) {
                         : null;
                     return { ...campaign, distanceKm };
                 })
-                .filter((campaign) => campaign.distanceKm === null || campaign.distanceKm <= radiusKm)
+                .filter((campaign): campaign is CampaignWithKnownDistance<typeof campaign> => {
+                    return campaign.distanceKm !== null && campaign.distanceKm <= radiusKm;
+                })
                 .sort((a, b) => {
-                    if (a.distanceKm === null && b.distanceKm === null) return 0;
-                    if (a.distanceKm === null) return 1;
-                    if (b.distanceKm === null) return -1;
                     return a.distanceKm - b.distanceKm;
                 });
 
