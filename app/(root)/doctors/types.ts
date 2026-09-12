@@ -27,8 +27,8 @@ export interface Campaign {
     hourlyLimit: number | null;
     totalCapacity: number | null;
     requiredDetails: string[];
-    bookingRules: any;
-    eligibility: any;
+    bookingRules: unknown;
+    eligibility: unknown;
     doctor: {
         id: string;
         userId: string;
@@ -55,4 +55,5 @@ export interface Campaign {
     doctorImage?: string | null;
     doctorExperience?: number | null;
     specialisation?: string | null;
+    distanceKm?: number | null;
 }
