@@ -2,6 +2,39 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 
+type CampaignLocation = {
+    latitude?: unknown;
+    longitude?: unknown;
+};
+
+function toNumber(value: string | null) {
+    if (value === null) return null;
+    const number = Number(value);
+    return Number.isFinite(number) ? number : null;
+}
+
+function getCoordinate(location: unknown, key: "latitude" | "longitude") {
+    if (!location || typeof location !== "object") return null;
+    const value = (location as CampaignLocation)[key];
+    const number = typeof value === "string" || typeof value === "number" ? Number(value) : NaN;
+    return Number.isFinite(number) ? number : null;
+}
+
+function getDistanceKm(originLat: number, originLng: number, destinationLat: number, destinationLng: number) {
+    const earthRadiusKm = 6371;
+    const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
+    const latDelta = toRadians(destinationLat - originLat);
+    const lngDelta = toRadians(destinationLng - originLng);
+    const a =
+        Math.sin(latDelta / 2) * Math.sin(latDelta / 2) +
+        Math.cos(toRadians(originLat)) *
+        Math.cos(toRadians(destinationLat)) *
+        Math.sin(lngDelta / 2) *
+        Math.sin(lngDelta / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return earthRadiusKm * c;
+}
+
 export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
@@ -10,10 +43,14 @@ export async function GET(req: Request) {
         const specialization = searchParams.get("specialization");
         const sort = searchParams.get("sort") || "recommended";
         const source = searchParams.get("source"); // "doctor" or "lab"
+        const lat = toNumber(searchParams.get("lat"));
+        const lng = toNumber(searchParams.get("lng"));
+        const radiusKm = toNumber(searchParams.get("radiusKm")) ?? 25;
+        const hasLocation = lat !== null && lng !== null;
 
         const page = Math.max(1, parseInt(searchParams.get("page") || "1") || 1);
         const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") || "9") || 9));
-        const skip = (page - 1) * limit;
+        const skip = hasLocation ? 0 : (page - 1) * limit;
         const allowedTypes = ["OPD", "HEALTH_CAMP", "FREE_CHECKUP"] as const;
         const allowedSorts = ["recommended", "newest", "price_asc", "price_desc", "rating_desc", "experience_desc"] as const;
         const normalizedQuery = query?.trim();
@@ -79,8 +116,7 @@ export async function GET(req: Request) {
             experience_desc: { doctor: { experienceYears: "desc" } },
         } as const;
 
-        // Get total count for pagination
-        const total = await db.campaign.count({ where: whereClause });
+        const total = hasLocation ? 0 : await db.campaign.count({ where: whereClause });
 
         const campaigns = await db.campaign.findMany({
             where: whereClause,
@@ -107,8 +143,39 @@ export async function GET(req: Request) {
             },
             orderBy: orderBy[safeSort],
             skip,
-            take: limit
+            take: hasLocation ? Math.max(limit * 4, 50) : limit
         });
+
+        if (hasLocation) {
+            const campaignsWithDistance = campaigns
+                .map((campaign) => {
+                    const campaignLat = getCoordinate(campaign.location, "latitude");
+                    const campaignLng = getCoordinate(campaign.location, "longitude");
+                    const distanceKm = campaignLat !== null && campaignLng !== null
+                        ? getDistanceKm(lat, lng, campaignLat, campaignLng)
+                        : null;
+                    return { ...campaign, distanceKm };
+                })
+                .filter((campaign) => campaign.distanceKm === null || campaign.distanceKm <= radiusKm)
+                .sort((a, b) => {
+                    if (a.distanceKm === null && b.distanceKm === null) return 0;
+                    if (a.distanceKm === null) return 1;
+                    if (b.distanceKm === null) return -1;
+                    return a.distanceKm - b.distanceKm;
+                });
+
+            const paginatedCampaigns = campaignsWithDistance.slice((page - 1) * limit, page * limit);
+
+            return NextResponse.json({
+                data: paginatedCampaigns,
+                pagination: {
+                    total: campaignsWithDistance.length,
+                    page,
+                    limit,
+                    totalPages: Math.ceil(campaignsWithDistance.length / limit)
+                }
+            });
+        }
 
         return NextResponse.json({
             data: campaigns,
