@@ -39,13 +39,15 @@ export default function Home() {
         <Hero />
         <TrustBar />
         <Services />
+        <DoctorSection />
+
         <HowItWorks />
         <Specialities />
         <HealthConcerns />
-        <DoctorSection />
-        <AbhaIntegration />
+       
         <LabSection />
         <InClinic />
+         <AbhaIntegration />
         <Testimonials />
         <DownloadApp />
       </main>
