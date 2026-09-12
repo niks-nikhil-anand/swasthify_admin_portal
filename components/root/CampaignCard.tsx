@@ -116,6 +116,11 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                                 {campaign.location?.city} • {campaign.location?.address}
                             </span>
                         </div>
+                        {typeof campaign.distanceKm === "number" && (
+                            <div className="mt-2 inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-[11px] font-black uppercase tracking-wide text-primary">
+                                {campaign.distanceKm < 1 ? "<1 km away" : `${campaign.distanceKm.toFixed(1)} km away`}
+                            </div>
+                        )}
                     </div>
 
                     {/* Divider line mimicking exactly the screenshot's faint line */}
