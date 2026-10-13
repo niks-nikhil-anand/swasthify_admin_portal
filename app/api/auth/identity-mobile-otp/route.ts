@@ -3,7 +3,7 @@ import { db as prisma } from "@/lib/db";
 import { SignJWT } from "jose";
 import mobileAdmin, { mobileAdminApp } from "@/lib/firebaseAdminMobile";
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "default_secret");
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "your-secret-key");
 
 export async function POST(req: NextRequest) {
     try {
@@ -85,6 +85,7 @@ export async function POST(req: NextRequest) {
         const token = await new SignJWT({
             userId: user.id,
             email: user.email,
+            phone: user.phone,
             role: user.role,
         })
             .setProtectedHeader({ alg: "HS256" })
@@ -95,10 +96,12 @@ export async function POST(req: NextRequest) {
         // Set Cookie
         const response = NextResponse.json({
             success: true,
+            token,
             user: {
                 id: user.id,
                 name: user.name,
                 email: user.email,
+                phone: user.phone,
                 role: user.role,
             },
         });

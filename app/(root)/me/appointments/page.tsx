@@ -37,6 +37,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ExternalLink, ChevronLeft } from "lucide-react";
 import { AppointmentCard, Appointment } from "./components/AppointmentCard";
+import { ReviewModal } from "./components/ReviewModal";
 import { SkeletonAppointments } from "./components/SkeletonAppointmentCard";
 import {
     Pagination,
@@ -59,6 +60,8 @@ export default function AppointmentsPage() {
     const [sortBy, setSortBy] = useState("newest");
     const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const [reviewAppointment, setReviewAppointment] = useState<Appointment | null>(null);
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -219,6 +222,10 @@ export default function AppointmentsPage() {
                                     setIsDetailsModalOpen(true);
                                 }}
                                 onCancel={handleCancelClick}
+                                onReview={(apt) => {
+                                    setReviewAppointment(apt);
+                                    setIsReviewModalOpen(true);
+                                }}
                             />
                         ))}
                     </div>
@@ -492,6 +499,13 @@ export default function AppointmentsPage() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            <ReviewModal
+                appointment={reviewAppointment}
+                open={isReviewModalOpen}
+                onOpenChange={setIsReviewModalOpen}
+                onSubmitted={fetchAppointments}
+            />
         </div>
     );
 }

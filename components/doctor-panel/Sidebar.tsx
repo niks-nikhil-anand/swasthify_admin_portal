@@ -19,7 +19,8 @@ import {
     Megaphone,
     HandCoins,
     ShieldCheck,
-    CreditCard
+    CreditCard,
+    Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -56,6 +57,11 @@ const sidebarGroups = [
                 title: "Campaigns",
                 href: "/doctor-panel/campaign",
                 icon: Megaphone,
+            },
+            {
+                title: "Reviews",
+                href: "/doctor-panel/reviews",
+                icon: Star,
             },
         ]
     },

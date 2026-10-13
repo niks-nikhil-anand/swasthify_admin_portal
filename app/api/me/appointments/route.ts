@@ -1,25 +1,17 @@
 import { NextResponse } from "next/server";
-import { jwtVerify } from "jose";
-import { cookies } from "next/headers";
 import { db } from "@/lib/db";
+import { getPatientUserId } from "@/lib/patient-auth";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
-
-export async function GET() {
+export async function GET(req: Request) {
     try {
-        const cookieStore = await cookies();
-        const token = cookieStore.get("PATIENT")?.value;
+        const userId = await getPatientUserId(req);
 
-        if (!token) {
+        if (!userId) {
             return NextResponse.json(
                 { error: "Not authenticated" },
                 { status: 401 }
             );
         }
-
-        const secret = new TextEncoder().encode(JWT_SECRET);
-        const { payload } = await jwtVerify(token, secret);
-        const userId = payload.userId as string;
         console.log("Debug: userId from token:", userId);
 
         // 1. Find Patient profile
@@ -66,7 +58,8 @@ export async function GET() {
                         }
                     }
                 },
-                payment: true
+                payment: true,
+                review: true
             },
             orderBy: {
                 dateTime: "desc"
@@ -102,6 +95,7 @@ export async function GET() {
 
             return {
                 id: apt.id,
+                doctorId: apt.doctorId,
                 doctor: organizerName,
                 speciality: speciality,
                 date: apt.dateTime.toISOString(),
@@ -109,6 +103,13 @@ export async function GET() {
                 status: apt.status === "CONFIRMED" ? (isPast ? "Completed" : "Upcoming") : apt.status,
                 img: apt.doctor?.profilePhoto || organizerName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2),
                 rawStatus: apt.status,
+                canReview: Boolean(apt.doctorId) && !apt.review && (apt.status === "COMPLETED" || (apt.status === "CONFIRMED" && isPast)),
+                review: apt.review ? {
+                    id: apt.review.id,
+                    rating: apt.review.rating,
+                    comment: apt.review.comment,
+                    createdAt: apt.review.createdAt.toISOString(),
+                } : null,
                 // New fields for details view
                 doctorDetails: doctorDetails,
                 consultationFee: apt.consultationFee,

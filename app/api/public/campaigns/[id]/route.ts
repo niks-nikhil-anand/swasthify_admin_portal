@@ -28,6 +28,29 @@ export async function GET(
                             }
                         },
                         specializations: true,
+                        reviews: {
+                            include: {
+                                patient: {
+                                    include: {
+                                        user: {
+                                            select: {
+                                                name: true,
+                                                profilePic: true,
+                                            }
+                                        }
+                                    }
+                                },
+                                appointment: {
+                                    select: {
+                                        dateTime: true,
+                                    }
+                                }
+                            },
+                            orderBy: {
+                                createdAt: "desc",
+                            },
+                            take: 10,
+                        },
                     }
                 },
                 lab: {

@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
-import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 import { uploadToS3 } from "@/lib/s3";
 import { z } from "zod";
-
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+import { getPatientUserId } from "@/lib/patient-auth";
 
 const documentSchema = z.object({
     title: z.string().min(1, "Title is required"),
@@ -15,16 +12,11 @@ const documentSchema = z.object({
 
 export async function POST(req: NextRequest) {
     try {
-        const cookieStore = await cookies();
-        const token = cookieStore.get("PATIENT")?.value;
+        const userId = await getPatientUserId(req);
 
-        if (!token) {
+        if (!userId) {
             return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
         }
-
-        const secret = new TextEncoder().encode(JWT_SECRET);
-        const { payload } = await jwtVerify(token, secret);
-        const userId = payload.userId as string;
 
         // Find the patient record associated with this user
         const patient = await db.patient.findFirst({
@@ -92,16 +84,11 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
     try {
-        const cookieStore = await cookies();
-        const token = cookieStore.get("PATIENT")?.value;
+        const userId = await getPatientUserId(req);
 
-        if (!token) {
+        if (!userId) {
             return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
         }
-
-        const secret = new TextEncoder().encode(JWT_SECRET);
-        const { payload } = await jwtVerify(token, secret);
-        const userId = payload.userId as string;
 
         const patient = await db.patient.findFirst({
             where: { userId },

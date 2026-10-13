@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
-import { jwtVerify } from "jose";
-import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 import { z } from "zod";
-
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+import { getPatientUserId } from "@/lib/patient-auth";
 
 const profileSchema = z.object({
     name: z.string().optional(),
@@ -22,16 +19,11 @@ const profileSchema = z.object({
 
 export async function PATCH(req: Request) {
     try {
-        const cookieStore = await cookies();
-        const token = cookieStore.get("PATIENT")?.value;
+        const userId = await getPatientUserId(req);
 
-        if (!token) {
+        if (!userId) {
             return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
         }
-
-        const secret = new TextEncoder().encode(JWT_SECRET);
-        const { payload } = await jwtVerify(token, secret);
-        const userId = payload.userId as string;
 
         const body = await req.json();
         console.log("PROFILE UPDATE REQUEST BODY:", body);

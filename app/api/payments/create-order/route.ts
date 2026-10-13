@@ -1,11 +1,8 @@
 import { NextResponse } from "next/server";
-import { jwtVerify } from "jose";
-import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 import { razorpay } from "@/lib/razorpay";
 import { isExpiredPendingAppointment, releasePendingAppointment } from "@/lib/booking-reservation";
-
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+import { getPatientUserId } from "@/lib/patient-auth";
 
 export async function POST(req: Request) {
     console.log("Create Order API started");
@@ -19,16 +16,11 @@ export async function POST(req: Request) {
         }
 
         // 1. Authenticate user
-        const cookieStore = await cookies();
-        const token = cookieStore.get("PATIENT")?.value;
-        if (!token) {
+        const userId = await getPatientUserId(req);
+        if (!userId) {
             console.log("Auth failed: No token");
             return NextResponse.json({ error: "Authentication required" }, { status: 401 });
         }
-
-        const secret = new TextEncoder().encode(JWT_SECRET);
-        const { payload } = await jwtVerify(token, secret);
-        const userId = payload.userId as string;
 
         // 2. Fetch appointment
         const appointment = await db.appointment.findUnique({

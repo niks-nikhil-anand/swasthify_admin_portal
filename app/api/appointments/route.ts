@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server";
 import type { Prisma } from "@prisma/client";
-import { jwtVerify } from "jose";
-import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 import { startOfDay, endOfDay } from "date-fns";
 import { calculateDoctorAvailability, getDateBounds, parseTimeToMinutes } from "@/lib/doctor-availability";
+import { getPatientUserId } from "@/lib/patient-auth";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 const APPOINTMENT_STATUSES_TO_CHECK = ["PENDING", "CONFIRMED", "RESCHEDULED"] as const;
 class SlotConflictError extends Error {}
 
@@ -30,19 +28,14 @@ export async function POST(req: Request) {
         }
 
         // 1. Authenticate user
-        const cookieStore = await cookies();
-        const token = cookieStore.get("PATIENT")?.value;
+        const userId = await getPatientUserId(req);
 
-        if (!token) {
+        if (!userId) {
             return NextResponse.json(
                 { error: "Not authenticated" },
                 { status: 401 }
             );
         }
-
-        const secret = new TextEncoder().encode(JWT_SECRET);
-        const { payload } = await jwtVerify(token, secret);
-        const userId = payload.userId as string;
 
         // 2. Find Patient profile
         const patient = await db.patient.findFirst({

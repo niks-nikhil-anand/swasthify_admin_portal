@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Clock, MapPin, Video, CheckCircle2, XCircle, Timer, ExternalLink, Hash } from "lucide-react";
+import { Calendar, Clock, MapPin, Video, CheckCircle2, XCircle, Timer, ExternalLink, Hash, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatAppointmentDate } from "@/lib/date-utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 
 export interface Appointment {
     id: string;
+    doctorId?: string | null;
     doctor: string;
     speciality: string;
     date: string;
@@ -15,6 +16,13 @@ export interface Appointment {
     status: string;
     img: string;
     rawStatus: string;
+    canReview?: boolean;
+    review?: {
+        id: string;
+        rating: number;
+        comment?: string | null;
+        createdAt: string;
+    } | null;
     consultationFee?: number;
     reason?: string;
     doctorDetails?: {
@@ -47,9 +55,10 @@ interface AppointmentCardProps {
     appointment: Appointment;
     onViewDetails: (appointment: Appointment) => void;
     onCancel: (id: string) => void;
+    onReview: (appointment: Appointment) => void;
 }
 
-export function AppointmentCard({ appointment, onViewDetails, onCancel }: AppointmentCardProps) {
+export function AppointmentCard({ appointment, onViewDetails, onCancel, onReview }: AppointmentCardProps) {
     const isUpcoming = appointment.status === "Upcoming";
     const isCancelled = appointment.status === "CANCELLED";
 
@@ -194,6 +203,21 @@ export function AppointmentCard({ appointment, onViewDetails, onCancel }: Appoin
                         >
                             Cancel
                         </button>
+                    )}
+                    {appointment.canReview && (
+                        <button
+                            onClick={() => onReview(appointment)}
+                            className="px-6 py-3 md:py-2.5 text-[11px] font-black uppercase tracking-wider text-amber-700 bg-amber-50/80 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 rounded-2xl hover:bg-amber-100 transition-all duration-300 shadow-sm flex items-center justify-center gap-2"
+                        >
+                            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                            Write Review
+                        </button>
+                    )}
+                    {appointment.review && (
+                        <div className="px-6 py-3 md:py-2.5 text-[11px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-50/80 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 rounded-2xl flex items-center justify-center gap-2">
+                            <Star className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
+                            Reviewed
+                        </div>
                     )}
                 </div>
             </div>

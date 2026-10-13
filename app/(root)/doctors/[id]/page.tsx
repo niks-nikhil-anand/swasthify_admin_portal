@@ -16,6 +16,7 @@ import { DoctorSidebar } from "./components/DoctorSidebar";
 import { useParams as useNextParams } from "next/navigation";
 import { BookingModal } from "./components/BookingModal";
 import { ClinicImageSlider } from "./components/ClinicImageSlider";
+import { DoctorReviews } from "./components/DoctorReviews";
 
 export default function CampaignDetailsPage() {
     const params = useNextParams();
@@ -131,6 +132,9 @@ export default function CampaignDetailsPage() {
 
                             {/* Location */}
                             <LocationSection campaign={campaign} />
+
+                            {/* Verified Reviews */}
+                            <DoctorReviews campaign={campaign} />
                         </div>
                     </div>
 

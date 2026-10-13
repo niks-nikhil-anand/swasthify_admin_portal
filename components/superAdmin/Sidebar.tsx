@@ -26,7 +26,8 @@ import {
     ShieldCheck,
     Activity,
     CreditCard,
-    Image as ImageIcon
+    Image as ImageIcon,
+    Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -87,6 +88,11 @@ const sidebarGroups = [
                 title: "Appointments",
                 href: "/superAdmin/operations/appointment",
                 icon: Calendar,
+            },
+            {
+                title: "Reviews",
+                href: "/superAdmin/operations/reviews",
+                icon: Star,
             },
             {
                 title: "Tickets",

@@ -49,6 +49,21 @@ export interface Campaign {
             name: string;
         }[];
         clinicImages: string[];
+        reviews?: {
+            id: string;
+            rating: number;
+            comment: string | null;
+            createdAt: string;
+            patient: {
+                user: {
+                    name: string;
+                    profilePic?: string | null;
+                };
+            };
+            appointment?: {
+                dateTime: string;
+            } | null;
+        }[];
     };
     isVerified: boolean;
     doctorName?: string | null;

@@ -15,6 +15,7 @@ function normalizeQuery(query: string): string {
 
 // Load knowledge base embeddings
 let kbEmbeddings: any[] | null = null;
+let knowledgeBase: any | null = null;
 
 function loadKbEmbeddings() {
     if (!kbEmbeddings) {
@@ -30,6 +31,21 @@ function loadKbEmbeddings() {
     return kbEmbeddings;
 }
 
+function loadKnowledgeBase() {
+    if (!knowledgeBase) {
+        try {
+            const filePath = path.join(process.cwd(), 'public', 'chatbot-knowledge.json');
+            const fileContent = fs.readFileSync(filePath, 'utf-8');
+            knowledgeBase = JSON.parse(fileContent);
+        } catch (error) {
+            console.error('Failed to load knowledge base:', error);
+            knowledgeBase = { categories: {} };
+        }
+    }
+
+    return knowledgeBase;
+}
+
 // Cosine similarity
 function cosineSimilarity(vecA: number[], vecB: number[]) {
     let dotProduct = 0;
@@ -43,19 +59,74 @@ function cosineSimilarity(vecA: number[], vecB: number[]) {
     return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
+function getAllowedCategoryNames(userContext?: string) {
+    const allowedCategories = new Set(['General Information', 'Common Questions', 'Troubleshooting']);
+
+    if (userContext === 'doctor') allowedCategories.add('Doctor Panel');
+    else if (userContext === 'lab') allowedCategories.add('Lab Panel');
+    else if (userContext === 'admin') allowedCategories.add('Super Admin');
+    else if (userContext === 'patient' || userContext === 'mobile' || userContext === 'general') {
+        allowedCategories.add('General Information');
+        allowedCategories.add('Common Questions');
+    }
+
+    return allowedCategories;
+}
+
+function searchKnowledgeBaseByKeyword(query: string, userContext?: string): string {
+    const kb = loadKnowledgeBase();
+    const categories = kb?.categories || {};
+    const allowedCategories = getAllowedCategoryNames(userContext);
+    const queryLower = query.toLowerCase();
+    const queryTokens = new Set(queryLower.split(/[^a-z0-9]+/).filter((token: string) => token.length > 2));
+
+    const scoredFaqs: any[] = [];
+
+    Object.values(categories).forEach((category: any) => {
+        if (!allowedCategories.has(category?.name)) return;
+
+        (category?.faqs || []).forEach((faq: any) => {
+            const keywords = Array.isArray(faq.keywords) ? faq.keywords : [];
+            const searchable = [
+                faq.question || '',
+                faq.answer || '',
+                ...keywords,
+            ].join(' ').toLowerCase();
+
+            let score = 0;
+
+            keywords.forEach((keyword: string) => {
+                if (queryLower.includes(keyword.toLowerCase())) score += 4;
+            });
+
+            queryTokens.forEach((token) => {
+                if (searchable.includes(token)) score += 1;
+            });
+
+            if (score > 0) {
+                scoredFaqs.push({ faq, score });
+            }
+        });
+    });
+
+    scoredFaqs.sort((a, b) => b.score - a.score);
+
+    return scoredFaqs
+        .slice(0, 3)
+        .map(({ faq }) => `Q: ${faq.question}\nA: ${faq.answer}`)
+        .join('\n\n');
+}
+
 // Search knowledge base using embeddings
 async function searchKnowledgeBase(query: string, userContext?: string): Promise<string> {
     const embeddings = loadKbEmbeddings();
     if (!embeddings || embeddings.length === 0) {
-        return "Knowledge base not available.";
+        return searchKnowledgeBaseByKeyword(query, userContext) || "Knowledge base not available.";
     }
 
     // 1. Filter by Category (Metadata Filtering)
     // Map user context (panel) to allowed categories
-    const allowedCategories = new Set(['general', 'troubleshooting']);
-    if (userContext === 'doctor') allowedCategories.add('Doctor Panel');
-    else if (userContext === 'lab') allowedCategories.add('Lab Panel');
-    else if (userContext === 'admin') allowedCategories.add('Super Admin');
+    const allowedCategories = getAllowedCategoryNames(userContext);
 
     // FAQ Fast-Path: Detect definition queries
     const queryLower = query.toLowerCase();
@@ -127,7 +198,7 @@ async function searchKnowledgeBase(query: string, userContext?: string): Promise
 
         if (topDocs.length === 0) {
             console.log("No relevant documents found (threshold 0.45)");
-            return "No highly relevant information found in knowledge base.";
+            return searchKnowledgeBaseByKeyword(query, userContext) || "No highly relevant information found in knowledge base.";
         }
 
         let context = '';
@@ -135,10 +206,12 @@ async function searchKnowledgeBase(query: string, userContext?: string): Promise
             context += `Q: ${doc.original.question}\nA: ${doc.original.answer}\n\n`;
         });
 
-        return context.trim(); // Trim to remove trailing newlines
+        const keywordContext = searchKnowledgeBaseByKeyword(query, userContext);
+
+        return [context.trim(), keywordContext].filter(Boolean).join('\n\n'); // Trim to remove trailing newlines
     } catch (error) {
         console.error("Error performing similarity search:", error);
-        return "Error searching knowledge base.";
+        return searchKnowledgeBaseByKeyword(query, userContext) || "Error searching knowledge base.";
     }
 }
 
@@ -204,14 +277,38 @@ Output JSON format:
   "suggestions": ["Follow-up Q1", "Follow-up Q2", "Follow-up Q3", "Follow-up Q4"]
 }`;
 
-        // Call Gemini API
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-        const result = await model.generateContent({
-            contents: [{ role: 'user', parts: [{ text: systemPrompt }] }],
-            generationConfig: {
-                responseMimeType: "application/json"
+        // Call Gemini API with fallbacks so temporary model pressure does not break chat.
+        const modelNames = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
+        let result;
+        let lastModelError: any;
+
+        for (const modelName of modelNames) {
+            try {
+                const model = genAI.getGenerativeModel({ model: modelName });
+                result = await model.generateContent({
+                    contents: [{ role: 'user', parts: [{ text: systemPrompt }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json"
+                    }
+                });
+                break;
+            } catch (error: any) {
+                lastModelError = error;
+                const message = error?.message || '';
+                const isRetryable = message.includes('503') || message.includes('Service Unavailable') || message.includes('overloaded') || message.includes('high demand');
+
+                if (!isRetryable) {
+                    throw error;
+                }
+
+                console.warn(`Gemini model ${modelName} unavailable, trying fallback...`);
             }
-        });
+        }
+
+        if (!result) {
+            throw lastModelError || new Error('No Gemini model returned a response');
+        }
+
         const response = await result.response;
         const text = response.text();
 
