@@ -3,7 +3,11 @@ import { db as prisma } from "@/lib/db";
 import { SignJWT } from "jose";
 import mobileAdmin, { mobileAdminApp } from "@/lib/firebaseAdminMobile";
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "default_secret");
+function getJwtSecret() {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) throw new Error("JWT_SECRET is not configured");
+    return new TextEncoder().encode(secret);
+}
 
 export async function POST(req: NextRequest) {
     try {
@@ -90,11 +94,12 @@ export async function POST(req: NextRequest) {
             .setProtectedHeader({ alg: "HS256" })
             .setIssuedAt()
             .setExpirationTime("24h")
-            .sign(JWT_SECRET);
+            .sign(getJwtSecret());
 
         // Set Cookie
         const response = NextResponse.json({
             success: true,
+            token,
             user: {
                 id: user.id,
                 name: user.name,
