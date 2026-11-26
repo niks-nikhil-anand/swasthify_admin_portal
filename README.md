@@ -1,6 +1,6 @@
 # Swasthify — Project Overview
 
-Swasthify is a multi-role healthcare marketplace for Bihar and Patna. Patients can discover verified doctors and diagnostic labs, book appointments or tests, pay online, manage health records, and contact support. Dedicated operational portals support doctors, labs, and super administrators.
+Swasthify is a multi-role healthcare marketplace for Bihar and Patna. Patients can discover verified doctors and diagnostic labs, book appointments or tests, pay online, manage health records, and contact support. Dedicated operational portals support doctors, and super administrators.
 
 ## Core User Flows
 
